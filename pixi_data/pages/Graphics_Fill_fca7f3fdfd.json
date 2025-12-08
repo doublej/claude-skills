@@ -1,0 +1,131 @@
+{
+  "title": "Graphics Fill",
+  "content": "If you are new to graphics, please check out the [graphics guide](../graphics) here. This guide dives a bit deeper into a specific aspect of graphics: how to fill them! The `fill()` method in PixiJS is particularly powerful, enabling you to fill shapes with colors, textures, or gradients. Whether you're designing games, UI components, or creative tools, mastering the `fill()` method is essential for creating visually appealing and dynamic graphics. This guide explores the different ways to use the `fill()` method to achieve stunning visual effects.\n\n:::info Note\nThe `fillStyles` discussed here can also be applied to Text objects!\n:::\n\nWhen creating a `Graphics` object, you can easily fill it with a color using the `fill()` method. Here's a simple example:\n\n![alt text](/assets/guides/components/image.png)\n\nThis creates a red rectangle. PixiJS supports multiple color formats for the `fill()` method. Developers can choose a format based on their needs. For example, CSS color strings are user-friendly and readable, hexadecimal strings are compact and widely used in design tools, and numbers are efficient for programmatic use. Arrays and Color objects offer precise control, making them ideal for advanced graphics.\n\n- CSS color strings (e.g., 'red', 'blue')\n- Hexadecimal strings (e.g., '#ff0000')\n- Numbers (e.g., `0xff0000`)\n- Arrays (e.g., `[255, 0, 0]`)\n- Color objects for precise color control\n\n## Fill with a Style Object\n\nFor more advanced fills, you can use a `FillStyle` object. This allows for additional customization, such as setting opacity:\n\n![alt text](/assets/guides/components/image-1.png)\n\n## Fill with Textures\n\nFilling shapes with textures is just as simple:\n\n![alt text](/assets/guides/components/image-2.png)\n\n### Local vs. Global Texture Space\n\nTextures can be applied in two coordinate spaces:\n\n- **Local Space** (Default): The texture coordinates are mapped relative to the shape's dimensions and position. The texture coordinates use a normalized coordinate system where (0,0) is the top-left and (1,1) is the bottom-right of the shape, regardless of its actual pixel dimensions. For example, if you have a 300x200 pixel texture filling a 100x100 shape, the texture will be scaled to fit exactly within those 100x100 pixels. The texture's top-left corner (0,0) will align with the shape's top-left corner, and the texture's bottom-right corner (1,1) will align with the shape's bottom-right corner, stretching or compressing the texture as needed.\n\n![alt text](/assets/guides/components/image-13.png)\n\n- **Global Space**: Set `textureSpace: 'global'` to make the texture position and scale relative to the Graphics object's coordinate system. Despite the name, this isn't truly \"global\" - the texture remains fixed relative to the Graphics object itself, maintaining its position even when the object moves or scales. See how the image goes across all the shapes (in the same graphics) below:\n\n![alt text](/assets/guides/components/image-11.png)\n\n### Using Matrices with Textures\n\nTo modify texture coordinates, you can apply a transformation matrix, which is a mathematical tool used to scale, rotate, or translate the texture. If you're unfamiliar with transformation matrices, they allow for precise control over how textures are rendered, and you can explore more about them [here](https://learnwebgl.brown37.net/10_surface_properties/texture_mapping_transforms.html#:~:text=Overview%C2%B6,by%2D4%20transformation%20matrix).\n\n![alt text](/assets/guides/components/image-4.png)\n\n1. **Sprite Sheets**: If using a texture from a sprite sheet, the entire source texture will be used. To use a specific frame, create a new texture:\n\n2. **Power of Two Textures**: Textures should be power-of-two dimensions for proper tiling in WebGL1 (WebGL2 and WebGPU are fine).\n\n## Fill with Gradients\n\nPixiJS supports both linear and radial gradients, which can be created using the `FillGradient` class. Gradients are particularly useful for adding visual depth and dynamic styling to shapes and text.\n\nLinear gradients create a smooth color transition along a straight line. Here is an example of a simple linear gradient:\n\n![alt text](/assets/guides/components/image-5.png)\n\nYou can control the gradient direction with the following properties:\n\n- `start {x, y}`: These define the starting point of the gradient. For example, in a linear gradient, this is where the first color stop is positioned. These values are typically expressed in relative coordinates (0 to 1), where `0` represents the left/top edge and `1` represents the right/bottom edge of the shape.\n\n- `end {x, y}`: These define the ending point of the gradient. Similar to `start {x, y}`, these values specify where the last color stop is positioned in the shape's local coordinate system.\n\nUsing these properties, you can create various gradient effects, such as horizontal, vertical, or diagonal transitions. For example, setting `start` to `{x: 0, y: 0}` and `end` to `{x: 1, y: 1}` would result in a diagonal gradient from the top-left to the bottom-right of the shape.\n\n![alt text](/assets/guides/components/image-6.png)\n\nRadial gradients create a smooth color transition in a circular pattern. Unlike linear gradients, they blend colors from one circle to another. Here is an example of a simple radial gradient:\n\n![alt text](/assets/guides/components/image-7.png)\n\nYou can control the gradient's shape and size using the following properties:\n\n- `center {x, y}`: These define the center of the inner circle where the gradient starts. Typically, these values are expressed in relative coordinates (0 to 1), where `0.5` represents the center of the shape.\n\n- `innerRadius`: The radius of the inner circle. This determines the size of the gradient's starting point.\n\n- `outerCenter {x, y}`: These define the center of the outer circle where the gradient ends. Like `center {x, y}`, these values are also relative coordinates.\n\n- `outerRadius`: The radius of the outer circle. This determines the size of the gradient's ending point.\n\nBy adjusting these properties, you can create a variety of effects, such as small, concentrated gradients or large, expansive ones. For example, setting a small `r0` and a larger `r1` will create a gradient that starts does not start to transition until the inner circle radius is reached.\n\n![alt text](/assets/guides/components/image-8.png)\n\n### Gradient Gotcha's\n\n1. **Memory Management**: Use `fillGradient.destroy()` to free up resources when gradients are no longer needed.\n\n2. **Animation**: Update existing gradients instead of creating new ones for better performance.\n\n3. **Custom Shaders**: For complex animations, custom shaders may be more efficient.\n\n4. **Texture and Matrix Limitations**: Under the hood, gradient fills set both the texture and matrix properties internally. This means you cannot use a texture fill or matrix transformation at the same time as a gradient fill.\n\n### Combining Textures and Colors\n\nYou can combine a texture or gradients with a color tint and alpha to achieve more complex and visually appealing effects. This allows you to overlay a color on top of the texture or gradient, adjusting its transparency with the alpha value.\n\n![alt text](/assets/guides/components/image-10.png)\n\n![alt text](/assets/guides/components/image-9.png)\n\nHopefully, this guide has shown you how easy and powerful fills can be when working with graphics (and text!). By mastering the `fill()` method, you can unlock endless possibilities for creating visually dynamic and engaging graphics in PixiJS. Have fun!\n\n## Graphics Pixel Line\n\nimport { Sandpack } from '@codesandbox/sandpack-react';\nimport { dracula } from '@codesandbox/sandpack-themes';",
+  "code_samples": [
+    {
+      "code": "const obj = new Graphics()\n  .rect(0, 0, 200, 100) // Create a rectangle with dimensions 200x100\n  .fill('red'); // Fill the rectangle with a red color",
+      "language": "ts"
+    },
+    {
+      "code": "// Using a number\nconst obj1 = new Graphics().rect(0, 0, 100, 100).fill(0xff0000);\n\n// Using a hex string\nconst obj2 = new Graphics().rect(0, 0, 100, 100).fill('#ff0000');\n\n// Using an array\nconst obj3 = new Graphics().rect(0, 0, 100, 100).fill([255, 0, 0]);\n\n// Using a Color object\nconst color = new Color();\nconst obj4 = new Graphics().rect(0, 0, 100, 100).fill(color);",
+      "language": "ts"
+    },
+    {
+      "code": "const obj = new Graphics().rect(0, 0, 100, 100).fill({\n  color: 'red',\n  alpha: 0.5, // 50% opacity\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const texture = await Assets.load('assets/image.png');\nconst obj = new Graphics().rect(0, 0, 100, 100).fill(texture);",
+      "language": "ts"
+    },
+    {
+      "code": "const shapes = new PIXI.Graphics()\n  .rect(50, 50, 100, 100)\n  .circle(250, 100, 50)\n  .star(400, 100, 6, 60, 40)\n  .roundRect(500, 50, 100, 100, 10)\n  .fill({\n    texture,\n    textureSpace: 'local', // default!\n  });",
+      "language": "ts"
+    },
+    {
+      "code": "const shapes = new PIXI.Graphics()\n  .rect(50, 50, 100, 100)\n  .circle(250, 100, 50)\n  .star(400, 100, 6, 60, 40)\n  .roundRect(500, 50, 100, 100, 10)\n  .fill({\n    texture,\n    textureSpace: 'global',\n  });",
+      "language": "ts"
+    },
+    {
+      "code": "const matrix = new Matrix().scale(0.5, 0.5);\n\nconst obj = new Graphics().rect(0, 0, 100, 100).fill({\n  texture: texture,\n  matrix: matrix, // scale the texture down by 2\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const spriteSheetTexture = Texture.from('assets/my-sprite-sheet.png');\nconst newTexture = renderer.generateTexture(Sprite.from(spriteSheetTexture));\n\nconst obj = new Graphics().rect(0, 0, 100, 100).fill(newTexture);",
+      "language": "ts"
+    },
+    {
+      "code": "const gradient = new FillGradient({\n  type: 'linear',\n  colorStops: [\n    { offset: 0, color: 'yellow' },\n    { offset: 1, color: 'green' },\n  ],\n});\n\nconst obj = new Graphics().rect(0, 0, 100, 100).fill(gradient);",
+      "language": "ts"
+    },
+    {
+      "code": "const diagonalGradient = new FillGradient({\n  type: 'linear',\n  start: { x: 0, y: 0 },\n  end: { x: 1, y: 1 },\n  colorStops: [\n    { offset: 0, color: 'yellow' },\n    { offset: 1, color: 'green' },\n  ],\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const gradient = new FillGradient({\n  type: 'radial',\n  colorStops: [\n    { offset: 0, color: 'yellow' },\n    { offset: 1, color: 'green' },\n  ],\n});\n\nconst obj = new Graphics().rect(0, 0, 100, 100).fill(gradient);",
+      "language": "ts"
+    },
+    {
+      "code": "const radialGradient = new FillGradient({\n  type: 'radial',\n  center: { x: 0.5, y: 0.5 },\n  innerRadius: 0.25,\n  outerCenter: { x: 0.5, y: 0.5 },\n  outerRadius: 0.5,\n  colorStops: [\n    { offset: 0, color: 'blue' },\n    { offset: 1, color: 'red' },\n  ],\n});\n\nconst obj = new Graphics().rect(0, 0, 100, 100).fill(gradient);",
+      "language": "ts"
+    },
+    {
+      "code": "const gradient = new FillGradient({\n  colorStops: [\n    { offset: 0, color: 'blue' },\n    { offset: 1, color: 'red' },\n  ],\n});\n\nconst obj = new Graphics().rect(0, 0, 100, 100).fill({\n  fill: gradient,\n  color: 'yellow',\n  alpha: 0.5,\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const obj = new Graphics().rect(0, 0, 100, 100).fill({\n  texture: texture,\n  color: 'yellow',\n  alpha: 0.5,\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Basic Color Fills",
+      "id": "basic-color-fills"
+    },
+    {
+      "level": "h3",
+      "text": "Examples:",
+      "id": "examples:"
+    },
+    {
+      "level": "h2",
+      "text": "Fill with a Style Object",
+      "id": "fill-with-a-style-object"
+    },
+    {
+      "level": "h2",
+      "text": "Fill with Textures",
+      "id": "fill-with-textures"
+    },
+    {
+      "level": "h3",
+      "text": "Local vs. Global Texture Space",
+      "id": "local-vs.-global-texture-space"
+    },
+    {
+      "level": "h3",
+      "text": "Using Matrices with Textures",
+      "id": "using-matrices-with-textures"
+    },
+    {
+      "level": "h3",
+      "text": "Texture Gotcha's",
+      "id": "texture-gotcha's"
+    },
+    {
+      "level": "h2",
+      "text": "Fill with Gradients",
+      "id": "fill-with-gradients"
+    },
+    {
+      "level": "h3",
+      "text": "Linear Gradients",
+      "id": "linear-gradients"
+    },
+    {
+      "level": "h3",
+      "text": "Radial Gradients",
+      "id": "radial-gradients"
+    },
+    {
+      "level": "h3",
+      "text": "Gradient Gotcha's",
+      "id": "gradient-gotcha's"
+    },
+    {
+      "level": "h3",
+      "text": "Combining Textures and Colors",
+      "id": "combining-textures-and-colors"
+    },
+    {
+      "level": "h2",
+      "text": "Graphics Pixel Line",
+      "id": "graphics-pixel-line"
+    }
+  ],
+  "url": "llms-txt#graphics-fill",
+  "links": []
+}

@@ -1,0 +1,82 @@
+{
+  "title": "Ticker",
+  "content": "The `Ticker` class in PixiJS provides a powerful and flexible mechanism for executing callbacks on every animation frame. It's useful for managing game loops, animations, and any time-based updates.\n\n## Adding and Removing Listeners\n\nThe `Ticker` class allows you to add multiple listeners that will be called on every frame. You can also specify a context for the callback, which is useful for maintaining the correct `this` reference.\n\n## Controlling the Ticker\n\nTo automatically start the ticker when a listener is added, enable `autoStart`:\n\n## Prioritizing Listeners\n\nListeners can be assigned a priority. Higher values run earlier.\n\nAvailable constants include:\n\n- `UPDATE_PRIORITY.HIGH = 50`\n- `UPDATE_PRIORITY.NORMAL = 0`\n- `UPDATE_PRIORITY.LOW = -50`\n\nTickers allows FPS limits to control the update rate.\n\nCaps how _slow_ frames are allowed to be. Used to clamp `deltaTime`:\n\nLimits how _fast_ the ticker runs. Useful for conserving CPU/GPU:\n\nSet to `0` to allow unlimited framerate:\n\n- [Ticker](https://pixijs.download/release/docs/ticker.Ticker.html)\n- [Application](https://pixijs.download/release/docs/app.Application.html)\n\n## Mixing PixiJS and Three.js",
+  "code_samples": [
+    {
+      "code": "import { Ticker } from 'pixi.js';\n\nconst ticker = new Ticker();\n\nticker.add((ticker) => {\n  console.log(`Delta Time: ${ticker.deltaTime}`);\n});\n\n// Start the ticker\nticker.start();",
+      "language": "ts"
+    },
+    {
+      "code": "ticker.add(myFunction, myContext);\nticker.addOnce(myFunction, myContext);\nticker.remove(myFunction, myContext);",
+      "language": "ts"
+    },
+    {
+      "code": "ticker.start(); // Begin calling listeners every frame\nticker.stop(); // Pause the ticker and cancel the animation frame",
+      "language": "ts"
+    },
+    {
+      "code": "ticker.autoStart = true;",
+      "language": "ts"
+    },
+    {
+      "code": "import { UPDATE_PRIORITY } from 'pixi.js';\n\nticker.add(fnA, null, UPDATE_PRIORITY.HIGH); // runs before...\nticker.add(fnB, null, UPDATE_PRIORITY.NORMAL); // ...this",
+      "language": "ts"
+    },
+    {
+      "code": "ticker.minFPS = 30; // deltaTime will never act as if below 30 FPS",
+      "language": "ts"
+    },
+    {
+      "code": "ticker.maxFPS = 60; // will not tick faster than 60fps",
+      "language": "ts"
+    },
+    {
+      "code": "ticker.maxFPS = 0;",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Adding and Removing Listeners",
+      "id": "adding-and-removing-listeners"
+    },
+    {
+      "level": "h2",
+      "text": "Controlling the Ticker",
+      "id": "controlling-the-ticker"
+    },
+    {
+      "level": "h2",
+      "text": "Prioritizing Listeners",
+      "id": "prioritizing-listeners"
+    },
+    {
+      "level": "h2",
+      "text": "Configuring FPS",
+      "id": "configuring-fps"
+    },
+    {
+      "level": "h3",
+      "text": "`minFPS`",
+      "id": "`minfps`"
+    },
+    {
+      "level": "h3",
+      "text": "`maxFPS`",
+      "id": "`maxfps`"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Mixing PixiJS and Three.js",
+      "id": "mixing-pixijs-and-three.js"
+    }
+  ],
+  "url": "llms-txt#ticker",
+  "links": []
+}

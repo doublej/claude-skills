@@ -1,0 +1,33 @@
+{
+  "title": "Color",
+  "content": "The `Color` class in PixiJS is a flexible utility for representing colors. It is used throughout the rendering pipeline for things like tints, fills, strokes, gradients, and more.\n\n## Using `Color` and `ColorSource`\n\nPixiJS supports many color formats through the `ColorSource` type:\n\n- Color names: `'red'`, `'white'`, `'blue'`, etc.\n- Hex integers: `0xffcc00`\n- Hex strings: `'ffcc00'`, `'#f00'`, `'0xffcc00ff'`\n- RGB(A) objects: `{ r: 255, g: 0, b: 0 }`, `{ r: 255, g: 0, b: 0, a: 0.5 }`\n- RGB(A) strings: `'rgb(255,0,0)'`, `'rgba(255,0,0,0.5)'`\n- RGB(A) arrays: `[1, 0, 0]`, `[1, 0, 0, 0.5]`\n- Typed arrays: `Uint8Array`, `Float32Array`\n- HSL/HSV objects and strings\n- `Color` instances\n\nWhenever you see a color-related property (e.g., `fill`, `tint`, `stroke`), you can use any of these formats. The library will automatically convert them to the appropriate format internally.\n\n- [Color](https://pixijs.download/release/docs/color.Color.html)\n\n## Events / Interaction",
+  "code_samples": [
+    {
+      "code": "import { Color, Sprite, Texture, Graphics } from 'pixi.js';\n\nconst red = new Color('red'); // Named color\nconst green = new Color(0x00ff00); // Hex\nconst blue = new Color('#0000ff'); // Hex string\nconst rgba = new Color({ r: 255, g: 0, b: 0, a: 0.5 }); // RGBA object\n\nconsole.log(red.toArray()); // [1, 0, 0, 1]\nconsole.log(green.toHex()); // \"#00ff00\"\n\nconst sprite = new Sprite(Texture.WHITE);\nsprite.tint = red; // Works directly with a Color instance",
+      "language": "ts"
+    },
+    {
+      "code": "import { Graphics, Sprite, Texture } from 'pixi.js';\n\nconst sprite = new Sprite(Texture.WHITE);\nsprite.tint = 'red'; // converted internally\n\nconst graphics = new Graphics();\ngraphics.fill({ color: '#00ff00' }); // Also converted internally",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Using `Color` and `ColorSource`",
+      "id": "using-`color`-and-`colorsource`"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Events / Interaction",
+      "id": "events-/-interaction"
+    }
+  ],
+  "url": "llms-txt#color",
+  "links": []
+}

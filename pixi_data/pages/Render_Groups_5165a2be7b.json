@@ -1,0 +1,44 @@
+{
+  "title": "Render Groups",
+  "content": "## Understanding RenderGroups in PixiJS\n\nAs you delve deeper into PixiJS, especially with version 8, you'll encounter a powerful feature known as RenderGroups. Think of RenderGroups as specialized containers within your scene graph that act like mini scene graphs themselves. Here's what you need to know to effectively use Render Groups in your projects:\n\n### What Are Render Groups?\n\nRender Groups are essentially containers that PixiJS treats as self-contained scene graphs. When you assign parts of your scene to a Render Group, you're telling PixiJS to manage these objects together as a unit. This management includes monitoring for changes and preparing a set of render instructions specifically for the group. This is a powerful tool for optimizing your rendering process.\n\n### Why Use Render Groups?\n\nThe main advantage of using Render Groups lies in their optimization capabilities. They allow for certain calculations, like transformations (position, scale, rotation), tint, and alpha adjustments, to be offloaded to the GPU. This means that operations like moving or adjusting the Render Group can be done with minimal CPU impact, making your application more performance-efficient.\n\nIn practice, you're utilizing Render Groups even without explicit awareness. The root element you pass to the render function in PixiJS is automatically converted into a RenderGroup as this is where its render instructions will be stored. Though you also have the option to explicitly create additional RenderGroups as needed to further optimize your project.\n\nThis feature is particularly beneficial for:\n\n- **Static Content:** For content that doesn't change often, a Render Group can significantly reduce the computational load on the CPU. In this case static refers to the scene graph structure, not that actual values of the PixiJS elements inside it (eg position, scale of things).\n- **Distinct Scene Parts:** You can separate your scene into logical parts, such as the game world and the HUD (Heads-Up Display). Each part can be optimized individually, leading to overall better performance.\n\nCheck out the [container example](/8.x/examples/?example=container_transform_pivot_basic).\n\n- **Don't Overuse:** While Render Groups are powerful, using too many can actually degrade performance. The goal is to find a balance that optimizes rendering without overwhelming the system with too many separate groups. Make sure to profile when using them. The majority of the time you won't need to use them at all!\n- **Strategic Grouping:** Consider what parts of your scene change together and which parts remain static. Grouping dynamic elements separately from static elements can lead to performance gains.\n\nBy understanding and utilizing Render Groups, you can take full advantage of PixiJS's rendering capabilities, making your applications smoother and more efficient. This feature represents a powerful tool in the optimization toolkit offered by PixiJS, enabling developers to create rich, interactive scenes that run smoothly across different devices.",
+  "code_samples": [
+    {
+      "code": "const myGameWorld = new Container({\n  isRenderGroup: true,\n});\n\nconst myHud = new Container({\n  isRenderGroup: true,\n});\n\nscene.addChild(myGameWorld, myHud);\n\nrenderer.render(scene); // this action will actually convert the scene to a render group under the hood",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Understanding RenderGroups in PixiJS",
+      "id": "understanding-rendergroups-in-pixijs"
+    },
+    {
+      "level": "h3",
+      "text": "What Are Render Groups?",
+      "id": "what-are-render-groups?"
+    },
+    {
+      "level": "h3",
+      "text": "Why Use Render Groups?",
+      "id": "why-use-render-groups?"
+    },
+    {
+      "level": "h3",
+      "text": "Examples",
+      "id": "examples"
+    },
+    {
+      "level": "h3",
+      "text": "Best Practices",
+      "id": "best-practices"
+    },
+    {
+      "level": "h2",
+      "text": "Render Layers",
+      "id": "render-layers"
+    }
+  ],
+  "url": "llms-txt#render-groups",
+  "links": []
+}

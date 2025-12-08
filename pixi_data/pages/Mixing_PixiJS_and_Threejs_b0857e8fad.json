@@ -1,0 +1,61 @@
+{
+  "title": "Mixing PixiJS and Three.js",
+  "content": "In many projects, developers aim to harness the strengths of both 3D and 2D graphics. Combining the advanced 3D rendering capabilities of Three.js with the speed and versatility of PixiJS for 2D can result in a powerful, seamless experience. Together, these technologies create opportunities for dynamic and visually compelling applications. Lets see how to do this.\n\n:::info NOTE\nThis guide assumes PixiJS will be used as the top layer to deliver UI over a 3D scene rendered by Three.js. However, developers can render either in any order, as many times as needed. This flexibility allows for creative and dynamic applications.\n:::\n\n### What You’ll Learn\n\n- Setting up PixiJS and Three.js to share a single WebGL context.\n- Using `resetState` to manage renderer states.\n- Avoiding common pitfalls when working with multiple renderers.\n\n#### Step 1: Initialize Three.js Renderer and Scene\n\nThree.js will handle the 3D rendering the creation of the dom element and context.\n\n:::info NOTE\nWe used the dom element and context created by the three.js renderer to pass to the pixijs renderer.\nThis was the simplest way to ensure that the two renderers were using the same WebGL context. You could have done it the other way round\nif you wanted to.\n:::\n\n#### Step 2: Initialize PixiJS Renderer and Stage\n\nPixiJS will handle the 2D overlay.\n\nTo ensure smooth transitions between the renderers, reset their states before each render:\n\n### Example: Combining 3D and 2D Elements\n\nHere’s the complete example integrating PixiJS and Three.js:\n\n- **Enable Stencil Buffers:**\n\n- When creating the Three.js renderer, ensure `stencil` is set to `true`. This allows PixiJS masks to work correctly.\n\n- **Keep Dimensions in Sync:**\n\n- Ensure both renderers use the same `width` and `height` to avoid visual mismatches—so be careful when resizing one, you need to resize the other!\n\n- **Pass the WebGL Context:**\n\n- Pass the WebGL context from Three.js to PixiJS during initialization using `pixiRenderer.init({ context: threeRenderer.getContext() });`.\n\n- **Disable Clear Before Render:**\n\n- Set `clearBeforeRender: false` when initializing the PixiJS renderer. This prevents PixiJS from clearing the Three.js content that was rendered before it.\n  - Alternatively you can set `clear: false` in the `pixiRenderer.render()` call. eg `pixiRenderer.render({ container: stage, clear: false });`.\n\n- **Manage Render Order:**\n\n- In this example, Three.js is rendered first, followed by PixiJS for UI layers. However, this order is flexible. You can render pixi -> three -> pixi is you want, just make sure you reset the state when switching renderer.\n\n- **Separate Resources:**\n\n- Remember that resources like textures are not shared between PixiJS and Three.js. A PixiJS texture cannot be directly used as a Three.js texture and vice versa.\n\nMixing PixiJS and Three.js can be a powerful way to create dynamic and visually appealing applications. By carefully managing the rendering loop and states, you can achieve seamless transitions between 3D and 2D layers. This approach allows you to leverage the strengths of both technologies, creating applications that are both visually stunning and performant.\n\nThis technique can be used with other renderers too - as long as they have their own way of resetting their state (which the main ones do) you can mix them. Popular 3D engines like Babylon.js and PlayCanvas both support state management through their respective APIs, making them compatible with this mixing approach. This gives you the flexibility to choose the 3D engine that best suits your needs while still leveraging PixiJS's powerful 2D capabilities.\n\n## v8 Migration Guide",
+  "code_samples": [
+    {
+      "code": "const WIDTH = window.innerWidth;\nconst HEIGHT = window.innerHeight;\n\nconst threeRenderer = new THREE.WebGLRenderer({\n  antialias: true,\n  stencil: true, // so masks work in pixijs\n});\n\nthreeRenderer.setSize(WIDTH, HEIGHT);\nthreeRenderer.setClearColor(0xdddddd, 1);\ndocument.body.appendChild(threeRenderer.domElement);\n\nconst scene = new THREE.Scene();\nconst camera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT);\ncamera.position.z = 50;\nscene.add(camera);\n\nconst boxGeometry = new THREE.BoxGeometry(10, 10, 10);\nconst basicMaterial = new THREE.MeshBasicMaterial({ color: 0x0095dd });\nconst cube = new THREE.Mesh(boxGeometry, basicMaterial);\ncube.rotation.set(0.4, 0.2, 0);\nscene.add(cube);",
+      "language": "javascript"
+    },
+    {
+      "code": "const pixiRenderer = new PIXI.WebGLRenderer();\n\nawait pixiRenderer.init({\n  context: threeRenderer.getContext(),\n  width: WIDTH,\n  height: HEIGHT,\n  clearBeforeRender: false, // Prevent PixiJS from clearing the Three.js render\n});\n\nconst stage = new PIXI.Container();\nconst amazingUI = new PIXI.Graphics()\n  .roundRect(20, 80, 100, 100, 5)\n  .roundRect(220, 80, 100, 100, 5)\n  .fill(0xffff00);\n\nstage.addChild(amazingUI);",
+      "language": "javascript"
+    },
+    {
+      "code": "function render() {\n  // Render the Three.js scene\n  threeRenderer.resetState();\n  threeRenderer.render(scene, camera);\n\n  // Render the PixiJS stage\n  pixiRenderer.resetState();\n  pixiRenderer.render({ container: stage });\n\n  requestAnimationFrame(render);\n}\n\nrequestAnimationFrame(render);",
+      "language": "javascript"
+    },
+    {
+      "code": "// dependencies: { \"three\": \"latest\", \"pixi.js\": \"latest\" }\n// description: A basic integration of PixiJS and Three.js sharing the same WebGL context\n// Import required classes from PixiJS and Three.js\nimport { Container, Graphics, Text, WebGLRenderer } from 'pixi.js';\nimport * as THREE from 'three';\n\n// Self-executing async function to set up the demo\n(async () => {\n  // Initialize window dimensions\n  let WIDTH = window.innerWidth;\n  let HEIGHT = window.innerHeight;\n\n  // === THREE.JS SETUP ===\n  // Create Three.js WebGL renderer with antialiasing and stencil buffer\n  const threeRenderer = new THREE.WebGLRenderer({\n    antialias: true,\n    stencil: true,\n  });\n\n  // Configure Three.js renderer size and background color\n  threeRenderer.setSize(WIDTH, HEIGHT);\n  threeRenderer.setClearColor(0xdddddd, 1); // Light gray background\n  document.body.appendChild(threeRenderer.domElement);\n\n  // Create Three.js scene\n  const scene = new THREE.Scene();\n\n  // Set up perspective camera with 70° FOV\n  const threeCamera = new THREE.PerspectiveCamera(70, WIDTH / HEIGHT);\n\n  threeCamera.position.z = 50; // Move camera back to see the scene\n  scene.add(threeCamera);\n\n  // Create a simple cube mesh\n  const boxGeometry = new THREE.BoxGeometry(30, 30, 30);\n  const basicMaterial = new THREE.MeshBasicMaterial({ color: 0x0095dd }); // Blue color\n  const cube = new THREE.Mesh(boxGeometry, basicMaterial);\n\n  scene.add(cube);\n\n  // === PIXI.JS SETUP ===\n  // Create PixiJS renderer that shares the WebGL context with Three.js\n  const pixiRenderer = new WebGLRenderer();\n\n  // Initialize PixiJS renderer with shared context\n  await pixiRenderer.init({\n    context: threeRenderer.getContext(),\n    width: WIDTH,\n    height: HEIGHT,\n    clearBeforeRender: false, // Don't clear the canvas as Three.js will handle that\n  });\n\n  // Create PixiJS scene graph\n  const stage = new Container();\n\n  // Create a yellow rounded rectangle UI element\n  const uiLayer = new Graphics().roundRect(20, 80, 300, 300, 20).fill(0xffff00);\n\n  // Add text overlay\n  const text = new Text({\n    text: 'Pixi and Three.js',\n    style: { fontFamily: 'Arial', fontSize: 24, fill: 'black' },\n  });\n\n  uiLayer.addChild(text);\n  stage.addChild(uiLayer);\n\n  // Animation loop\n  function loop() {\n    // Rotate cube continuously\n    cube.rotation.x += 0.01;\n    cube.rotation.y += 0.01;\n\n    // Animate UI layer position using sine wave\n    uiLayer.y = ((Math.sin(Date.now() * 0.001) + 1) * 0.5 * WIDTH) / 2;\n\n    // Render Three.js scene\n    threeRenderer.resetState();\n    threeRenderer.render(scene, threeCamera);\n\n    // Render PixiJS scene\n    pixiRenderer.resetState();\n    pixiRenderer.render({ container: stage });\n\n    // Continue animation loop\n    requestAnimationFrame(loop);\n  }\n\n  // Start animation loop\n  requestAnimationFrame(loop);\n\n  // Handle window resizing\n  window.addEventListener('resize', () => {\n    WIDTH = window.innerWidth;\n    HEIGHT = window.innerHeight;\n\n    // Update Three.js renderer\n    threeRenderer.setSize(WIDTH, HEIGHT);\n    // Update Three.js camera aspect ratio so it renders correctly\n    threeCamera.aspect = WIDTH / HEIGHT;\n    threeCamera.updateProjectionMatrix();\n\n    // Update PixiJS renderer\n    pixiRenderer.resize(WIDTH, HEIGHT);\n  });\n})();",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h3",
+      "text": "What You’ll Learn",
+      "id": "what-you’ll-learn"
+    },
+    {
+      "level": "h3",
+      "text": "Setting Up",
+      "id": "setting-up"
+    },
+    {
+      "level": "h3",
+      "text": "Rendering Loop",
+      "id": "rendering-loop"
+    },
+    {
+      "level": "h3",
+      "text": "Example: Combining 3D and 2D Elements",
+      "id": "example:-combining-3d-and-2d-elements"
+    },
+    {
+      "level": "h3",
+      "text": "Gotchas",
+      "id": "gotchas"
+    },
+    {
+      "level": "h3",
+      "text": "Conclusion",
+      "id": "conclusion"
+    },
+    {
+      "level": "h2",
+      "text": "v8 Migration Guide",
+      "id": "v8-migration-guide"
+    }
+  ],
+  "url": "llms-txt#mixing-pixijs-and-three.js",
+  "links": []
+}

@@ -1,0 +1,70 @@
+{
+  "title": "Application",
+  "content": "The `Application` class provides a modern, extensible entry point to set up rendering in PixiJS. It abstracts common tasks like renderer setup and ticker updates, and is designed to support both WebGL and WebGPU via async initialization.\n\n## Creating an Application\n\nCreating an application requires two steps: constructing an instance, then initializing it asynchronously using `.init()`:\n\n### ApplicationOptions Reference\n\nThe `.init()` method of `Application` accepts a `Partial` object with the following configuration options:\n\n| Option                   | Type                                | Default     | Description                                                                                                                              |\n| ------------------------ | ----------------------------------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |\n| `autoStart`              | `boolean`                           | `true`      | Whether to start rendering immediately after initialization. Setting to `false` will not stop the shared ticker if it's already running. |\n| `resizeTo`               | `Window \\| HTMLElement`             | —           | Element to auto-resize the renderer to match.                                                                                            |\n| `sharedTicker`           | `boolean`                           | `false`     | Use the shared ticker instance if `true`; otherwise, a private ticker is created.                                                        |\n| `preference`             | `'webgl' \\| 'webgpu'`               | `webgl`     | Preferred renderer type.                                                                                                                 |\n| `useBackBuffer`          | `boolean`                           | `false`     | _(WebGL only)_ Use the back buffer when required.                                                                                        |\n| `forceFallbackAdapter`   | `boolean`                           | `false`     | _(WebGPU only)_ Force usage of fallback adapter.                                                                                         |\n| `powerPreference`        | `'high-performance' \\| 'low-power'` | `undefined` | Hint for GPU power preference (WebGL & WebGPU).                                                                                          |\n| `antialias`              | `boolean`                           | —           | Enables anti-aliasing. May impact performance.                                                                                           |\n| `autoDensity`            | `boolean`                           | —           | Adjusts canvas size based on `resolution`. Applies only to `HTMLCanvasElement`.                                                          |\n| `background`             | `ColorSource`                       | —           | Alias for `backgroundColor`.                                                                                                             |\n| `backgroundAlpha`        | `number`                            | `1`         | Alpha transparency for background (0 = transparent, 1 = opaque).                                                                         |\n| `backgroundColor`        | `ColorSource`                       | `'black'`   | Color used to clear the canvas. Accepts hex, CSS color, or array.                                                                        |\n| `canvas`                 | `ICanvas`                           | —           | A custom canvas instance (optional).                                                                                                     |\n| `clearBeforeRender`      | `boolean`                           | `true`      | Whether the renderer should clear the canvas each frame.                                                                                 |\n| `context`                | `WebGL2RenderingContext \\| null`    | `null`      | User-supplied rendering context (WebGL).                                                                                                 |\n| `depth`                  | `boolean`                           | —           | Enable a depth buffer in the main view. Always `true` for WebGL.                                                                         |\n| `height`                 | `number`                            | `600`       | Initial height of the renderer (in pixels).                                                                                              |\n| `width`                  | `number`                            | `800`       | Initial width of the renderer (in pixels).                                                                                               |\n| `hello`                  | `boolean`                           | `false`     | Log renderer info and version to the console.                                                                                            |\n| `multiView`              | `boolean`                           | `false`     | Enable multi-canvas rendering.                                                                                                           |\n| `preferWebGLVersion`     | `1 \\| 2`                            | `2`         | Preferred WebGL version.                                                                                                                 |\n| `premultipliedAlpha`     | `boolean`                           | `true`      | Assume alpha is premultiplied in color buffers.                                                                                          |\n| `preserveDrawingBuffer`  | `boolean`                           | `false`     | Preserve buffer between frames. Needed for `toDataURL`.                                                                                  |\n| `resolution`             | `number`                            | 1           | The resolution of the renderer.                                                                                                          |\n| `skipExtensionImports`   | `boolean`                           | `false`     | Prevent automatic import of default PixiJS extensions.                                                                                   |\n| `textureGCActive`        | `boolean`                           | `true`      | Enable garbage collection for GPU textures.                                                                                              |\n| `textureGCCheckCountMax` | `number`                            | `600`       | Frame interval between GC runs (textures).                                                                                               |\n| `textureGCMaxIdle`       | `number`                            | `3600`      | Max idle frames before destroying a texture.                                                                                             |\n| `textureGCAMaxIdle`      | `number`                            | —           | (Appears undocumented; placeholder for internal GC controls.)                                                                            |\n\n### Customizing Application Options Per Renderer Type\n\nYou can also override properties based on the renderer type by using the `WebGLOptions` or `WebGPUOptions` interfaces. For example:\n\n- ✅ **Ticker Plugin** — Updates every frame → [Guide](./ticker-plugin.md)\n- ✅ **Resize Plugin** — Resizes renderer/canvas → [Guide](./resize-plugin.md)\n- ➕ **Optional: Culler Plugin** - Culls objects that are out of frame → [Guide](./culler-plugin.md)\n\n## Creating a Custom Application Plugin\n\nYou can create custom plugins for the `Application` class. A plugin must implement the `ApplicationPlugin` interface, which includes `init()` and `destroy()` methods. You can also specify the `extension` type, which is `ExtensionType.Application` for application plugins.\n\nBoth functions are called with `this` set as the `Application` instance e.g `this.renderer` or `this.stage` is available.\n\nThe `init()` method is called when the application is initialized and passes the options from the `application.init` call, and the `destroy()` method is called when the application is destroyed.\n\nIf you are using TypeScript, or are providing a plugin for others to use, you can extend the `ApplicationOptions` interface to include your custom plugins options.\n\n- [Overview](https://pixijs.download/release/docs/app.html)\n- [Application](https://pixijs.download/release/docs/app.Application.html)\n- [ApplicationOptions](https://pixijs.download/release/docs/app.ApplicationOptions.html)\n  - [AutoDetectOptions](https://pixijs.download/release/docs/rendering.AutoDetectOptions.html)\n  - [WebGLOptions](https://pixijs.download/release/docs/rendering.WebGLOptions.html)\n  - [WebGPUOptions](https://pixijs.download/release/docs/rendering.WebGPUOptions.html)\n  - [SharedRendererOptions](https://pixijs.download/release/docs/rendering.SharedRendererOptions.html)\n- [TickerPlugin](https://pixijs.download/release/docs/app.TickerPlugin.html)\n- [ResizePlugin](https://pixijs.download/release/docs/app.ResizePlugin.html)\n- [CullerPlugin](https://pixijs.download/release/docs/app.CullerPlugin.html)",
+  "code_samples": [
+    {
+      "code": "import { Application } from 'pixi.js';\n\nconst app = new Application();\n\nawait app.init({\n  width: 800,\n  height: 600,\n  backgroundColor: 0x1099bb,\n});\n\ndocument.body.appendChild(app.canvas);",
+      "language": "ts"
+    },
+    {
+      "code": "import { Application } from 'pixi.js';\n\nconst app = new Application();\nawait app.init({\n  width: 800,\n  height: 600,\n  backgroundColor: 0x1099bb,\n  webgl: {\n    antialias: true,\n  },\n  webgpu: {\n    antialias: false,\n  },\n});\ndocument.body.appendChild(app.canvas);",
+      "language": "ts"
+    },
+    {
+      "code": "import type { ApplicationOptions, ApplicationPlugin, ExtensionType } from 'pixi.js';\n\nconst myPlugin: ApplicationPlugin = {\n    extension: ExtensionType.Application;\n    init(options: ApplicationOptions) {\n        console.log('Custom plugin init:', this, options);\n    },\n    destroy() {\n        console.log('Custom plugin destroy');\n    },\n};",
+      "language": "ts"
+    },
+    {
+      "code": "import { extensions } from 'pixi.js';\nextensions.add(myPlugin);",
+      "language": "ts"
+    },
+    {
+      "code": "declare global {\n  namespace PixiMixins {\n    interface ApplicationOptions {\n      myPlugin?: import('./myPlugin').PluginOptions | null;\n    }\n  }\n}\n\nawait app.init({\n  myPlugin: {\n    customOption: true, // Now TypeScript will know about this option\n  },\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Creating an Application",
+      "id": "creating-an-application"
+    },
+    {
+      "level": "h3",
+      "text": "ApplicationOptions Reference",
+      "id": "applicationoptions-reference"
+    },
+    {
+      "level": "h3",
+      "text": "Customizing Application Options Per Renderer Type",
+      "id": "customizing-application-options-per-renderer-type"
+    },
+    {
+      "level": "h2",
+      "text": "Built-In Plugins",
+      "id": "built-in-plugins"
+    },
+    {
+      "level": "h2",
+      "text": "Creating a Custom Application Plugin",
+      "id": "creating-a-custom-application-plugin"
+    },
+    {
+      "level": "h3",
+      "text": "Adding Types",
+      "id": "adding-types"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Resize Plugin",
+      "id": "resize-plugin"
+    }
+  ],
+  "url": "llms-txt#application",
+  "links": []
+}

@@ -1,0 +1,18 @@
+{{SUBDOMAIN}}.jurrejan.com {
+    root * /var/www/{{SUBDOMAIN}}.jurrejan.com
+    encode gzip
+    file_server
+
+    # Security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Cache static assets
+    @static {
+        path *.js *.css *.png *.jpg *.jpeg *.gif *.svg *.ico *.woff *.woff2
+    }
+    header @static Cache-Control "public, max-age=31536000, immutable"
+}

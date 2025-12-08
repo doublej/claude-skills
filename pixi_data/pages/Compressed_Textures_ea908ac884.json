@@ -1,0 +1,52 @@
+{
+  "title": "Compressed Textures",
+  "content": "Compressed textures significantly reduce memory usage and GPU upload time, especially on mobile devices or lower-end hardware. PixiJS supports multiple compressed texture formats, but **you must configure the appropriate loaders** before using them.\n\n## Supported Compressed Texture Formats\n\nPixiJS provides built-in support for several widely-used compressed texture formats:\n\n| Format    | File Extension | Description                                                             |\n| --------- | -------------- | ----------------------------------------------------------------------- |\n| **DDS**   | `.dds`         | DirectDraw Surface format, supports DXT variants (S3TC)                 |\n| **KTX**   | `.ktx`         | Khronos format, supports ETC and other schemes                          |\n| **KTX2**  | `.ktx2`        | Modern container supporting Basis Universal and Supercompressed formats |\n| **Basis** | `.basis`       | Highly compressed format that can transcode to multiple GPU formats     |\n\n## Registering Loaders\n\nPixiJS does **not automatically include compressed texture support**. To use these formats, you must explicitly import the necessary loaders before loading any assets:\n\n:::info\nYou only need to import the loaders for the formats you're using. These imports must run **before** any call to `Assets.load`.\n:::\n\n## Using Compressed Textures in Assets\n\nOnce loaders are registered, you can load compressed textures just like any other asset:\n\nPixiJS will parse and upload the texture using the correct loader and GPU-compatible transcoding path based on the user's device.\n\n## Integration with AssetPack\n\n[**AssetPack**](https://pixijs.io/assetpack) supports automatic generation of compressed texture variants during the build step. You can:\n\n- Convert `.png` or `.jpg` files into `.basis`, `.ktx2`, or `.dds` formats.\n- Reference compressed files in your manifest using the same aliases or wildcard patterns.\n- Use the **same manifest and loading workflow** — PixiJS will resolve and load the best available variant based on the device.\n\nYour manifest might include:\n\nPixiJS will try to load `bg.ktx2` or `bg.basis` first if the device supports it, falling back to `bg.png` as needed.",
+  "code_samples": [
+    {
+      "code": "import 'pixi.js/dds';\nimport 'pixi.js/ktx';\nimport 'pixi.js/ktx2';\nimport 'pixi.js/basis';",
+      "language": "ts"
+    },
+    {
+      "code": "import 'pixi.js/ktx2'; // Import the KTX2 loader\nimport { Assets } from 'pixi.js';\n\nawait Assets.load('textures/background.ktx2');",
+      "language": "ts"
+    },
+    {
+      "code": "{\n  \"bundles\": [\n    {\n      \"name\": \"scene\",\n      \"assets\": [\n        {\n          \"alias\": \"bg\",\n          \"src\": [\"assets/bg.ktx2\", \"assets/bg.basis\", \"assets/bg.png\"]\n        }\n      ]\n    }\n  ]\n}",
+      "language": "json"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Supported Compressed Texture Formats",
+      "id": "supported-compressed-texture-formats"
+    },
+    {
+      "level": "h2",
+      "text": "Registering Loaders",
+      "id": "registering-loaders"
+    },
+    {
+      "level": "h2",
+      "text": "Using Compressed Textures in Assets",
+      "id": "using-compressed-textures-in-assets"
+    },
+    {
+      "level": "h2",
+      "text": "Integration with AssetPack",
+      "id": "integration-with-assetpack"
+    },
+    {
+      "level": "h3",
+      "text": "Example",
+      "id": "example"
+    },
+    {
+      "level": "h2",
+      "text": "Assets",
+      "id": "assets"
+    }
+  ],
+  "url": "llms-txt#compressed-textures",
+  "links": []
+}

@@ -1,0 +1,52 @@
+{
+  "title": "Resize Plugin",
+  "content": "The `ResizePlugin` provides automatic resizing functionality for PixiJS applications. When enabled, it listens to window or element resize events and resizes the application's renderer accordingly.\n\n- Making the canvas responsive to the browser window\n- Maintaining aspect ratio or fitting to containers\n- Handling layout changes without manual resize calls\n\nBy default, PixiJS adds this plugin when initializing an `Application`, but you can also register it manually if you're using a custom setup.\n\n- When using `Application.init()` with no overrides, the `ResizePlugin` is installed automatically:\n- When `resizeTo` is set, the renderer automatically adjusts to match the dimensions of the target (`window` or `HTMLElement`).\n- Resizing is throttled using `requestAnimationFrame` to prevent performance issues during rapid resize events.\n- You can trigger a resize manually with `app.resize()` or cancel a scheduled resize with `app.cancelResize()`.\n\n### Manual Registration\n\nIf you're managing extensions manually:\n\n### Custom Resize Target\n\nYou can specify a custom target for resizing. This is useful if you want to resize the canvas to fit a specific element rather than the entire window.\n\n- [`ResizePlugin`](https://pixijs.download/release/docs/app.ResizePlugin.html)",
+  "code_samples": [
+    {
+      "code": "import { Application } from 'pixi.js';\n\nconst app = new Application();\n\nawait app.init({\n  width: 800,\n  height: 600,\n  resizeTo: window,\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { extensions, ResizePlugin } from 'pixi.js';\n\nextensions.add(ResizePlugin);",
+      "language": "ts"
+    },
+    {
+      "code": "await app.init({\n  resizeTo: document.getElementById('game-container'),\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Usage",
+      "id": "usage"
+    },
+    {
+      "level": "h3",
+      "text": "Default Behavior",
+      "id": "default-behavior"
+    },
+    {
+      "level": "h3",
+      "text": "Manual Registration",
+      "id": "manual-registration"
+    },
+    {
+      "level": "h3",
+      "text": "Custom Resize Target",
+      "id": "custom-resize-target"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Ticker Plugin",
+      "id": "ticker-plugin"
+    }
+  ],
+  "url": "llms-txt#resize-plugin",
+  "links": []
+}

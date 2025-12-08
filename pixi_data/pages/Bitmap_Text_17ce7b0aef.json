@@ -1,0 +1,42 @@
+{
+  "title": "Bitmap Text",
+  "content": "`BitmapText` is a high-performance text rendering solution in PixiJS. Unlike the `Text` class, which rasterizes each string into a new texture, `BitmapText` draws characters from a pre-generated texture atlas. This design allows you to render tens of thousands of text objects with minimal overhead.\n\n## **Why Use `BitmapText`?**\n\n- ✅ **Fast rendering**: Perfect for HUDs, score counters, timers, etc.\n- ✅ **No per-frame rasterization**: Text changes are cheap.\n- ✅ **Efficient memory usage**: Shares glyph textures across all instances.\n- ✅ **Supports MSDF/SDF fonts**: Crisp scaling without blurring.\n\n- Frequently updating text\n- Large numbers of text instances\n- High-performance or mobile projects\n\n## **How to Load and Use Bitmap Fonts**\n\nPixiJS supports AngelCode BMFont format and MSDF-compatible `.fnt` and `.xml` files. You can load these files using the `Assets` API.\n\nOnce loaded, you can create a `BitmapText` instance with the loaded font using the `fontFamily` property.\n\n### MSDF and SDF Fonts\n\nPixiJS supports **MSDF** (multi-channel signed distance field) and **SDF** formats for crisp, resolution-independent text. These fonts remain sharp at any size and scale.\n\nYou can generate MSDF/SDF fonts using tools like [AssetPack](https://pixijs.io/assetpack/) which can take a `.ttf` or `.otf` font and generate a bitmap font atlas with MSDF/SDF support.\n\nUsing MSDF/SDF fonts is similar to using regular bitmap fonts and just requires you to load the appropriate font file:",
+  "code_samples": [
+    {
+      "code": "import { Assets, BitmapText } from 'pixi.js';\n\nawait Assets.load('fonts/MyFont.fnt');\n\nconst text = new BitmapText({\n  text: 'Loaded font!',\n  style: {\n    fontFamily: 'MyFont',\n    fontSize: 32,\n    fill: '#ffcc00',\n  },\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { Assets, BitmapText } from 'pixi.js';\n\nawait Assets.load('fonts/MyFont.fnt');\n\nconst text = new BitmapText({\n  text: 'Loaded font!',\n  style: {\n    fontFamily: 'MyFont',\n    fontSize: 32,\n    fill: '#ffcc00',\n  },\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { Assets, BitmapText } from 'pixi.js';\n\nawait Assets.load('fonts/MyMSDFFont.fnt');\n\nconst text = new BitmapText({\n  text: 'Loaded MSDF font!',\n  style: {\n    fontFamily: 'MyMSDFFont',\n  },\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "**Why Use `BitmapText`?**",
+      "id": "**why-use-`bitmaptext`?**"
+    },
+    {
+      "level": "h2",
+      "text": "**How to Load and Use Bitmap Fonts**",
+      "id": "**how-to-load-and-use-bitmap-fonts**"
+    },
+    {
+      "level": "h3",
+      "text": "Font Loading",
+      "id": "font-loading"
+    },
+    {
+      "level": "h3",
+      "text": "MSDF and SDF Fonts",
+      "id": "msdf-and-sdf-fonts"
+    }
+  ],
+  "url": "llms-txt#bitmap-text",
+  "links": []
+}

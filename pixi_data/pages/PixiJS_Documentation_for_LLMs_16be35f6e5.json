@@ -1,0 +1,74 @@
+{
+  "title": "PixiJS Documentation for LLMs",
+  "content": "> PixiJS is the fastest, most lightweight 2D library available for the web, working across all devices and allowing you to create rich, interactive graphics and cross-platform applications using WebGL and WebGPU.\n\nThis file contains all documentation content in a single document following the llmtxt.org standard.\n\nPixiJS itself is just a rendering engine. However, there is a foundation of a robust ecosystem of libraries and tools that enhance and expand its capabilities. These tools integrate seamlessly with PixiJS, empowering developers to create richer, more interactive applications with ease.\n\n## Core Ecosystem Libraries\n\n### [DevTools](https://pixijs.io/devtools/)\n\nOptimize and debug your PixiJS projects with DevTools. This browser extension offers real-time insights into application performance, rendering hierarchies, and texture management, ensuring your projects run smoothly.\n\n### [React Integration](https:/react.pixijs.io/)\n\n:::info\nPixiJS React requires React 19 or higher.\n:::\n\nSimplify the use of PixiJS in React applications with the Pixi-React library. This library provides bindings that allow you to manage PixiJS components as React elements, making it easy to incorporate powerful graphics into React's declarative framework.\n\n### [Layout](https://layout.pixijs.io/)\n\nAdd flexbox-style layouting to PixiJS with the PixiJS Layout library, which is powered by Facebook’s [Yoga](https://www.yogalayout.dev/) engine. It introduces a declarative way to control positioning, alignment, and sizing of PixiJS display objects using familiar CSS-like rules.\n\nKey features include:\n\n- Built on Yoga for standardized, reliable layouts\n- Fully opt-in: apply layout only where you need it\n- Any PixiJS object can now be layout-aware\n- Supports PixiJS React\n- New web-style features: objectFit, objectPosition, and overflow scrolling\n\n### [Spine Integration](https://esotericsoftware.com/spine-pixi)\n\nBring animations to life with Spine-Pixi. This integration combines the power of PixiJS and Spine, a leading animation tool, to create smooth, skeletal-based animations for games and interactive content.\n\n### [Filters](https://github.com/pixijs/filters)\n\nTransform your visuals with PixiJS Filters. This extensive collection of high-performance effects includes options like blur, glow, and color adjustments, giving you the tools to create visually stunning graphics.\n\n### [Sound](https://github.com/pixijs/sound)\n\nAdd audio to your projects with PixiJS Sound a WebAudio API playback library, with filters.\n\n### [UI](https://github.com/pixijs/ui)\n\nStreamline the creation of user interfaces with PixiJS UI. This library offers pre-built components:\n\n- Buttons\n- Sliders\n- Progress bars\n- Lists\n- Scrollbox\n- Radio Groups\n- Checkboxes\n- Switches\n\nAll the essentials for building interactive interfaces in PixiJS.\n\n### [AssetPack](https://pixijs.io/assetpack/)\n\nSimplify asset management with AssetPack. This tool organizes, packages, and loads assets efficiently, reducing load times and improving resource handling for your projects.\n\n## [PixiJS Userland](https://github.com/pixijs-userland) - Community-Driven Repositories\n\nPixiJS Userland is a dedicated space for hosting community-driven repositories. This organization allows developers to collaborate on PixiJS-related projects and share their work with the wider community.\n\nIf you have an idea for a new library or tool, you can request access to PixiJS Userland to create and maintain a repository within the organization. This is a great opportunity to contribute to the growing PixiJS ecosystem and engage with like-minded developers.\n\nNote that userland repositories are community-driven and may not be up to date with the latest PixiJS releases. However, they offer a wealth of resources and inspiration for developers looking to enhance their PixiJS projects.\n\n## Getting Started with the Ecosystem\n\nTo explore these libraries, visit their respective documentation and GitHub repositories for installation instructions and usage guides. Additionally, PixiJS offers [**Creation Templates**](https://pixijs.io/create-pixi/docs/guide/creations/intro/) through the [PixiJS Create CLI](https://pixijs.io/create-pixi/) that combine many of these libraries into pre-configured setups, ideal for specific use cases and platforms.\n\nFor inspiration, you can also check out the [open-games repository](https://github.com/pixijs/open-games), which showcases a variety of games built with PixiJS and its ecosystem libraries.",
+  "code_samples": [],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Ecosystem",
+      "id": "ecosystem"
+    },
+    {
+      "level": "h2",
+      "text": "Core Ecosystem Libraries",
+      "id": "core-ecosystem-libraries"
+    },
+    {
+      "level": "h3",
+      "text": "[DevTools](https://pixijs.io/devtools/)",
+      "id": "[devtools](https://pixijs.io/devtools/)"
+    },
+    {
+      "level": "h3",
+      "text": "[React Integration](https:/react.pixijs.io/)",
+      "id": "[react-integration](https:/react.pixijs.io/)"
+    },
+    {
+      "level": "h3",
+      "text": "[Layout](https://layout.pixijs.io/)",
+      "id": "[layout](https://layout.pixijs.io/)"
+    },
+    {
+      "level": "h3",
+      "text": "[Spine Integration](https://esotericsoftware.com/spine-pixi)",
+      "id": "[spine-integration](https://esotericsoftware.com/spine-pixi)"
+    },
+    {
+      "level": "h3",
+      "text": "[Filters](https://github.com/pixijs/filters)",
+      "id": "[filters](https://github.com/pixijs/filters)"
+    },
+    {
+      "level": "h3",
+      "text": "[Sound](https://github.com/pixijs/sound)",
+      "id": "[sound](https://github.com/pixijs/sound)"
+    },
+    {
+      "level": "h3",
+      "text": "[UI](https://github.com/pixijs/ui)",
+      "id": "[ui](https://github.com/pixijs/ui)"
+    },
+    {
+      "level": "h3",
+      "text": "[AssetPack](https://pixijs.io/assetpack/)",
+      "id": "[assetpack](https://pixijs.io/assetpack/)"
+    },
+    {
+      "level": "h2",
+      "text": "[PixiJS Userland](https://github.com/pixijs-userland) - Community-Driven Repositories",
+      "id": "[pixijs-userland](https://github.com/pixijs-userland)---community-driven-repositories"
+    },
+    {
+      "level": "h2",
+      "text": "Getting Started with the Ecosystem",
+      "id": "getting-started-with-the-ecosystem"
+    },
+    {
+      "level": "h2",
+      "text": "Quick Start",
+      "id": "quick-start"
+    }
+  ],
+  "url": "llms-txt#pixijs-documentation-for-llms",
+  "links": []
+}

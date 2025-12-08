@@ -1,0 +1,34 @@
+{
+  "title": "Shared vs Custom Ticker",
+  "content": "The plugin supports two modes:\n\n| Option                | Description                                                  |\n| --------------------- | ------------------------------------------------------------ |\n| `sharedTicker: true`  | Uses `Ticker.shared`, shared across all applications.        |\n| `sharedTicker: false` | Creates a private ticker instance scoped to the application. |\n\n### Behavior Differences\n\n- If using a **shared ticker**, other code may also be registering updates, so the order of execution can vary.\n- If using a **custom ticker**, you get complete control over timing and update order.\n\nYou can manually stop and start the ticker:\n\n- Pausing the game or animation\n- Performance throttling on inactive tabs\n- Managing visibility events\n\n- [TickerPlugin](https://pixijs.download/release/docs/app.TickerPlugin.html)\n- [Ticker](https://pixijs.download/release/docs/ticker.Ticker.html)",
+  "code_samples": [
+    {
+      "code": "app.stop(); // Stop automatic rendering\napp.start(); // Resume",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h3",
+      "text": "Behavior Differences",
+      "id": "behavior-differences"
+    },
+    {
+      "level": "h2",
+      "text": "Lifecycle Control",
+      "id": "lifecycle-control"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Background Loader",
+      "id": "background-loader"
+    }
+  ],
+  "url": "llms-txt#shared-vs-custom-ticker",
+  "links": []
+}

@@ -1,0 +1,99 @@
+{
+  "title": "Textures",
+  "content": "Textures are one of the most essential components in the PixiJS rendering pipeline. They define the visual content used by Sprites, Meshes, and other renderable objects. This guide covers how textures are loaded, created, and used, along with the various types of data sources PixiJS supports.\n\nThe texture system is built around two major classes:\n\n- **`TextureSource`**: Represents a pixel source, such as an image, canvas, or video.\n- **`Texture`**: Defines a view into a `TextureSource`, including sub-rectangles, trims, and transformations.\n\nTextures can be loaded asynchronously using the `Assets` system:\n\n### Preparing Textures\n\nEven after you've loaded your textures, the images still need to be pushed to the GPU and decoded. Doing this for a large number of source images can be slow and cause lag spikes when your project first loads. To solve this, you can use the [Prepare](https://pixijs.download/release/docs/rendering.PrepareSystem.html) plugin, which allows you to pre-load textures in a final step before displaying your project.\n\n## Texture vs. TextureSource\n\nThe `TextureSource` handles the raw pixel data and GPU upload. A `Texture` is a lightweight view on that source, with metadata such as trimming, frame rectangle, UV mapping, etc. Multiple `Texture` instances can share a single `TextureSource`, such as in a sprite sheet.\n\nYou can manually create textures using the constructor:\n\nSet `dynamic: true` in the `Texture` options if you plan to modify its `frame`, `trim`, or `source` at runtime.\n\n## Destroying Textures\n\nOnce you're done with a Texture, you may wish to free up the memory (both WebGL-managed buffers and browser-based) that it uses. To do so, you should call `Assets.unload('texture.png')`, or `texture.destroy()` if you have created the texture outside of Assets.\n\nThis is a particularly good idea for short-lived imagery like cut-scenes that are large and will only be used once. If a texture is destroyed that was loaded via `Assets` then the assets class will automatically remove it from the cache for you.\n\n## Unload Texture from GPU\n\nIf you want to unload a texture from the GPU but keep it in memory, you can call `texture.source.unload()`. This will remove the texture from the GPU but keep the source in memory.\n\nPixiJS supports multiple `TextureSource` types, depending on the kind of input data:\n\n| Texture Type          | Description                                                       |\n| --------------------- | ----------------------------------------------------------------- |\n| **ImageSource**       | HTMLImageElement, ImageBitmap, SVG's, VideoFrame, etc.            |\n| **CanvasSource**      | HTMLCanvasElement or OffscreenCanvas                              |\n| **VideoSource**       | HTMLVideoElement with optional auto-play and update FPS           |\n| **BufferImageSource** | TypedArray or ArrayBuffer with explicit width, height, and format |\n| **CompressedSource**  | Array of compressed mipmaps (Uint8Array\\[])                       |\n\n## Common Texture Properties\n\nHere are some important properties of the `Texture` class:\n\n- `frame`: Rectangle defining the visible portion within the source.\n- `orig`: Original untrimmed dimensions.\n- `trim`: Defines trimmed regions to exclude transparent space.\n- `uvs`: UV coordinates generated from `frame` and `rotate`.\n- `rotate`: GroupD8 rotation value for atlas compatibility.\n- `defaultAnchor`: Default anchor when used in Sprites.\n- `defaultBorders`: Used for 9-slice scaling.\n- `source`: The `TextureSource` instance.\n\n## Common TextureSource Properties\n\nHere are some important properties of the `TextureSource` class:\n\n- `resolution`: Affects render size relative to actual pixel size.\n- `format`: Texture format (e.g., `rgba8unorm`, `bgra8unorm`, etc.)\n- `alphaMode`: Controls how alpha is interpreted on upload.\n- `wrapMode` / `scaleMode`: Controls how texture is sampled outside of bounds or when scaled.\n- `autoGenerateMipmaps`: Whether to generate mipmaps on upload.\n\nYou can set these properties when creating a `TextureSource`:\n\n- [Texture](https://pixijs.download/release/docs/rendering.Texture.html)\n- [TextureSource](https://pixijs.download/release/docs/rendering.TextureSource.html)\n- [TextureStyle](https://pixijs.download/release/docs/rendering.TextureStyle.html)\n- [RenderTexture](https://pixijs.download/release/docs/rendering.RenderTexture.html)",
+  "code_samples": [
+    {
+      "code": "Source File/Image -> TextureSource -> Texture -> Sprite (or other display object)",
+      "language": "unknown"
+    },
+    {
+      "code": "const texture = await Assets.load('myTexture.png');\n\nconst sprite = new Sprite(texture);",
+      "language": "ts"
+    },
+    {
+      "code": "const sheet = await Assets.load('spritesheet.json');\nconst heroTexture = sheet.textures['hero.png'];",
+      "language": "ts"
+    },
+    {
+      "code": "const mySource = new TextureSource({ resource: myImage });\nconst texture = new Texture({ source: mySource });",
+      "language": "ts"
+    },
+    {
+      "code": "// Load the texture\nconst texture = await Assets.load('myTexture.png');\n\n// ... Use the texture\n\n// Unload the texture from the GPU\ntexture.source.unload();",
+      "language": "ts"
+    },
+    {
+      "code": "texture.source.scaleMode = 'linear';\ntexture.source.wrapMode = 'repeat';",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Texture Lifecycle",
+      "id": "texture-lifecycle"
+    },
+    {
+      "level": "h3",
+      "text": "Lifecycle Flow",
+      "id": "lifecycle-flow"
+    },
+    {
+      "level": "h3",
+      "text": "Loading Textures",
+      "id": "loading-textures"
+    },
+    {
+      "level": "h3",
+      "text": "Preparing Textures",
+      "id": "preparing-textures"
+    },
+    {
+      "level": "h2",
+      "text": "Texture vs. TextureSource",
+      "id": "texture-vs.-texturesource"
+    },
+    {
+      "level": "h2",
+      "text": "Texture Creation",
+      "id": "texture-creation"
+    },
+    {
+      "level": "h2",
+      "text": "Destroying Textures",
+      "id": "destroying-textures"
+    },
+    {
+      "level": "h2",
+      "text": "Unload Texture from GPU",
+      "id": "unload-texture-from-gpu"
+    },
+    {
+      "level": "h2",
+      "text": "Texture Types",
+      "id": "texture-types"
+    },
+    {
+      "level": "h2",
+      "text": "Common Texture Properties",
+      "id": "common-texture-properties"
+    },
+    {
+      "level": "h2",
+      "text": "Common TextureSource Properties",
+      "id": "common-texturesource-properties"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Ticker",
+      "id": "ticker"
+    }
+  ],
+  "url": "llms-txt#textures",
+  "links": []
+}

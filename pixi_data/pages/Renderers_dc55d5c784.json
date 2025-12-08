@@ -1,0 +1,74 @@
+{
+  "title": "Renderers",
+  "content": "PixiJS renderers are responsible for drawing your scene to a canvas using either **WebGL/WebGL2** or **WebGPU**. These renderers are high-performance GPU-accelerated engines and are composed of modular systems that manage everything from texture uploads to rendering pipelines.\n\nAll PixiJS renderers inherit from a common base, which provides consistent methods such as `.render()`, `.resize()`, and `.clear()` as well as shared systems for managing the canvas, texture GC, events, and more.\n\n| Renderer         | Description                                                        | Status          |\n| ---------------- | ------------------------------------------------------------------ | --------------- |\n| `WebGLRenderer`  | Default renderer using WebGL/WebGL2. Well supported and stable.    | ✅ Recommended  |\n| `WebGPURenderer` | Modern GPU renderer using WebGPU. More performant, still maturing. | 🚧 Experimental |\n| `CanvasRenderer` | Fallback renderer using 2D canvas.                                 | ❌ Coming-soon  |\n\n:::info\nThe WebGPU renderer is feature complete, however, inconsistencies in browser implementations may lead to unexpected behavior. It is recommended to use the WebGL renderer for production applications.\n:::\n\n## Creating a Renderer\n\nYou can use `autoDetectRenderer()` to create the best renderer for the environment:\n\nOr construct one explicitly:\n\nTo render a scene, you can use the `render()` method. This will draw the specified container to the screen or a texture:\n\n## Resizing the Renderer\n\nTo resize the renderer, use the `resize()` method. This will adjust the canvas size and update the resolution:\n\n## Generating Textures\n\nYou can generate textures from containers using the `generateTexture()` method. This is useful for creating textures from dynamic content:\n\nTo reset the renderer's state, use the `resetState()` method. This is useful when mixing PixiJS with other libraries like Three.js:\n\nSee our full guide on [mixing PixiJS with Three.js](../../third-party/mixing-three-and-pixi.mdx) for more details.\n\n- [Overview](https://pixijs.download/release/docs/rendering.html)\n- [AbstractRenderer](https://pixijs.download/release/docs/rendering.AbstractRenderer.html)\n- [WebGLRenderer](https://pixijs.download/release/docs/rendering.WebGLRenderer.html)\n- [WebGPURenderer](https://pixijs.download/release/docs/rendering.WebGPURenderer.html)\n- [AutoDetectRenderer](https://pixijs.download/release/docs/rendering.html#autoDetectRenderer)",
+  "code_samples": [
+    {
+      "code": "import { autoDetectRenderer } from 'pixi.js';\n\nconst renderer = await autoDetectRenderer({\n  preference: 'webgpu', // or 'webgl'\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { WebGLRenderer, WebGPURenderer } from 'pixi.js';\n\nconst renderer = new WebGLRenderer();\nawait renderer.init(options);",
+      "language": "ts"
+    },
+    {
+      "code": "import { Container } from 'pixi.js';\n\nconst container = new Container();\nrenderer.render(container);\n\n// or provide a complete set of options\nrenderer.render({\n  target: container,\n  clear: true, // clear the screen before rendering\n  transform: new Matrix(), // optional transform to apply to the container\n});",
+      "language": "ts"
+    },
+    {
+      "code": "renderer.resize(window.innerWidth, window.innerHeight);",
+      "language": "ts"
+    },
+    {
+      "code": "import { Sprite } from 'pixi.js';\n\nconst sprite = new Sprite();\nconst texture = renderer.generateTexture(sprite);",
+      "language": "ts"
+    },
+    {
+      "code": "function render() {\n  // Render the Three.js scene\n  threeRenderer.resetState();\n  threeRenderer.render(scene, camera);\n\n  // Render the PixiJS stage\n  pixiRenderer.resetState();\n  pixiRenderer.render({ container: stage });\n\n  requestAnimationFrame(render);\n}\n\nrequestAnimationFrame(render);",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Renderer Types",
+      "id": "renderer-types"
+    },
+    {
+      "level": "h2",
+      "text": "Creating a Renderer",
+      "id": "creating-a-renderer"
+    },
+    {
+      "level": "h2",
+      "text": "Rendering a Scene",
+      "id": "rendering-a-scene"
+    },
+    {
+      "level": "h2",
+      "text": "Resizing the Renderer",
+      "id": "resizing-the-renderer"
+    },
+    {
+      "level": "h2",
+      "text": "Generating Textures",
+      "id": "generating-textures"
+    },
+    {
+      "level": "h2",
+      "text": "Resetting State",
+      "id": "resetting-state"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Cache As Texture",
+      "id": "cache-as-texture"
+    }
+  ],
+  "url": "llms-txt#renderers",
+  "links": []
+}

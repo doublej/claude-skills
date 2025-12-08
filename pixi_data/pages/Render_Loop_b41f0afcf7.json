@@ -1,0 +1,53 @@
+{
+  "title": "Render Loop",
+  "content": "At the core of PixiJS lies its **render loop**, a repeating cycle that updates and redraws your scene every frame. Unlike traditional web development where rendering is event-based (e.g. on user input), PixiJS uses a continuous animation loop that provides full control over real-time rendering.\n\nThis guide provides a deep dive into how PixiJS structures this loop internally, from the moment a frame begins to when it is rendered to the screen. Understanding this will help you write more performant, well-structured applications.\n\nEach frame, PixiJS performs the following sequence:\n\n1. **Tickers are executed** (user logic)\n2. **Scene graph is updated** (transforms and culling)\n3. **Rendering occurs** (GPU draw calls)\n\nThis cycle repeats as long as your application is running and its ticker is active.\n\n## Step 1: Running Ticker Callbacks\n\nThe render loop is driven by the `Ticker` class, which uses `requestAnimationFrame` to schedule work. Each tick:\n\n- Measures elapsed time since the previous frame\n- Caps it based on `minFPS` and `maxFPS`\n- Calls every listener registered with `ticker.add()` or `app.ticker.add()`\n\nEvery callback receives the current `Ticker` instance. You can access `ticker.deltaTime` (scaled frame delta) and `ticker.elapsedMS` (unscaled delta in ms) to time animations.\n\n## Step 2: Updating the Scene Graph\n\nPixiJS uses a hierarchical **scene graph** to represent all visual objects. Before rendering, the graph needs to be traversed to:\n\n- Recalculate transforms (world matrix updates)\n- Apply custom logic via `onRender` handlers\n- Apply culling if enabled\n\n## Step 3: Rendering the Scene\n\nOnce the scene graph is ready, the renderer walks the display list starting at `app.stage`:\n\n1. Applies global and local transformations\n2. Batches draw calls when possible\n3. Uploads geometry, textures, and uniforms\n4. Issues GPU commands\n\nAll rendering is **retained mode**: objects persist across frames unless explicitly removed.\n\nRendering is done via either WebGL or WebGPU, depending on your environment. The renderer abstracts away the differences behind a common API.\n\n## Full Frame Lifecycle Diagram",
+  "code_samples": [
+    {
+      "code": "app.ticker.add((ticker) => {\n  bunny.rotation += ticker.deltaTime * 0.1;\n});",
+      "language": "ts"
+    },
+    {
+      "code": "requestAnimationFrame\n        │\n    [Ticker._tick()]\n        │\n    ├─ Compute elapsed time\n    ├─ Call user listeners\n    │   └─ sprite.onRender\n    ├─ Cull display objects (if enabled)\n    ├─ Update world transforms\n    └─ Render stage\n            ├─ Traverse display list\n            ├─ Upload data to GPU\n            └─ Draw",
+      "language": "plaintext"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Overview",
+      "id": "overview"
+    },
+    {
+      "level": "h2",
+      "text": "Step 1: Running Ticker Callbacks",
+      "id": "step-1:-running-ticker-callbacks"
+    },
+    {
+      "level": "h3",
+      "text": "Example",
+      "id": "example"
+    },
+    {
+      "level": "h2",
+      "text": "Step 2: Updating the Scene Graph",
+      "id": "step-2:-updating-the-scene-graph"
+    },
+    {
+      "level": "h2",
+      "text": "Step 3: Rendering the Scene",
+      "id": "step-3:-rendering-the-scene"
+    },
+    {
+      "level": "h2",
+      "text": "Full Frame Lifecycle Diagram",
+      "id": "full-frame-lifecycle-diagram"
+    },
+    {
+      "level": "h2",
+      "text": "Scene Graph",
+      "id": "scene-graph"
+    }
+  ],
+  "url": "llms-txt#render-loop",
+  "links": []
+}

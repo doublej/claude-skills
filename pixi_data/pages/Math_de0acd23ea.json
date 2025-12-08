@@ -1,0 +1,135 @@
+{
+  "title": "Math",
+  "content": "PixiJS includes a several math utilities for 2D transformations, geometry, and shape manipulation. This guide introduces the most important classes and their use cases, including optional advanced methods enabled via `math-extras`.\n\nThe `Matrix` class represents a 2D affine transformation matrix. It is used extensively for transformations such as scaling, translation, and rotation.\n\n## Point and ObservablePoint\n\nThe Point object represents a location in a two-dimensional coordinate system, where `x` represents the position on the horizontal axis and `y` represents the position on the vertical axis. Many Pixi functions accept the `PointData` type as an alternative to `Point`, which only requires `x` and `y` properties.\n\n### `ObservablePoint`\n\nExtends `Point` and triggers a callback when its values change. Used internally for reactive systems like position and scale updates.\n\nPixiJS includes several 2D shapes, used for hit testing, rendering, and geometry computations.\n\nAxis-aligned rectangle defined by `x`, `y`, `width`, and `height`.\n\nDefined by `x`, `y` (center) and `radius`.\n\nSimilar to `Circle`, but supports different width and height (radii).\n\nDefined by a list of points. Used for complex shapes and hit testing.\n\n### `RoundedRectangle`\n\nRectangle with rounded corners, defined by a radius.\n\nA convenience wrapper for defining triangles with three points.\n\n## Optional: `math-extras`\n\nImporting `pixi.js/math-extras` extends `Point` and `Rectangle` with additional vector and geometry utilities.\n\n### Enhanced `Point` Methods\n\n| Method                          | Description                                                  |\n| ------------------------------- | ------------------------------------------------------------ |\n| `add(other[, out])`             | Adds another point to this one.                              |\n| `subtract(other[, out])`        | Subtracts another point from this one.                       |\n| `multiply(other[, out])`        | Multiplies this point with another point component-wise.     |\n| `multiplyScalar(scalar[, out])` | Multiplies the point by a scalar.                            |\n| `dot(other)`                    | Computes the dot product of two vectors.                     |\n| `cross(other)`                  | Computes the scalar z-component of the 3D cross product.     |\n| `normalize([out])`              | Returns a normalized (unit-length) vector.                   |\n| `magnitude()`                   | Returns the Euclidean length.                                |\n| `magnitudeSquared()`            | Returns the squared length (more efficient for comparisons). |\n| `project(onto[, out])`          | Projects this point onto another vector.                     |\n| `reflect(normal[, out])`        | Reflects the point across a given normal.                    |\n\n### Enhanced `Rectangle` Methods\n\n| Method                       | Description                                           |\n| ---------------------------- | ----------------------------------------------------- |\n| `containsRect(other)`        | Returns true if this rectangle contains the other.    |\n| `equals(other)`              | Checks if all properties are equal.                   |\n| `intersection(other[, out])` | Returns a new rectangle representing the overlap.     |\n| `union(other[, out])`        | Returns a rectangle that encompasses both rectangles. |\n\n- [Overview](https://pixijs.download/release/docs/maths.html)\n- [Matrix](https://pixijs.download/release/docs/maths.Matrix.html)\n- [Point](https://pixijs.download/release/docs/maths.Point.html)\n- [ObservablePoint](https://pixijs.download/release/docs/maths.ObservablePoint.html)\n- [Rectangle](https://pixijs.download/release/docs/maths.Rectangle.html)\n- [Circle](https://pixijs.download/release/docs/maths.Circle.html)\n- [Ellipse](https://pixijs.download/release/docs/maths.Ellipse.html)\n- [Polygon](https://pixijs.download/release/docs/maths.Polygon.html)\n- [RoundedRectangle](https://pixijs.download/release/docs/maths.RoundedRectangle.html)\n- [Triangle](https://pixijs.download/release/docs/maths.Triangle.html)",
+  "code_samples": [
+    {
+      "code": "import { Matrix, Point } from 'pixi.js';\n\nconst matrix = new Matrix();\nmatrix.translate(10, 20).scale(2, 2);\n\nconst point = new Point(5, 5);\nconst result = matrix.apply(point); // result is (20, 30)",
+      "language": "ts"
+    },
+    {
+      "code": "import { Point } from 'pixi.js';\nconst point = new Point(5, 10);\n\npoint.set(20, 30); // set x and y",
+      "language": "ts"
+    },
+    {
+      "code": "import { Point, ObservablePoint } from 'pixi.js';\n\nconst observer = {\n  _onUpdate: (point) => {\n    console.log(`Point updated to: (${point.x}, ${point.y})`);\n  },\n};\nconst reactive = new ObservablePoint(observer, 1, 2);\nreactive.set(3, 4); // triggers call to _onUpdate",
+      "language": "ts"
+    },
+    {
+      "code": "import { Rectangle } from 'pixi.js';\n\nconst rect = new Rectangle(10, 10, 100, 50);\nrect.contains(20, 20); // true",
+      "language": "ts"
+    },
+    {
+      "code": "import { Circle } from 'pixi.js';\n\nconst circle = new Circle(50, 50, 25);\ncircle.contains(50, 75); // true",
+      "language": "ts"
+    },
+    {
+      "code": "import { Ellipse } from 'pixi.js';\n\nconst ellipse = new Ellipse(0, 0, 20, 10);\nellipse.contains(5, 0); // true",
+      "language": "ts"
+    },
+    {
+      "code": "import { Polygon } from 'pixi.js';\n\nconst polygon = new Polygon([0, 0, 100, 0, 100, 100, 0, 100]);\npolygon.contains(50, 50); // true",
+      "language": "ts"
+    },
+    {
+      "code": "import { RoundedRectangle } from 'pixi.js';\n\nconst roundRect = new RoundedRectangle(0, 0, 100, 100, 10);\nroundRect.contains(10, 10); // true",
+      "language": "ts"
+    },
+    {
+      "code": "import { Triangle } from 'pixi.js';\n\nconst triangle = new Triangle(0, 0, 100, 0, 50, 100);\ntriangle.contains(50, 50); // true",
+      "language": "ts"
+    },
+    {
+      "code": "import 'pixi.js/math-extras';",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Matrix",
+      "id": "matrix"
+    },
+    {
+      "level": "h2",
+      "text": "Point and ObservablePoint",
+      "id": "point-and-observablepoint"
+    },
+    {
+      "level": "h3",
+      "text": "`Point`",
+      "id": "`point`"
+    },
+    {
+      "level": "h3",
+      "text": "`ObservablePoint`",
+      "id": "`observablepoint`"
+    },
+    {
+      "level": "h2",
+      "text": "Shapes",
+      "id": "shapes"
+    },
+    {
+      "level": "h3",
+      "text": "`Rectangle`",
+      "id": "`rectangle`"
+    },
+    {
+      "level": "h3",
+      "text": "`Circle`",
+      "id": "`circle`"
+    },
+    {
+      "level": "h3",
+      "text": "`Ellipse`",
+      "id": "`ellipse`"
+    },
+    {
+      "level": "h3",
+      "text": "`Polygon`",
+      "id": "`polygon`"
+    },
+    {
+      "level": "h3",
+      "text": "`RoundedRectangle`",
+      "id": "`roundedrectangle`"
+    },
+    {
+      "level": "h3",
+      "text": "`Triangle`",
+      "id": "`triangle`"
+    },
+    {
+      "level": "h2",
+      "text": "Optional: `math-extras`",
+      "id": "optional:-`math-extras`"
+    },
+    {
+      "level": "h3",
+      "text": "To enable:",
+      "id": "to-enable:"
+    },
+    {
+      "level": "h3",
+      "text": "Enhanced `Point` Methods",
+      "id": "enhanced-`point`-methods"
+    },
+    {
+      "level": "h3",
+      "text": "Enhanced `Rectangle` Methods",
+      "id": "enhanced-`rectangle`-methods"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Textures",
+      "id": "textures"
+    }
+  ],
+  "url": "llms-txt#math",
+  "links": []
+}

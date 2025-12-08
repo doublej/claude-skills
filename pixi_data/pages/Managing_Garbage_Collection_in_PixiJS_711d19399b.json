@@ -1,0 +1,52 @@
+{
+  "title": "Managing Garbage Collection in PixiJS",
+  "content": "Efficient resource management is crucial for maintaining optimal performance in any PixiJS application. This guide explores how PixiJS handles garbage collection, the tools it provides, and best practices for managing GPU resources effectively.\n\n## Explicit Resource Management with `destroy`\n\nPixiJS objects, such as textures, meshes, and other GPU-backed data, hold references that consume memory. To explicitly release these resources, call the `destroy` method on objects you no longer need. For example:\n\nCalling `destroy` ensures that the object’s GPU resources are freed immediately, reducing the likelihood of memory leaks and improving performance.\n\n## Managing Textures with `texture.unload`\n\nIn cases where PixiJS’s automatic texture garbage collection is insufficient, you can manually unload textures from the GPU using `texture.unload()`:\n\nThis is particularly useful for applications that dynamically load large numbers of textures and require precise memory control.\n\n## Automatic Texture Garbage Collection with `TextureGCSystem`\n\nPixiJS also includes the `TextureGCSystem`, a system that manages GPU texture memory. By default:\n\n- **Removes textures unused for 3600 frames** (approximately 1 minute at 60 FPS).\n- **Checks every 600 frames** for unused textures.\n\n### Customizing `TextureGCSystem`\n\nYou can adjust the behavior of `TextureGCSystem` to suit your application:\n\n- **`textureGCActive`**: Enable or disable garbage collection. Default: `true`.\n- **`textureGCMaxIdle`**: Maximum idle frames before texture cleanup. Default: `3600` frames.\n- **`textureGCCheckCountMax`**: Frequency of garbage collection checks (in frames). Default: `600` frames.\n\nExample configuration:\n\n## Best Practices for Garbage Collection in PixiJS\n\n1. **Explicitly Destroy Objects:** Always call `destroy` on objects you no longer need to ensure GPU resources are promptly released.\n2. **Use Pooling:** Reuse objects with a pooling system to reduce allocation and deallocation overhead.\n3. **Proactively Manage Textures:** Use `texture.unload()` for manual memory management when necessary.\n\nBy following these practices and understanding PixiJS’s garbage collection mechanisms, you can create high-performance applications that efficiently utilize system resources.",
+  "code_samples": [
+    {
+      "code": "import { Sprite } from 'pixi.js';\n\nconst sprite = new Sprite(texture);\n// Use the sprite in your application\n\n// When no longer needed\nsprite.destroy();",
+      "language": "javascript"
+    },
+    {
+      "code": "import { Texture } from 'pixi.js';\n\nconst texture = Texture.from('image.png');\n\n// Use the texture\n\n// When no longer needed\ntexture.unload();",
+      "language": "javascript"
+    },
+    {
+      "code": "import { Application } from 'pixi.js';\n\nconst app = new Application();\n\nawait app.init({\n  textureGCActive: true, // Enable texture garbage collection\n  textureGCMaxIdle: 7200, // 2 hours idle time\n  textureGCCheckCountMax: 1200, // Check every 20 seconds at 60 FPS\n});",
+      "language": "javascript"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Explicit Resource Management with `destroy`",
+      "id": "explicit-resource-management-with-`destroy`"
+    },
+    {
+      "level": "h2",
+      "text": "Managing Textures with `texture.unload`",
+      "id": "managing-textures-with-`texture.unload`"
+    },
+    {
+      "level": "h2",
+      "text": "Automatic Texture Garbage Collection with `TextureGCSystem`",
+      "id": "automatic-texture-garbage-collection-with-`texturegcsystem`"
+    },
+    {
+      "level": "h3",
+      "text": "Customizing `TextureGCSystem`",
+      "id": "customizing-`texturegcsystem`"
+    },
+    {
+      "level": "h2",
+      "text": "Best Practices for Garbage Collection in PixiJS",
+      "id": "best-practices-for-garbage-collection-in-pixijs"
+    },
+    {
+      "level": "h2",
+      "text": "Performance Tips",
+      "id": "performance-tips"
+    }
+  ],
+  "url": "llms-txt#managing-garbage-collection-in-pixijs",
+  "links": []
+}

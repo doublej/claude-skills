@@ -1,0 +1,39 @@
+{
+  "title": "Text",
+  "content": "Text is essential in games and applications, and PixiJS provides three different systems to cover different needs:\n\n- **`Text`**: High-quality, styled raster text\n- **`BitmapText`**: Ultra-fast, GPU-optimized bitmap fonts\n- **`HTMLText`**: Richly formatted HTML inside the Pixi scene\n\nEach approach has tradeoffs in fidelity, speed, and flexibility. Let’s look at when and how to use each one.\n\n## `Text`: Rich Dynamic Text with Styles\n\nThe `Text` class renders using the browser's native text engine, and then converts the result into a texture. This allows for:\n\n- Full CSS-like font control\n- Drop shadows, gradients, and alignment\n- Support for dynamic content and layout\n\n- You need detailed font control\n- Text changes occasionally\n- Fidelity is more important than speed\n\n- You're changing text every frame\n- You need to render hundreds of instances\n\n## `BitmapText`: High-Performance Glyph Rendering\n\n`BitmapText` uses a pre-baked bitmap font image for glyphs, bypassing font rasterization entirely. This gives:\n\n- High rendering speed\n- Ideal for thousands of changing labels\n- Low memory usage\n\n- You need to render lots of dynamic text\n- You prioritize performance over styling\n- You predefine the characters and styles\n\n- You need fine-grained style control\n- You change fonts or font sizes frequently\n\nTo use `BitmapText`, you must first register a bitmap font via:\n\n- `BitmapFont.from(...)` to create on the fly, or\n- `Assets.load(...)` if using a 3rd-party BMFont or AngelCode export\n\n## `HTMLText`: Styled HTML Inside the Scene\n\n`HTMLText` lets you render actual HTML markup in your PixiJS scene. This allows:\n\n- `, `, `` style formatting\n- Fine layout and text flow\n- Emoji, RTL, links, and more\n\n- You want complex HTML-style markup\n- Static or semi-dynamic content\n- Your users expect \"document-like\" layout\n\n- You need pixel-perfect performance\n- You're rendering hundreds of text blocks\n- You need GPU text effects\n\nEach text type has a corresponding guide that covers setup, font loading, style options, and limitations in more detail:\n\n- [Text Guide →](./canvas.md)\n- [BitmapText Guide →](./bitmap.md)\n- [HTMLText Guide →](./html.md)\n\n- [Text](https://pixijs.download/release/docs/scene.Text.html)\n- [BitmapText](https://pixijs.download/release/docs/scene.BitmapText.html)\n- [HTMLText](https://pixijs.download/release/docs/scene.HTMLText.html)\n- [TextStyle](https://pixijs.download/release/docs/text.TextStyle.html)\n- [BitmapFont](https://pixijs.download/release/docs/text.BitmapFont.html)\n- [FillStyle](https://pixijs.download/release/docs/scene.FillStyle.html)\n- [StrokeStyle](https://pixijs.download/release/docs/scene.StrokeStyle.html)\n\n## SplitText & SplitBitmapText",
+  "code_samples": [],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "`Text`: Rich Dynamic Text with Styles",
+      "id": "`text`:-rich-dynamic-text-with-styles"
+    },
+    {
+      "level": "h2",
+      "text": "`BitmapText`: High-Performance Glyph Rendering",
+      "id": "`bitmaptext`:-high-performance-glyph-rendering"
+    },
+    {
+      "level": "h2",
+      "text": "`HTMLText`: Styled HTML Inside the Scene",
+      "id": "`htmltext`:-styled-html-inside-the-scene"
+    },
+    {
+      "level": "h2",
+      "text": "Next Steps",
+      "id": "next-steps"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "SplitText & SplitBitmapText",
+      "id": "splittext-&-splitbitmaptext"
+    }
+  ],
+  "url": "llms-txt#text",
+  "links": []
+}

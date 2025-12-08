@@ -1,0 +1,37 @@
+{
+  "title": "Ticker Plugin",
+  "content": "The `TickerPlugin` provides a built-in update loop for your PixiJS `Application`. This loop calls `.render()` at a regular cadence—by default, once per animation frame—and integrates with PixiJS's `Ticker` system for precise control over frame-based updates.\n\nPixiJS includes this plugin automatically when you initialize an `Application`, but you can also opt out and add it manually.\n\nThe `TickerPlugin` is included automatically unless disabled:\n\n### Manual Registration\n\nIf you're managing extensions yourself:",
+  "code_samples": [
+    {
+      "code": "const app = new Application();\n\nawait app.init({\n  sharedTicker: false,\n  autoStart: true,\n});\n\napp.ticker.add((ticker) => {\n  // Custom update logic here\n  bunny.rotation += 1 * ticker.deltaTime;\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const app = new Application();\n\nawait app.init({\n  autoStart: true, // Automatically starts the render loop\n  sharedTicker: false, // Use a dedicated ticker\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { extensions, TickerPlugin } from 'pixi.js';\n\nextensions.add(TickerPlugin);",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Usage",
+      "id": "usage"
+    },
+    {
+      "level": "h3",
+      "text": "Default Behavior",
+      "id": "default-behavior"
+    },
+    {
+      "level": "h3",
+      "text": "Manual Registration",
+      "id": "manual-registration"
+    }
+  ],
+  "url": "llms-txt#ticker-plugin",
+  "links": []
+}

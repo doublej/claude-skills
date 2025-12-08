@@ -1,0 +1,106 @@
+{
+  "title": "Assets",
+  "content": "PixiJS has the `Assets` singleton which is used to streamline resource loading. It’s modern, Promise-based, cache-aware, and highly extensible—making it the one stop shop for all PixiJS resource management!\n\n- **Asynchronous loading** of assets via Promises or async/await.\n- **Caching** prevents redundant network requests.\n- **Built-in support** for common media formats (images, video, fonts).\n- **Custom parsers** and **resolvers** for flexibility.\n- **Background loading, manifest-based bundles,** and **smart fallbacks**.\n\n## Supported File Types\n\n| Type                | Extensions                                                       | Loaders                           |\n| ------------------- | ---------------------------------------------------------------- | --------------------------------- |\n| Textures            | `.png`, `.jpg`, `.gif`, `.webp`, `.avif`, `.svg`                 | `loadTextures`, `loadSvg`         |\n| Video Textures      | `.mp4`, `.m4v`, `.webm`, `.ogg`, `.ogv`, `.h264`, `.avi`, `.mov` | `loadVideoTextures`               |\n| Sprite Sheets       | `.json`                                                          | `spritesheetAsset`                |\n| Bitmap Fonts        | `.fnt`, `.xml`, `.txt`                                           | `loadBitmapFont`                  |\n| Web Fonts           | `.ttf`, `.otf`, `.woff`, `.woff2`                                | `loadWebFont`                     |\n| JSON                | `.json`                                                          | `loadJson`                        |\n| Text                | `.txt`                                                           | `loadTxt`                         |\n| Compressed Textures | `.basis`, `.dds`, `.ktx`, `.ktx2`                                | `loadBasis`, `loadDDS`, `loadKTX` |\n\n> Need more? Add custom parsers!\n\nLoading an asset with PixiJS is as simple as calling `Assets.load()` and passing in the asset’s URL. This function returns a `Promise` that resolves to the loaded resource—whether that’s a texture, font, JSON, or another supported format.\n\nYou can provide either an **absolute URL** (e.g. from a CDN):\n\nOr a **relative path** within your project:\n\nPixiJS will **_typically_** automatically determine how to load the asset based on its **file extension** and will cache the result to avoid redundant downloads.\n\n### Repeated Loads Are Safe\n\n`Assets` caches by URL or alias. Requests for the same resource return the **same texture**.\n\nYou can also use aliases to refer to assets instead of their full URLs. This provides a more convenient way to manage assets, especially when you have long or complex URLs.\n\nAll Asset APIs support aliases, including `Assets.load()`, `Assets.get()`, and `Assets.unload()`.\n\nThere is more complex ways of defining assets and you can read about them in the [Resolver](./resolver.md) section.\n\n### Retrieving Loaded Assets\n\nYou can also retrieve assets that have already been loaded using `Assets.get()`:\n\nThis is useful for when you have preloaded your assets elsewhere in your code and want to access them later without having to pass round references from the initial load.\n\nTo unload an asset, you can use `Assets.unload()`. This will remove the asset from the cache and free up memory. Note that if you try to access the asset after unloading it, you will need to load it again.\n\n### Customizing Asset Loading\n\nYou can customize the asset loading process by providing options to the `Assets.init()` method. This allows you to set preferences for how assets are loaded, specify a base path for assets, and more.\n\n| Option                | Type                      | Description                                                   |\n| --------------------- | ------------------------- | ------------------------------------------------------------- |\n| `basePath`            | `string`                  | Prefix applied to all relative asset paths (e.g. for CDNs).   |\n| `defaultSearchParams` | `string`                  | A default URL parameter string to append to all assets loaded |\n| `skipDetections`      | `boolean`                 | Skip environment detection parsers for assets.                |\n| `manifest`            | `Manifest`                | A descriptor of named asset bundles and their contents.       |\n| `preferences`         | `AssetPreferences`        | Specifies preferences for each loader                         |\n| `bundleIdentifier`    | `BundleIdentifierOptions` | **Advanced** - Override how bundlesIds are generated.         |\n\nThere are several advanced features available in the `Assets` API that can help you manage your assets more effectively.\nYou can read more about these features in the rest of the documentation:\n\n- [Resolving Assets](./resolver.md)\n- [Manifests & Bundles (Recommended)](./manifest.md)\n- [Background Loading](./background-loader.md)\n- [Compressed Textures](./compressed-textures.md)\n\n- [Overview](https://pixijs.download/release/docs/assets.html)\n- [Assets](https://pixijs.download/release/docs/assets.Assets.html)\n\n## Manifests & Bundles",
+  "code_samples": [
+    {
+      "code": "import { Assets } from 'pixi.js';\n\nawait Assets.init({ ... });\n\nconst texture = await Assets.load('path/to/hero.png');",
+      "language": "ts"
+    },
+    {
+      "code": "const texture = await Assets.load('https://example.com/assets/hero.png');",
+      "language": "ts"
+    },
+    {
+      "code": "const texture = await Assets.load('assets/hero.png');",
+      "language": "ts"
+    },
+    {
+      "code": "import { Application, Assets, Texture } from 'pixi.js';\n\nconst app = new Application();\n// Application must be initialized before loading assets\nawait app.init({ backgroundColor: 0x1099bb });\n\n// Load a single asset\nconst bunnyTexture = await Assets.load('path/to/bunny.png');\nconst sprite = new Sprite(bunnyTexture);\n\n// Load multiple assets at once\nconst textures = await Assets.load(['path/to/bunny.png', 'path/to/cat.png']);\nconst bunnySprite = new Sprite(textures['path/to/bunny.png']);\nconst catSprite = new Sprite(textures['path/to/cat.png']);",
+      "language": "typescript"
+    },
+    {
+      "code": "const p1 = await Assets.load('bunny.png');\nconst p2 = await Assets.load('bunny.png');\nconsole.log(p1 === p2); // true",
+      "language": "ts"
+    },
+    {
+      "code": "await Assets.load({ alias: 'bunny', src: 'path/to/bunny.png' });\nconst bunnyTexture = Assets.get('bunny');",
+      "language": "ts"
+    },
+    {
+      "code": "await Assets.load('path/to/bunny.png');\nconst bunnyTexture = Assets.get('path/to/bunny.png');\nconst sprite = new Sprite(bunnyTexture);",
+      "language": "ts"
+    },
+    {
+      "code": "await Assets.load('path/to/bunny.png');\nconst bunnyTexture = Assets.get('path/to/bunny.png');\nconst sprite = new Sprite(bunnyTexture);\n// Unload the asset\nawait Assets.unload('path/to/bunny.png');",
+      "language": "ts"
+    },
+    {
+      "code": "import { Assets } from 'pixi.js';\n\nawait Assets.init({...});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Key Capabilities",
+      "id": "key-capabilities"
+    },
+    {
+      "level": "h2",
+      "text": "Supported File Types",
+      "id": "supported-file-types"
+    },
+    {
+      "level": "h2",
+      "text": "Getting started",
+      "id": "getting-started"
+    },
+    {
+      "level": "h3",
+      "text": "Loading Assets",
+      "id": "loading-assets"
+    },
+    {
+      "level": "h3",
+      "text": "Repeated Loads Are Safe",
+      "id": "repeated-loads-are-safe"
+    },
+    {
+      "level": "h3",
+      "text": "Asset Aliases",
+      "id": "asset-aliases"
+    },
+    {
+      "level": "h3",
+      "text": "Retrieving Loaded Assets",
+      "id": "retrieving-loaded-assets"
+    },
+    {
+      "level": "h3",
+      "text": "Unloading Assets",
+      "id": "unloading-assets"
+    },
+    {
+      "level": "h3",
+      "text": "Customizing Asset Loading",
+      "id": "customizing-asset-loading"
+    },
+    {
+      "level": "h2",
+      "text": "Advanced Usage",
+      "id": "advanced-usage"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Manifests & Bundles",
+      "id": "manifests-&-bundles"
+    }
+  ],
+  "url": "llms-txt#assets",
+  "links": []
+}

@@ -1,0 +1,54 @@
+{
+  "title": "FAQ",
+  "content": "## What is PixiJS for?\n\nEverything! Pixi.js is a rendering library that will allow you to create rich,\ninteractive graphic experiences, cross-platform applications, and games without\nhaving to dive into the WebGL API or grapple with the intricacies of browser and\ndevice compatibility. Killer performance with a clean API, means not only will\nyour content be better - but also faster to build!\n\nPixiJS is and always will be free and Open Source. That said, financial contributions\nare what make it possible to push PixiJS further, faster. Contributions allow us to\ncommission the PixiJS developer community to accelerate feature development and create\nmore in-depth documentation. Support Us by making a contribution via Open Collective. Go on! It will be a massive help AND make you feel good about yourself, win win ;)\n\n## Where do I get it?\n\nVisit our GitHub page to download the very latest version of PixiJS. This is the most up-to-date resource for PixiJS and should always be your first port of call to make sure you are using the latest version. Just click the 'Download' link in the navigation.\n\n## How do I get started?\n\nRight here! Take a look through the Resources section for a wealth of information including documentation, forums, tutorials and the Goodboy blog.\n\n## Why should I use PixiJS?\n\nBecause you care about speed. PixiJS' #1 mantra has always been speed. We really do feel the need! We do everything we can to make PixiJS as streamlined, efficient and fast as possible, whilst balancing it with offering as many crucial and valuable features as we can.\n\n## Is PixiJS a game engine?\n\nNo. PixiJS is what we've come to think of as a \"creation engine\". Whilst it is extremely good for making games, the core essence of PixiJS is simply moving things around on screens as quickly and efficiently as possible. It does of course happen that it is absolutely brilliant for making games though!\n\nPixiJS is maintained by three core developers who work on the project part-time:\n\n- Mat Groves ([@GoodBoyDigital](https://github.com/GoodBoyDigital))\n- Sean Burns ([@Zyie](https://github.com/Zyie))\n- Matt Karl ([@bigtimebuddy](https://github.com/bigtimebuddy))\n\nThe project thrives thanks to our highly active community of contributors and sponsors. As part-time maintainers, your sponsorship directly supports our ability to improve PixiJS, fix bugs, and create better documentation. Consider supporting our work through [GitHub Sponsors](https://github.com/sponsors/pixijs) or [Open Collective](https://opencollective.com/pixijs).\n\n## I found a bug. What should I do?\n\nTwo things - lets us know via the PixiJS GitHub community and even better yet, if you know how, post a fix! Our Community is stronger in numbers so we're always keen to welcome new contributors into the team to help us shape what PixiJS becomes next.",
+  "code_samples": [],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "What is PixiJS for?",
+      "id": "what-is-pixijs-for?"
+    },
+    {
+      "level": "h2",
+      "text": "Is PixiJS free?",
+      "id": "is-pixijs-free?"
+    },
+    {
+      "level": "h2",
+      "text": "Where do I get it?",
+      "id": "where-do-i-get-it?"
+    },
+    {
+      "level": "h2",
+      "text": "How do I get started?",
+      "id": "how-do-i-get-started?"
+    },
+    {
+      "level": "h2",
+      "text": "Why should I use PixiJS?",
+      "id": "why-should-i-use-pixijs?"
+    },
+    {
+      "level": "h2",
+      "text": "Is PixiJS a game engine?",
+      "id": "is-pixijs-a-game-engine?"
+    },
+    {
+      "level": "h2",
+      "text": "Who makes PixiJS?",
+      "id": "who-makes-pixijs?"
+    },
+    {
+      "level": "h2",
+      "text": "I found a bug. What should I do?",
+      "id": "i-found-a-bug.-what-should-i-do?"
+    },
+    {
+      "level": "h2",
+      "text": "Culler Plugin",
+      "id": "culler-plugin"
+    }
+  ],
+  "url": "llms-txt#faq",
+  "links": []
+}

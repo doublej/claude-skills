@@ -1,0 +1,56 @@
+{
+  "title": "Text (Canvas)",
+  "content": "The `Text` class in PixiJS allows you to render styled, dynamic strings as display objects in your scene. Under the hood, PixiJS rasterizes the text using the browser’s canvas text API, then converts that into a texture. This makes `Text` objects behave like sprites: they can be moved, rotated, scaled, masked, and rendered efficiently.\n\nThe `TextStyle` class allows you to customize the appearance of your text. You can set properties like:\n\n- `fontFamily`\n- `fontSize`\n- `fontWeight`\n- `fill` (color)\n- `align`\n- `stroke` (outline)\n\nSee the guide on [TextStyle](./style.md) for more details.\n\n## **Changing Text Dynamically**\n\nYou can update the text string or its style at runtime:\n\n:::warning\nChanging text or style re-rasterizes the object. Avoid doing this every frame unless necessary.\n:::\n\nThe `resolution` property of the `Text` class determines the pixel density of the rendered text. By default, it uses the resolution of the renderer.\n\nHowever, you can set text resolution independently from the renderer for sharper text, especially on high-DPI displays.\n\nPixiJS supports loading custom fonts via the `Assets` API. It supports many of the common font formats:\n\n- `woff`\n- `woff2`\n- `ttf`\n- `otf`\n\nIt is recommended to use `woff2` for the best performance and compression.\n\nBelow is a list of properties you can pass in the `data` object when loading a font:\n\n| Property            | Description                                             |\n| ------------------- | ------------------------------------------------------- |\n| **family**          | The font family name.                                   |\n| **display**         | The display property of the FontFace interface.         |\n| **featureSettings** | The featureSettings property of the FontFace interface. |\n| **stretch**         | The stretch property of the FontFace interface.         |\n| **style**           | The style property of the FontFace interface.           |\n| **unicodeRange**    | The unicodeRange property of the FontFace interface.    |\n| **variant**         | The variant property of the FontFace interface.         |\n| **weights**         | The weights property of the FontFace interface.         |\n\n- [Text](https://pixijs.download/release/docs/scene.Text.html)\n- [TextStyle](https://pixijs.download/release/docs/text.TextStyle.html)\n- [FillStyle](https://pixijs.download/release/docs/scene.FillStyle.html)\n- [StrokeStyle](https://pixijs.download/release/docs/scene.StrokeStyle.html)",
+  "code_samples": [
+    {
+      "code": "import { Text, TextStyle, Assets } from 'pixi.js';\n\n// Load font before use\nawait Assets.load({\n    src: 'my-font.woff2',\n    data: {\n        family: 'MyFont', // optional\n    }\n});\n\nconst myText = new Text({\n    text: 'Hello PixiJS!',\n    style: {\n      fill: '#ffffff',\n      fontSize: 36,\n      fontFamily: 'MyFont',\n    }\n    anchor: 0.5\n});\n\napp.stage.addChild(myText);",
+      "language": "ts"
+    },
+    {
+      "code": "text.text = 'Updated!';\ntext.style.fontSize = 40; // Triggers re-render",
+      "language": "ts"
+    },
+    {
+      "code": "const myText = new Text('Hello', {\n  resolution: 2, // Higher resolution for sharper text\n});\n\n// change resolution\nmyText.resolution = 1; // Reset to default",
+      "language": "ts"
+    },
+    {
+      "code": "await Assets.load({\n  src: 'my-font.woff2',\n  data: {},\n});",
+      "language": "js"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Text Styling",
+      "id": "text-styling"
+    },
+    {
+      "level": "h2",
+      "text": "**Changing Text Dynamically**",
+      "id": "**changing-text-dynamically**"
+    },
+    {
+      "level": "h2",
+      "text": "Text Resolution",
+      "id": "text-resolution"
+    },
+    {
+      "level": "h2",
+      "text": "Font Loading",
+      "id": "font-loading"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "HTML Text",
+      "id": "html-text"
+    }
+  ],
+  "url": "llms-txt#text-(canvas)",
+  "links": []
+}

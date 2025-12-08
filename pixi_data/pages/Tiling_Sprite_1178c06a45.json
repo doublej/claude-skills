@@ -1,0 +1,52 @@
+{
+  "title": "Tiling Sprite",
+  "content": "A `TilingSprite` is a high-performance way to render a repeating texture across a rectangular area. Instead of stretching the texture, it repeats (tiles) it to fill the given space, making it ideal for backgrounds, parallax effects, terrain, and UI panels.\n\n## What is a TilingSprite?\n\n- It draws a texture repeatedly across a defined area.\n- The texture is not scaled by default unless you adjust `tileScale`.\n- The sprite's overall `width` and `height` determine how much area the tiles fill, independent of the texture's native size.\n- The pattern's offset, scale, and rotation can be controlled independently of the object's transform.\n\n| Property               | Description                                                            |\n| ---------------------- | ---------------------------------------------------------------------- |\n| `texture`              | The texture being repeated                                             |\n| `tilePosition`         | `ObservablePoint` controlling offset of the tiling pattern             |\n| `tileScale`            | `ObservablePoint` controlling scaling of each tile                     |\n| `tileRotation`         | Number controlling the rotation of the tile pattern                    |\n| `width` / `height`     | The size of the area to be filled by tiles                             |\n| `anchor`               | Adjusts origin point of the TilingSprite                               |\n| `applyAnchorToTexture` | If `true`, the anchor affects the starting point of the tiling pattern |\n| `clampMargin`          | Margin adjustment to avoid edge artifacts (default: `0.5`)             |\n\n### Width & Height vs Scale\n\nUnlike `Sprite`, setting `width` and `height` in a `TilingSprite` directly changes the visible tiling area. It **does not affect the scale** of the tiles.\n\nTo scale the tile pattern itself, use `tileScale`:\n\n### Anchor and applyAnchorToTexture\n\n- `anchor` sets the pivot/origin point for positioning the TilingSprite.\n- If `applyAnchorToTexture` is `true`, the anchor also affects where the tile pattern begins.\n- By default, the tile pattern starts at (0, 0) in local space regardless of anchor.\n\n- [TilingSprite](https://pixijs.download/release/docs/scene.TilingSprite.html)\n- [Texture](https://pixijs.download/release/docs/rendering.Texture.html)\n\n## Documentation for LLMs",
+  "code_samples": [
+    {
+      "code": "import { TilingSprite, Texture } from 'pixi.js';\n\nconst tilingSprite = new TilingSprite({\n  texture: Texture.from('assets/tile.png'),\n  width: 400,\n  height: 300,\n});\n\napp.stage.addChild(tilingSprite);",
+      "language": "ts"
+    },
+    {
+      "code": "// Makes the tiling area bigger\ntilingSprite.width = 800;\ntilingSprite.height = 600;\n\n// Keeps tiles the same size, just tiles more of them",
+      "language": "ts"
+    },
+    {
+      "code": "// Makes each tile appear larger\ntilingSprite.tileScale.set(2, 2);",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "What is a TilingSprite?",
+      "id": "what-is-a-tilingsprite?"
+    },
+    {
+      "level": "h2",
+      "text": "Key Properties",
+      "id": "key-properties"
+    },
+    {
+      "level": "h3",
+      "text": "Width & Height vs Scale",
+      "id": "width-&-height-vs-scale"
+    },
+    {
+      "level": "h3",
+      "text": "Anchor and applyAnchorToTexture",
+      "id": "anchor-and-applyanchortotexture"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Documentation for LLMs",
+      "id": "documentation-for-llms"
+    }
+  ],
+  "url": "llms-txt#tiling-sprite",
+  "links": []
+}

@@ -1,0 +1,108 @@
+{
+  "title": "SplitText & SplitBitmapText",
+  "content": "The `SplitText` and `SplitBitmapText` classes let you break a string into individual lines, words, and characters—each as its own display object—unlocking rich, per-segment animations and advanced text layout effects.\n\nThese classes work just like regular `Text` or `BitmapText`, but provide fine-grained control over every part of your text.\n\n:::warning\n**Experimental:** These features are new and may evolve in future versions.\n:::\n\n## What Are SplitText & SplitBitmapText?\n\nBoth `SplitText` and `SplitBitmapText` extend PixiJS containers, generating nested display objects for each line, word, and character of your string.\n\nThe difference is in the underlying text rendering:\n\n| Class             | Base Type    | Best For                      |\n| ----------------- | ------------ | ----------------------------- |\n| `SplitText`       | `Text`       | Richly styled text            |\n| `SplitBitmapText` | `BitmapText` | High-performance dynamic text |\n\n- Per-character or per-word animations\n- Line-based entrance or exit effects\n- Interactive text elements\n- Complex animated typography\n\n### SplitText Example\n\n### SplitBitmapText Example\n\n## Accessing Segments\n\nBoth classes provide convenient segment arrays:\n\nEach line contains its words, and each word contains its characters.\n\n## Anchor Points Explained\n\nSegment anchors control the origin for transformations like rotation or scaling.\n\nNormalized range: `0` (start) to `1` (end)\n\n| Anchor    | Meaning      |\n| --------- | ------------ |\n| `0,0`     | Top-left     |\n| `0.5,0.5` | Center       |\n| `1,1`     | Bottom-right |\n\n## Animation Example (with GSAP)\n\n## Creating from Existing Text\n\nConvert existing text objects into segmented versions:\n\n## Configuration Options\n\nShared options for both classes:\n\n| Option       | Description                                         | Default    |\n| ------------ | --------------------------------------------------- | ---------- |\n| `text`       | String content to render and split                  | _Required_ |\n| `style`      | Text style configuration (varies by text type)      | `{}`       |\n| `autoSplit`  | Auto-update segments when text or style changes     | `true`     |\n| `lineAnchor` | Anchor for line containers (`number` or `{x, y}`)   | `0`        |\n| `wordAnchor` | Anchor for word containers (`number` or `{x, y}`)   | `0`        |\n| `charAnchor` | Anchor for character objects (`number` or `{x, y}`) | `0`        |\n\nChange global defaults for each class:\n\n⚠️ **Character Spacing:**\nSplitting text into individual objects removes browser or font kerning. Expect slight differences in spacing compared to standard `Text`.\n\nSplitting text creates additional display objects. For simple static text, a regular `Text` object is more efficient. Use `SplitText` when you need:\n\n- Per-segment animations\n- Interactive or responsive text effects\n- Complex layouts\n\nThe same performance limitations outlined [here](./index.md) apply for these classes as well.\n\n- [Text](https://pixijs.download/release/docs/scene.Text.html)\n- [TextStyle](https://pixijs.download/release/docs/text.TextStyle.html)\n- [BitmapFont](https://pixijs.download/release/docs/text.BitmapFont.html)\n- [SplitText](https://pixijs.download/release/docs/text.SplitText.html)\n- [SplitBitmapText](https://pixijs.download/release/docs/text.SplitBitmapText.html)",
+  "code_samples": [
+    {
+      "code": "import { SplitText } from 'pixi.js';\n\nconst text = new SplitText({\n  text: 'Hello World',\n  style: { fontSize: 32, fill: 0xffffff },\n\n  // Optional: Anchor points (0-1 range)\n  lineAnchor: 0.5, // Center lines\n  wordAnchor: { x: 0, y: 0.5 }, // Left-center words\n  charAnchor: { x: 0.5, y: 1 }, // Bottom-center characters\n  autoSplit: true,\n});\n\napp.stage.addChild(text);",
+      "language": "ts"
+    },
+    {
+      "code": "import { SplitBitmapText, BitmapFont } from 'pixi.js';\n\n// Ensure your bitmap font is installed\nBitmapFont.install({\n  name: 'Game Font',\n  style: { fontFamily: 'Arial', fontSize: 32 },\n});\n\nconst text = new SplitBitmapText({\n  text: 'High Performance',\n  style: { fontFamily: 'Game Font', fontSize: 32 },\n  autoSplit: true,\n});\n\napp.stage.addChild(text);",
+      "language": "ts"
+    },
+    {
+      "code": "console.log(text.lines); // Array of line containers\nconsole.log(text.words); // Array of word containers\nconsole.log(text.chars); // Array of character display objects",
+      "language": "ts"
+    },
+    {
+      "code": "const text = new SplitText({\n  text: 'Animate Me',\n  lineAnchor: { x: 1, y: 0 }, // Top-right lines\n  wordAnchor: 0.5, // Center words\n  charAnchor: { x: 0, y: 1 }, // Bottom-left characters\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { gsap } from 'gsap';\n\nconst text = new SplitBitmapText({\n  text: 'Split and Animate',\n  style: { fontFamily: 'Game Font', fontSize: 48 },\n});\n\napp.stage.addChild(text);\n\n// Animate characters one by one\ntext.chars.forEach((char, i) => {\n  gsap.from(char, {\n    alpha: 0,\n    delay: i * 0.05,\n  });\n});\n\n// Animate words with scaling\ntext.words.forEach((word, i) => {\n  gsap.to(word.scale, {\n    x: 1.2,\n    y: 1.2,\n    yoyo: true,\n    repeat: -1,\n    delay: i * 0.2,\n  });\n});",
+      "language": "ts"
+    },
+    {
+      "code": "import { Text, SplitText, BitmapText, SplitBitmapText } from 'pixi.js';\n\nconst basicText = new Text({\n  text: 'Standard Text',\n  style: { fontSize: 32 },\n});\nconst splitText = SplitText.from(basicText);\n\nconst bitmapText = new BitmapText({\n  text: 'Bitmap Example',\n  style: { fontFamily: 'Game Font', fontSize: 32 },\n});\nconst splitBitmap = SplitBitmapText.from(bitmapText);",
+      "language": "ts"
+    },
+    {
+      "code": "SplitText.defaultOptions = {\n  lineAnchor: 0.5,\n  wordAnchor: { x: 0, y: 0.5 },\n  charAnchor: { x: 0.5, y: 1 },\n};\n\nSplitBitmapText.defaultOptions = {\n  autoSplit: false,\n};",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "What Are SplitText & SplitBitmapText?",
+      "id": "what-are-splittext-&-splitbitmaptext?"
+    },
+    {
+      "level": "h2",
+      "text": "Basic Usage",
+      "id": "basic-usage"
+    },
+    {
+      "level": "h3",
+      "text": "SplitText Example",
+      "id": "splittext-example"
+    },
+    {
+      "level": "h3",
+      "text": "SplitBitmapText Example",
+      "id": "splitbitmaptext-example"
+    },
+    {
+      "level": "h2",
+      "text": "Accessing Segments",
+      "id": "accessing-segments"
+    },
+    {
+      "level": "h2",
+      "text": "Anchor Points Explained",
+      "id": "anchor-points-explained"
+    },
+    {
+      "level": "h2",
+      "text": "Animation Example (with GSAP)",
+      "id": "animation-example-(with-gsap)"
+    },
+    {
+      "level": "h2",
+      "text": "Creating from Existing Text",
+      "id": "creating-from-existing-text"
+    },
+    {
+      "level": "h2",
+      "text": "Configuration Options",
+      "id": "configuration-options"
+    },
+    {
+      "level": "h2",
+      "text": "Global Defaults",
+      "id": "global-defaults"
+    },
+    {
+      "level": "h2",
+      "text": "Limitations",
+      "id": "limitations"
+    },
+    {
+      "level": "h2",
+      "text": "Performance Notes",
+      "id": "performance-notes"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Text Style",
+      "id": "text-style"
+    }
+  ],
+  "url": "llms-txt#splittext-&-splitbitmaptext",
+  "links": []
+}

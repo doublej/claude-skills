@@ -1,0 +1,46 @@
+{
+  "title": "Sprite",
+  "content": "Sprites are the foundational visual elements in PixiJS. They represent a single image to be displayed on the screen. Each [Sprite](https://pixijs.download/release/docs/scene.Sprite.html) contains a [Texture](https://pixijs.download/release/docs/rendering.Texture.html) to be drawn, along with all the transformation and display state required to function in the scene graph.\n\n## Updating the Texture\n\nIf you change the texture of a sprite, it will automatically:\n\n- Rebind listeners for texture updates\n- Recalculate width/height if set so that the visual size remains the same\n- Trigger a visual update\n\n## **Scale vs Width/Height**\n\nSprites inherit `scale` from `Container`, allowing for percentage-based resizing:\n\nSprites also have `width` and `height` properties that act as _convenience setters_ for `scale`, based on the texture’s dimensions:\n\n- [Sprite](https://pixijs.download/release/docs/scene.Sprite.html)\n- [Texture](https://pixijs.download/release/docs/rendering.Texture.html)\n- [Assets](https://pixijs.download/release/docs/assets.Assets.html)",
+  "code_samples": [
+    {
+      "code": "import { Assets, Sprite } from 'pixi.js';\n\nconst texture = await Assets.load('path/to/image.png');\nconst sprite = new Sprite(texture);\n\nsprite.anchor.set(0.5);\nsprite.position.set(100, 100);\nsprite.scale.set(2);\nsprite.rotation = Math.PI / 4; // Rotate 45 degrees",
+      "language": "ts"
+    },
+    {
+      "code": "const texture = Assets.get('path/to/image.png');\nsprite.texture = texture;",
+      "language": "ts"
+    },
+    {
+      "code": "sprite.scale.set(2); // Double the size",
+      "language": "ts"
+    },
+    {
+      "code": "sprite.width = 100; // Automatically updates scale.x\n// sets: sprite.scale.x = 100 / sprite.texture.orig.width;",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Updating the Texture",
+      "id": "updating-the-texture"
+    },
+    {
+      "level": "h2",
+      "text": "**Scale vs Width/Height**",
+      "id": "**scale-vs-width/height**"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Bitmap Text",
+      "id": "bitmap-text"
+    }
+  ],
+  "url": "llms-txt#sprite",
+  "links": []
+}

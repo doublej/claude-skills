@@ -1,0 +1,83 @@
+{
+  "title": "Mesh",
+  "content": "PixiJS v8 offers a powerful `Mesh` system that provides full control over geometry, UVs, indices, shaders, and WebGL/WebGPU state. Meshes are ideal for custom rendering effects, advanced distortion, perspective manipulation, or performance-tuned rendering pipelines.\n\n## **What Is a Mesh?**\n\nA mesh is a low-level rendering primitive composed of:\n\n- **Geometry**: Vertex positions, UVs, indices, and other attributes\n- **Shader**: A GPU program that defines how the geometry is rendered\n- **State**: GPU state configuration (e.g. blending, depth, stencil)\n\nWith these elements, you can build anything from simple quads to curved surfaces and procedural effects.\n\nAll meshes in PixiJS are built using the `MeshGeometry` class. This class allows you to define the vertex positions, UV coordinates, and indices that describe the mesh's shape and texture mapping.\n\nYou can access and modify buffers directly:\n\n## Built-in Mesh Types\n\nA minimal wrapper over `Mesh` that accepts vertex, UV, and index arrays directly. Suitable for fast static or dynamic meshes.\n\n- Use `autoUpdate = true` to update geometry per frame.\n- Access `mesh.vertices` to read/write data.\n\nBends a texture along a series of control points, often used for trails, snakes, and animated ribbons.\n\n- `textureScale > 0` repeats texture; `0` stretches it.\n- `autoUpdate = true` re-evaluates geometry each frame.\n\nA flexible subdivided quad mesh, suitable for distortion or grid-based warping.\n\n- Automatically resizes on texture update when `autoResize = true`.\n\nA special subclass of `MeshPlane` that applies perspective correction by transforming the UVs.\n\n- Set corner coordinates via `setCorners(...)`.\n- Ideal for emulating 3D projection in 2D.\n\n- [Mesh](https://pixijs.download/release/docs/scene.Mesh.html)\n- [MeshGeometry](https://pixijs.download/release/docs/scene.MeshGeometry.html)\n- [MeshSimple](https://pixijs.download/release/docs/scene.MeshSimple.html)\n- [MeshRope](https://pixijs.download/release/docs/scene.MeshRope.html)\n- [MeshPlane](https://pixijs.download/release/docs/scene.MeshPlane.html)\n- [PerspectiveMesh](https://pixijs.download/release/docs/scene.PerspectiveMesh.html)\n- [Shader](https://pixijs.download/release/docs/rendering.Shader.html)\n- [Texture](https://pixijs.download/release/docs/rendering.Texture.html)",
+  "code_samples": [
+    {
+      "code": "import { Texture, Mesh, MeshGeometry, Shader } from 'pixi.js';\n\nconst geometry = new MeshGeometry({\n  positions: new Float32Array([0, 0, 100, 0, 100, 100, 0, 100]),\n  uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),\n  indices: new Uint32Array([0, 1, 2, 0, 2, 3]),\n});\n\nconst shader = Shader.from({\n  gl: {\n    vertex: `\n            attribute vec2 aPosition;\n            attribute vec2 aUV;\n            varying vec2 vUV;\n            void main() {\n                gl_Position = vec4(aPosition / 100.0 - 1.0, 0.0, 1.0);\n                vUV = aUV;\n            }\n        `,\n    fragment: `\n            precision mediump float;\n            varying vec2 vUV;\n            uniform sampler2D uSampler;\n            void main() {\n                gl_FragColor = texture2D(uSampler, vUV);\n            }\n        `,\n  },\n  resources: {\n    uSampler: Texture.from('image.png').source,\n  },\n});\n\nconst mesh = new Mesh({ geometry, shader });\napp.stage.addChild(mesh);",
+      "language": "ts"
+    },
+    {
+      "code": "const geometry = new MeshGeometry({\n  positions: Float32Array, // 2 floats per vertex\n  uvs: Float32Array, // matching number of floats\n  indices: Uint32Array, // 3 indices per triangle\n  topology: 'triangle-list',\n});",
+      "language": "ts"
+    },
+    {
+      "code": "geometry.positions[0] = 50;\ngeometry.uvs[0] = 0.5;\ngeometry.indices[0] = 1;",
+      "language": "ts"
+    },
+    {
+      "code": "const mesh = new MeshSimple({\n  texture: Texture.from('image.png'),\n  vertices: new Float32Array([0, 0, 100, 0, 100, 100, 0, 100]),\n  uvs: new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),\n  indices: new Uint32Array([0, 1, 2, 0, 2, 3]),\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const points = [new Point(0, 0), new Point(100, 0), new Point(200, 50)];\nconst rope = new MeshRope({\n  texture: Texture.from('snake.png'),\n  points,\n  textureScale: 1, // optional\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const plane = new MeshPlane({\n  texture: Texture.from('image.png'),\n  verticesX: 10,\n  verticesY: 10,\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const mesh = new PerspectiveMesh({\n  texture: Texture.from('image.png'),\n  verticesX: 20,\n  verticesY: 20,\n  x0: 0,\n  y0: 0,\n  x1: 300,\n  y1: 30,\n  x2: 280,\n  y2: 300,\n  x3: 20,\n  y3: 280,\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "**What Is a Mesh?**",
+      "id": "**what-is-a-mesh?**"
+    },
+    {
+      "level": "h2",
+      "text": "**MeshGeometry**",
+      "id": "**meshgeometry**"
+    },
+    {
+      "level": "h2",
+      "text": "Built-in Mesh Types",
+      "id": "built-in-mesh-types"
+    },
+    {
+      "level": "h3",
+      "text": "MeshSimple",
+      "id": "meshsimple"
+    },
+    {
+      "level": "h3",
+      "text": "MeshRope",
+      "id": "meshrope"
+    },
+    {
+      "level": "h3",
+      "text": "MeshPlane",
+      "id": "meshplane"
+    },
+    {
+      "level": "h3",
+      "text": "PerspectiveMesh",
+      "id": "perspectivemesh"
+    },
+    {
+      "level": "h2",
+      "text": "**API Reference**",
+      "id": "**api-reference**"
+    },
+    {
+      "level": "h2",
+      "text": "NineSlice Sprite",
+      "id": "nineslice-sprite"
+    }
+  ],
+  "url": "llms-txt#mesh",
+  "links": []
+}

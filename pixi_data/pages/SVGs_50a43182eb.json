@@ -1,0 +1,156 @@
+{
+  "title": "SVG's",
+  "content": "PixiJS provides powerful support for rendering SVGs, allowing developers to integrate scalable vector graphics seamlessly into their projects. This guide explores different ways to use SVGs in PixiJS, covering real-time rendering, performance optimizations, and potential pitfalls.\n\nSVGs have several advantages over raster images like PNGs:\n\n- ✅ **Smaller File Sizes** – SVGs can be significantly smaller than PNGs, especially for large but simple shapes. A high-resolution PNG may be several megabytes, while an equivalent SVG could be just a few kilobytes.\n- ✅ **Scalability** – SVGs scale without losing quality, making them perfect for responsive applications and UI elements.\n- ✅ **Editable After Rendering** – Unlike textures, SVGs rendered via Graphics can be modified dynamically (e.g., changing stroke colors, modifying shapes).\n- ✅ **Efficient for Simple Graphics** – If the graphic consists of basic shapes and paths, SVGs can be rendered efficiently as vector graphics.\n\nHowever, SVGs can also be computationally expensive to parse, particularly for intricate illustrations with many paths or effects.\n\n### Ways to Render SVGs in PixiJS\n\nPixiJS offers two primary ways to render SVGs:\n\n1. **As a Texture** – Converts the SVG into a texture for rendering as a sprite.\n2. **As a Graphics Object** – Parses the SVG and renders it as vector geometry.\n\nEach method has its advantages and use cases, which we will explore below.\n\n## 1. Rendering SVGs as Textures\n\nSVGs can be loaded as textures and used within Sprites. This method is efficient but does not retain the scalability of vector graphics.\n\nYou can specify a resolution when loading an SVG as a texture to control its size:\nThis does increase memory usage, but it be of a higher fidelity.\n\nThis ensures the texture appears at the correct size and resolution.\n\n- ✅ **Fast to render** (rendered as a quad, not geometry)\n- ✅ **Good for static images**\n- ✅ **Supports resolution scaling for precise sizing**\n- ✅ **Ideal for complex SVGs that do not need crisp vector scaling** (e.g., UI components with fixed dimensions)\n- ❌ **Does not scale cleanly** (scaling may result in pixelation)\n- ❌ **Less flexibility** (cannot modify the shape dynamically)\n- ❌ **Texture Size Limit** A texture can only be up to 4096x4096 pixels, so if you need to render a larger SVG, you will need to use the Graphics method.\n\n- Background images\n- Decorative elements\n- Performance-critical applications where scaling isn’t needed\n- Complex SVGs that do not require crisp vector scaling (e.g., fixed-size UI components)\n\n## 2. Rendering SVGs as Graphics\n\nPixiJS can render SVGs as real scalable vector graphics using the `Graphics` class.\n\nIf you want to use the same SVG multiple times, you can use `GraphicsContext` to share the parsed SVG data across multiple graphics objects, improving performance by parsing it once and reusing it.\n\n### Loading SVGs as Graphics\n\nInstead of passing an SVG string directly, you can load an SVG file using PixiJS’s `Assets.load` method. This will return a `GraphicsContext` object, which can be used to create multiple `Graphics` objects efficiently.\n\nSince it's loaded via `Assets.load`, it will be cached and reused, much like a texture.\n\n- ✅ **Retains vector scalability** (no pixelation when zooming)\n- ✅ **Modifiable after rendering** (change colors, strokes, etc.)\n- ✅ **Efficient for simple graphics**\n- ✅ **fast rendering if SVG structure does not change** (no need to reparse)\n- ❌ **More expensive to parse** (complex SVGs can be slow to render)\n- ❌ **Not ideal for static images**\n\n- Icons and UI elements that need resizing\n- A game world that needs to remain crisp as a player zooms in\n- Interactive graphics where modifying the SVG dynamically is necessary\n\n## SVG Rendering Considerations\n\n### Supported Features\n\nPixiJS supports most SVG features that can be rendered in a Canvas 2D context. Below is a list of common SVG features and their compatibility:\n\n| Feature                                 | Supported |\n| --------------------------------------- | --------- |\n| Basic Shapes (rect, circle, path, etc.) | ✅        |\n| Gradients                               | ✅        |\n| Stroke & Fill Styles                    | ✅        |\n| Text Elements                           | ❌        |\n| Filters (Blur, Drop Shadow, etc.)       | ❌        |\n| Clipping Paths                          | ✅        |\n| Patterns                                | ❌        |\n| Complex Paths & Curves                  | ✅        |\n\n### Performance Considerations\n\n- **Complex SVGs:** Large or intricate SVGs can slow down rendering start up due to high parsing costs. Use `GraphicsContext` to cache and reuse parsed data.\n- **Vector vs. Texture:** If performance is a concern, consider using SVGs as textures instead of rendering them as geometry. However, keep in mind that textures take up more memory.\n- **Real-Time Rendering:** Avoid rendering complex SVGs dynamically. Preload and reuse them wherever possible.\n\n## Best Practices & Gotchas\n\n- ✅ **Use Graphics for scalable and dynamic SVGs**\n- ✅ **Use Textures for performance-sensitive applications**\n- ✅ **Use `GraphicsContext` to avoid redundant parsing**\n- ✅ **Consider `resolution` when using textures to balance quality and memory**\n\n- ⚠ **Large SVGs can be slow to parse** – Optimize SVGs before using them in PixiJS.\n- ⚠ **Texture-based SVGs do not scale cleanly** – Use higher resolution if necessary.\n- ⚠ **Not all SVG features are supported** – Complex filters and text elements may not work as expected.\n\nBy understanding how PixiJS processes SVGs, developers can make informed decisions on when to use `Graphics.svg()`, `GraphicsContext`, or SVG textures, balancing quality and performance for their specific use case.",
+  "code_samples": [
+    {
+      "code": "const svgTexture = await Assets.load('tiger.svg');\nconst mySprite = new Sprite(svgTexture);",
+      "language": "ts"
+    },
+    {
+      "code": "// description: This example demonstrates loading and displaying SVG graphics using the Graphics class\nimport { Application, Assets, Graphics } from 'pixi.js';\n\n(async () => {\n  // Create a new application\n  const app = new Application();\n\n  // Initialize the application\n  await app.init({ antialias: true, resizeTo: window });\n\n  // Append the application canvas to the document body\n  document.body.appendChild(app.canvas);\n\n  const tigerSvg = await Assets.load({\n    src: 'https://pixijs.com/assets/tiger.svg',\n    data: {\n      parseAsGraphicsContext: true,\n    },\n  });\n\n  const graphics = new Graphics(tigerSvg);\n\n  // line it up as this svg is not centered\n  const bounds = graphics.getLocalBounds();\n\n  graphics.pivot.set(\n    (bounds.x + bounds.width) / 2,\n    (bounds.y + bounds.height) / 2,\n  );\n\n  graphics.position.set(app.screen.width / 2, app.screen.height / 2);\n\n  app.stage.addChild(graphics);\n\n  app.ticker.add(() => {\n    graphics.rotation += 0.01;\n    graphics.scale.set(2 + Math.sin(graphics.rotation));\n  });\n})();",
+      "language": "ts"
+    },
+    {
+      "code": "// description: This example demonstrates how to create and display SVG graphics using the Graphics class\nimport { Application, Graphics } from 'pixi.js';\n\n(async () => {\n  // Create a new application\n  const app = new Application();\n\n  // Initialize the application\n  await app.init({\n    antialias: true,\n    backgroundColor: 'white',\n    resizeTo: window,\n  });\n\n  // Append the application canvas to the document body\n  document.body.appendChild(app.canvas);\n\n  const graphics = new Graphics().svg(`\n            <svg height=\"400\" width=\"450\" xmlns=\"http://www.w3.org/2000/svg\">\n                <!-- Draw the paths -->\n                <path id=\"lineAB\" d=\"M 100 350 l 150 -300\" stroke=\"red\" stroke-width=\"4\"/>\n                <path id=\"lineBC\" d=\"M 250 50 l 150 300\" stroke=\"red\" stroke-width=\"4\"/>\n                <path id=\"lineMID\" d=\"M 175 200 l 150 0\" stroke=\"green\" stroke-width=\"4\"/>\n                <path id=\"lineAC\" d=\"M 100 350 q 150 -300 300 0\" stroke=\"blue\" fill=\"none\" stroke-width=\"4\"/>\n\n                <!-- Mark relevant points -->\n                <g stroke=\"black\" stroke-width=\"3\" fill=\"black\">\n                    <circle id=\"pointA\" cx=\"100\" cy=\"350\" r=\"4\" />\n                    <circle id=\"pointB\" cx=\"250\" cy=\"50\" r=\"4\" />\n                    <circle id=\"pointC\" cx=\"400\" cy=\"350\" r=\"4\" />\n                </g>\n            </svg>\n        `);\n\n  app.stage.addChild(graphics);\n})();",
+      "language": "ts"
+    },
+    {
+      "code": "// description: This example demonstrates loading a large SVG texture and displaying it as a sprite\nimport { Application, Assets, Sprite } from 'pixi.js';\n\n(async () => {\n  // Create a new application\n  const app = new Application();\n\n  // Initialize the application\n  await app.init({ antialias: true, resizeTo: window });\n\n  // Append the application canvas to the document body\n  document.body.appendChild(app.canvas);\n\n  const tigerTexture = await Assets.load({\n    src: 'https://pixijs.com/assets/tiger.svg',\n  });\n\n  const sprite = new Sprite(tigerTexture);\n\n  // line it up as this svg is not centered\n  const bounds = sprite.getLocalBounds();\n\n  sprite.pivot.set(\n    (bounds.x + bounds.width) / 2,\n    (bounds.y + bounds.height) / 2,\n  );\n\n  sprite.position.set(app.screen.width / 2, app.screen.height / 2);\n\n  app.stage.addChild(sprite);\n\n  app.ticker.add(() => {\n    sprite.rotation += 0.01;\n    sprite.scale.set(2 + Math.sin(sprite.rotation));\n  });\n})();",
+      "language": "ts"
+    },
+    {
+      "code": "// description: This example demonstrates loading a large SVG texture and displaying it as a sprite\nimport { Application, Assets, Sprite } from 'pixi.js';\n\n(async () => {\n  // Create a new application\n  const app = new Application();\n\n  // Initialize the application\n  await app.init({ antialias: true, resizeTo: window });\n\n  // Append the application canvas to the document body\n  document.body.appendChild(app.canvas);\n\n  const tigerTexture = await Assets.load({\n    src: 'https://pixijs.com/assets/tiger.svg',\n    data: {\n      resolution: 4,\n    },\n  });\n\n  const sprite = new Sprite(tigerTexture);\n\n  // line it up as this svg is not centered\n  const bounds = sprite.getLocalBounds();\n\n  sprite.pivot.set(\n    (bounds.x + bounds.width) / 2,\n    (bounds.y + bounds.height) / 2,\n  );\n\n  sprite.position.set(app.screen.width / 2, app.screen.height / 2);\n\n  app.stage.addChild(sprite);\n\n  app.ticker.add(() => {\n    sprite.rotation += 0.01;\n    sprite.scale.set(2 + Math.sin(sprite.rotation));\n  });\n})();",
+      "language": "ts"
+    },
+    {
+      "code": "const svgTexture = await Assets.load('path/to.svg', {\n  resolution: 4, // will be 4 times as big!\n});\nconst mySprite = new Sprite(svgTexture);",
+      "language": "ts"
+    },
+    {
+      "code": "const graphics = new Graphics().svg('');",
+      "language": "ts"
+    },
+    {
+      "code": "const context = new GraphicsContext().svg('');\n\nconst graphics1 = new Graphics(context);\nconst graphics2 = new Graphics(context);",
+      "language": "ts"
+    },
+    {
+      "code": "const svgContext = await Assets.load('path/to.svg', {\n  parseAsGraphicsContext: true, // If false, it returns a texture instead.\n});\nconst myGraphics = new Graphics(svgContext);",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h3",
+      "text": "Overview",
+      "id": "overview"
+    },
+    {
+      "level": "h3",
+      "text": "Why Use SVGs?",
+      "id": "why-use-svgs?"
+    },
+    {
+      "level": "h3",
+      "text": "Ways to Render SVGs in PixiJS",
+      "id": "ways-to-render-svgs-in-pixijs"
+    },
+    {
+      "level": "h2",
+      "text": "1. Rendering SVGs as Textures",
+      "id": "1.-rendering-svgs-as-textures"
+    },
+    {
+      "level": "h3",
+      "text": "Overview",
+      "id": "overview"
+    },
+    {
+      "level": "h3",
+      "text": "Example",
+      "id": "example"
+    },
+    {
+      "level": "h3",
+      "text": "Scaling Textures",
+      "id": "scaling-textures"
+    },
+    {
+      "level": "h3",
+      "text": "Pros & Cons",
+      "id": "pros-&-cons"
+    },
+    {
+      "level": "h3",
+      "text": "Best Use Cases",
+      "id": "best-use-cases"
+    },
+    {
+      "level": "h2",
+      "text": "2. Rendering SVGs as Graphics",
+      "id": "2.-rendering-svgs-as-graphics"
+    },
+    {
+      "level": "h3",
+      "text": "Overview",
+      "id": "overview"
+    },
+    {
+      "level": "h3",
+      "text": "Example",
+      "id": "example"
+    },
+    {
+      "level": "h3",
+      "text": "Loading SVGs as Graphics",
+      "id": "loading-svgs-as-graphics"
+    },
+    {
+      "level": "h3",
+      "text": "Pros & Cons",
+      "id": "pros-&-cons"
+    },
+    {
+      "level": "h3",
+      "text": "Best Use Cases",
+      "id": "best-use-cases"
+    },
+    {
+      "level": "h2",
+      "text": "SVG Rendering Considerations",
+      "id": "svg-rendering-considerations"
+    },
+    {
+      "level": "h3",
+      "text": "Supported Features",
+      "id": "supported-features"
+    },
+    {
+      "level": "h3",
+      "text": "Performance Considerations",
+      "id": "performance-considerations"
+    },
+    {
+      "level": "h2",
+      "text": "Best Practices & Gotchas",
+      "id": "best-practices-&-gotchas"
+    },
+    {
+      "level": "h3",
+      "text": "Best Practices",
+      "id": "best-practices"
+    },
+    {
+      "level": "h3",
+      "text": "Gotchas",
+      "id": "gotchas"
+    },
+    {
+      "level": "h2",
+      "text": "Renderers",
+      "id": "renderers"
+    }
+  ],
+  "url": "llms-txt#svg's",
+  "links": []
+}

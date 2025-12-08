@@ -1,0 +1,75 @@
+{
+  "title": "Particle Container",
+  "content": "PixiJS v8 introduces a high-performance particle system via the `ParticleContainer` and `Particle` classes. Designed for rendering vast numbers of lightweight visuals—like sparks, bubbles, bunnies, or explosions—this system provides raw speed by stripping away all non-essential overhead.\n\n:::warning **Experimental API Notice**\nThe Particle API is stable but **experimental**. Its interface may evolve in future PixiJS versions. We welcome feedback to help guide its development.\n:::\n\n## **Why Use ParticleContainer?**\n\n- **Extreme performance**: Render hundreds of thousands or even millions of particles with high FPS.\n- **Lightweight design**: Particles are more efficient than `Sprite`, lacking extra features like children, events, or filters.\n- **Fine-grained control**: Optimize rendering by declaring which properties are dynamic (updated every frame) or static (set once).\n\n### **Performance Tip: Static vs. Dynamic**\n\n- **Dynamic properties** are uploaded to the GPU every frame.\n- **Static properties** are uploaded only when `update()` is called.\n\nDeclare your needs explicitly:\n\nIf you later modify a static property or the particle list, you must call:\n\n## **Limitations and API Differences**\n\n`ParticleContainer` is designed for speed and simplicity. As such, it doesn't support the full `Container` API:\n\n- `addChild()`, `removeChild()`\n- `getChildAt()`, `setChildIndex()`\n- `swapChildren()`, `reparentChild()`\n\n- `addParticle(particle)`\n- `removeParticle(particle)`\n- `removeParticles(beginIndex, endIndex)`\n- `addParticleAt(particle, index)`\n- `removeParticleAt(index)`\n\nThese methods operate on the `.particleChildren` array and maintain the internal GPU buffers correctly.\n\n## **Creating a Particle**\n\nA `Particle` supports key display properties, and is far more efficient than `Sprite`.\n\n### **Particle Example**\n\nYou can also use the shorthand:\n\n- [ParticleContainer](https://pixijs.download/release/docs/scene.ParticleContainer.html)\n- [Particle](https://pixijs.download/release/docs/scene.Particle.html)",
+  "code_samples": [
+    {
+      "code": "import { ParticleContainer, Particle, Texture } from 'pixi.js';\n\nconst texture = Texture.from('bunny.png');\n\nconst container = new ParticleContainer({\n  dynamicProperties: {\n    position: true, // default\n    vertex: false,\n    rotation: false,\n    color: false,\n  },\n});\n\nfor (let i = 0; i < 100000; i++) {\n  const particle = new Particle({\n    texture,\n    x: Math.random() * 800,\n    y: Math.random() * 600,\n  });\n\n  container.addParticle(particle);\n}\n\napp.stage.addChild(container);",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new ParticleContainer({\n  dynamicProperties: {\n    position: true,\n    rotation: true,\n    vertex: false,\n    color: false,\n  },\n});",
+      "language": "ts"
+    },
+    {
+      "code": "container.update();",
+      "language": "ts"
+    },
+    {
+      "code": "const particle = new Particle({\n  texture: Texture.from('spark.png'),\n  x: 200,\n  y: 100,\n  scaleX: 0.8,\n  scaleY: 0.8,\n  rotation: Math.PI / 4,\n  tint: 0xff0000,\n  alpha: 0.5,\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const particle = new Particle(Texture.from('spark.png'));",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "**Why Use ParticleContainer?**",
+      "id": "**why-use-particlecontainer?**"
+    },
+    {
+      "level": "h3",
+      "text": "**Performance Tip: Static vs. Dynamic**",
+      "id": "**performance-tip:-static-vs.-dynamic**"
+    },
+    {
+      "level": "h2",
+      "text": "**Limitations and API Differences**",
+      "id": "**limitations-and-api-differences**"
+    },
+    {
+      "level": "h3",
+      "text": "❌ Not Available:",
+      "id": "❌-not-available:"
+    },
+    {
+      "level": "h3",
+      "text": "✅ Use Instead:",
+      "id": "✅-use-instead:"
+    },
+    {
+      "level": "h2",
+      "text": "**Creating a Particle**",
+      "id": "**creating-a-particle**"
+    },
+    {
+      "level": "h3",
+      "text": "**Particle Example**",
+      "id": "**particle-example**"
+    },
+    {
+      "level": "h2",
+      "text": "**API Reference**",
+      "id": "**api-reference**"
+    },
+    {
+      "level": "h2",
+      "text": "Sprite",
+      "id": "sprite"
+    }
+  ],
+  "url": "llms-txt#particle-container",
+  "links": []
+}

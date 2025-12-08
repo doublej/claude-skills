@@ -1,0 +1,168 @@
+{
+  "title": "Scene Objects",
+  "content": "In PixiJS, scene objects are the building blocks of your application’s display hierarchy. They include **containers**, **sprites**, **text**, **graphics**, and other drawable entities that make up the **scene graph**—the tree-like structure that determines what gets rendered, how, and in what order.\n\n## Containers vs. Leaf Nodes\n\nScene objects in PixiJS can be divided into **containers** and **leaf nodes**:\n\n`Container` is the **base class** for all scene objects in v8 (replacing the old `DisplayObject`).\n\n- Can have children.\n- Commonly used to group objects and apply transformations (position, scale, rotation) to the group.\n- Examples: `Application.stage`, user-defined groups.\n\nLeaf nodes are renderable objects that should not have children. In v8, **only containers should have children**.\n\nExamples of leaf nodes include:\n\n- `Sprite`\n- `Text`\n- `Graphics`\n- `Mesh`\n- `TilingSprite`\n- `HTMLText`\n\nAttempting to add children to a leaf node will not result in a runtime error, however, you may run into unexpected rendering behavior. Therefore, If nesting is required, wrap leaf nodes in a `Container`.\n\n**Before v8 (invalid in v8):**\n\nAll scene objects in PixiJS have several properties that control their position, rotation, scale, and alpha. These properties are inherited by child objects, allowing you to apply transformations to groups of objects easily.\n\nYou will often use these properties to position and animate objects in your scene.\n\n| Property     | Description                                                                                                                                             |\n| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |\n| **position** | X- and Y-position are given in pixels and change the position of the object relative to its parent, also available directly as `object.x` / `object.y`  |\n| **rotation** | Rotation is specified in radians, and turns an object clockwise (0.0 - 2 \\* Math.PI)                                                                    |\n| **angle**    | Angle is an alias for rotation that is specified in degrees instead of radians (0.0 - 360.0)                                                            |\n| **pivot**    | Point the object rotates around, in pixels - also sets origin for child objects                                                                         |\n| **alpha**    | Opacity from 0.0 (fully transparent) to 1.0 (fully opaque), inherited by children                                                                       |\n| **scale**    | Scale is specified as a percent with 1.0 being 100% or actual-size, and can be set independently for the x and y axis                                   |\n| **skew**     | Skew transforms the object in x and y similar to the CSS skew() function, and is specified in radians                                                   |\n| **anchor?**  | Anchor is a percentage-based offset for the sprite's position and rotation. This is different from the `pivot` property, which is a pixel-based offset. |\n\n### **Anchor vs Pivot**\n\nSome leaf nodes have an additional property called `anchor`, which is a percentage-based offset for the nodes position and rotation. This is different from the `pivot` property, which is a pixel-based offset. Understanding the difference between anchor and pivot is critical when positioning or rotating a node.\n\n:::info\nSetting either pivot or anchor visually moves the node. This differs from CSS where changing `transform-origin` does not affect the element's position.\n:::\n\n- Available only on `Sprite`\n- Defined in normalized values `(0.0 to 1.0)`\n- `(0, 0)` is the top-left, `(0.5, 0.5)` is the center\n- Changes both position and rotation origin\n\n- Available on all `Container`s\n- Defined in **pixels**, not normalized\n\nThere are two types of bounds in PixiJS:\n\n- **Local bounds** represent the object’s dimensions in its own coordinate space. Use `getLocalBounds()`.\n- **Global bounds** represent the object's bounding box in world coordinates. Use `getBounds()`.\n\nIf performance is critical you can also provide a custom `boundsArea` to avoid per-child measurement entirely.\n\nTo change the size of a container, you can use the `width` and `height` properties. This will scale the container to fit the specified dimensions:\n\nSetting the `width` and `height` individually can be an expensive operation, as it requires recalculating the bounds of the container and its children. To avoid this, you can use `setSize()` to set both properties at once:\n\nThis method is more efficient than setting `width` and `height` separately, as it only requires one bounds calculation.\n\n## Masking Scene Objects\n\nPixiJS supports **masking**, allowing you to restrict the visible area of a scene object based on another object's shape.\nThis is useful for creating effects like cropping, revealing, or hiding parts of your scene.\n\n- **Graphics-based masks**: Use a `Graphics` object to define the shape.\n- **Sprite-based masks**: Use a `Sprite` or other renderable object.\n\nTo create an inverse mask, you can use the `setMask` property and set its `inverse` option to `true`. This will render everything outside the mask.\n\n- The mask is **not rendered**; it's used only to define the visible area. However, it must be added to the display list.\n- Only one mask can be assigned per object.\n- For advanced blending, use **alpha masks** or **filters** (covered in later guides).\n\nAnother common use for Container objects is as hosts for filtered content. Filters are an advanced, WebGL/WebGPU-only feature that allows PixiJS to perform per-pixel effects like blurring and displacements. By setting a filter on a Container, the area of the screen the Container encompasses will be processed by the filter after the Container's contents have been rendered.\n\n:::info\nFilters should be used somewhat sparingly. They can slow performance and increase memory usage if used too often in a scene.\n:::\n\nBelow are list of filters available by default in PixiJS. There is, however, a community repository with [many more filters](https://github.com/pixijs/filters).\n\n| Filter             | Description                                                                                                   |\n| ------------------ | ------------------------------------------------------------------------------------------------------------- |\n| AlphaFilter        | Similar to setting `alpha` property, but flattens the Container instead of applying to children individually. |\n| BlurFilter         | Apply a blur effect                                                                                           |\n| ColorMatrixFilter  | A color matrix is a flexible way to apply more complex tints or color transforms (e.g., sepia tone).          |\n| DisplacementFilter | Displacement maps create visual offset pixels, for instance creating a wavy water effect.                     |\n| NoiseFilter        | Create random noise (e.g., grain effect).                                                                     |\n\nUnder the hood, each Filter we offer out of the box is written in both glsl (for WebGL) and wgsl (for WebGPU). This means all filters should work on both renderers.\n\nYou can tint any scene object by setting the `tint` property. It modifies the color of the rendered pixels, similar to multiplying a tint color over the object.\n\nThe `tint` is inherited by child objects unless they specify their own. If only part of your scene should be tinted, place it in a separate container.\n\nA value of `0xFFFFFF` disables tinting.\n\nPixiJS supports a variety of color formats and you can find more information from the [Color documentation](../color.md).\n\nBlend modes determine how colors of overlapping objects are combined. PixiJS supports a variety of blend modes, including:\n\n- `normal`: Default blend mode.\n- `add`: Adds the colors of the source and destination pixels.\n- `multiply`: Multiplies the colors of the source and destination pixels.\n- `screen`: Inverts the colors, multiplies them, and inverts again.\n\nWe also support may more advanced blend modes, such as `subtract`, `difference`, and `overlay`. You can find the full list of blend modes in the [Blend Modes documentation](../filters.md#advanced-blend-modes).\n\nPixiJS provides a powerful interaction system that allows you to handle user input events like clicks/hovers. To enable interaction on a scene object, can be as simple as setting its `interactive` property to `true`.\n\nWe have a detailed guide on [Interaction](../events.md) that covers how to set up and manage interactions, including hit testing, pointer events, and more. We highly recommend checking it out.\n\nThe `onRender` callback allows you to run logic every frame when a scene object is rendered. This is useful for lightweight animation and update logic:\n\nNote: In PixiJS v8, this replaces the common v7 pattern of overriding `updateTransform`, which no longer runs every frame. The `onRender` function is registered with the render group the container belongs to.\n\nTo remove the callback:\n\n- [Overview](https://pixijs.download/release/docs/scene.html)\n- [Container](https://pixijs.download/release/docs/scene.Container.html)\n- [ParticleContainer](https://pixijs.download/release/docs/scene.ParticleContainer.html)\n- [Sprite](https://pixijs.download/release/docs/scene.Sprite.html)\n- [TilingSprite](https://pixijs.download/release/docs/scene.TilingSprite.html)\n- [NineSliceSprite](https://pixijs.download/release/docs/scene.NineSliceSprite.html)\n- [Graphics](https://pixijs.download/release/docs/scene.Graphics.html)\n- [Mesh](https://pixijs.download/release/docs/scene.Mesh.html)\n- [Text](https://pixijs.download/release/docs/scene.Text.html)\n- [Bitmap Text](https://pixijs.download/release/docs/scene.BitmapText.html)\n- [HTMLText](https://pixijs.download/release/docs/scene.HTMLText.html)",
+  "code_samples": [
+    {
+      "code": "const group = new Container();\ngroup.addChild(spriteA);\ngroup.addChild(spriteB);",
+      "language": "ts"
+    },
+    {
+      "code": "const sprite = new Sprite();\nsprite.addChild(anotherSprite); // ❌ Invalid in v8",
+      "language": "ts"
+    },
+    {
+      "code": "const group = new Container();\ngroup.addChild(sprite);\ngroup.addChild(anotherSprite); // ✅ Valid",
+      "language": "ts"
+    },
+    {
+      "code": "sprite.anchor.set(0.5); // center\nsprite.rotation = Math.PI / 4; // Rotate 45 degrees around the center",
+      "language": "ts"
+    },
+    {
+      "code": "const sprite = new Sprite(texture);\nsprite.width = 100;\nsprite.height = 100;\nsprite.pivot.set(50, 50); // Center of the container\ncontainer.rotation = Math.PI / 4; // Rotate 45 degrees around the pivot",
+      "language": "ts"
+    },
+    {
+      "code": "const local = container.getLocalBounds();\nconst global = container.getBounds();",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new Container();\ncontainer.width = 100;\ncontainer.height = 200;",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new Container();\ncontainer.setSize(100, 200);\nconst size = container.getSize(); // { width: 100, height: 200 }",
+      "language": "ts"
+    },
+    {
+      "code": "const shape = new Graphics().circle(100, 100, 50).fill(0x000000);\n\nconst maskedSprite = new Sprite(texture);\nmaskedSprite.mask = shape;\n\nstage.addChild(shape);\nstage.addChild(maskedSprite);",
+      "language": "ts"
+    },
+    {
+      "code": "const inverseMask = new Graphics().rect(0, 0, 200, 200).fill(0x000000);\nconst maskedContainer = new Container();\nmaskedContainer.setMask({ mask: inverseMask, inverse: true });\nmaskedContainer.addChild(sprite);\nstage.addChild(inverseMask);\nstage.addChild(maskedContainer);",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new Container();\nconst sprite = new Sprite(texture);\nconst filter = new BlurFilter({ strength: 8, quality: 4, kernelSize: 5 });\ncontainer.filters = [filter];\ncontainer.addChild(sprite);",
+      "language": "ts"
+    },
+    {
+      "code": "const sprite = new Sprite(texture);\nsprite.tint = 0xff0000; // Red tint\nsprite.tint = 'red'; // Red tint",
+      "language": "ts"
+    },
+    {
+      "code": "const sprite = new Sprite(texture);\nsprite.tint = 0x00ff00; // Green tint\nsprite.tint = 0xffffff; // No tint",
+      "language": "ts"
+    },
+    {
+      "code": "const sprite = new Sprite(texture);\nsprite.blendMode = 'multiply'; // Multiply blend mode",
+      "language": "ts"
+    },
+    {
+      "code": "const sprite = new Sprite(texture);\nsprite.interactive = true;\nsprite.on('click', (event) => {\n  console.log('Sprite clicked!', event);\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new Container();\ncontainer.onRender = () => {\n  container.rotation += 0.01;\n};",
+      "language": "ts"
+    },
+    {
+      "code": "container.onRender = null;",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Containers vs. Leaf Nodes",
+      "id": "containers-vs.-leaf-nodes"
+    },
+    {
+      "level": "h3",
+      "text": "Containers",
+      "id": "containers"
+    },
+    {
+      "level": "h3",
+      "text": "Leaf Nodes",
+      "id": "leaf-nodes"
+    },
+    {
+      "level": "h2",
+      "text": "Transforms",
+      "id": "transforms"
+    },
+    {
+      "level": "h3",
+      "text": "**Anchor vs Pivot**",
+      "id": "**anchor-vs-pivot**"
+    },
+    {
+      "level": "h2",
+      "text": "Measuring Bounds",
+      "id": "measuring-bounds"
+    },
+    {
+      "level": "h3",
+      "text": "Changing size",
+      "id": "changing-size"
+    },
+    {
+      "level": "h2",
+      "text": "Masking Scene Objects",
+      "id": "masking-scene-objects"
+    },
+    {
+      "level": "h3",
+      "text": "Types of Masks",
+      "id": "types-of-masks"
+    },
+    {
+      "level": "h3",
+      "text": "Inverse Masks",
+      "id": "inverse-masks"
+    },
+    {
+      "level": "h3",
+      "text": "Notes on Masking",
+      "id": "notes-on-masking"
+    },
+    {
+      "level": "h2",
+      "text": "Filters",
+      "id": "filters"
+    },
+    {
+      "level": "h2",
+      "text": "Tinting",
+      "id": "tinting"
+    },
+    {
+      "level": "h2",
+      "text": "Blend Modes",
+      "id": "blend-modes"
+    },
+    {
+      "level": "h2",
+      "text": "Interaction",
+      "id": "interaction"
+    },
+    {
+      "level": "h2",
+      "text": "Using `onRender`",
+      "id": "using-`onrender`"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Mesh",
+      "id": "mesh"
+    }
+  ],
+  "url": "llms-txt#scene-objects",
+  "links": []
+}

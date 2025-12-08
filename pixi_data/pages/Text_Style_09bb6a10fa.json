@@ -1,0 +1,42 @@
+{
+  "title": "Text Style",
+  "content": "The `TextStyle` class encapsulates all visual styling properties for text. You can define colors, font families, stroke, shadows, alignment, line spacing, word wrapping, and more.\n\nA `TextStyle` instance can be reused across multiple `Text` objects, making your code cleaner and improving memory efficiency.\n\nUsing fills and strokes are identical to that of the `Graphics` class. You can find more details about them in the [Graphics Fills](../graphics/graphics-fill.md) section.\n\nIn v8 `dropShadow` and its properties are now objects. To update a drop shadow, you can set the properties directly on the `dropShadow` object.\n\n- [TextStyle](https://pixijs.download/release/docs/text.TextStyle.html)\n- [Text](https://pixijs.download/release/docs/scene.Text.html)\n- [BitmapText](https://pixijs.download/release/docs/scene.BitmapText.html)\n- [HTMLText](https://pixijs.download/release/docs/scene.HTMLText.html)\n- [FillStyle](https://pixijs.download/release/docs/scene.FillStyle.html)\n- [StrokeStyle](https://pixijs.download/release/docs/scene.StrokeStyle.html)",
+  "code_samples": [
+    {
+      "code": "import { TextStyle } from 'pixi.js';\n\nconst style = new TextStyle({\n  fontFamily: 'Arial',\n  fontSize: 30,\n  fill: '#ffffff',\n  stroke: '#000000',\n  strokeThickness: 3,\n  dropShadow: {\n    color: '#000000',\n    blur: 5,\n    distance: 4,\n    angle: Math.PI / 4,\n    alpha: 0.5,\n  },\n});\n\nconst label = new Text({\n  text: 'Score: 1234',\n  style,\n});",
+      "language": "ts"
+    },
+    {
+      "code": "// Using a number\nconst fill = 0xff0000;\n\n// Using a hex string\nconst fill = '#ff0000';\n\n// Using an array\nconst fill = [255, 0, 0];\n\n// Using a Color object\nconst color = new Color();\nconst obj4 = color;\n\n// Using a gradient\nconst fill = new FillGradient({\n  type: 'linear',\n  colorStops: [\n    { offset: 0, color: 'yellow' },\n    { offset: 1, color: 'green' },\n  ],\n});\n\n// Using a pattern\nconst txt = await Assets.load('https://pixijs.com/assets/bg_scene_rotate.jpg');\nconst fill = new FillPattern(txt, 'repeat');\n\n// Use the fill in a TextStyle\nconst style = new TextStyle({\n  fontSize: 48,\n  fill: fill,\n  stroke: {\n    fill,\n    width: 4,\n  },\n});",
+      "language": "ts"
+    },
+    {
+      "code": "const style = new TextStyle({\n  dropShadow: {\n    color: '#000000',\n    alpha: 0.5,\n    angle: Math.PI / 4,\n    blur: 5,\n    distance: 4,\n  },\n});\n\nstyle.dropShadow.color = '#ff0000'; // Change shadow color",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Fill and Stroke",
+      "id": "fill-and-stroke"
+    },
+    {
+      "level": "h2",
+      "text": "Drop Shadow",
+      "id": "drop-shadow"
+    },
+    {
+      "level": "h2",
+      "text": "**API Reference**",
+      "id": "**api-reference**"
+    },
+    {
+      "level": "h2",
+      "text": "Tiling Sprite",
+      "id": "tiling-sprite"
+    }
+  ],
+  "url": "llms-txt#text-style",
+  "links": []
+}

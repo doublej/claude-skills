@@ -1,0 +1,38 @@
+{
+  "title": "Background Loader",
+  "content": "PixiJS provides a **background loader** that allows you to load assets in the background while your application is running. This is useful for loading large assets or multiple assets without blocking the main thread. This can help improve the responsiveness of your application, reduce the initial loading time, and potentially void showing multiple loading screens to the user.\n\nThe most effective way to use the background loader is to load bundles of assets. Bundles are groups of assets that are related to each other in some way, such as all the assets for a specific screen or level in your game. By loading bundles in the background, you can ensure that the assets are available when you need them without blocking the main thread.\n\n## Loading Individual Assets\n\nYou can also load individual assets in the background using the `Assets.backgroundLoad()` method. This is useful for loading assets that are not part of a bundle or for loading additional assets after the initial load.\n\n- [Assets](https://pixijs.download/release/docs/assets.Assets.html)\n- [BackgroundLoader](https://pixijs.download/release/docs/assets.BackgroundLoader.html)\n\n## Compressed Textures",
+  "code_samples": [
+    {
+      "code": "const manifest = {\n  bundles: [\n    {\n      name: 'home-screen',\n      assets: [\n        { alias: 'flowerTop', src: 'https://pixijs.com/assets/flowerTop.png' },\n      ],\n    },\n    {\n      name: 'game-screen',\n      assets: [\n        { alias: 'eggHead', src: 'https://pixijs.com/assets/eggHead.png' },\n      ],\n    },\n  ],\n};\n\n// Initialize the asset system with a manifest\nawait Assets.init({ manifest });\n\n// Start loading both bundles in the background\nAssets.backgroundLoadBundle(['game-screen']);\n\n// Load only the first screen assets immediately\nconst resources = await Assets.loadBundle('home-screen');",
+      "language": "ts"
+    },
+    {
+      "code": "// Load an individual asset in the background\nAssets.backgroundLoad({\n  alias: 'flowerTop',\n  src: 'https://pixijs.com/assets/flowerTop.png',\n});\n\n// Load another asset in the background\nAssets.backgroundLoad({\n  alias: 'eggHead',\n  src: 'https://pixijs.com/assets/eggHead.png',\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Loading Bundles",
+      "id": "loading-bundles"
+    },
+    {
+      "level": "h2",
+      "text": "Loading Individual Assets",
+      "id": "loading-individual-assets"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Compressed Textures",
+      "id": "compressed-textures"
+    }
+  ],
+  "url": "llms-txt#background-loader",
+  "links": []
+}

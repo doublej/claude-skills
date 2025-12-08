@@ -1,0 +1,65 @@
+{
+  "title": "Manifests & Bundles",
+  "content": "PixiJS has a structured and scalable approach to asset management through **Manifests** and **Bundles**. This is the recommended way to manage assets in your PixiJS applications, especially for larger projects or those that require dynamic loading of assets based on context or user interaction. This guide explains what they are, how to use them, and how to generate them efficiently using [AssetPack](https://github.com/pixijs/AssetPack) — a tool designed to automate manifest and bundle creation.\n\n## What Is a Manifest?\n\nA **Manifest** is a descriptor object that defines your asset loading strategy. It lists all bundles, each of which contains grouped assets by name and alias. This structure allows for lazy-loading assets based on application context (e.g. load screen assets, level-specific content, etc.).\n\n### Initializing With a Manifest\n\nTo initialize PixiJS asset handling with a manifest:\n\nOnce initialized, you can load bundles by name:\n\nIt should be noted that you can still load assets directly without loading an entire bundle via their alias:\n\nA **Bundle** is a group of assets that are identified by a shared name. While bundles can be pre-defined in a manifest, they can also be dynamically registered at runtime.\n\n### Adding a Bundle Dynamically\n\nThis approach is helpful for scenarios where you want to define bundles on the fly:\n\n## Recommended Tool: AssetPack\n\nManaging manifests and bundles manually can be error-prone. [**AssetPack**](https://pixijs.io/assetpack) is a CLI tool that scans your assets folder and generates optimized manifests and bundles automatically.\n\n- Organizes assets by directory or pattern\n- Supports output in PixiJS manifest format\n- Reduces boilerplate and risk of manual mistakes\n\nYou can integrate AssetPack into your build pipeline to generate the manifest file and load it using `Assets.init({ manifest })`.",
+  "code_samples": [
+    {
+      "code": "const manifest = {\n  bundles: [\n    {\n      name: 'load-screen',\n      assets: [\n        { alias: 'background', src: 'sunset.png' },\n        { alias: 'bar', src: 'load-bar.{png,webp}' },\n      ],\n    },\n    {\n      name: 'game-screen',\n      assets: [\n        { alias: 'character', src: 'robot.png' },\n        { alias: 'enemy', src: 'bad-guy.png' },\n      ],\n    },\n  ],\n};",
+      "language": "js"
+    },
+    {
+      "code": "import { Assets } from 'pixi.js';\n\nawait Assets.init({ manifest });",
+      "language": "js"
+    },
+    {
+      "code": "const loadScreenAssets = await Assets.loadBundle('load-screen');\nconst gameScreenAssets = await Assets.loadBundle('game-screen');",
+      "language": "js"
+    },
+    {
+      "code": "await Assets.init({ manifest });\nconst background = await Assets.load('background');\nconst bar = await Assets.load('bar');",
+      "language": "js"
+    },
+    {
+      "code": "import { Assets } from 'pixi.js';\n\nAssets.addBundle('animals', [\n  { alias: 'bunny', src: 'bunny.png' },\n  { alias: 'chicken', src: 'chicken.png' },\n  { alias: 'thumper', src: 'thumper.png' },\n]);\n\nconst assets = await Assets.loadBundle('animals');\n\n// or load a specific asset from the bundle\nconst bunny = await Assets.load('bunny');",
+      "language": "js"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "What Is a Manifest?",
+      "id": "what-is-a-manifest?"
+    },
+    {
+      "level": "h3",
+      "text": "Initializing With a Manifest",
+      "id": "initializing-with-a-manifest"
+    },
+    {
+      "level": "h2",
+      "text": "What Is a Bundle?",
+      "id": "what-is-a-bundle?"
+    },
+    {
+      "level": "h3",
+      "text": "Adding a Bundle Dynamically",
+      "id": "adding-a-bundle-dynamically"
+    },
+    {
+      "level": "h2",
+      "text": "Recommended Tool: AssetPack",
+      "id": "recommended-tool:-assetpack"
+    },
+    {
+      "level": "h3",
+      "text": "Key Benefits",
+      "id": "key-benefits"
+    },
+    {
+      "level": "h2",
+      "text": "Resolver",
+      "id": "resolver"
+    }
+  ],
+  "url": "llms-txt#manifests-&-bundles",
+  "links": []
+}

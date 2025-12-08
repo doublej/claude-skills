@@ -1,0 +1,99 @@
+{
+  "title": "Container",
+  "content": "The `Container` class is the foundation of PixiJS's scene graph system. Containers act as groups of scene objects, allowing you to build complex hierarchies, organize rendering layers, and apply transforms or effects to groups of objects.\n\n## What Is a Container?\n\nA `Container` is a general-purpose node that can hold other display objects, **including other containers**. It is used to structure your scene, apply transformations, and manage rendering and interaction.\n\nContainers are **not** rendered directly. Instead, they delegate rendering to their children.\n\nPixiJS provides a robust API for adding, removing, reordering, and swapping children in a container:\n\nYou can also remove a child by index or remove all children within a range:\n\nTo keep a child’s world transform while moving it to another container, use `reparentChild` or `reparentChildAt`:\n\nContainers emit events when children are added or removed:\n\nContainers support searching children by `label` using helper methods:\n\nSet `deep = true` to search recursively through all descendants.\n\nUse `zIndex` and `sortableChildren` to control render order within a container:\n\nCall `sortChildren()` to manually re-sort if needed:\n\n:::info\nUse this feature sparingly, as sorting can be expensive for large numbers of children.\n:::\n\n## Optimizing with Render Groups\n\nContainers can be promoted to **render groups** by setting `isRenderGroup = true` or calling `enableRenderGroup()`.\n\nUse render groups for UI layers, particle systems, or large moving subtrees.\nSee the [Render Groups guide](../../../concepts/render-groups.md) for more details.\n\nThe `cacheAsTexture` function in PixiJS is a powerful tool for optimizing rendering in your applications. By rendering a container and its children to a texture, `cacheAsTexture` can significantly improve performance for static or infrequently updated containers.\n\nWhen you set `container.cacheAsTexture()`, the container is rendered to a texture. Subsequent renders reuse this texture instead of rendering all the individual children of the container. This approach is particularly useful for containers with many static elements, as it reduces the rendering workload.\n\n:::info[Note]\n`cacheAsTexture` is PixiJS v8's equivalent of the previous `cacheAsBitmap` functionality. If you're migrating from v7 or earlier, simply replace `cacheAsBitmap` with `cacheAsTexture` in your code.\n:::\n\nFor more advanced usage, including setting cache options and handling dynamic content, refer to the [Cache as Texture guide](./cache-as-texture.md).\n\n- [Container](https://pixijs.download/release/docs/scene.Container.html)\n- [ContainerOptions](https://pixijs.download/release/docs/scene.ContainerOptions.html)\n- [RenderContainer](https://pixijs.download/release/docs/scene.RenderContainer.html)",
+  "code_samples": [
+    {
+      "code": "import { Container, Sprite } from 'pixi.js';\n\nconst group = new Container();\nconst sprite = Sprite.from('bunny.png');\n\ngroup.addChild(sprite);",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new Container();\nconst child1 = new Container();\nconst child2 = new Container();\n\ncontainer.addChild(child1, child2);\ncontainer.removeChild(child1);\ncontainer.addChildAt(child1, 0);\ncontainer.swapChildren(child1, child2);",
+      "language": "ts"
+    },
+    {
+      "code": "container.removeChildAt(0);\ncontainer.removeChildren(0, 2);",
+      "language": "ts"
+    },
+    {
+      "code": "otherContainer.reparentChild(child);",
+      "language": "ts"
+    },
+    {
+      "code": "group.on('childAdded', (child, parent, index) => { ... });\ngroup.on('childRemoved', (child, parent, index) => { ... });",
+      "language": "ts"
+    },
+    {
+      "code": "const child = new Container({ label: 'enemy' });\ncontainer.addChild(child);\ncontainer.getChildByLabel('enemy');\ncontainer.getChildrenByLabel(/^enemy/); // all children whose label starts with \"enemy\"",
+      "language": "ts"
+    },
+    {
+      "code": "container.getChildByLabel('ui', true);",
+      "language": "ts"
+    },
+    {
+      "code": "child1.zIndex = 1;\nchild2.zIndex = 10;\ncontainer.sortableChildren = true;",
+      "language": "ts"
+    },
+    {
+      "code": "container.sortChildren();",
+      "language": "ts"
+    },
+    {
+      "code": "const uiLayer = new Container({ isRenderGroup: true });",
+      "language": "ts"
+    },
+    {
+      "code": "const container = new Container();\nconst sprite = Sprite.from('bunny.png');\ncontainer.addChild(sprite);\n\n// enable cache as texture\ncontainer.cacheAsTexture();\n\n// update the texture if the container changes\ncontainer.updateCacheTexture();\n\n// disable cache as texture\ncontainer.cacheAsTexture(false);",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "What Is a Container?",
+      "id": "what-is-a-container?"
+    },
+    {
+      "level": "h2",
+      "text": "Managing Children",
+      "id": "managing-children"
+    },
+    {
+      "level": "h3",
+      "text": "Events",
+      "id": "events"
+    },
+    {
+      "level": "h3",
+      "text": "Finding Children",
+      "id": "finding-children"
+    },
+    {
+      "level": "h3",
+      "text": "Sorting Children",
+      "id": "sorting-children"
+    },
+    {
+      "level": "h2",
+      "text": "Optimizing with Render Groups",
+      "id": "optimizing-with-render-groups"
+    },
+    {
+      "level": "h2",
+      "text": "Cache as Texture",
+      "id": "cache-as-texture"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Graphics Fill",
+      "id": "graphics-fill"
+    }
+  ],
+  "url": "llms-txt#container",
+  "links": []
+}

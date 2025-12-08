@@ -1,0 +1,56 @@
+{
+  "title": "Filters / Blend Modes",
+  "content": "PixiJS filters allow you to apply post-processing visual effects to any scene object and its children. Filters can be used for effects such as blurring, color adjustments, noise, or custom shader-based operations.\n\nApplying filters is straightforward. You can assign a filter instance to the `filters` property of any scene object, such as `Sprite`, `Container`, or `Graphics`.\nYou can apply multiple filters by passing an array of filter instances.\n\n:::info\nOrder matters — filters are applied in sequence.\n:::\n\n## Advanced Blend Modes\n\nPixiJS v8 introduces advanced blend modes for filters, allowing for more complex compositing effects. These blend modes can be used to create unique visual styles and effects.\nTo use advanced modes like `HARD_LIGHT`, you must manually import the advanced blend mode extension:\n\n## Built-In Filters Overview\n\nPixiJS v8 provides a variety of filters out of the box:\n\n| Filter Class         | Description                                 |\n| -------------------- | ------------------------------------------- |\n| `AlphaFilter`        | Applies transparency to an object.          |\n| `BlurFilter`         | Gaussian blur.                              |\n| `ColorMatrixFilter`  | Applies color transformations via a matrix. |\n| `DisplacementFilter` | Distorts an object using another texture.   |\n| `NoiseFilter`        | Adds random noise for a grainy effect.      |\n\n:::info\nTo explore more community filters, see [pixi-filters](https://pixijs.io/filters/docs/).\n:::\n\n**Blend Filters**: Used for custom compositing modes\n\n| Filter Class       | Description                                        |\n| ------------------ | -------------------------------------------------- |\n| `ColorBurnBlend`   | Darkens the base color to reflect the blend color. |\n| `ColorDodgeBlend`  | Brightens the base color.                          |\n| `DarkenBlend`      | Retains the darkest color components.              |\n| `DivideBlend`      | Divides the base color by the blend color.         |\n| `HardMixBlend`     | High-contrast blend.                               |\n| `LinearBurnBlend`  | Darkens using linear formula.                      |\n| `LinearDodgeBlend` | Lightens using linear formula.                     |\n| `LinearLightBlend` | Combination of linear dodge and burn.              |\n| `PinLightBlend`    | Selective replacement of colors.                   |\n| `SubtractBlend`    | Subtracts the blend color from base.               |\n\n## Creating a Custom Filter\n\nTo define a custom filter in PixiJS v8, you use `Filter.from()` with shader programs and GPU resources.\n\n:::info **Tip**\nShaders must be WebGL- or WebGPU-compatible. For dual-renderer support, include a `gpuProgram`.\n:::\n\n- [Overview](https://pixijs.download/release/docs/filters.html)\n- [Filter](https://pixijs.download/release/docs/filters.Filter.html)",
+  "code_samples": [
+    {
+      "code": "import { Sprite, BlurFilter } from 'pixi.js';\n\n// Apply the filter\nsprite.filters = [new BlurFilter({ strength: 8 })];",
+      "language": "ts"
+    },
+    {
+      "code": "import { BlurFilter, NoiseFilter } from 'pixi.js';\n\nsprite.filters = new BlurFilter({ strength: 5 });\n\nsprite.filters = [\n  new BlurFilter({ strength: 4 }),\n  new NoiseFilter({ noise: 0.2 }),\n];",
+      "language": "ts"
+    },
+    {
+      "code": "import 'pixi.js/advanced-blend-modes';\nimport { HardMixBlend } from 'pixi.js';\n\nsprite.filters = [new HardMixBlend()];",
+      "language": "ts"
+    },
+    {
+      "code": "import { Filter, GlProgram, Texture } from 'pixi.js';\n\nconst vertex = `\n  in vec2 aPosition;\n  out vec2 vTextureCoord;\n\n  uniform vec4 uInputSize;\n  uniform vec4 uOutputFrame;\n  uniform vec4 uOutputTexture;\n\n  vec4 filterVertexPosition( void )\n  {\n      vec2 position = aPosition * uOutputFrame.zw + uOutputFrame.xy;\n\n      position.x = position.x * (2.0 / uOutputTexture.x) - 1.0;\n      position.y = position.y * (2.0*uOutputTexture.z / uOutputTexture.y) - uOutputTexture.z;\n\n      return vec4(position, 0.0, 1.0);\n  }\n\n  vec2 filterTextureCoord( void )\n  {\n      return aPosition * (uOutputFrame.zw * uInputSize.zw);\n  }\n\n  void main(void)\n  {\n      gl_Position = filterVertexPosition();\n      vTextureCoord = filterTextureCoord();\n  }\n`;\n\nconst fragment = `\n  in vec2 vTextureCoord;\n  in vec4 vColor;\n\n  uniform sampler2D uTexture;\n  uniform float uTime;\n\n  void main(void)\n  {\n      vec2 uvs = vTextureCoord.xy;\n\n      vec4 fg = texture2D(uTexture, vTextureCoord);\n\n      fg.r = uvs.y + sin(uTime);\n\n      gl_FragColor = fg;\n\n  }\n`;\n\nconst customFilter = new Filter({\n  glProgram: new GlProgram({\n    fragment,\n    vertex,\n  }),\n  resources: {\n    timeUniforms: {\n      uTime: { value: 0.0, type: 'f32' },\n    },\n  },\n});\n\n// Apply the filter\nsprite.filters = [customFilter];\n\n// Update uniform\napp.ticker.add((ticker) => {\n  filter.resources.timeUniforms.uniforms.uTime += 0.04 * ticker.deltaTime;\n});",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Applying Filters",
+      "id": "applying-filters"
+    },
+    {
+      "level": "h2",
+      "text": "Advanced Blend Modes",
+      "id": "advanced-blend-modes"
+    },
+    {
+      "level": "h2",
+      "text": "Built-In Filters Overview",
+      "id": "built-in-filters-overview"
+    },
+    {
+      "level": "h2",
+      "text": "Creating a Custom Filter",
+      "id": "creating-a-custom-filter"
+    },
+    {
+      "level": "h2",
+      "text": "API Reference",
+      "id": "api-reference"
+    },
+    {
+      "level": "h2",
+      "text": "Math",
+      "id": "math"
+    }
+  ],
+  "url": "llms-txt#filters-/-blend-modes",
+  "links": []
+}

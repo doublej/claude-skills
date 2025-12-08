@@ -1,0 +1,14 @@
+{
+  "title": "Documentation for LLMs",
+  "content": "PixiJS supports the [`llms.txt`](https://llmstxt.org/) convention for making documentation accessible to large language models (LLMs) and the applications that utilize them.\n\nWe provide several documentation files at different compression levels to accommodate various context window sizes:\n\n- [`/llms.txt`](https://pixijs.com/llms.txt) - An index of available documentation files\n- [`/llms-full.txt`](https://pixijs.com/llms-full.txt) - Complete PixiJS API documentation including all classes, methods, and examples\n- [`/llms-medium.txt`](https://pixijs.com/llms-medium.txt) - Compressed documentation optimized for medium context windows\n\nThese files are automatically generated and updated daily from our TypeScript definition files and documentation sources.",
+  "code_samples": [],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Available Files",
+      "id": "available-files"
+    }
+  ],
+  "url": "llms-txt#documentation-for-llms",
+  "links": []
+}

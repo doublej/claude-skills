@@ -1,0 +1,66 @@
+{
+  "title": "Resolver",
+  "content": "In PixiJS, asset management centers around the concept of `UnresolvedAsset` and `ResolvedAsset`. This system is designed to support multi-format assets, conditional loading, and runtime optimization based on platform capabilities (e.g., WebP support, device resolution, or performance constraints).\n\nRather than specifying a fixed URL, developers describe what assets _could_ be loaded — and PixiJS selects the best option dynamically.\n\n## Resolver Lifecycle\n\nThe resolution process involves four key steps:\n\n1. **UnresolvedAsset Creation**\n   Assets defined using a string or object are internally normalized into `UnresolvedAsset` instances. These include metadata such as aliases, wildcard paths, parser hints, and custom data.\n\n2. **Source Expansion**\n   The `src` field of an `UnresolvedAsset` can be a string or array of strings. PixiJS expands any wildcard patterns (e.g. `myAsset@{1,2}x.{png,webp}`) into a list of concrete candidate URLs.\n\n3. **Best-Match Selection**\n   PixiJS evaluates all candidate URLs and uses platform-aware heuristics to pick the most suitable source. Factors include supported formats (e.g. WebP vs PNG), device pixel ratio, and custom configuration such as preferred formats.\n\n4. **ResolvedAsset Output**\n   The result is a `ResolvedAsset` containing a specific URL and all required metadata, ready to be passed to the relevant parser and loaded into memory.\n\n## Using Unresolved Assets\n\nAn `UnresolvedAsset` is the primary structure used to define assets in PixiJS. It allows you to specify the source URL(s), alias(es), and any additional data needed for loading. They are more complex, but are also more powerful.\n\n| Field              | Type                 | Description                                                                  |\n| ------------------ | -------------------- | ---------------------------------------------------------------------------- |\n| `alias`            | `string \\| string[]` | One or more aliases used to reference this asset later.                      |\n| `src`              | `string \\| string[]` | Path or paths to one or more asset candidates. Supports wildcards.           |\n| `loadParser` (opt) | `string`             | A specific parser to handle the asset (e.g. `'loadTextures'`, `'loadJson'`). |\n| `data` (opt)       | `any`                | Extra data to pass into the loader. This varies by parser type.              |\n\n### Loading a Single Asset\n\n### Loading with Explicit Parser and Loader Options\n\n### Using Wildcards for Responsive and Format-Aware Loading\n\nThis pattern expands internally to:\n\nPixiJS will select the best match depending on runtime capabilities (e.g. chooses WebP if supported, 2x if on a high-res display).\n\n## Related Tools and Features\n\n- **AssetPack**: If you're managing large asset sets, [AssetPack](https://pixijs.io/assetpack) can generate optimized manifests using glob patterns and output `UnresolvedAsset` structures automatically.\n- **Asset Manifests & Bundles**: Use [manifests and bundles](./manifest.md) to predefine groups of unresolved assets and load them via `Assets.loadBundle`.",
+  "code_samples": [
+    {
+      "code": "import { Assets } from 'pixi.js';\n\nawait Assets.load({\n  alias: 'bunny',\n  src: 'images/bunny.png',\n});",
+      "language": "ts"
+    },
+    {
+      "code": "await Assets.load({\n  alias: 'bunny',\n  src: 'images/bunny.png',\n  loadParser: 'loadTextures',\n  data: {\n    alphaMode: 'no-premultiply-alpha',\n  },\n});",
+      "language": "ts"
+    },
+    {
+      "code": "await Assets.load({\n  alias: 'bunny',\n  src: 'images/bunny@{0.5,1,2}x.{png,webp}',\n});",
+      "language": "ts"
+    },
+    {
+      "code": "[\n  'images/bunny@0.5x.png',\n  'images/bunny@0.5x.webp',\n  'images/bunny@1x.png',\n  'images/bunny@1x.webp',\n  'images/bunny@2x.png',\n  'images/bunny@2x.webp',\n];",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "Resolver Lifecycle",
+      "id": "resolver-lifecycle"
+    },
+    {
+      "level": "h2",
+      "text": "Using Unresolved Assets",
+      "id": "using-unresolved-assets"
+    },
+    {
+      "level": "h2",
+      "text": "Examples",
+      "id": "examples"
+    },
+    {
+      "level": "h3",
+      "text": "Loading a Single Asset",
+      "id": "loading-a-single-asset"
+    },
+    {
+      "level": "h3",
+      "text": "Loading with Explicit Parser and Loader Options",
+      "id": "loading-with-explicit-parser-and-loader-options"
+    },
+    {
+      "level": "h3",
+      "text": "Using Wildcards for Responsive and Format-Aware Loading",
+      "id": "using-wildcards-for-responsive-and-format-aware-loading"
+    },
+    {
+      "level": "h2",
+      "text": "Related Tools and Features",
+      "id": "related-tools-and-features"
+    },
+    {
+      "level": "h2",
+      "text": "SVG's",
+      "id": "svg's"
+    }
+  ],
+  "url": "llms-txt#resolver",
+  "links": []
+}

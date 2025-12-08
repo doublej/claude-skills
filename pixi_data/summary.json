@@ -1,0 +1,221 @@
+{
+  "name": "pixi",
+  "total_pages": 53,
+  "base_url": "https://pixijs.com/llms-full.txt",
+  "llms_txt_detected": true,
+  "llms_txt_variant": null,
+  "pages": [
+    {
+      "title": "PixiJS Documentation for LLMs",
+      "url": "llms-txt#pixijs-documentation-for-llms"
+    },
+    {
+      "title": "Quick Start",
+      "url": "llms-txt#quick-start"
+    },
+    {
+      "title": "Architecture",
+      "url": "llms-txt#architecture"
+    },
+    {
+      "title": "Using PixiJS in Different Environments",
+      "url": "llms-txt#using-pixijs-in-different-environments"
+    },
+    {
+      "title": "Managing Garbage Collection in PixiJS",
+      "url": "llms-txt#managing-garbage-collection-in-pixijs"
+    },
+    {
+      "title": "Performance Tips",
+      "url": "llms-txt#performance-tips"
+    },
+    {
+      "title": "Render Groups",
+      "url": "llms-txt#render-groups"
+    },
+    {
+      "title": "Render Layers",
+      "url": "llms-txt#render-layers"
+    },
+    {
+      "title": "Render Loop",
+      "url": "llms-txt#render-loop"
+    },
+    {
+      "title": "Scene Graph",
+      "url": "llms-txt#scene-graph"
+    },
+    {
+      "title": "Accessibility",
+      "url": "llms-txt#accessibility"
+    },
+    {
+      "title": "Color",
+      "url": "llms-txt#color"
+    },
+    {
+      "title": "Events / Interaction",
+      "url": "llms-txt#events-/-interaction"
+    },
+    {
+      "title": "Filters / Blend Modes",
+      "url": "llms-txt#filters-/-blend-modes"
+    },
+    {
+      "title": "Math",
+      "url": "llms-txt#math"
+    },
+    {
+      "title": "Textures",
+      "url": "llms-txt#textures"
+    },
+    {
+      "title": "Ticker",
+      "url": "llms-txt#ticker"
+    },
+    {
+      "title": "Mixing PixiJS and Three.js",
+      "url": "llms-txt#mixing-pixijs-and-three.js"
+    },
+    {
+      "title": "v8 Migration Guide",
+      "url": "llms-txt#v8-migration-guide"
+    },
+    {
+      "title": "Bug Bounty Program",
+      "url": "llms-txt#bug-bounty-program"
+    },
+    {
+      "title": "FAQ",
+      "url": "llms-txt#faq"
+    },
+    {
+      "title": "Culler Plugin",
+      "url": "llms-txt#culler-plugin"
+    },
+    {
+      "title": "Application",
+      "url": "llms-txt#application"
+    },
+    {
+      "title": "Resize Plugin",
+      "url": "llms-txt#resize-plugin"
+    },
+    {
+      "title": "Ticker Plugin",
+      "url": "llms-txt#ticker-plugin"
+    },
+    {
+      "title": "Shared vs Custom Ticker",
+      "url": "llms-txt#shared-vs-custom-ticker"
+    },
+    {
+      "title": "Background Loader",
+      "url": "llms-txt#background-loader"
+    },
+    {
+      "title": "Compressed Textures",
+      "url": "llms-txt#compressed-textures"
+    },
+    {
+      "title": "Assets",
+      "url": "llms-txt#assets"
+    },
+    {
+      "title": "Manifests & Bundles",
+      "url": "llms-txt#manifests-&-bundles"
+    },
+    {
+      "title": "Resolver",
+      "url": "llms-txt#resolver"
+    },
+    {
+      "title": "SVG's",
+      "url": "llms-txt#svg's"
+    },
+    {
+      "title": "Renderers",
+      "url": "llms-txt#renderers"
+    },
+    {
+      "title": "Cache As Texture",
+      "url": "llms-txt#cache-as-texture"
+    },
+    {
+      "title": "Container",
+      "url": "llms-txt#container"
+    },
+    {
+      "title": "Graphics Fill",
+      "url": "llms-txt#graphics-fill"
+    },
+    {
+      "title": "Graphics Pixel Line",
+      "url": "llms-txt#graphics-pixel-line"
+    },
+    {
+      "title": "Graphics",
+      "url": "llms-txt#graphics"
+    },
+    {
+      "title": "Scene Objects",
+      "url": "llms-txt#scene-objects"
+    },
+    {
+      "title": "Mesh",
+      "url": "llms-txt#mesh"
+    },
+    {
+      "title": "NineSlice Sprite",
+      "url": "llms-txt#nineslice-sprite"
+    },
+    {
+      "title": "Particle Container",
+      "url": "llms-txt#particle-container"
+    },
+    {
+      "title": "Sprite",
+      "url": "llms-txt#sprite"
+    },
+    {
+      "title": "Bitmap Text",
+      "url": "llms-txt#bitmap-text"
+    },
+    {
+      "title": "**Limitations and Caveats**",
+      "url": "llms-txt#**limitations-and-caveats**"
+    },
+    {
+      "title": "Text (Canvas)",
+      "url": "llms-txt#text-(canvas)"
+    },
+    {
+      "title": "HTML Text",
+      "url": "llms-txt#html-text"
+    },
+    {
+      "title": "Text",
+      "url": "llms-txt#text"
+    },
+    {
+      "title": "SplitText & SplitBitmapText",
+      "url": "llms-txt#splittext-&-splitbitmaptext"
+    },
+    {
+      "title": "Text Style",
+      "url": "llms-txt#text-style"
+    },
+    {
+      "title": "Tiling Sprite",
+      "url": "llms-txt#tiling-sprite"
+    },
+    {
+      "title": "Documentation for LLMs",
+      "url": "llms-txt#documentation-for-llms"
+    },
+    {
+      "title": "Full API Reference",
+      "url": "llms-txt#full-api-reference"
+    }
+  ]
+}

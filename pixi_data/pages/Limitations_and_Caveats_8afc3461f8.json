@@ -1,0 +1,34 @@
+{
+  "title": "**Limitations and Caveats**",
+  "content": "### ❌ Cannot Update Resolution\n\n`BitmapText.resolution` is not mutable. It must be handled by the `BitmapFont`\n\n### ⚠️ Large Character Sets Not Practical\n\nBitmap fonts are limited by texture size. CJK or emoji-rich sets may require too much memory. Use `Text` or `HTMLText` for dynamic internationalization or emoji support.\n\n- [BitmapText](https://pixijs.download/release/docs/scene.BitmapText.html)\n- [BitmapFont](https://pixijs.download/release/docs/text.BitmapFont.html)\n- [Assets](https://pixijs.download/release/docs/assets.Assets.html)\n- [TextStyle](https://pixijs.download/release/docs/text.TextStyle.html)\n- [FillStyle](https://pixijs.download/release/docs/scene.FillStyle.html)\n- [StrokeStyle](https://pixijs.download/release/docs/scene.StrokeStyle.html)",
+  "code_samples": [
+    {
+      "code": "text.resolution = 2;\n// ⚠️ [BitmapText] dynamically updating the resolution is not supported.",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h3",
+      "text": "❌ Cannot Update Resolution",
+      "id": "❌-cannot-update-resolution"
+    },
+    {
+      "level": "h3",
+      "text": "⚠️ Large Character Sets Not Practical",
+      "id": "⚠️-large-character-sets-not-practical"
+    },
+    {
+      "level": "h2",
+      "text": "**API Reference**",
+      "id": "**api-reference**"
+    },
+    {
+      "level": "h2",
+      "text": "Text (Canvas)",
+      "id": "text-(canvas)"
+    }
+  ],
+  "url": "llms-txt#**limitations-and-caveats**",
+  "links": []
+}

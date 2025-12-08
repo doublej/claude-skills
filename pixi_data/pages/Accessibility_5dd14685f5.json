@@ -1,0 +1,65 @@
+{
+  "title": "Accessibility",
+  "content": "PixiJS includes built-in accessibility support through a DOM-based overlay system that integrates with screen readers, keyboard navigation, and other assistive technologies. It uses `` overlays to describe visual elements to screen readers\n\n:::info\nAccessibility is opt-in to reduce bundle size and must be explicitly enabled.\n:::\n\nPixiJS places DOM `` elements over your canvas, aligned to the bounds of accessible objects. These elements:\n\n- Can receive focus via keyboard (`tabIndex`)\n- Announce `accessibleTitle` or `accessibleHint` to screen readers\n- Dispatch `click`, `mouseover`, `mouseout` events as Pixi pointer events\n- Use `aria-live` and `aria-label` where appropriate\n\n## Enabling the System\n\nTo enable accessibility, you must import the module before creating your renderer:\n\nPixiJS automatically installs the `AccessibilitySystem` onto your renderer. You can configure how and when it's activated.\n\n## **Configuration Options**\n\nYou can customize when and how the accessibility system activates by passing options to the `Application` constructor:\n\nOr programmatically enable/disable the system:\n\n## **Creating Accessible Objects**\n\nTo mark a display object as accessible and add it to the accessibility system, set the `accessible` property to `true`. This will create a `` overlay that screen readers can interact with.\n\n### **Properties for Accessible Containers**\n\nThere are several properties you can set on accessible containers to customize their behavior:\n\n| Property                  | Description                                                      |\n| ------------------------- | ---------------------------------------------------------------- |\n| `accessible`              | Enables accessibility for the object                             |\n| `accessibleTitle`         | Sets the `title` for screen readers                              |\n| `accessibleHint`          | Sets the `aria-label`                                            |\n| `accessibleText`          | Alternative inner text for the div                               |\n| `accessibleType`          | Tag name used for the shadow element (`'button'`, `'div'`, etc.) |\n| `accessiblePointerEvents` | CSS `pointer-events` value (`'auto'`, `'none'`, etc.)            |\n| `tabIndex`                | Allows focus with keyboard navigation                            |\n| `accessibleChildren`      | Whether children of this container are accessible                |\n\n- [Overview](https://pixijs.download/release/docs/accessibility.html)\n- [AccessibilitySystem](https://pixijs.download/release/docs/accessibility.AccessibilitySystem.html)\n- [AccessibleOptions](https://pixijs.download/release/docs/accessibility.AccessibleOptions.html)",
+  "code_samples": [
+    {
+      "code": "import 'pixi.js/accessibility';\nimport { Container } from 'pixi.js';\n\nconst button = new Container();\nbutton.accessible = true;",
+      "language": "ts"
+    },
+    {
+      "code": "import 'pixi.js/accessibility';",
+      "language": "ts"
+    },
+    {
+      "code": "const app = new Application({\n  accessibilityOptions: {\n    enabledByDefault: true, // Enable on startup\n    activateOnTab: false, // Disable auto-activation via tab\n    deactivateOnMouseMove: false, // Keep system active with mouse use\n    debug: true, // Show div overlays for debugging\n  },\n});",
+      "language": "ts"
+    },
+    {
+      "code": "app.renderer.accessibility.setAccessibilityEnabled(true);",
+      "language": "ts"
+    },
+    {
+      "code": "const button = new Container();\nbutton.accessible = true;\n\napp.stage.addChild(button);",
+      "language": "ts"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h2",
+      "text": "**How It Works**",
+      "id": "**how-it-works**"
+    },
+    {
+      "level": "h2",
+      "text": "Enabling the System",
+      "id": "enabling-the-system"
+    },
+    {
+      "level": "h2",
+      "text": "**Configuration Options**",
+      "id": "**configuration-options**"
+    },
+    {
+      "level": "h2",
+      "text": "**Creating Accessible Objects**",
+      "id": "**creating-accessible-objects**"
+    },
+    {
+      "level": "h3",
+      "text": "**Properties for Accessible Containers**",
+      "id": "**properties-for-accessible-containers**"
+    },
+    {
+      "level": "h2",
+      "text": "**API Reference**",
+      "id": "**api-reference**"
+    },
+    {
+      "level": "h2",
+      "text": "Color",
+      "id": "color"
+    }
+  ],
+  "url": "llms-txt#accessibility",
+  "links": []
+}
