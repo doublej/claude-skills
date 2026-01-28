@@ -1,6 +1,6 @@
 ---
 name: animation-easing
-description: Comprehensive guide to animation easing functions, timing principles, and best practices for creating smooth, responsive animations. Learn when and how to use ease-out, ease-in-out, bounce, elastic, and spring animations. Use this skill when explaining animation techniques, helping choose the right easing for a project, designing animation timings for UI transitions, or teaching animation principles to designers and developers.
+description: Guide to animation easing functions, timing, and best practices. Covers ease-out, ease-in-out, bounce, elastic, and spring animations. Use when choosing easing for projects, designing UI transitions, or explaining animation techniques.
 ---
 
 # Animation Easing: Theory & Practice
