@@ -18,14 +18,21 @@ Search exported ChatGPT and Claude.ai conversations via SQLite full-text search.
 
 DB location: `~/.chat-archive/conversations.db`
 
-## Subagent Policy
+## Context Budget Rules
 
-Delegate mechanical work to **haiku** subagents via `Task` tool to save context:
-- Running scripts and formatting their JSON output
+**NEVER** let raw script JSON reach the main agent context. All script execution goes through haiku subagents that return **concise formatted summaries only**.
+
+Delegate to **haiku** subagents (`Task` tool, `model: "haiku"`) for:
+- Running scripts and returning formatted markdown (not raw JSON)
 - Displaying search results and conversation messages
 - Stats checks
 
-The main agent handles: query intent, refinement decisions, and user interaction.
+Subagent output caps — instruct each subagent to:
+- Return **max 80 lines** of formatted text
+- Truncate or summarize if output would exceed that
+- Include metadata (total count, showing N of M, truncated notice) so main agent can offer pagination
+
+The main agent handles: query intent, refinement decisions, user interaction, and deciding what to fetch next.
 
 ## Phase 1: STATUS
 
@@ -75,12 +82,12 @@ Ask user for search query via `consult-user-mcp`. Optional filters:
 Delegate search + result formatting to a **haiku** subagent:
 
 > Run `python3 {SKILL_DIR}/scripts/search_conversations.py "<query>" --db ~/.chat-archive/conversations.db [filters]`.
-> Parse the JSON output and format as markdown:
-> - For each conversation group: show **title**, platform, date, match count
-> - For each snippet: render `>>>text<<<` markers as **bold**, show role and timestamp
-> - Show context (previous message) in *italic* when present
+> Parse the JSON output and format as **concise** markdown:
+> - For each conversation group: one line with **title**, platform, date, match count
+> - For each snippet: render `>>>text<<<` markers as **bold**, show role — keep each snippet to 1-2 lines max
+> - Show context (previous message) in *italic* when present — single line
 > - End with numbered list of conversation IDs for follow-up
-> Return the formatted results.
+> Return **max 80 lines**. If more results exist, note "N more results available — increase --limit".
 
 ## Phase 4: FOLLOW-UP
 
@@ -89,11 +96,16 @@ After receiving formatted results from the subagent, the main agent offers:
 - **Refine search**: adjust query or add filters
 - **New search**: start fresh query
 
-For showing a full conversation, delegate to a **haiku** subagent:
+For showing a conversation, delegate to a **haiku** subagent. The script auto-limits output:
+- `--max-messages N` — max messages returned (default 40)
+- `--truncate N` — truncate each message to N chars (default 300, use 0 for full)
+- `--around N` — center the window around message index N (useful after search)
 
-> Run `python3 {SKILL_DIR}/scripts/search_conversations.py --conversation <id> --db ~/.chat-archive/conversations.db`.
-> Format each message as: `**role** (timestamp):\n content`.
-> Return formatted conversation.
+> Run `python3 {SKILL_DIR}/scripts/search_conversations.py --conversation <id> --db ~/.chat-archive/conversations.db [--max-messages 30] [--around <index>]`.
+> Format each message as: `**role** (timestamp): content`
+> At the top, show: "Showing messages X–Y of Z (truncated at N chars)"
+> If there are more messages, note it so the main agent can offer to load more with `--around`.
+> Return **max 80 lines** of formatted text.
 
 ## Export Format Reference
 

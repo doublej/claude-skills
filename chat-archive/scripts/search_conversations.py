@@ -32,28 +32,53 @@ def show_stats(conn: sqlite3.Connection):
     }))
 
 
-def show_conversation(conn: sqlite3.Connection, conv_id: str):
+def _truncate(text: str | None, limit: int) -> str:
+    if not text:
+        return ""
+    return text[:limit] + "..." if len(text) > limit else text
+
+
+def show_conversation(conn: sqlite3.Connection, conv_id: str,
+                      max_msgs: int, trunc: int, around: int | None):
     conv = conn.execute(
         "SELECT * FROM conversations WHERE id = ?", (conv_id,)
     ).fetchone()
     if not conv:
         print(json.dumps({"error": f"Conversation {conv_id} not found"}))
         sys.exit(1)
-    messages = conn.execute(
+    all_msgs = conn.execute(
         "SELECT role, content, timestamp, model FROM messages "
         "WHERE conversation_id = ? ORDER BY timestamp, rowid", (conv_id,)
     ).fetchall()
+    total = len(all_msgs)
+
+    if around is not None:
+        half = max_msgs // 2
+        start = max(0, around - half)
+        end = min(total, start + max_msgs)
+        window = all_msgs[start:end]
+        window_start = start
+    else:
+        window = all_msgs[:max_msgs]
+        window_start = 0
+
+    messages = [
+        {"index": window_start + i, "role": r["role"],
+         "content": _truncate(r["content"], trunc),
+         "timestamp": r["timestamp"], "model": r["model"]}
+        for i, r in enumerate(window)
+    ]
     print(json.dumps({
         "conversation": {
             "id": conv["id"], "platform": conv["platform"],
             "title": conv["title"], "created_at": conv["created_at"],
             "message_count": conv["message_count"],
         },
-        "messages": [
-            {"role": r["role"], "content": r["content"],
-             "timestamp": r["timestamp"], "model": r["model"]}
-            for r in messages
-        ],
+        "total_messages": total,
+        "showing": len(messages),
+        "window_start": window_start,
+        "truncated_at": trunc,
+        "messages": messages,
     }))
 
 
@@ -170,7 +195,13 @@ def main():
     parser.add_argument("--no-group", action="store_true",
                         help="Flat results instead of conversation grouping")
     parser.add_argument("--stats", action="store_true", help="Show database stats")
-    parser.add_argument("--conversation", help="Show all messages for a conversation ID")
+    parser.add_argument("--conversation", help="Show messages for a conversation ID")
+    parser.add_argument("--max-messages", type=int, default=40,
+                        help="Max messages to return (default 40)")
+    parser.add_argument("--truncate", type=int, default=300,
+                        help="Truncate message content to N chars (default 300)")
+    parser.add_argument("--around", type=int, default=None,
+                        help="Center window around message index")
     args = parser.parse_args()
 
     conn = get_db(args.db)
@@ -178,7 +209,8 @@ def main():
     if args.stats:
         show_stats(conn)
     elif args.conversation:
-        show_conversation(conn, args.conversation)
+        show_conversation(conn, args.conversation, args.max_messages,
+                          args.truncate, args.around)
     elif args.query:
         search(conn, args.query, args.platform, args.after, args.before,
                args.title, args.limit, group=not args.no_group)
