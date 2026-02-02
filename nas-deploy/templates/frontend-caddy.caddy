@@ -1,0 +1,4 @@
+{{SUBDOMAIN}}.jurrejan.com {
+    import default_site
+    root * /var/www/{{SUBDOMAIN}}.jurrejan.com
+}

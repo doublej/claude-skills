@@ -1,7 +1,6 @@
 ---
 name: claude-agent-sdk
-description: Comprehensive guide for building production-ready AI agents with Claude Agent SDK. Covers installation, authentication, core concepts, tool permissions, MCP integration, and best practices for coding and business agents.
-license: MIT
+description: Builds production-ready AI agents with Claude Agent SDK. Covers installation, authentication, tool permissions, MCP integration, and agent patterns. Use when building custom AI agents, integrating Claude as an autonomous agent, or extending Claude Code capabilities.
 ---
 
 # Claude Agent SDK Skill

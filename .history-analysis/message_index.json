@@ -1,0 +1,875 @@
+[
+  {
+    "timestamp": "2026-01-04T04:49:29.806Z",
+    "session_id": "9f2b9c98-ba5d-4d72-8e3d-16570cbd183c",
+    "uuid": "1869e111-f034-4a2a-9497-8b1c88b0e987",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/9f2b9c98-ba5d-4d72-8e3d-16570cbd183c.jsonl",
+    "source_line": 2,
+    "preview": "Review this claude skills folder against the documentaiton:  # Agent Skills  > Create, manage, and s",
+    "char_count": 22634
+  },
+  {
+    "timestamp": "2026-01-04T05:14:13.275Z",
+    "session_id": "9f2b9c98-ba5d-4d72-8e3d-16570cbd183c",
+    "uuid": "fa8dad0b-355c-4459-ab34-b97caf271310",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/9f2b9c98-ba5d-4d72-8e3d-16570cbd183c.jsonl",
+    "source_line": 178,
+    "preview": "This session is being continued from a previous conversation that ran out of context. The conversati",
+    "char_count": 7241
+  },
+  {
+    "timestamp": "2026-01-04T05:24:36.607Z",
+    "session_id": "9f2b9c98-ba5d-4d72-8e3d-16570cbd183c",
+    "uuid": "b83d5190-b2d0-4841-9f4d-4161794afd15",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/9f2b9c98-ba5d-4d72-8e3d-16570cbd183c.jsonl",
+    "source_line": 203,
+    "preview": "Fix issue of duplicate skills.  ",
+    "char_count": 32
+  },
+  {
+    "timestamp": "2026-01-04T05:25:11.746Z",
+    "session_id": "9f2b9c98-ba5d-4d72-8e3d-16570cbd183c",
+    "uuid": "4c8a0329-2c8a-497c-b2af-ae1476b893d7",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/9f2b9c98-ba5d-4d72-8e3d-16570cbd183c.jsonl",
+    "source_line": 206,
+    "preview": "Fix issue of duplicate skills.   > /context   \u23bf       Context Usage      \u26c1 \u26c1 \u26c1 \u26c1 \u26c1 \u26c1 \u26c1 \u26c1 \u26c1 \u26c1   claud",
+    "char_count": 7384
+  },
+  {
+    "timestamp": "2026-01-05T05:58:34.048Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "4109d66c-b099-4540-a140-2060eb99b0b6",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 2,
+    "preview": "review the pixi skills, the debug one is new, does it follow best practices for skills",
+    "char_count": 86
+  },
+  {
+    "timestamp": "2026-01-05T07:15:10.013Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "08a35c36-ac42-484b-9ebb-4d5b99676a13",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 29,
+    "preview": "Yes, refactor it and add clear instructions that if the browser extension is not found it needs to b",
+    "char_count": 272
+  },
+  {
+    "timestamp": "2026-01-05T07:18:53.876Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "7531138a-ab49-43fc-bed7-47f6f5cffc65",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 66,
+    "preview": "Add to check if any chrome is running at all",
+    "char_count": 44
+  },
+  {
+    "timestamp": "2026-01-05T07:19:40.012Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "6100e07a-40f0-4182-b405-bef31066d0c5",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 77,
+    "preview": "Dope. Now tet with clean context subagents, dont over instruct but tell them to use the skill and do",
+    "char_count": 114
+  },
+  {
+    "timestamp": "2026-01-05T07:22:55.001Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "e3f986e2-b77c-49c9-8660-e93b448a30a2",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 100,
+    "preview": "Any unclarity at any point?",
+    "char_count": 27
+  },
+  {
+    "timestamp": "2026-01-05T07:28:43.066Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "bf97eba4-77e0-4981-aebd-bee263ec6ddc",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 105,
+    "preview": "tweak it",
+    "char_count": 8
+  },
+  {
+    "timestamp": "2026-01-05T07:29:41.357Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "ad55c347-6c1a-49cd-97fd-bfb9c8d1d34d",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 121,
+    "preview": "Can you add a recommendation to use sub agents to go and find out the information needed to save on ",
+    "char_count": 107
+  },
+  {
+    "timestamp": "2026-01-05T07:49:13.087Z",
+    "session_id": "b49b17d3-8d3a-4b0b-ac85-c84d54186787",
+    "uuid": "da63d400-7029-4861-a294-b8ab73451ccf",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/b49b17d3-8d3a-4b0b-ac85-c84d54186787.jsonl",
+    "source_line": 132,
+    "preview": "Great. Make a very strong recommendation to not use screenshots to establish whether something is fi",
+    "char_count": 320
+  },
+  {
+    "timestamp": "2026-01-10T03:23:35.244Z",
+    "session_id": "e5008330-7dba-4f95-9c32-35e7157611c0",
+    "uuid": "7777da69-73da-4177-aed6-66b7837d1cd7",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e5008330-7dba-4f95-9c32-35e7157611c0.jsonl",
+    "source_line": 4,
+    "preview": "We have some caddy skills. Do we already cover how to deploy node to this caddy server?",
+    "char_count": 87
+  },
+  {
+    "timestamp": "2026-01-10T03:26:00.777Z",
+    "session_id": "e5008330-7dba-4f95-9c32-35e7157611c0",
+    "uuid": "eaa9ce00-cb3e-4aa0-a699-c721187d0cf2",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e5008330-7dba-4f95-9c32-35e7157611c0.jsonl",
+    "source_line": 20,
+    "preview": "I want you to rewrite the frontend-nas-deply to nas deploy and have it contain subguides, one is for",
+    "char_count": 1817
+  },
+  {
+    "timestamp": "2026-01-10T03:28:58.934Z",
+    "session_id": "e5008330-7dba-4f95-9c32-35e7157611c0",
+    "uuid": "09d97dbe-64f1-45c5-b3d1-875772a43e5b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e5008330-7dba-4f95-9c32-35e7157611c0.jsonl",
+    "source_line": 95,
+    "preview": "remote it",
+    "char_count": 9
+  },
+  {
+    "timestamp": "2026-01-10T03:35:34.003Z",
+    "session_id": "e5008330-7dba-4f95-9c32-35e7157611c0",
+    "uuid": "ecd80a46-a1b4-4fcf-9b5c-c79840917969",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e5008330-7dba-4f95-9c32-35e7157611c0.jsonl",
+    "source_line": 103,
+    "preview": " Audit Summary    Overall: The skill is mostly accurate but has a few discrepancies with the actual ",
+    "char_count": 1919
+  },
+  {
+    "timestamp": "2026-01-10T04:23:40.409Z",
+    "session_id": "e5008330-7dba-4f95-9c32-35e7157611c0",
+    "uuid": "8545311d-f10a-4a9d-804c-6a671aaf8aef",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e5008330-7dba-4f95-9c32-35e7157611c0.jsonl",
+    "source_line": 127,
+    "preview": "npm command not found",
+    "char_count": 21
+  },
+  {
+    "timestamp": "2026-01-12T14:23:09.519Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "253c9e1c-a700-407a-a737-84125534bcc2",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 2,
+    "preview": "list all skills",
+    "char_count": 15
+  },
+  {
+    "timestamp": "2026-01-12T14:23:16.568Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "77b70f17-5586-4efd-91f7-84ad87d8c452",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 6,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-overview  # Skill Overview  Disp",
+    "char_count": 346
+  },
+  {
+    "timestamp": "2026-01-12T14:25:19.606Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "05a8d4f6-2ea9-4c7a-9a24-58b33f8fcae5",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 14,
+    "preview": "delete  ultra-designer",
+    "char_count": 22
+  },
+  {
+    "timestamp": "2026-01-12T14:26:18.328Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "6f8bc4e9-c981-42c7-abcf-9794b334f537",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 25,
+    "preview": "take front-end design, know that it does wonders for the output of design choices and the quality of",
+    "char_count": 188
+  },
+  {
+    "timestamp": "2026-01-12T14:27:39.654Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "e4602fd4-8f5c-440b-8b22-0657ba441cc4",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 31,
+    "preview": "take into account that apps look  different to websites, but also take note of how the skill breaks ",
+    "char_count": 230
+  },
+  {
+    "timestamp": "2026-01-12T14:31:49.929Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "dd83b902-4344-4f04-a29e-592290de809b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 50,
+    "preview": "Use four subagents with differnt angles, critic, preach, alternative... whatever, to get new htought",
+    "char_count": 116
+  },
+  {
+    "timestamp": "2026-01-12T14:34:32.021Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "3988149a-6614-4db7-a4a7-77fe8c95746b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 65,
+    "preview": "forbid emoji",
+    "char_count": 12
+  },
+  {
+    "timestamp": "2026-01-12T14:34:49.048Z",
+    "session_id": "7caa3d8e-bdf6-44ee-8a05-d162f03ec06b",
+    "uuid": "96cc8863-e6df-4822-a59b-47ec75e31153",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7caa3d8e-bdf6-44ee-8a05-d162f03ec06b.jsonl",
+    "source_line": 68,
+    "preview": "forbid emoji and improve good feedback",
+    "char_count": 38
+  },
+  {
+    "timestamp": "2026-01-18T04:18:32.529Z",
+    "session_id": "71156264-84f0-441c-acc0-f5707344404c",
+    "uuid": "42c4e05e-57f4-4a2a-80d3-8f290e2923ed",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/71156264-84f0-441c-acc0-f5707344404c.jsonl",
+    "source_line": 7,
+    "preview": "Do we have a tmux skill?",
+    "char_count": 24
+  },
+  {
+    "timestamp": "2026-01-18T04:20:49.986Z",
+    "session_id": "aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e",
+    "uuid": "f81c45e5-e960-4b25-a531-1297d73b67a5",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e.jsonl",
+    "source_line": 4,
+    "preview": "Guide for using PyCharm MCP terminal execution with Gemini and Codex. Topic: $ARGUMENTS (default: us",
+    "char_count": 4941
+  },
+  {
+    "timestamp": "2026-01-18T04:20:49.986Z",
+    "session_id": "aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e",
+    "uuid": "2a0a9887-ce55-4fba-a1ff-eac6d6e8a7fc",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e.jsonl",
+    "source_line": 3,
+    "preview": "<command-message>mcp-terminal-guide</command-message> <command-name>/mcp-terminal-guide</command-nam",
+    "char_count": 102
+  },
+  {
+    "timestamp": "2026-01-18T04:22:52.989Z",
+    "session_id": "aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e",
+    "uuid": "5a73e105-06d6-464d-8114-9ed40fbbf206",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e.jsonl",
+    "source_line": 14,
+    "preview": "Clean up: $ARGUMENTS (default: all)  Clean up workspace and manage branches with proper git workflow",
+    "char_count": 1408
+  },
+  {
+    "timestamp": "2026-01-18T04:22:52.989Z",
+    "session_id": "aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e",
+    "uuid": "b2bd3bf2-abfc-42c6-a179-9b9f0bfeb8ab",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/aa8626e6-6bbe-4e92-aa44-f4dec4ca5f2e.jsonl",
+    "source_line": 13,
+    "preview": "<command-message>cleanup</command-message> <command-name>/cleanup</command-name>",
+    "char_count": 80
+  },
+  {
+    "timestamp": "2026-01-18T04:23:22.174Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "bc40adc6-a78e-4a41-ac91-a2d71933bb3b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 6,
+    "preview": "use skill skill-creator",
+    "char_count": 23
+  },
+  {
+    "timestamp": "2026-01-18T04:23:29.436Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "5fa783f2-f60e-4d3f-9388-644ebcd564f3",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 12,
+    "preview": "https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md",
+    "char_count": 76
+  },
+  {
+    "timestamp": "2026-01-18T04:24:52.974Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "73071e02-800c-4165-923b-fe9be1a6f6d2",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 25,
+    "preview": "install the skill-creator skil",
+    "char_count": 30
+  },
+  {
+    "timestamp": "2026-01-18T04:25:41.141Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "c5ea0519-31bd-4993-914e-d40ae892b2fb",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 42,
+    "preview": "get the other files too: https://github.com/anthropics/skills/tree/main/skills/skill-creator",
+    "char_count": 92
+  },
+  {
+    "timestamp": "2026-01-18T04:28:13.416Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "880a41a2-82bb-46ef-ba0c-fa25235f3508",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 102,
+    "preview": "continue",
+    "char_count": 8
+  },
+  {
+    "timestamp": "2026-01-18T04:36:21.717Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "47c037fb-9daa-4d4d-9b62-8fb3910f551b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 110,
+    "preview": "continue. Compare to the scripts in project folder, make sure there is no overlap",
+    "char_count": 81
+  },
+  {
+    "timestamp": "2026-01-18T04:52:09.856Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "c3c1baa0-ad97-4e81-887a-5a9c4ea8d417",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 187,
+    "preview": "Clean up: $ARGUMENTS (default: all)  Clean up workspace and manage branches with proper git workflow",
+    "char_count": 1408
+  },
+  {
+    "timestamp": "2026-01-18T04:52:09.856Z",
+    "session_id": "fd88bd78-4bd6-4e45-9b3d-147edbdee650",
+    "uuid": "c1175b3f-7881-43f6-b864-8e3886c5391a",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fd88bd78-4bd6-4e45-9b3d-147edbdee650.jsonl",
+    "source_line": 186,
+    "preview": "<command-message>cleanup</command-message> <command-name>/cleanup</command-name>",
+    "char_count": 80
+  },
+  {
+    "timestamp": "2026-01-18T04:52:54.725Z",
+    "session_id": "75e63f85-0df7-44c5-9d0a-966be276d7d3",
+    "uuid": "6480dcbd-3ef9-4507-9af7-4e95f9d8dd5f",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/75e63f85-0df7-44c5-9d0a-966be276d7d3.jsonl",
+    "source_line": 3,
+    "preview": "Search the web for claude code skill relating to tmux or some other shell window manager. Provide me",
+    "char_count": 135
+  },
+  {
+    "timestamp": "2026-01-18T05:10:13.382Z",
+    "session_id": "75e63f85-0df7-44c5-9d0a-966be276d7d3",
+    "uuid": "4a0506b4-b0ca-4903-a918-88f24eea2c1f",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/75e63f85-0df7-44c5-9d0a-966be276d7d3.jsonl",
+    "source_line": 31,
+    "preview": "install it",
+    "char_count": 10
+  },
+  {
+    "timestamp": "2026-01-26T12:25:27.809Z",
+    "session_id": "55d7ec1f-e1e5-4fe1-81a7-4d290c5a7896",
+    "uuid": "1fef6397-d65b-4916-83f0-71399f210a6b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55d7ec1f-e1e5-4fe1-81a7-4d290c5a7896.jsonl",
+    "source_line": 3,
+    "preview": "Search github using gh cli for claude skills that are used to create logos ",
+    "char_count": 75
+  },
+  {
+    "timestamp": "2026-01-26T12:29:50.072Z",
+    "session_id": "55d7ec1f-e1e5-4fe1-81a7-4d290c5a7896",
+    "uuid": "9b234ee3-74c6-4d0f-8689-93c9d3699578",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55d7ec1f-e1e5-4fe1-81a7-4d290c5a7896.jsonl",
+    "source_line": 128,
+    "preview": "Learn from these and more, learn from the design skill and create a new skill that is ours that can ",
+    "char_count": 113
+  },
+  {
+    "timestamp": "2026-01-26T12:29:55.937Z",
+    "session_id": "55d7ec1f-e1e5-4fe1-81a7-4d290c5a7896",
+    "uuid": "8ffe3895-ebf2-47df-9927-579b00bafc8b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55d7ec1f-e1e5-4fe1-81a7-4d290c5a7896.jsonl",
+    "source_line": 134,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-28T03:38:58.122Z",
+    "session_id": "55c99fea-54d6-487d-9663-e4dad504e58d",
+    "uuid": "b7570f40-809b-4ae2-b555-3edd9a0fb312",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55c99fea-54d6-487d-9663-e4dad504e58d.jsonl",
+    "source_line": 2,
+    "preview": "Search the web on how to manage skills for OpenAI Codex CLI.",
+    "char_count": 60
+  },
+  {
+    "timestamp": "2026-01-28T03:38:58.122Z",
+    "session_id": "f953d4ec-8fb9-4377-aa2d-78644ac46848",
+    "uuid": "b7570f40-809b-4ae2-b555-3edd9a0fb312",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/f953d4ec-8fb9-4377-aa2d-78644ac46848.jsonl",
+    "source_line": 3,
+    "preview": "Search the web on how to manage skills for OpenAI Codex CLI.",
+    "char_count": 60
+  },
+  {
+    "timestamp": "2026-01-28T03:49:20.678Z",
+    "session_id": "55c99fea-54d6-487d-9663-e4dad504e58d",
+    "uuid": "1c8b2287-59d7-413f-b62e-b010610f9a5f",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55c99fea-54d6-487d-9663-e4dad504e58d.jsonl",
+    "source_line": 16,
+    "preview": "Make a plan to keep my claude skills synced to codex too",
+    "char_count": 56
+  },
+  {
+    "timestamp": "2026-01-28T03:49:20.678Z",
+    "session_id": "f953d4ec-8fb9-4377-aa2d-78644ac46848",
+    "uuid": "1c8b2287-59d7-413f-b62e-b010610f9a5f",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/f953d4ec-8fb9-4377-aa2d-78644ac46848.jsonl",
+    "source_line": 18,
+    "preview": "Make a plan to keep my claude skills synced to codex too",
+    "char_count": 56
+  },
+  {
+    "timestamp": "2026-01-28T04:02:52.863Z",
+    "session_id": "55c99fea-54d6-487d-9663-e4dad504e58d",
+    "uuid": "90b9e1a7-2157-4295-802b-54b59df472f1",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55c99fea-54d6-487d-9663-e4dad504e58d.jsonl",
+    "source_line": 144,
+    "preview": "Implement the following plan:  # Plan: Sync Claude Skills to OpenAI Codex CLI  ## Summary  Extend `i",
+    "char_count": 2670
+  },
+  {
+    "timestamp": "2026-01-28T04:02:58.814Z",
+    "session_id": "55c99fea-54d6-487d-9663-e4dad504e58d",
+    "uuid": "32272455-bcb6-4b17-98e5-03a24c3c6ae4",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55c99fea-54d6-487d-9663-e4dad504e58d.jsonl",
+    "source_line": 152,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-28T04:15:03.445Z",
+    "session_id": "55c99fea-54d6-487d-9663-e4dad504e58d",
+    "uuid": "becb94e3-aa70-473f-b082-06dbbff6d778",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/55c99fea-54d6-487d-9663-e4dad504e58d.jsonl",
+    "source_line": 214,
+    "preview": "Shorten any description over 400 ch",
+    "char_count": 35
+  },
+  {
+    "timestamp": "2026-01-29T12:08:34.138Z",
+    "session_id": "8e9618b9-3bd6-4f53-be99-9f8e8bb277ef",
+    "uuid": "115a826a-a82a-4486-a8cb-1972b54005bf",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/8e9618b9-3bd6-4f53-be99-9f8e8bb277ef.jsonl",
+    "source_line": 3,
+    "preview": "I want you to find al threejs skills for claude/codex using gh cli, rate them on popularity and on o",
+    "char_count": 380
+  },
+  {
+    "timestamp": "2026-01-29T12:08:41.829Z",
+    "session_id": "8e9618b9-3bd6-4f53-be99-9f8e8bb277ef",
+    "uuid": "155d97c5-3b01-4a6c-9b72-88b37fd061de",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/8e9618b9-3bd6-4f53-be99-9f8e8bb277ef.jsonl",
+    "source_line": 10,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-29T12:09:19.341Z",
+    "session_id": "8e9618b9-3bd6-4f53-be99-9f8e8bb277ef",
+    "uuid": "0f6c6889-33d6-4ec6-9f97-8349b9504727",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/8e9618b9-3bd6-4f53-be99-9f8e8bb277ef.jsonl",
+    "source_line": 13,
+    "preview": "Research github using gh cli first to find a self improving skill researcher, builder, creator or ot",
+    "char_count": 167
+  },
+  {
+    "timestamp": "2026-01-29T12:09:22.234Z",
+    "session_id": "8e9618b9-3bd6-4f53-be99-9f8e8bb277ef",
+    "uuid": "51843f01-a0c1-4b54-b3c6-1b78edaadb64",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/8e9618b9-3bd6-4f53-be99-9f8e8bb277ef.jsonl",
+    "source_line": 16,
+    "preview": "after runs",
+    "char_count": 10
+  },
+  {
+    "timestamp": "2026-01-29T12:09:32.295Z",
+    "session_id": "fc4d092f-dab4-4c8e-b6d1-3c6889ced5db",
+    "uuid": "bd63d8ec-428c-48a1-a8ef-9f285ad54842",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fc4d092f-dab4-4c8e-b6d1-3c6889ced5db.jsonl",
+    "source_line": 3,
+    "preview": "search gh cli for all threejs related skils",
+    "char_count": 43
+  },
+  {
+    "timestamp": "2026-01-29T12:10:15.597Z",
+    "session_id": "31c8707c-a087-4fe2-a4ab-af4044db1954",
+    "uuid": "f86b0c03-f4e3-4196-866c-af0c739d91ab",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c8707c-a087-4fe2-a4ab-af4044db1954.jsonl",
+    "source_line": 3,
+    "preview": "search gh cli for claude/codex skills about https://www.theatrejs.com/",
+    "char_count": 70
+  },
+  {
+    "timestamp": "2026-01-29T12:11:18.172Z",
+    "session_id": "fc4d092f-dab4-4c8e-b6d1-3c6889ced5db",
+    "uuid": "3dab34c7-9536-4521-b691-09464a52b620",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fc4d092f-dab4-4c8e-b6d1-3c6889ced5db.jsonl",
+    "source_line": 40,
+    "preview": "create comparison table",
+    "char_count": 23
+  },
+  {
+    "timestamp": "2026-01-29T12:13:31.582Z",
+    "session_id": "31c8707c-a087-4fe2-a4ab-af4044db1954",
+    "uuid": "af096e39-68b9-45ce-84d8-8d4e681d9975",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c8707c-a087-4fe2-a4ab-af4044db1954.jsonl",
+    "source_line": 49,
+    "preview": "find other sources of recent information about this library. Create a new skill for this library and",
+    "char_count": 227
+  },
+  {
+    "timestamp": "2026-01-29T12:13:37.554Z",
+    "session_id": "31c8707c-a087-4fe2-a4ab-af4044db1954",
+    "uuid": "1272da3c-86b3-45c4-a401-19b1928091ee",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c8707c-a087-4fe2-a4ab-af4044db1954.jsonl",
+    "source_line": 56,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-29T12:18:44.271Z",
+    "session_id": "fc4d092f-dab4-4c8e-b6d1-3c6889ced5db",
+    "uuid": "ba847b4a-ac01-4002-98ba-9822cbe587af",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fc4d092f-dab4-4c8e-b6d1-3c6889ced5db.jsonl",
+    "source_line": 47,
+    "preview": "Create a best of all worlds skill ",
+    "char_count": 34
+  },
+  {
+    "timestamp": "2026-01-29T12:18:49.720Z",
+    "session_id": "fc4d092f-dab4-4c8e-b6d1-3c6889ced5db",
+    "uuid": "391f5a9b-d64b-42d7-94b1-87748632eede",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/fc4d092f-dab4-4c8e-b6d1-3c6889ced5db.jsonl",
+    "source_line": 53,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-29T12:21:15.596Z",
+    "session_id": "31c06c84-57b4-4e42-b2b2-49632ce89cbb",
+    "uuid": "dcf548dc-9510-43a3-ab88-16d639102bdf",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c06c84-57b4-4e42-b2b2-49632ce89cbb.jsonl",
+    "source_line": 7,
+    "preview": "is skill-researcher neutral or is there a certain bias or technology>",
+    "char_count": 69
+  },
+  {
+    "timestamp": "2026-01-29T12:21:21.363Z",
+    "session_id": "31c06c84-57b4-4e42-b2b2-49632ce89cbb",
+    "uuid": "59fd1248-3423-42b9-a55a-b970d743137f",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c06c84-57b4-4e42-b2b2-49632ce89cbb.jsonl",
+    "source_line": 14,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 3563
+  },
+  {
+    "timestamp": "2026-01-29T12:21:41.764Z",
+    "session_id": "31c8707c-a087-4fe2-a4ab-af4044db1954",
+    "uuid": "421fa10e-89ec-4f4f-ad60-8f2121b28361",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c8707c-a087-4fe2-a4ab-af4044db1954.jsonl",
+    "source_line": 246,
+    "preview": "use skill-researcher to look for improvements",
+    "char_count": 45
+  },
+  {
+    "timestamp": "2026-01-29T12:21:53.873Z",
+    "session_id": "31c8707c-a087-4fe2-a4ab-af4044db1954",
+    "uuid": "bb3123b0-640d-4e01-9922-f496c2392b03",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c8707c-a087-4fe2-a4ab-af4044db1954.jsonl",
+    "source_line": 252,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 3604
+  },
+  {
+    "timestamp": "2026-01-29T12:22:02.215Z",
+    "session_id": "31c06c84-57b4-4e42-b2b2-49632ce89cbb",
+    "uuid": "db0af692-639e-452c-b320-f8f84f7a0947",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c06c84-57b4-4e42-b2b2-49632ce89cbb.jsonl",
+    "source_line": 20,
+    "preview": "expand the skill to search the top 3 sources",
+    "char_count": 44
+  },
+  {
+    "timestamp": "2026-01-29T12:22:07.909Z",
+    "session_id": "31c06c84-57b4-4e42-b2b2-49632ce89cbb",
+    "uuid": "bf0f355a-16d6-4f5e-bdb5-1fc547aa166a",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/31c06c84-57b4-4e42-b2b2-49632ce89cbb.jsonl",
+    "source_line": 26,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-29T16:24:44.918Z",
+    "session_id": "7fed46b1-32d3-41f1-bd34-6a6769b7f326",
+    "uuid": "638400e6-565e-4ee1-b5b9-7a5abba90a02",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7fed46b1-32d3-41f1-bd34-6a6769b7f326.jsonl",
+    "source_line": 3,
+    "preview": "use skill researcher and skill creator to create a shopify api skill",
+    "char_count": 68
+  },
+  {
+    "timestamp": "2026-01-29T16:24:52.596Z",
+    "session_id": "7fed46b1-32d3-41f1-bd34-6a6769b7f326",
+    "uuid": "1682de32-cd6a-474b-be6e-b0f04284d547",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7fed46b1-32d3-41f1-bd34-6a6769b7f326.jsonl",
+    "source_line": 10,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 5683
+  },
+  {
+    "timestamp": "2026-01-29T16:33:21.143Z",
+    "session_id": "7fed46b1-32d3-41f1-bd34-6a6769b7f326",
+    "uuid": "8e649436-fd91-4631-8354-633d31cca816",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/7fed46b1-32d3-41f1-bd34-6a6769b7f326.jsonl",
+    "source_line": 165,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4294
+  },
+  {
+    "timestamp": "2026-01-29T17:53:06.942Z",
+    "session_id": "4090cbe0-59f0-4f9d-8c10-b497a52e6206",
+    "uuid": "424e66d7-6bd6-43c8-b693-0f794203f8eb",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/4090cbe0-59f0-4f9d-8c10-b497a52e6206.jsonl",
+    "source_line": 3,
+    "preview": "use skill researcher, skill creator and any means to create a skill for using ghostscript",
+    "char_count": 89
+  },
+  {
+    "timestamp": "2026-01-29T17:53:12.364Z",
+    "session_id": "4090cbe0-59f0-4f9d-8c10-b497a52e6206",
+    "uuid": "106279f7-5754-4f15-87d5-042409dc9c09",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/4090cbe0-59f0-4f9d-8c10-b497a52e6206.jsonl",
+    "source_line": 11,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4270
+  },
+  {
+    "timestamp": "2026-01-29T17:53:17.337Z",
+    "session_id": "4090cbe0-59f0-4f9d-8c10-b497a52e6206",
+    "uuid": "3046faed-0ae7-45a6-bce2-2cc6050030c6",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/4090cbe0-59f0-4f9d-8c10-b497a52e6206.jsonl",
+    "source_line": 17,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 5683
+  },
+  {
+    "timestamp": "2026-01-29T17:53:32.499Z",
+    "session_id": "6e3658ae-3619-4f4d-a953-899d616d80fc",
+    "uuid": "ef4cf0de-684d-4c8d-8b47-a107fb874714",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/6e3658ae-3619-4f4d-a953-899d616d80fc.jsonl",
+    "source_line": 3,
+    "preview": "use skill researcher, skill creator and any means to create a skill for managing icc profiles, color",
+    "char_count": 114
+  },
+  {
+    "timestamp": "2026-01-29T17:53:40.300Z",
+    "session_id": "6e3658ae-3619-4f4d-a953-899d616d80fc",
+    "uuid": "2069971b-7cb4-473a-8880-c05a20fd0bb3",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/6e3658ae-3619-4f4d-a953-899d616d80fc.jsonl",
+    "source_line": 11,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 5760
+  },
+  {
+    "timestamp": "2026-01-29T17:55:25.668Z",
+    "session_id": "6e3658ae-3619-4f4d-a953-899d616d80fc",
+    "uuid": "2502363b-dc3a-4785-85b8-06310f8ee09e",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/6e3658ae-3619-4f4d-a953-899d616d80fc.jsonl",
+    "source_line": 88,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-creator  # Skill Creator  This s",
+    "char_count": 4703
+  },
+  {
+    "timestamp": "2026-01-30T01:02:22.077Z",
+    "session_id": "585c28f7-d59a-4912-903d-ac4165a4e9b3",
+    "uuid": "1460bfcf-4a9e-496e-8a81-ffe5fe77410b",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/585c28f7-d59a-4912-903d-ac4165a4e9b3.jsonl",
+    "source_line": 3,
+    "preview": "use skill researcher to search for raycast skills",
+    "char_count": 49
+  },
+  {
+    "timestamp": "2026-01-30T01:02:27.909Z",
+    "session_id": "585c28f7-d59a-4912-903d-ac4165a4e9b3",
+    "uuid": "bd199d93-db1b-472f-ac56-08d4d56d9fe2",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/585c28f7-d59a-4912-903d-ac4165a4e9b3.jsonl",
+    "source_line": 10,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 5686
+  },
+  {
+    "timestamp": "2026-01-30T02:45:03.375Z",
+    "session_id": "aebc72fc-9729-418e-a340-eb8042f4b43f",
+    "uuid": "6d483c03-ffe2-4be2-8a12-dfb470cf35be",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/aebc72fc-9729-418e-a340-eb8042f4b43f.jsonl",
+    "source_line": 3,
+    "preview": "Craete a globally avialable command that will go to this CWD and open claude code with \"claude --dan",
+    "char_count": 135
+  },
+  {
+    "timestamp": "2026-01-30T02:49:29.534Z",
+    "session_id": "096a4bb5-dc57-4637-98d8-c11255f8c32e",
+    "uuid": "f287d3b9-c3e0-4e18-8730-1b93becf1203",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/096a4bb5-dc57-4637-98d8-c11255f8c32e.jsonl",
+    "source_line": 3,
+    "preview": "Find skills for writing for x.com, then find skills for writing for threads.com, then find skills fo",
+    "char_count": 238
+  },
+  {
+    "timestamp": "2026-01-30T02:49:37.455Z",
+    "session_id": "096a4bb5-dc57-4637-98d8-c11255f8c32e",
+    "uuid": "65fc3899-ef0e-4e3f-abbd-2aa777777c95",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/096a4bb5-dc57-4637-98d8-c11255f8c32e.jsonl",
+    "source_line": 11,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 5733
+  },
+  {
+    "timestamp": "2026-01-30T03:16:53.355Z",
+    "session_id": "80877197-1d09-4a00-9f79-12a0b2520e7e",
+    "uuid": "5d793253-19af-4218-bee9-50a73b55b110",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/80877197-1d09-4a00-9f79-12a0b2520e7e.jsonl",
+    "source_line": 3,
+    "preview": "what ios or mobile development skills do we have",
+    "char_count": 48
+  },
+  {
+    "timestamp": "2026-01-30T03:33:58.479Z",
+    "session_id": "80877197-1d09-4a00-9f79-12a0b2520e7e",
+    "uuid": "0d5aca4b-6b2c-4484-8122-d165cbf425f9",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/80877197-1d09-4a00-9f79-12a0b2520e7e.jsonl",
+    "source_line": 37,
+    "preview": "Create a skill that holds all of the best practices for a mobile website, think certain type of meta",
+    "char_count": 325
+  },
+  {
+    "timestamp": "2026-01-30T03:34:03.744Z",
+    "session_id": "80877197-1d09-4a00-9f79-12a0b2520e7e",
+    "uuid": "f03fb0b0-e270-42b0-9993-a04263d0bad7",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/80877197-1d09-4a00-9f79-12a0b2520e7e.jsonl",
+    "source_line": 45,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/skill-researcher  # Skill Researcher  ",
+    "char_count": 5746
+  },
+  {
+    "timestamp": "2026-01-30T06:38:33.977Z",
+    "session_id": "22f7a987-bf0f-4c07-90ca-2491d6a2de84",
+    "uuid": "4c348474-0500-466b-9c56-ae2bcc04da41",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/22f7a987-bf0f-4c07-90ca-2491d6a2de84.jsonl",
+    "source_line": 3,
+    "preview": "Analyze consult user mcp and beads kanban docs page and analyze how i approach these pages, then mak",
+    "char_count": 356
+  },
+  {
+    "timestamp": "2026-01-30T06:38:33.977Z",
+    "session_id": "e8eb95fc-352d-4e37-93bd-ae4ca3dbb595",
+    "uuid": "4c348474-0500-466b-9c56-ae2bcc04da41",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e8eb95fc-352d-4e37-93bd-ae4ca3dbb595.jsonl",
+    "source_line": 2,
+    "preview": "Analyze consult user mcp and beads kanban docs page and analyze how i approach these pages, then mak",
+    "char_count": 356
+  },
+  {
+    "timestamp": "2026-01-30T06:49:55.760Z",
+    "session_id": "e8eb95fc-352d-4e37-93bd-ae4ca3dbb595",
+    "uuid": "575a8980-821d-4e38-b252-01e5e7a30cf9",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e8eb95fc-352d-4e37-93bd-ae4ca3dbb595.jsonl",
+    "source_line": 336,
+    "preview": "Implement the following plan:  # GitHub Pages Documentation Generator Skill  ## Overview Create a sk",
+    "char_count": 11959
+  },
+  {
+    "timestamp": "2026-01-30T07:19:34.853Z",
+    "session_id": "e8eb95fc-352d-4e37-93bd-ae4ca3dbb595",
+    "uuid": "41f9aaa4-45a2-4ee1-8a78-fbe3f9254100",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/e8eb95fc-352d-4e37-93bd-ae4ca3dbb595.jsonl",
+    "source_line": 467,
+    "preview": "Forbid emoji",
+    "char_count": 12
+  },
+  {
+    "timestamp": "2026-01-30T08:43:15.012Z",
+    "session_id": "8dc35ae9-2320-46d7-9209-729aa4518a21",
+    "uuid": "e2099657-a1b8-4069-b885-3410dcec92b8",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/8dc35ae9-2320-46d7-9209-729aa4518a21.jsonl",
+    "source_line": 2,
+    "preview": "list skills",
+    "char_count": 11
+  },
+  {
+    "timestamp": "2026-01-30T08:44:05.983Z",
+    "session_id": "8dc35ae9-2320-46d7-9209-729aa4518a21",
+    "uuid": "4558493e-9701-4130-8b65-2a3dcb17fef6",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/8dc35ae9-2320-46d7-9209-729aa4518a21.jsonl",
+    "source_line": 18,
+    "preview": "the most recent one houd be about documentaiton building",
+    "char_count": 56
+  },
+  {
+    "timestamp": "2026-01-30T14:29:52.330Z",
+    "session_id": "1ec69aac-4498-49ff-b6c9-7b3034fb02d7",
+    "uuid": "74a91bab-a47a-4849-ad6a-c782b102b5bd",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1ec69aac-4498-49ff-b6c9-7b3034fb02d7.jsonl",
+    "source_line": 2,
+    "preview": "what is the skill called that analyzes history",
+    "char_count": 46
+  },
+  {
+    "timestamp": "2026-01-30T14:30:08.119Z",
+    "session_id": "1ec69aac-4498-49ff-b6c9-7b3034fb02d7",
+    "uuid": "e538168b-d1cf-4f7b-ab5f-25f8d92048e9",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1ec69aac-4498-49ff-b6c9-7b3034fb02d7.jsonl",
+    "source_line": 10,
+    "preview": "is session-history-analyzer/ installed?",
+    "char_count": 39
+  },
+  {
+    "timestamp": "2026-01-30T14:30:26.528Z",
+    "session_id": "1ec69aac-4498-49ff-b6c9-7b3034fb02d7",
+    "uuid": "dcbce8b8-533c-48ab-9f05-76905300b7ea",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1ec69aac-4498-49ff-b6c9-7b3034fb02d7.jsonl",
+    "source_line": 26,
+    "preview": " \u276f use session-history-analyzer/   \u23bf \u00a0UserPromptSubmit hook succeeded: Success  \u23fa Skill(session-hist",
+    "char_count": 497
+  },
+  {
+    "timestamp": "2026-01-30T14:30:56.313Z",
+    "session_id": "1ec69aac-4498-49ff-b6c9-7b3034fb02d7",
+    "uuid": "a8285e9f-45c2-4052-9405-55e7400c15e0",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1ec69aac-4498-49ff-b6c9-7b3034fb02d7.jsonl",
+    "source_line": 47,
+    "preview": "fix this one first, and then fix ALL",
+    "char_count": 36
+  },
+  {
+    "timestamp": "2026-01-30T14:32:05.890Z",
+    "session_id": "1ec69aac-4498-49ff-b6c9-7b3034fb02d7",
+    "uuid": "5e4e4662-b373-48c0-ba93-8729445538d8",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1ec69aac-4498-49ff-b6c9-7b3034fb02d7.jsonl",
+    "source_line": 80,
+    "preview": "remove it",
+    "char_count": 9
+  },
+  {
+    "timestamp": "2026-01-30T14:37:10.044Z",
+    "session_id": "6ecb34be-ba1e-43e2-8ecb-3b9926f14804",
+    "uuid": "fb86e9c5-9bbe-4ac9-8d45-9d330cee7eb0",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/6ecb34be-ba1e-43e2-8ecb-3b9926f14804.jsonl",
+    "source_line": 2,
+    "preview": "\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 \u276f\u00a0u",
+    "char_count": 194
+  },
+  {
+    "timestamp": "2026-01-30T14:37:17.148Z",
+    "session_id": "6ecb34be-ba1e-43e2-8ecb-3b9926f14804",
+    "uuid": "c93faa5b-6442-48d9-9930-0a2b9e24626c",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/6ecb34be-ba1e-43e2-8ecb-3b9926f14804.jsonl",
+    "source_line": 9,
+    "preview": "Base directory for this skill: /Users/jurrejan/.claude/skills/session-history-analyzer  # Session An",
+    "char_count": 5014
+  }
+]
