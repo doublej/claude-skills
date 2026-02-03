@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Releases",
+  "description": "Multi-component release tracking schema",
+  "type": "object",
+  "properties": {
+    "releases": {
+      "type": "array",
+      "description": "Ordered list of releases (newest first)",
+      "items": {
+        "type": "object",
+        "required": ["version", "date", "highlight", "changes"],
+        "properties": {
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.-]+)?(\\+[a-zA-Z0-9.-]+)?$",
+            "description": "Semantic version number"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "description": "Release date in YYYY-MM-DD format"
+          },
+          "highlight": {
+            "type": "string",
+            "description": "Brief summary of the release"
+          },
+          "changes": {
+            "type": "array",
+            "description": "List of changes in this release",
+            "items": {
+              "type": "object",
+              "required": ["text", "type"],
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Description of the change"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["added", "changed", "fixed", "removed", "deprecated", "security"],
+                  "description": "Type of change (Keep a Changelog categories)"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "object",
+      "description": "Component-specific versions (optional)",
+      "patternProperties": {
+        "^[a-z0-9-]+$": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.-]+)?(\\+[a-zA-Z0-9.-]+)?$"
+        }
+      }
+    }
+  },
+  "required": ["releases"]
+}

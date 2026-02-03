@@ -1,0 +1,18 @@
+## Versioning
+
+Current version: {{VERSION}}
+
+### Release Process
+1. {{CHANGELOG_UPDATE_INSTRUCTION}}
+2. Run: python3 scripts/bump_version.py
+3. Select version bump type (major/minor/patch)
+4. Review and confirm changes
+5. Push: git push && git push --tags
+
+{{COMMIT_CONVENTIONS}}
+
+### Version Files
+{{VERSION_FILES}}
+
+### Git Tags
+Format: vX.Y.Z (e.g., v{{VERSION}})

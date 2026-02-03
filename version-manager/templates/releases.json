@@ -1,0 +1,16 @@
+{
+  "$schema": "./assets/schema/releases.schema.json",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "date": "2025-02-04",
+      "highlight": "Initial release",
+      "changes": [
+        {
+          "text": "First stable release with core functionality",
+          "type": "added"
+        }
+      ]
+    }
+  ]
+}

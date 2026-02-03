@@ -1,0 +1,32 @@
+#!/bin/bash
+# Pre-commit hook: validate version consistency
+
+# Check if version-related files are staged
+VERSION_FILES=$(git diff --cached --name-only | grep -E '(VERSION|package\.json|pyproject\.toml|Cargo\.toml|releases\.json)')
+
+if [ -n "$VERSION_FILES" ]; then
+    echo "Version files changed, validating..."
+
+    # Find validate_version.py (could be in project or skill directory)
+    VALIDATE_SCRIPT=""
+    if [ -f "scripts/validate_version.py" ]; then
+        VALIDATE_SCRIPT="scripts/validate_version.py"
+    elif [ -f ".version-manager/validate_version.py" ]; then
+        VALIDATE_SCRIPT=".version-manager/validate_version.py"
+    fi
+
+    if [ -n "$VALIDATE_SCRIPT" ]; then
+        python3 "$VALIDATE_SCRIPT" --staged
+        if [ $? -ne 0 ]; then
+            echo ""
+            echo "✗ Version validation failed"
+            echo "Run: python3 scripts/validate_version.py"
+            echo "Or: python3 scripts/sync_versions.py"
+            exit 1
+        fi
+    else
+        echo "⚠ validate_version.py not found, skipping validation"
+    fi
+fi
+
+exit 0
