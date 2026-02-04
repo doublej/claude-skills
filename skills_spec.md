@@ -50,6 +50,24 @@ The Markdown body has no restrictions on it.
 
 For a minimal example, see the `template-skill` example.
 
+# Output Formatting Recommendations
+
+For guidance on consistent skill output formatting, see [OUTPUT_FRAMEWORK.md](OUTPUT_FRAMEWORK.md).
+
+The framework provides:
+- 7 common output patterns with usage guidance
+- Reusable components (phase headers, status indicators, approval gates)
+- Templates for different skill types
+- Best practices for clarity and scannability
+
+Templates are available in the `templates/` directory:
+- [simple-workflow.md](templates/simple-workflow.md) - Linear scan → analyze → execute workflows
+- [multi-phase.md](templates/multi-phase.md) - Complex workflows with approval gates
+- [reference.md](templates/reference.md) - Documentation and API reference skills
+- [components.md](templates/components.md) - Copy-paste formatting snippets
+
+Applying the framework is **optional** but recommended for new skills.
+
 # Version History
 
 - 1.0 (2025-10-16) Public Launch
