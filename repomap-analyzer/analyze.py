@@ -3,48 +3,39 @@ import subprocess
 import sys
 import re
 from pathlib import Path
-from datetime import datetime
 import argparse
 
 sys.path.insert(0, str(Path(__file__).parent))
 from detectors import deprecated, conventions, deadcode, duplicates
 from report_generator import generate_report
 
+# Resolve codebase-mapper's bundled repomap relative to this skill
+SKILL_DIR = Path(__file__).parent
+MAPPER_SCRIPT = SKILL_DIR.parent / "codebase-mapper" / "scripts" / "repomap.sh"
+
 
 def get_repomap_cmd():
-    repomap_path = '/Users/jurrejan/Documents/development/python/RepoMapper/repomap.py'
-    python_path = '/Library/Frameworks/Python.framework/Versions/3.11/bin/python3'
+    if MAPPER_SCRIPT.exists():
+        return ["bash", str(MAPPER_SCRIPT)]
 
-    if Path(repomap_path).exists():
-        return [python_path, repomap_path]
-
-    result = subprocess.run(['which', 'repomap'], capture_output=True)
+    result = subprocess.run(["which", "repomap"], capture_output=True)
     if result.returncode == 0:
-        return ['repomap']
+        return ["repomap"]
 
-    print("Error: repomap not found", file=sys.stderr)
-    print(f"Expected at: {repomap_path}", file=sys.stderr)
+    print(f"Error: codebase-mapper not found at {MAPPER_SCRIPT}", file=sys.stderr)
+    print("Install the codebase-mapper skill alongside repomap-analyzer.", file=sys.stderr)
     sys.exit(1)
-
-
-def verify_repomap():
-    cmd = get_repomap_cmd()
-    result = subprocess.run(cmd + ['--help'], capture_output=True)
-    if result.returncode != 0:
-        print("Error: repomap execution failed", file=sys.stderr)
-        sys.exit(1)
-    return cmd
 
 
 def run_repomap(target_dir, map_tokens):
     cmd = get_repomap_cmd()
     result = subprocess.run(
-        cmd + [target_dir, '--map-tokens', str(map_tokens)],
+        cmd + [target_dir, "--root", target_dir, "--map-tokens", str(map_tokens)],
         capture_output=True,
-        text=True
+        text=True,
     )
     if result.returncode != 0:
-        print(f"Error: repomap failed with exit code {result.returncode}", file=sys.stderr)
+        print(f"Error: repomap failed (exit {result.returncode})", file=sys.stderr)
         print(result.stderr, file=sys.stderr)
         sys.exit(1)
 
@@ -116,8 +107,6 @@ def main():
         sys.exit(1)
 
     print(f"Analyzing repository: {repo_path}")
-    verify_repomap()
-
     print("Generating repository map...")
     repomap_data = run_repomap(str(repo_path), args.map_tokens)
 

@@ -1,89 +1,99 @@
 import re
-from pathlib import Path
+from . import iter_source_files
+
+# Multi-language definition patterns
+DEF_PATTERN = re.compile(r'(?:def|func|fn|function)\s+(\w+)')
+CLASS_PATTERN = re.compile(r'class\s+(\w+)')
+
+# Multi-language import patterns
+IMPORT_PATTERNS = [
+    re.compile(r'^import\s+(\w+)'),                         # Python/Go/Java
+    re.compile(r'^from\s+\S+\s+import\s+(.+)'),             # Python from-import
+    re.compile(r"(?:import|require)\s*\(\s*['\"](.+?)['\"]\s*\)"),  # JS/TS require/import
+    re.compile(r'^use\s+(.+);'),                             # Rust use
+]
+
+# Multi-language commented-out code patterns
+COMMENTED_CODE_PATTERNS = [
+    re.compile(r'#\s*(def|class|import|from|if|for|while)\s+\w+'),
+    re.compile(r'#\s*\w+\s*=\s*.+'),
+    re.compile(r'#\s*return\s+'),
+    re.compile(r'//\s*(function|class|import|const|let|var|if|for|while)\s+\w+'),
+    re.compile(r'//\s*\w+\s*=\s*.+'),
+    re.compile(r'//\s*return\s+'),
+]
 
 
 def find_orphaned_definitions(repomap_data):
     findings = []
-
     for filepath, data in repomap_data.items():
-        rank = data.get('rank', 0.0)
-        if rank == 0.0 and data['definitions']:
-            for definition in data['definitions']:
-                content = definition['content']
-                func_match = re.search(r'def\s+(\w+)', content)
-                class_match = re.search(r'class\s+(\w+)', content)
-
-                if func_match or class_match:
-                    name = func_match.group(1) if func_match else class_match.group(1)
+        if data.get('rank', 0.0) != 0.0 or not data['definitions']:
+            continue
+        for definition in data['definitions']:
+            content = definition['content']
+            for pattern in (DEF_PATTERN, CLASS_PATTERN):
+                match = pattern.search(content)
+                if match:
+                    name = match.group(1)
                     if not name.startswith('_'):
                         findings.append({
                             'type': 'dead_code',
                             'file': filepath,
                             'line': definition['line'],
                             'message': f"'{name}' has PageRank 0 (unreferenced)",
-                            'severity': 'medium'
+                            'severity': 'medium',
                         })
-
+                    break
     return findings
 
 
 def find_commented_code(source_dir):
     findings = []
-    code_patterns = [
-        r'#\s*(def|class|import|from|if|for|while)\s+\w+',
-        r'#\s*\w+\s*=\s*.+',
-        r'#\s*return\s+',
-    ]
-
-    for filepath in Path(source_dir).rglob('*.py'):
+    for filepath in iter_source_files(source_dir):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             for line_num, line in enumerate(f, 1):
-                for pattern in code_patterns:
-                    if re.search(pattern, line):
+                for pattern in COMMENTED_CODE_PATTERNS:
+                    if pattern.search(line):
                         findings.append({
                             'type': 'dead_code',
                             'file': str(filepath.relative_to(source_dir)),
                             'line': line_num,
                             'message': f"Commented code: {line.strip()[:50]}",
-                            'severity': 'low'
+                            'severity': 'low',
                         })
                         break
-
     return findings
 
 
 def find_unused_imports(source_dir):
+    """Find imports where the imported name appears only once (the import line itself)."""
     findings = []
-
-    for filepath in Path(source_dir).rglob('*.py'):
+    for filepath in iter_source_files(source_dir):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
             lines = content.split('\n')
 
         imports = {}
         for line_num, line in enumerate(lines, 1):
-            import_match = re.match(r'^import\s+(\w+)', line)
-            from_match = re.match(r'^from\s+\S+\s+import\s+(.+)', line)
-
-            if import_match:
-                module = import_match.group(1)
-                imports[module] = line_num
-            elif from_match:
-                names = from_match.group(1)
-                for name in re.findall(r'\b(\w+)\b', names):
-                    if name != 'import':
+            for pattern in IMPORT_PATTERNS:
+                match = pattern.match(line)
+                if not match:
+                    continue
+                names_str = match.group(1)
+                for name in re.findall(r'\b(\w+)\b', names_str):
+                    if name not in ('import', 'from', 'as'):
                         imports[name] = line_num
+                break
 
         for name, line_num in imports.items():
-            pattern = rf'\b{re.escape(name)}\b'
-            occurrences = len(re.findall(pattern, content))
+            occurrences = len(re.findall(rf'\b{re.escape(name)}\b', content))
             if occurrences == 1:
                 findings.append({
                     'type': 'dead_code',
                     'file': str(filepath.relative_to(source_dir)),
                     'line': line_num,
                     'message': f"Unused import: {name}",
-                    'severity': 'low'
+                    'severity': 'low',
                 })
 
     return findings

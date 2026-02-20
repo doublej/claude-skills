@@ -1,10 +1,19 @@
 from datetime import datetime
 from collections import defaultdict
 
+TYPE_NAMES = {
+    'deprecated_pattern': 'Deprecated Patterns',
+    'mixed_conventions': 'Mixed Conventions',
+    'dead_code': 'Dead Code Paths',
+    'duplicate_code': 'Duplicate Methods',
+}
+
+TYPE_ORDER = list(TYPE_NAMES.keys())
+
 
 def group_by_type(findings):
     grouped = defaultdict(list)
-    for detector_name, detector_findings in findings.items():
+    for detector_findings in findings.values():
         for finding in detector_findings:
             grouped[finding['type']].append(finding)
     return grouped
@@ -16,21 +25,13 @@ def format_finding(finding):
 
 
 def generate_summary(grouped_findings):
-    total = sum(len(findings) for findings in grouped_findings.values())
-
-    type_names = {
-        'deprecated_pattern': 'Deprecated Patterns',
-        'mixed_conventions': 'Mixed Conventions',
-        'dead_code': 'Dead Code Paths',
-        'duplicate_code': 'Duplicate Methods'
-    }
+    total = sum(len(f) for f in grouped_findings.values())
 
     lines = [
         "## Summary\n",
-        f"- **Total Issues**: {total}"
+        f"- **Total Issues**: {total}",
     ]
-
-    for type_key, type_name in type_names.items():
+    for type_key, type_name in TYPE_NAMES.items():
         count = len(grouped_findings.get(type_key, []))
         lines.append(f"- **{type_name}**: {count}")
 
@@ -41,15 +42,8 @@ def generate_section(type_key, findings):
     if not findings:
         return ""
 
-    type_names = {
-        'deprecated_pattern': 'Deprecated Patterns',
-        'mixed_conventions': 'Mixed Conventions',
-        'dead_code': 'Dead Code Paths',
-        'duplicate_code': 'Duplicate Methods'
-    }
-
     lines = [
-        f"\n## {type_names.get(type_key, type_key)} ({len(findings)} issues)\n"
+        f"\n## {TYPE_NAMES.get(type_key, type_key)} ({len(findings)} issues)\n"
     ]
 
     severity_order = {'critical': 0, 'high': 1, 'medium': 2, 'low': 3}
@@ -70,8 +64,7 @@ def generate_report(findings, output_path, repo_path):
         generate_summary(grouped)
     ]
 
-    type_order = ['deprecated_pattern', 'mixed_conventions', 'dead_code', 'duplicate_code']
-    for type_key in type_order:
+    for type_key in TYPE_ORDER:
         if type_key in grouped:
             report_lines.append(generate_section(type_key, grouped[type_key]))
 

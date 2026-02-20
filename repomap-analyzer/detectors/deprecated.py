@@ -1,5 +1,21 @@
 import re
-from pathlib import Path
+from . import iter_source_files
+
+# Language-aware definition patterns
+DEF_PATTERNS = {
+    'func': re.compile(r'(?:def|func|fn|function)\s+(\w+)'),
+    'class': re.compile(r'class\s+(\w+)'),
+}
+
+# Deprecated markers across languages
+DEPRECATED_PATTERNS = [
+    re.compile(r'#\s*deprecated', re.IGNORECASE),
+    re.compile(r'@deprecated', re.IGNORECASE),
+    re.compile(r'@Deprecated', re.IGNORECASE),
+    re.compile(r'//\s*deprecated', re.IGNORECASE),
+    re.compile(r'#\s*(?:fixme|todo).*(?:deprecat|remove)', re.IGNORECASE),
+    re.compile(r'//\s*(?:FIXME|TODO).*(?:deprecat|remove)', re.IGNORECASE),
+]
 
 
 def extract_identifiers(repomap_data):
@@ -8,13 +24,21 @@ def extract_identifiers(repomap_data):
         identifiers[filepath] = []
         for definition in data['definitions']:
             content = definition['content'].strip()
-            func_match = re.search(r'def\s+(\w+)', content)
-            class_match = re.search(r'class\s+(\w+)', content)
-            if func_match:
-                identifiers[filepath].append(func_match.group(1))
-            elif class_match:
-                identifiers[filepath].append(class_match.group(1))
+            for pattern in DEF_PATTERNS.values():
+                match = pattern.search(content)
+                if match:
+                    identifiers[filepath].append(match.group(1))
+                    break
     return identifiers
+
+
+def to_snake_case(name):
+    return re.sub('([A-Z]+)', r'_\1', name).lower().lstrip('_')
+
+
+def to_camel_case(name):
+    parts = name.split('_')
+    return ''.join(word.capitalize() for word in parts)
 
 
 def find_naming_inconsistencies(identifiers):
@@ -23,69 +47,50 @@ def find_naming_inconsistencies(identifiers):
 
     for filepath, names in identifiers.items():
         for name in names:
-            if name not in all_names:
-                all_names[name] = []
-            all_names[name].append(filepath)
+            all_names.setdefault(name, []).append(filepath)
 
-    for name in all_names:
-        snake_version = to_snake_case(name)
-        camel_version = to_camel_case(name)
+    for name, files in all_names.items():
+        snake = to_snake_case(name)
+        camel = to_camel_case(name)
 
-        if snake_version != name and snake_version in all_names:
-            for filepath in all_names[name]:
+        if snake != name and snake in all_names:
+            for filepath in files:
                 findings.append({
                     'type': 'deprecated_pattern',
                     'file': filepath,
                     'line': 0,
-                    'message': f"Old convention '{name}' used alongside new '{snake_version}'",
-                    'severity': 'medium'
+                    'message': f"Old convention '{name}' coexists with '{snake}'",
+                    'severity': 'medium',
                 })
 
-        if camel_version != name and camel_version in all_names:
-            for filepath in all_names[name]:
+        if camel != name and camel in all_names:
+            for filepath in files:
                 findings.append({
                     'type': 'deprecated_pattern',
                     'file': filepath,
                     'line': 0,
-                    'message': f"Inconsistent naming: '{name}' vs '{camel_version}'",
-                    'severity': 'medium'
+                    'message': f"Inconsistent naming: '{name}' vs '{camel}'",
+                    'severity': 'medium',
                 })
 
     return findings
 
 
-def to_snake_case(name):
-    result = re.sub('([A-Z]+)', r'_\1', name)
-    return result.lower().lstrip('_')
-
-
-def to_camel_case(name):
-    parts = name.split('_')
-    return ''.join(word.capitalize() for word in parts)
-
-
 def check_deprecated_markers(source_dir):
     findings = []
-    deprecated_patterns = [
-        r'#\s*deprecated',
-        r'@deprecated',
-        r'#\s*fixme.*deprecat',
-        r'#\s*todo.*remove'
-    ]
-
-    for pattern in deprecated_patterns:
-        for filepath in Path(source_dir).rglob('*.py'):
-            with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
-                for line_num, line in enumerate(f, 1):
-                    if re.search(pattern, line, re.IGNORECASE):
+    for filepath in iter_source_files(source_dir):
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+            for line_num, line in enumerate(f, 1):
+                for pattern in DEPRECATED_PATTERNS:
+                    if pattern.search(line):
                         findings.append({
                             'type': 'deprecated_pattern',
                             'file': str(filepath.relative_to(source_dir)),
                             'line': line_num,
-                            'message': f"Deprecated marker found: {line.strip()[:60]}",
-                            'severity': 'medium'
+                            'message': f"Deprecated marker: {line.strip()[:60]}",
+                            'severity': 'medium',
                         })
-
+                        break
     return findings
 
 

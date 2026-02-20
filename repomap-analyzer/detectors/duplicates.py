@@ -1,27 +1,13 @@
 import re
-from pathlib import Path
 from collections import defaultdict
+from . import iter_source_files
 
+# Multi-language function definition with params
+FUNC_DEF_WITH_PARAMS = re.compile(r'(?:def|func|fn|function)\s+(\w+)\s*\(([^)]*)\)')
 
-def extract_signatures(repomap_data):
-    signatures = defaultdict(list)
-
-    for filepath, data in repomap_data.items():
-        for definition in data['definitions']:
-            content = definition['content']
-            func_match = re.match(r'def\s+(\w+)\s*\(([^)]*)\)', content)
-
-            if func_match:
-                name = func_match.group(1)
-                params = normalize_params(func_match.group(2))
-                signature = f"{name}({params})"
-                signatures[signature].append({
-                    'file': filepath,
-                    'line': definition['line'],
-                    'name': name
-                })
-
-    return signatures
+# Multi-language function body extraction (indented or braced)
+INDENTED_FUNC = re.compile(r'(?:def|function)\s+(\w+)\s*\([^)]*\):[^\n]*\n((?:    .+\n)+)')
+BRACED_FUNC = re.compile(r'(?:func|fn|function)\s+(\w+)\s*\([^)]*\)\s*(?:[^{]*)\{([^}]+)\}')
 
 
 def normalize_params(params):
@@ -29,25 +15,49 @@ def normalize_params(params):
     return ', '.join(p for p in parts if p)
 
 
+def normalize_body(body):
+    body = re.sub(r'(?:#|//).*', '', body)  # strip comments
+    body = re.sub(r'\s+', ' ', body)
+    body = re.sub(r'["\'].*?["\']', 'STR', body)
+    body = re.sub(r'\b\d+\b', 'NUM', body)
+    return body.strip()
+
+
+def extract_signatures(repomap_data):
+    signatures = defaultdict(list)
+    for filepath, data in repomap_data.items():
+        for definition in data['definitions']:
+            match = FUNC_DEF_WITH_PARAMS.match(definition['content'])
+            if not match:
+                continue
+            name = match.group(1)
+            params = normalize_params(match.group(2))
+            sig = f"{name}({params})"
+            signatures[sig].append({
+                'file': filepath,
+                'line': definition['line'],
+                'name': name,
+            })
+    return signatures
+
+
 def find_duplicate_signatures(signatures):
     findings = []
-
-    for signature, locations in signatures.items():
-        if len(locations) > 1:
-            files = [loc['file'] for loc in locations]
-            unique_files = set(files)
-
-            if len(unique_files) > 1:
-                loc = locations[0]
-                other_locs = ', '.join(f"{l['file']}:{l['line']}" for l in locations[1:])
-                findings.append({
-                    'type': 'duplicate_code',
-                    'file': loc['file'],
-                    'line': loc['line'],
-                    'message': f"Duplicate signature '{loc['name']}' also in {other_locs}",
-                    'severity': 'medium'
-                })
-
+    for locations in signatures.values():
+        if len(locations) < 2:
+            continue
+        unique_files = {loc['file'] for loc in locations}
+        if len(unique_files) < 2:
+            continue
+        loc = locations[0]
+        others = ', '.join(f"{l['file']}:{l['line']}" for l in locations[1:])
+        findings.append({
+            'type': 'duplicate_code',
+            'file': loc['file'],
+            'line': loc['line'],
+            'message': f"Duplicate signature '{loc['name']}' also in {others}",
+            'severity': 'medium',
+        })
     return findings
 
 
@@ -55,44 +65,37 @@ def find_similar_functions(source_dir):
     findings = []
     function_bodies = defaultdict(list)
 
-    for filepath in Path(source_dir).rglob('*.py'):
+    for filepath in iter_source_files(source_dir):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
 
-        func_pattern = r'def\s+(\w+)\s*\([^)]*\):[^\n]*\n((?:    .+\n)+)'
-        for match in re.finditer(func_pattern, content):
-            name = match.group(1)
-            body = match.group(2)
-            normalized = normalize_body(body)
+        # Try both indented (Python) and braced (JS/Go/Rust) patterns
+        for pattern in (INDENTED_FUNC, BRACED_FUNC):
+            for match in pattern.finditer(content):
+                name = match.group(1)
+                body = match.group(2)
+                normalized = normalize_body(body)
+                if len(normalized) > 50:
+                    function_bodies[normalized].append({
+                        'file': str(filepath.relative_to(source_dir)),
+                        'name': name,
+                        'line': content[:match.start()].count('\n') + 1,
+                    })
 
-            if len(normalized) > 50:
-                function_bodies[normalized].append({
-                    'file': str(filepath.relative_to(source_dir)),
-                    'name': name,
-                    'line': content[:match.start()].count('\n') + 1
-                })
-
-    for body, locations in function_bodies.items():
-        if len(locations) > 1:
-            loc = locations[0]
-            other_locs = ', '.join(f"{l['file']}:{l['line']}" for l in locations[1:])
-            findings.append({
-                'type': 'duplicate_code',
-                'file': loc['file'],
-                'line': loc['line'],
-                'message': f"Similar function '{loc['name']}' to {other_locs}",
-                'severity': 'low'
-            })
+    for locations in function_bodies.values():
+        if len(locations) < 2:
+            continue
+        loc = locations[0]
+        others = ', '.join(f"{l['file']}:{l['line']}" for l in locations[1:])
+        findings.append({
+            'type': 'duplicate_code',
+            'file': loc['file'],
+            'line': loc['line'],
+            'message': f"Similar function '{loc['name']}' to {others}",
+            'severity': 'low',
+        })
 
     return findings
-
-
-def normalize_body(body):
-    body = re.sub(r'#.*', '', body)
-    body = re.sub(r'\s+', ' ', body)
-    body = re.sub(r'["\'].*?["\']', 'STR', body)
-    body = re.sub(r'\b\d+\b', 'NUM', body)
-    return body.strip()
 
 
 def detect(repomap_data, source_dir):
