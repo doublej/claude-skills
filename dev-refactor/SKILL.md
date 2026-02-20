@@ -1,139 +1,113 @@
 ---
 name: dev-refactor
-description: Analyzes existing codebases against standards to identify gaps in architecture, code quality, testing, and DevOps. Auto-detects project language (Go, TypeScript, Frontend) and generates refactoring tasks. Use when refactoring legacy projects, auditing codebases, or modernizing existing code to follow standards.
+description: Analyzes existing codebases against standards to identify gaps in architecture, code quality, testing, and DevOps. Auto-detects project language and generates refactoring tasks. Use when refactoring legacy projects, auditing codebases, or modernizing existing code.
 ---
 
-# Dev Refactor Skill
+# Dev Refactor
 
-Analyzes an existing codebase to identify gaps between current implementation and project standards, then generates a structured refactoring plan.
+Analyses an existing codebase to identify gaps between current implementation and project standards, then generates a structured refactoring plan with actionable tasks.
 
 ## What This Skill Does
 
-1. **Detects project language** (Go, TypeScript, Python) from manifest files
-2. **Reads PROJECT_RULES.md** (project-specific standards - MANDATORY)
-3. **Dispatches specialized agents** that load Ring standards via WebFetch
-4. **Compiles agent findings** into structured analysis report
-5. **Generates tasks.md** in PM Team format
-6. **User approves** the plan before execution via dev-cycle
+1. **Detects project language** from manifest files (go.mod, package.json, pyproject.toml, Cargo.toml, etc.)
+2. **Reads project standards** from PROJECT_RULES.md, CLAUDE.md, or auto-detects conventions
+3. **Generates structural map** using codebase-mapper (PageRank-ranked)
+4. **Runs automated detection** using repomap-analyzer (deprecated, dead code, duplicates, conventions)
+5. **Dispatches analysis agents** for deeper inspection across 4 dimensions
+6. **Compiles findings** into structured analysis report with severity levels
+7. **Generates tasks.md** with actionable refactoring tasks
+8. **User approves** the plan before execution
 
-## Core Principle
+## Analysis Dimensions
 
-**Refactoring analysis is MANDATORY for codebases with technical debt.**
+| Dimension | What It Checks |
+|-----------|---------------|
+| Architecture | Patterns, structure, dependency direction, separation of concerns |
+| Code Quality | Standards compliance, naming, error handling, security |
+| Testing | Coverage, test patterns, naming, missing tests |
+| DevOps | Containerisation, CI/CD, environment config |
 
-- **NEVER** skip analysis because "code works"
-- **ALWAYS** analyze all 4 dimensions
-- **DOCUMENT** all findings, not just critical
-- Analysis now saves 10x effort later
+## Workflow
 
-## Prerequisites
-
-1. **PROJECT_RULES.md exists** (MANDATORY - analysis cannot proceed without it)
-2. **Project root identified**
-3. **Language detectable** (go.mod, package.json, etc.)
-
-If PROJECT_RULES.md is missing, STOP with blocker message.
-
-## Analysis Dimensions - ALL REQUIRED
-
-| Dimension | What It Checks | Skip Allowed? |
-|-----------|---------------|---------------|
-| Architecture | Patterns, structure, dependencies | NO |
-| Code Quality | Standards compliance, complexity, naming | NO |
-| Testing | Coverage, test quality, TDD compliance | NO |
-| DevOps | Containerization, CI/CD, infrastructure | NO |
-
-## Workflow Steps
-
-### Step 0: Verify PROJECT_RULES.md (HARD GATE)
-
-Check: `docs/PROJECT_RULES.md` or `docs/STANDARDS.md`
-If missing: STOP - Cannot analyze without project standards.
-
-### Step 1: Detect Project Language
+### Step 1: Detect Language and Standards
 
 ```text
-├── go.mod exists -> Go project
-├── package.json exists
-│   ├── Has react/next -> Frontend TypeScript
-│   └── Has express/fastify/nestjs -> Backend TypeScript
-└── Multiple languages -> Use all applicable standards
+Language detection:
+├── go.mod           -> Go
+├── Cargo.toml       -> Rust
+├── package.json     -> TypeScript/JavaScript
+├── pyproject.toml   -> Python
+└── Multiple         -> Use all applicable standards
+
+Standards (checked in order, first found wins):
+├── docs/PROJECT_RULES.md
+├── docs/STANDARDS.md
+├── CLAUDE.md
+└── Auto-detect from existing code patterns
 ```
 
-### Step 2: Read PROJECT_RULES.md
+If no standards file exists, proceed with language-default best practices and note it in the report.
 
-Load project-specific conventions and standards.
+### Step 2: Structural Map (codebase-mapper)
 
-### Step 3: Scan Codebase
+Generate a PageRank-ranked map to identify the most important files:
 
-Dispatch specialized agents in PARALLEL (single message, multiple Task tools):
-- Code analysis agent (language-specific)
-- qa-analyst (testing)
-- devops-engineer (infrastructure)
-- sre (observability)
+```bash
+bash {CODEBASE_MAPPER_DIR}/scripts/repomap.sh . --root . --map-tokens 8192 --exclude-unranked
+```
 
-Each agent loads Ring standards via WebFetch automatically.
+This reveals which files are most referenced/depended upon — refactoring these has the highest impact.
 
-### Step 4: Compile Findings
+### Step 3: Automated Detection (repomap-analyzer)
 
-Merge agent outputs into structured analysis report with severity levels.
+Run automated detectors for quick wins:
 
-### Step 5: Prioritize and Group
+```bash
+python3 {REPOMAP_ANALYZER_DIR}/analyze.py . --output /tmp/auto-findings.md
+```
 
-Group related issues into REFACTOR-XXX tasks by:
-- Bounded context / module
-- Dependency order
-- Risk level
+This catches deprecated patterns, naming inconsistencies, dead code, and duplicates without manual inspection.
 
-### Step 6: Generate tasks.md
+### Step 4: Deep Analysis (Parallel Agents)
 
-Create refactoring tasks in PM Team format with acceptance criteria.
+Dispatch analysis agents in PARALLEL (single message, multiple Task tools):
+
+- **Code analysis agent** — architecture, code quality, language-specific patterns
+- **Testing agent** — coverage gaps, test quality, missing tests
+- **DevOps agent** — container config, CI/CD, environment setup
+
+Each agent operates in **analysis-only mode** (no implementation).
+
+### Step 5: Compile and Prioritise
+
+1. Merge automated findings + agent findings
+2. Deduplicate overlapping issues
+3. Categorise by dimension
+4. Sort by severity (Critical > High > Medium > Low)
+5. Group related issues into REFACTOR-XXX tasks by module and dependency order
+
+### Step 6: Generate Artifacts
+
+```text
+docs/refactor/{timestamp}/
+├── analysis-report.md     # Full findings with severity
+├── tasks.md               # Actionable refactoring tasks
+└── standards-used.md      # Standards referenced during analysis
+```
 
 ### Step 7: User Approval
 
 Present plan with options: Approve all, Approve with changes, Critical only, Cancel.
 
-### Step 8: Save Artifacts
-
-```text
-docs/refactor/{timestamp}/
-├── analysis-report.md
-├── tasks.md
-└── project-rules-used.md
-```
-
-### Step 9: Handoff to dev-cycle
-
-If approved: `/ring-dev-team:dev-cycle docs/refactor/{timestamp}/tasks.md`
-
-## Example Usage
-
-```bash
-# Full project analysis
-/ring-dev-team:dev-refactor
-
-# Analyze specific directory
-/ring-dev-team:dev-refactor src/domain
-
-# Analysis only (no execution)
-/ring-dev-team:dev-refactor --analyze-only
-```
-
 ## Reference Files
 
-- [Analysis Patterns](references/analysis-patterns.md) - Detailed checks, agent selection, prompts
-- [Refactoring Strategies](references/refactoring-strategies.md) - Compiling, prioritization, task generation
-- [Common Rationalizations](references/common-rationalizations.md) - Pressure resistance, red flags
+- [Analysis Patterns](references/analysis-patterns.md) — detailed checks per dimension, agent prompts
+- [Refactoring Strategies](references/refactoring-strategies.md) — compiling, prioritisation, task format
+- [Common Rationalizations](references/common-rationalizations.md) — handling pressure to skip analysis
 
 ## Related Skills
 
-| Skill | Purpose |
-|-------|---------|
-| `ring-dev-team:dev-cycle` | Executes refactoring tasks through 6 gates |
-
-## Key Principles
-
-1. **Same workflow**: Refactoring uses the same dev-cycle as new features
-2. **Standards-driven**: Combines PROJECT_RULES.md + Ring standards
-3. **Traceable**: Every task links to specific issues found
-4. **Incremental**: Can approve subset of tasks
-5. **Reversible**: Original analysis preserved
+| Skill | Relationship |
+|-------|-------------|
+| **codebase-mapper** | Generates PageRank structural map (Step 2) |
+| **repomap-analyzer** | Runs automated code quality detection (Step 3) |
