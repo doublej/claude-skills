@@ -1,32 +1,19 @@
 ---
 name: iterm2
 description: >-
-  Manage iTerm2 via Python API - create/close tabs, split panes, send text, read output,
-  manage profiles, key bindings, arrangements, and color presets. Use when organizing
-  terminal workspace, automating iTerm2 layouts, or controlling terminal sessions.
+  Manage iTerm2 via it2 CLI - create/close tabs, split panes, send text, read output,
+  manage profiles, arrangements, and appearance. Use when organizing terminal workspace,
+  automating iTerm2 layouts, or controlling terminal sessions.
 ---
 
 # iTerm2 Terminal Management
 
-Control iTerm2 programmatically via the Python API.
+Control iTerm2 via the `it2` CLI.
 
 ## Prerequisites
 
 - iTerm2 with Python API enabled (Settings > General > Magic > Enable Python API)
-- Run setup once: `bash {{SKILL_DIR}}/scripts/setup.sh`
-
-## Runner
-
-Use the wrapper script directly — no function definition needed:
-
-```bash
-ITERM2="{{SKILL_DIR}}/scripts/iterm2"
-
-"$ITERM2" list-windows
-"$ITERM2" split-and-run --title "Test" "echo hello"
-```
-
-> **Always store the path in `ITERM2` and call `"$ITERM2" <command>`.** Do NOT define an inline bash function with `{ }` — it breaks in zsh when chained with `&&` or pipes.
+- `it2` installed (`pip install it2` or `uv tool install it2`)
 
 ## Commands
 
@@ -34,138 +21,173 @@ ITERM2="{{SKILL_DIR}}/scripts/iterm2"
 
 | Command | Description |
 |---------|-------------|
-| `list-windows` | JSON of all windows, tabs, sessions (IDs, titles, paths, grid sizes) |
-| `list-profiles` | Available profiles with GUIDs |
-| `list-arrangements` | Saved window arrangements |
-| `get-key-mappings` | Key bindings for current session's profile |
-| `find-self` | Find this agent's own iTerm2 session by TTY matching |
+| `it2 window list --json` | JSON of all windows with IDs |
+| `it2 session list --json` | JSON of all sessions with IDs |
+| `it2 tab list` | List all tabs |
+| `it2 profile list` | Available profiles |
+| `it2 window arrange list` | Saved window arrangements |
+| `it2 app get-focus` | Currently focused window/tab/session |
 
 ### Window/Tab/Pane Management
 
 | Command | Description |
 |---------|-------------|
-| `new-window [profile]` | Create window (optional profile name) |
-| `new-tab [profile]` | Create tab in current window |
-| `split-h [profile]` | Split current session horizontally |
-| `split-v [profile]` | Split current session vertically |
-| `focus-tab <id>` | Activate tab by ID (from list-windows) |
-| `focus-session <id>` | Activate session by ID |
-| `close-tab <id>` | Close tab (force, no confirmation) |
-| `close-session <id>` | Close session (force) |
-| `set-title <title>` | Set current tab's title |
+| `it2 new [-p profile] [-c cmd]` | Create window (shortcut for `window new`) |
+| `it2 newtab [-p profile] [-c cmd] [-w window]` | Create tab (shortcut for `tab new`) |
+| `it2 split [-s ID] [-p profile]` | Split horizontally (shortcut for `session split`) |
+| `it2 vsplit [-s ID] [-p profile]` | Split vertically (shortcut for `session split -v`) |
+| `it2 tab select <id>` | Activate tab by ID or index |
+| `it2 session focus <id>` | Activate session by ID |
+| `it2 tab close [-f] [id]` | Close tab (use `-f` to force) |
+| `it2 session close [-f] [-s ID]` | Close session (use `-f` to force) |
+| `it2 session set-name [-s ID] <name>` | Set session name |
 
 ### Terminal I/O
 
 | Command | Description |
 |---------|-------------|
-| `send [--session ID] <text>` | Send text to a session (default: current) |
-| `read [--session ID] [lines]` | Read terminal screen (default: current, 50 lines) |
-| `ctrl [--session ID] <char>` | Send control character (e.g., `C` for Ctrl-C, **`M` for Enter**) |
-| `run [--session ID] <cmd> [--wait N]` | Send command + Enter, wait N seconds (default 2), read non-blank output |
-| `split-and-run [options] <cmd>` | Split pane next to self, run command, return session ID + output |
+| `it2 send [-s ID] <text>` | Send text **without** newline |
+| `it2 run [-s ID] <cmd>` | Send command **with** newline (executes it) |
+| `it2 session read [-s ID] [-n lines]` | Read terminal screen |
+| `it2 session capture [-s ID] -o file [--history]` | Capture screen to file |
+| `it2 session clear [-s ID]` | Clear screen |
 
-### Session targeting with `--session`
+### Session targeting with `-s`
 
-> **Critical**: after `split-v`/`split-h`, the new pane gets a session ID but `send`/`read`/`ctrl` without `--session` still target the **original** pane (Claude Code's session). You MUST use `--session <id>` to target the new pane.
+> **Critical**: after `split`/`vsplit`, the new pane gets a session ID but `send`/`read` without `-s` still target the **active** session. You MUST use `-s <id>` to target the new pane.
 
 ```bash
-# split-v returns the new session ID — capture it
-"$ITERM2" split-v                              # → {"session_id": "ABC-123..."}
-"$ITERM2" send --session "ABC-123..." "echo hi" # targets the new pane
-"$ITERM2" ctrl --session "ABC-123..." "M"       # sends Enter to the new pane
+# vsplit returns the new session ID — capture it
+SID=$(it2 vsplit 2>&1 | grep -oE '[A-F0-9-]{36}')
+it2 run -s "$SID" "echo hello"
 ```
 
 ### Submitting commands
 
-> **`\n` does NOT submit commands.** Bash double-quotes pass `\n` as two literal characters, not a newline. **`ctrl ""` crashes** (empty string is not a character).
-
-Always use: `ctrl "M"` (Ctrl-M = carriage return = Enter).
+Use `it2 run` — it appends a newline automatically:
 
 ```bash
-"$ITERM2" send --session "$SID" "cd ~/project && npm run dev"
-"$ITERM2" ctrl --session "$SID" "M"
+it2 run -s "$SID" "cd ~/project && npm run dev"
+```
+
+For text without Enter (e.g., partial input), use `it2 send`:
+
+```bash
+it2 send -s "$SID" "partial text"
+```
+
+### Sending control characters
+
+`it2 send` accepts raw bytes via bash `$'...'` syntax:
+
+```bash
+it2 send -s "$SID" $'\x03'   # Ctrl-C (interrupt)
+it2 send -s "$SID" $'\x04'   # Ctrl-D (EOF)
+it2 send -s "$SID" $'\x1a'   # Ctrl-Z (suspend)
+it2 send -s "$SID" $'\x0c'   # Ctrl-L (clear)
 ```
 
 ### Verifying output
 
-After sending a command, always `read` to verify it executed. Use a **high line count** (e.g., 200) because screen content sits at the top with blank lines below.
+After sending a command, always `read` to verify. Use a high line count because screen content sits at the top with blank lines below.
 
 ```bash
 sleep 1
-"$ITERM2" read --session "$SID" 200 | grep -v '^$'
+it2 session read -s "$SID" -n 200
 ```
 
 ### Profiles & Appearance
 
 | Command | Description |
 |---------|-------------|
-| `set-colors <preset>` | Apply color preset to current session |
-| `set-font-size <size> [--profile name]` | Set font size on all profiles + open sessions (or specific profile) |
+| `it2 app theme [light\|dark\|automatic\|minimal]` | Show or set theme |
+| `it2 profile set <name> font-size <size>` | Set font size |
+| `it2 profile set <name> font-family <family>` | Set font family |
+| `it2 profile set <name> bg-color <hex>` | Set background colour |
+| `it2 profile set <name> fg-color <hex>` | Set foreground colour |
+| `it2 profile set <name> transparency <0.0-1.0>` | Set transparency |
+| `it2 profile set <name> cursor-color <hex>` | Set cursor colour |
+| `it2 profile apply <name>` | Apply profile to current session |
+| `it2 load <name>` | Load custom profile from config |
 
 ### Arrangements
 
 | Command | Description |
 |---------|-------------|
-| `save-arrangement <name>` | Save current layout |
-| `restore-arrangement <name>` | Restore saved layout |
+| `it2 window arrange save <name>` | Save current layout |
+| `it2 window arrange restore <name>` | Restore saved layout |
+| `it2 window arrange list` | List saved arrangements |
 
-## Key Mapping Format
+### Window Positioning
 
-Key codes are `"0x<keycode>-0x<modifiers>"`. Modifier bitmask:
+| Command | Description |
+|---------|-------------|
+| `it2 window move <x> <y> [window_id]` | Move window |
+| `it2 window resize <w> <h> [window_id]` | Resize window |
+| `it2 window fullscreen` | Toggle fullscreen |
+| `it2 tab move [tab_id]` | Move tab to its own window |
 
-| Modifier | Hex |
-|----------|-----|
-| Shift | `0x20000` |
-| Control | `0x40000` |
-| Option | `0x80000` |
-| Command | `0x100000` |
+### Broadcasting
 
-Action codes: 0=next tab, 10=escape seq, 11=hex code, 12=send text, 13=ignore,
-25=menu item, 26=new window, 27=new tab, 28/29=split h/v, 60=invoke script, 63=snippet.
+| Command | Description |
+|---------|-------------|
+| `it2 app broadcast on` | Broadcast input to all sessions in current tab |
+| `it2 app broadcast off` | Disable broadcasting |
+| `it2 app broadcast add` | Create broadcast group with specific sessions |
 
-### `split-and-run` options
+### Monitoring
 
-| Option | Description |
-|--------|-------------|
-| `--direction h\|v` | Split direction (default: `v` vertical) |
-| `--session ID` | Source session to split (default: auto-detect via `find-self`) |
-| `--title <title>` | Set tab title for the new pane |
-| `--wait N` | Seconds to wait before reading output (default: 2) |
+| Command | Description |
+|---------|-------------|
+| `it2 monitor activity` | Monitor session activity |
+| `it2 monitor output` | Monitor session output |
+| `it2 monitor prompt` | Monitor shell prompts (requires shell integration) |
+| `it2 monitor keystroke` | Monitor keystrokes |
+| `it2 monitor variable` | Monitor variable changes |
+
+### Session Variables
+
+| Command | Description |
+|---------|-------------|
+| `it2 session get-var [-s ID] <var>` | Get session variable |
+| `it2 session set-var [-s ID] <var> <val>` | Set session variable |
 
 ## Default workflow: iTerm2 pane + tmux (see tmux skill)
 
-When asked to "open a pane" or "run something next to this session", **always** combine iTerm2 (visibility) with tmux (reliability). Use `split-and-run` for one-call setup:
+When asked to "open a pane" or "run something next to this session", combine iTerm2 (visibility) with tmux (reliability):
 
 ```bash
-# One-liner: split next to this agent, start tmux, get session ID
-"$ITERM2" split-and-run --title "Dev Server" "tmux new -s dev-server"
+# Split, capture new session ID, start tmux
+SID=$(it2 vsplit 2>&1 | grep -oE '[A-F0-9-]{36}')
+it2 run -s "$SID" "tmux new -s dev-server"
 
 # All further commands go through tmux (reliable, no focus issues)
 tmux send-keys -t dev-server:0.0 -l -- 'cd ~/project && npm run dev'
 tmux send-keys -t dev-server:0.0 Enter
 ```
 
-Or use the tmux skill's `tmux-init.sh` which does this entire workflow automatically (see tmux skill).
+Or use the tmux skill's `tmux-init.sh` which does this workflow automatically.
 
 ## Workflow: Quick split (no tmux)
 
 For simple, non-interactive commands where tmux is overkill:
 
 ```bash
-# One call: splits next to agent, runs command, returns output
-"$ITERM2" split-and-run --title "Logs" "tail -f /var/log/app.log"
+# Split and run a command
+SID=$(it2 vsplit 2>&1 | grep -oE '[A-F0-9-]{36}')
+it2 run -s "$SID" "tail -f /var/log/app.log"
 
-# Or use run for an existing session:
-"$ITERM2" run --session "$SID" "echo hello" --wait 1
+# Or run in an existing session:
+it2 run -s "$SID" "echo hello"
 ```
 
 ## Workflow: Workspace with saved layout
 
 ```bash
-"$ITERM2" list-windows
-"$ITERM2" new-tab
-"$ITERM2" set-title "Tests"
-"$ITERM2" save-arrangement "my-project"
+it2 window list --json
+it2 newtab
+it2 session set-name "Tests"
+it2 window arrange save "my-project"
 ```
 
 ## Remote Windows Hosts (SSH/SCP)
@@ -201,8 +223,3 @@ cat local-file.txt | ssh user@host "powershell -c \"[IO.File]::WriteAllText('C:\
 - Use **backslashes** inside `cmd /c` commands: `C:\\Projects\\foo`
 - Use **forward slashes** inside PowerShell: `C:/Projects/foo`
 - Always double-escape backslashes in bash strings
-
-## Error Handling
-
-All commands output JSON. Errors include `{"error": "message"}`.
-Connection failures mean iTerm2 isn't running or Python API is disabled.

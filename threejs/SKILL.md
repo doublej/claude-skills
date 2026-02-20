@@ -1,6 +1,6 @@
 ---
 name: threejs
-description: Build, debug, and optimize Three.js applications. Covers WebGL/WebGPU rendering, glTF assets, color management, postprocessing, shaders, interaction, and performance. Use when writing Three.js code, fixing rendering issues, or optimizing 3D web apps.
+description: "Unified Three.js/WebGL/WebGPU development skill. Use when: (1) building Three.js applications \u2014 rendering, glTF assets, color management, postprocessing, shaders, interaction, performance; (2) animating 3D/DOM with Theatre.js \u2014 timelines, keyframes, Studio editor, @theatre/r3f; (3) choosing animation easing and timing; (4) working with 3D space, positioning, transforms, or camera setup. Covers vanilla, React Three Fiber, and production deployment."
 ---
 
 # Three.js Development
@@ -28,19 +28,19 @@ description: Build, debug, and optimize Three.js applications. Covers WebGL/WebG
 ### Lifecycle Contract
 
 Every Three.js integration MUST have:
-- **Init**: renderer, scene, camera → attach to canvas
+- **Init**: renderer, scene, camera -> attach to canvas
 - **Resize**: renderer + camera + composer + DPR cap
 - **Loop**: `requestAnimationFrame` or `setAnimationLoop` (XR)
 - **Teardown**: stop loop, remove listeners, dispose ALL GPU resources
 
-Target API: `createThreeApp(canvas) → { resize(), update(dt), render(), dispose() }`
+Target API: `createThreeApp(canvas) -> { resize(), update(dt), render(), dispose() }`
 
 ### Color and Postprocessing
 
-- Direct rendering → renderer output settings apply
-- EffectComposer (WebGL) → OutputPass handles tone mapping; passes needing sRGB (e.g., FXAA) go AFTER OutputPass
-- WebGL and WebGPU postprocessing stacks differ — do not mix
-- Color textures → sRGB; data textures (normal, roughness) → linear
+- Direct rendering -> renderer output settings apply
+- EffectComposer (WebGL) -> OutputPass handles tone mapping; passes needing sRGB (e.g., FXAA) go AFTER OutputPass
+- WebGL and WebGPU postprocessing stacks differ -- do not mix
+- Color textures -> sRGB; data textures (normal, roughness) -> linear
 
 ### Assets
 
@@ -58,7 +58,105 @@ Target API: `createThreeApp(canvas) → { resize(), update(dt), render(), dispos
 
 - Rewrite architecture or switch frameworks unless requested
 - Add dependencies when Three.js built-ins suffice
-- Global style/formatting changes — keep diffs minimal
+- Global style/formatting changes -- keep diffs minimal
+
+## 3D Space & Positioning
+
+### Coordinate System
+
+Three.js uses a **right-handed** coordinate system:
+- **X**: right
+- **Y**: up
+- **Z**: toward viewer (out of screen)
+
+### Transform Properties
+
+Every `Object3D` has:
+
+| Property | Type | Notes |
+|----------|------|-------|
+| `position` | `Vector3` | World units from parent origin |
+| `rotation` | `Euler` | Radians, default order `'XYZ'` |
+| `quaternion` | `Quaternion` | No gimbal lock, synced with `rotation` |
+| `scale` | `Vector3` | Multiplier per axis |
+
+Setting `rotation` updates `quaternion` and vice versa.
+
+### Local vs World Space
+
+```ts
+// position is local (relative to parent)
+child.position.set(2, 0, 0);
+
+// Get world coordinates
+const worldPos = new THREE.Vector3();
+child.getWorldPosition(worldPos);
+
+// Convert between spaces
+object.localToWorld(vec);
+object.worldToLocal(vec);
+```
+
+### Parent-Child Hierarchy
+
+Children inherit parent transforms. Use `Group` for logical grouping:
+
+```ts
+const group = new THREE.Group();
+group.position.set(5, 0, 0);
+
+const child = new THREE.Mesh(geo, mat);
+child.position.set(0, 2, 0); // world position = (5, 2, 0)
+group.add(child);
+scene.add(group);
+```
+
+### Cameras
+
+```ts
+// Perspective (most 3D scenes)
+const cam = new THREE.PerspectiveCamera(50, w / h, 0.1, 200);
+cam.position.set(0, 1.5, 4);
+cam.lookAt(0, 0, 0);
+
+// Orthographic (2D-like, UI overlays, isometric)
+const size = 10;
+const cam = new THREE.OrthographicCamera(-size * aspect, size * aspect, size, -size, 0.1, 1000);
+```
+
+`PerspectiveCamera(fov, aspect, near, far)` -- fov is vertical in degrees. Keep `near` as large and `far` as small as possible to avoid z-fighting.
+
+### Common Positioning Patterns
+
+```ts
+// Look at target
+camera.lookAt(target.position);
+
+// Orbit around point
+const angle = time * speed;
+obj.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+
+// Smooth interpolation (call each frame)
+object.position.lerp(targetPos, 0.05);
+object.quaternion.slerp(targetQuat, 0.05);
+
+// Get camera forward direction
+const dir = new THREE.Vector3();
+camera.getWorldDirection(dir);
+
+// Center model at origin
+const box = new THREE.Box3().setFromObject(model);
+const center = box.getCenter(new THREE.Vector3());
+model.position.sub(center);
+```
+
+### Units & Scale
+
+No fixed unit system. Common conventions:
+- **Architectural / games**: 1 unit = 1 metre (physics engines assume this)
+- **Small objects**: 1 unit = 1 centimetre
+
+Keep scale consistent across all models in a scene.
 
 ## Quick Reference
 
@@ -230,11 +328,93 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 composer.addPass(new UnrealBloomPass(new THREE.Vector2(w, h), 1.5, 0.4, 0.85));
-composer.addPass(new OutputPass()); // Tone mapping + sRGB — ALWAYS last
+composer.addPass(new OutputPass()); // Tone mapping + sRGB -- ALWAYS last
 
 function render() { composer.render(); }
 function resize() { composer.setSize(w, h); }
 ```
+
+## Animation & Motion
+
+### Theatre.js Integration
+
+Visual timeline animation editor for web. Provides Studio UI (dev) + programmatic playback (prod).
+
+```ts
+import { getProject, types } from '@theatre/core'
+import studio from '@theatre/studio'
+
+if (import.meta.env.DEV) studio.initialize()
+
+const project = getProject('My Project')
+const sheet = project.sheet('Main')
+const obj = sheet.object('Box', {
+  position: types.compound({
+    x: types.number(0), y: types.number(0), z: types.number(0)
+  }),
+  opacity: types.number(1, { range: [0, 1] })
+})
+
+obj.onValuesChange((v) => {
+  mesh.position.set(v.position.x, v.position.y, v.position.z)
+})
+
+project.ready.then(() => sheet.sequence.play({ iterationCount: Infinity }))
+```
+
+#### R3F Pattern
+
+```tsx
+import { editable as e, SheetProvider, PerspectiveCamera } from '@theatre/r3f'
+import extension from '@theatre/r3f/dist/extension'
+
+if (import.meta.env.DEV) { studio.initialize(); studio.extend(extension) }
+
+<Canvas>
+  <SheetProvider sheet={sheet}>
+    <PerspectiveCamera theatreKey="Camera" makeDefault position={[5, 5, -5]} fov={75} />
+    <e.mesh theatreKey="Cube">
+      <boxGeometry />
+      <meshStandardMaterial color="orange" />
+    </e.mesh>
+  </SheetProvider>
+</Canvas>
+```
+
+#### Critical Rules
+
+- **Studio is AGPL** -- dev only, wrap in `import.meta.env.DEV`
+- **Production**: export state JSON from Studio, load via `getProject('Name', { state })`
+- Every `e.*` needs a unique `theatreKey`
+- Wait for `project.ready` before playback
+- R3F: must call `studio.extend(extension)` for 3D controls
+
+| Shortcut | Action |
+|----------|--------|
+| `Alt + \` | Toggle Studio |
+| `Space` | Play/pause |
+| `Shift + drag` | Focus range |
+| Right-click prop | Sequence/keyframe |
+
+### Easing Quick Reference
+
+| Easing | Duration | Use Case |
+|--------|----------|----------|
+| **Ease-out** | 200-500ms | UI appearing (default, 80% of cases) |
+| **Ease-in-out** | 300-500ms | Position changes |
+| **Ease-in** | 150-300ms | UI disappearing |
+| **Linear** | Variable | Spinners, loaders |
+| **Back** | 400-600ms | Playful overshoot |
+| **Bounce** | 800-1200ms | Landing, dropping |
+| **Elastic** | 800-1200ms | Spring, attention |
+| **Spring** | Variable | Gesture response |
+
+**Key rules:**
+- Under 100ms = glitch; over 700ms = sluggish
+- Bounce/elastic need 800ms+ to settle
+- Animate only `transform` and `opacity` (GPU-accelerated)
+- Always support `prefers-reduced-motion`
+- Mobile 300ms baseline, desktop 200ms baseline
 
 ## Quality Gates
 
@@ -270,23 +450,28 @@ function resize() { composer.setSize(w, h); }
 | Too dark | Missing env light, double output transform |
 | Washed out | Wrong texture color spaces, tone mapping issues |
 | Neon/saturated | Double tone mapping |
-| First-frame stutter | Shader compilation — add warmup pass |
+| First-frame stutter | Shader compilation -- add warmup pass |
 | Memory growth | Resources not disposed on unmount |
 | Stretched on resize | Camera aspect not updated, composer not resized |
 
 ## Deep Reference
 
 Load on demand from `references/`:
-- `color-management.md` — Linear workflow, texture color spaces
-- `postprocessing.md` — EffectComposer, pass ordering, WebGPU differences
-- `performance.md` — Draw calls, fill rate, VRAM, GC, profiling
-- `loaders.md` — glTF, DRACO, KTX2, async patterns, caching
-- `shaders.md` — GLSL, onBeforeCompile, node materials
-- `interaction.md` — Raycasting, GPU picking, controls
-- `disposal.md` — Full teardown patterns, reference counting
+
+| Reference | Use When |
+|-----------|----------|
+| `color-management.md` | Linear workflow, texture color spaces, tone mapping |
+| `postprocessing.md` | EffectComposer, pass ordering, WebGPU differences |
+| `performance.md` | Draw calls, fill rate, VRAM, GC, profiling |
+| `loaders.md` | glTF, DRACO, KTX2, async patterns, caching |
+| `shaders.md` | GLSL, onBeforeCompile, node materials (TSL) |
+| `interaction.md` | Raycasting, GPU picking, controls (orbit, fly, drag) |
+| `disposal.md` | Full teardown patterns, reference counting |
+| `theatre-js.md` | Core API, prop types, Studio, React/R3F integration, production, audio sync |
+| `animation-easing.md` | Easing families, timing guidelines, platform standards, real-world examples |
 
 ## Scripts
 
 Run without loading source:
-- `scripts/three-doctor.mjs` — Repo pattern audit
-- `scripts/asset-audit.mjs` — Asset size report
+- `scripts/three-doctor.mjs` -- Repo pattern audit
+- `scripts/asset-audit.mjs` -- Asset size report

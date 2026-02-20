@@ -19,6 +19,7 @@ Type: [logomark | wordmark | lettermark | combination | emblem | abstract]
 Shape Language: [geometric | organic | angular | rounded | mixed]
 Signature Element: [the ONE thing that makes this memorable]
 Palette: primary [hex], secondary [hex], accent [hex]
+Typography: [none | see Typography Intent block below]
 ```
 
 ## Logo Types
@@ -77,7 +78,7 @@ Always use this structure:
   <title>Brand Name Logo</title>
   <!-- Primary shape -->
   <!-- Secondary elements -->
-  <!-- Text if wordmark/combination -->
+  <!-- Wordmark paths if applicable -->
 </svg>
 ```
 
@@ -101,13 +102,41 @@ Reserve gradients for hero usage only. Logo must work flat.
 
 ## Typography in Logos
 
-If including text:
-- Custom letterforms OR carefully chosen typeface
-- Letter-spacing is critical (often needs opening up)
-- Consider custom ligatures for letter combinations
-- Optical adjustments: O/Q/C often need to extend past baseline
+Typography is optional. Default to pure geometry unless the brand name IS the identity (wordmark, lettermark, combination).
 
-Convert text to paths in final output for consistent rendering.
+### Font Intent
+
+If typography is used, justify the choice in the brief:
+
+```
+TYPOGRAPHY INTENT
+Approach: [geometric construction | adapted from typeface family]
+Why: [one sentence - what does this letterform style communicate?]
+Character: [mono-width | proportional], [geometric | humanist | grotesque]
+```
+
+Examples of justified choices:
+- Geometric mono-width for a code tool (precision, technical)
+- Rounded grotesque for a children's app (friendly, approachable)
+- High-contrast serif for a luxury brand (elegance, tradition)
+
+If you can't articulate why, the logo probably doesn't need type.
+
+### Letterforms as Vector Geometry
+
+**Never use `<text>` elements.** All letterforms must be `<path>` data — constructed or converted to outlines.
+
+Why:
+- `<text>` depends on installed fonts — renders differently everywhere
+- Paths are measurable: you know exact widths, heights, and whitespace
+- Paths fit the logo grid — letters align to the same coordinate system as the mark
+
+Construction approach:
+1. Define a type grid: baseline, cap-height, x-height, ascender/descender lines
+2. Build each letter on this grid using `<path>` with cubic/quadratic beziers
+3. Ensure consistent stroke widths and optical corrections (round shapes extend ~2% past flat baselines)
+4. Kern manually — measure gaps between path bounding boxes, not guesswork
+5. Group the wordmark in a single `<g>` so it scales as one unit
 
 ## Python Generator Template
 
@@ -164,7 +193,8 @@ Before delivery:
 - [ ] viewBox is correct
 - [ ] Title element present
 - [ ] Colors are hex, not named
-- [ ] No external dependencies (fonts embedded or converted to paths)
+- [ ] No `<text>` elements — all type is `<path>` geometry
+- [ ] No external font dependencies
 
 ## Workflow
 

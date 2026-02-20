@@ -1,4 +1,0 @@
-#!/bin/bash
-# Wrapper script so agents can call `iterm2 <command>` without defining an inline function.
-DIR="$(cd "$(dirname "$0")" && pwd)"
-exec "$DIR/.venv/bin/python3" "$DIR/iterm2_run.py" "$@"

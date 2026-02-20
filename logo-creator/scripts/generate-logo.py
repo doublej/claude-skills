@@ -31,22 +31,17 @@ def svg_polygon(points: list[tuple[float, float]], fill: str) -> str:
     return f'<polygon points="{pts}" fill="{fill}"/>'
 
 
-def svg_text(
-    x: float,
-    y: float,
-    text: str,
-    fill: str,
-    font_size: float = 48,
-    font_family: str = "sans-serif",
-    font_weight: str = "bold",
-    anchor: str = "middle",
-) -> str:
-    return (
-        f'<text x="{x}" y="{y}" fill="{fill}" '
-        f'font-size="{font_size}" font-family="{font_family}" '
-        f'font-weight="{font_weight}" text-anchor="{anchor}" '
-        f'dominant-baseline="central">{text}</text>'
-    )
+def svg_letterform(d: str, fill: str, transform: str = "") -> str:
+    """Single letter as path data — construct on the logo grid, not as <text>."""
+    tx = f' transform="{transform}"' if transform else ""
+    return f'<path d="{d}" fill="{fill}"{tx}/>'
+
+
+def svg_wordmark(letters: list[str], fill: str, x_offset: float = 0, y_offset: float = 0) -> str:
+    """Group letter paths into a single wordmark unit."""
+    tx = f' transform="translate({x_offset},{y_offset})"' if x_offset or y_offset else ""
+    paths = "\n    ".join(f'<path d="{d}" fill="{fill}"/>' for d in letters)
+    return f'<g{tx}>\n    {paths}\n  </g>'
 
 
 def generate_elements(width: float, height: float, colors: dict) -> list[str]:
