@@ -1,5 +1,5 @@
 import re
-from . import iter_source_files
+from .utils import iter_source_files
 
 # Language-aware definition patterns
 DEF_PATTERNS = {

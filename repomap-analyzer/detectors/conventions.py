@@ -1,6 +1,6 @@
 import re
 from collections import Counter
-from . import iter_source_files
+from .utils import iter_source_files
 
 # Comment-style languages for quote checking
 QUOTE_LANGS = {'.py', '.js', '.ts', '.jsx', '.tsx', '.rb'}

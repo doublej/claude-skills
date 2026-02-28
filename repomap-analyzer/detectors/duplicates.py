@@ -1,6 +1,6 @@
 import re
 from collections import defaultdict
-from . import iter_source_files
+from .utils import iter_source_files
 
 # Multi-language function definition with params
 FUNC_DEF_WITH_PARAMS = re.compile(r'(?:def|func|fn|function)\s+(\w+)\s*\(([^)]*)\)')

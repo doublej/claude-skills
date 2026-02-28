@@ -1,5 +1,5 @@
 import re
-from . import iter_source_files
+from .utils import iter_source_files
 
 # Multi-language definition patterns
 DEF_PATTERN = re.compile(r'(?:def|func|fn|function)\s+(\w+)')
