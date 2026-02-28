@@ -192,20 +192,24 @@ class RepoMap:
         lang = filename_to_lang(fname)
         if not lang:
             return []
-        
+
+        code = self.read_text_func_internal(fname)
+        if not code:
+            return []
+
+        # Svelte/Vue: extract <script> block and parse as TypeScript
+        if lang in ("svelte", "vue"):
+            return self._get_tags_from_script_block(fname, rel_fname, code, get_language, get_parser)
+
         try:
             language = get_language(lang)
             parser = get_parser(lang)
         except Exception as err:
             self.output_handlers['error'](f"Skipping file {fname}: {err}")
             return []
-        
+
         scm_fname = get_scm_fname(lang)
         if not scm_fname:
-            return []
-        
-        code = self.read_text_func_internal(fname)
-        if not code:
             return []
         
         try:
@@ -253,6 +257,60 @@ class RepoMap:
             self.output_handlers['error'](f"Error parsing {fname}: {e}")
             return []
     
+    def _get_tags_from_script_block(self, fname, rel_fname, code, get_language, get_parser):
+        """Extract <script> content from Svelte/Vue files and parse as TypeScript."""
+        import re
+        pattern = re.compile(r'<script[^>]*>(.*?)</script>', re.DOTALL)
+        matches = list(pattern.finditer(code))
+        if not matches:
+            return []
+
+        try:
+            ts_language = get_language("typescript")
+            ts_parser = get_parser("typescript")
+        except Exception:
+            return []
+
+        scm_fname = get_scm_fname("typescript")
+        if not scm_fname:
+            return []
+
+        query_text = read_text(scm_fname, silent=True)
+        if not query_text:
+            return []
+
+        all_tags = []
+        for match in matches:
+            script_code = match.group(1)
+            line_offset = code[: match.start(1)].count("\n")
+
+            try:
+                import tree_sitter
+                tree = ts_parser.parse(bytes(script_code, "utf-8"))
+                query = ts_language.query(query_text)
+                cursor = tree_sitter.QueryCursor(query)
+                captures = cursor.captures(tree.root_node)
+
+                for capture_name, nodes in captures.items():
+                    for node in nodes:
+                        if capture_name.startswith("name.definition"):
+                            kind = "def"
+                        elif capture_name.startswith("name.reference"):
+                            kind = "ref"
+                        else:
+                            continue
+                        all_tags.append(Tag(
+                            rel_fname=rel_fname,
+                            fname=fname,
+                            line=node.start_point[0] + 1 + line_offset,
+                            name=node.text.decode("utf-8"),
+                            kind=kind,
+                        ))
+            except Exception as e:
+                self.output_handlers["error"](f"Error parsing script block in {fname}: {e}")
+
+        return all_tags
+
     @staticmethod
     def _pagerank(G, alpha=0.85, max_iter=100, tol=1e-6, personalization=None):
         """Pure-Python PageRank (no scipy/numpy needed)."""
