@@ -1,0 +1,312 @@
+#!/usr/bin/env python3
+"""
+ps — local Photoshop CLI for macOS
+Triggers ExtendScript (.jsx) via osascript.
+
+Usage:
+  ps export <file.psd> [--format jpg|png] [--quality 85] [--out <dir>]
+  ps resize <file.psd> <width> <height> [--out <file>]
+  ps text <file.psd> <layer> <new-text> [--out <file>]
+  ps action <file.psd> <action-name> <action-set>
+  ps batch <folder> [--format jpg|png] [--quality 85] [--out <dir>]
+  ps layers <file.psd>
+  ps run <script.jsx>
+"""
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+
+# ---------------------------------------------------------------------------
+# Photoshop detection
+# ---------------------------------------------------------------------------
+
+def find_photoshop() -> str:
+    apps = Path("/Applications")
+    candidates = sorted(
+        [d.name for d in apps.iterdir() if "Photoshop" in d.name and d.suffix == ".app"],
+        reverse=True,  # latest version first
+    )
+    if not candidates:
+        sys.exit("Adobe Photoshop not found in /Applications")
+    return candidates[0].removesuffix(".app")
+
+
+# ---------------------------------------------------------------------------
+# Script runner
+# ---------------------------------------------------------------------------
+
+def run_jsx(jsx: str, ps_app: str) -> None:
+    with tempfile.NamedTemporaryFile(suffix=".jsx", mode="w", delete=False, encoding="utf-8") as f:
+        f.write(jsx)
+        tmp = f.name
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ps_app}" to do javascript file "{tmp}"'],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Photoshop script failed (exit {e.returncode})")
+    finally:
+        os.unlink(tmp)
+
+
+def run_jsx_file(path: str, ps_app: str) -> None:
+    abs_path = str(Path(path).resolve())
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ps_app}" to do javascript file "{abs_path}"'],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Photoshop script failed (exit {e.returncode})")
+
+
+# ---------------------------------------------------------------------------
+# JSX templates
+# ---------------------------------------------------------------------------
+
+def jsx_export(psd: str, fmt: str, quality: int, out_dir: str) -> str:
+    psd = psd.replace("\\", "/")
+    out_dir = out_dir.replace("\\", "/")
+    save_type = "SaveDocumentType.JPEG" if fmt == "jpg" else "SaveDocumentType.PNG"
+    ext = fmt
+    return f"""
+var doc = app.open(new File("{psd}"));
+var opts = new ExportOptionsSaveForWeb();
+opts.format = {save_type};
+{"opts.quality = " + str(quality) + ";" if fmt == "jpg" else "opts.PNG8 = false;"}
+var name = doc.name.replace(/\\.[^.]+$/, ".{ext}");
+doc.exportDocument(new File("{out_dir}/" + name), ExportType.SAVEFORWEB, opts);
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_resize(psd: str, width: int, height: int, out_file: str) -> str:
+    psd = psd.replace("\\", "/")
+    out_file = out_file.replace("\\", "/")
+    return f"""
+var doc = app.open(new File("{psd}"));
+doc.resizeImage({width}, {height}, 72, ResampleMethod.BICUBIC);
+doc.saveAs(new File("{out_file}"), new PhotoshopSaveOptions(), true);
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_text(psd: str, layer_name: str, new_text: str, out_file: str) -> str:
+    psd = psd.replace("\\", "/")
+    out_file = out_file.replace("\\", "/")
+    escaped = new_text.replace('"', '\\"')
+    return f"""
+var doc = app.open(new File("{psd}"));
+var layer = doc.layers.getByName("{layer_name}");
+if (layer && layer.kind == LayerKind.TEXT) {{
+    layer.textItem.contents = "{escaped}";
+}} else {{
+    throw new Error("Layer '{layer_name}' not found or is not a text layer");
+}}
+doc.saveAs(new File("{out_file}"), new PhotoshopSaveOptions(), true);
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_action(psd: str, action_name: str, action_set: str) -> str:
+    psd = psd.replace("\\", "/")
+    return f"""
+var doc = app.open(new File("{psd}"));
+app.doAction("{action_name}", "{action_set}");
+doc.close(SaveOptions.SAVECHANGES);
+"""
+
+
+def jsx_batch(folder: str, fmt: str, quality: int, out_dir: str) -> str:
+    folder = folder.replace("\\", "/")
+    out_dir = out_dir.replace("\\", "/")
+    save_type = "SaveDocumentType.JPEG" if fmt == "jpg" else "SaveDocumentType.PNG"
+    ext = fmt
+    return f"""
+var folder = new Folder("{folder}");
+var files = folder.getFiles("*.psd");
+for (var i = 0; i < files.length; i++) {{
+    var doc = app.open(files[i]);
+    var opts = new ExportOptionsSaveForWeb();
+    opts.format = {save_type};
+    {"opts.quality = " + str(quality) + ";" if fmt == "jpg" else "opts.PNG8 = false;"}
+    var name = doc.name.replace(/\\.[^.]+$/, ".{ext}");
+    doc.exportDocument(new File("{out_dir}/" + name), ExportType.SAVEFORWEB, opts);
+    doc.close(SaveOptions.DONOTSAVECHANGES);
+}}
+"""
+
+
+def jsx_layers(psd: str) -> str:
+    psd = psd.replace("\\", "/")
+    return f"""
+var doc = app.open(new File("{psd}"));
+var result = [];
+function collect(layers, depth) {{
+    for (var i = 0; i < layers.length; i++) {{
+        var l = layers[i];
+        result.push(Array(depth + 1).join("  ") + l.name + " [" + l.kind + "]");
+        if (l.layers) collect(l.layers, depth + 1);
+    }}
+}}
+collect(doc.layers, 0);
+$.writeln(result.join("\\n"));
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+# ---------------------------------------------------------------------------
+# Commands
+# ---------------------------------------------------------------------------
+
+def cmd_export(args, ps_app):
+    psd = str(Path(args.file).resolve())
+    out_dir = str(Path(args.out).resolve()) if args.out else str(Path(psd).parent)
+    os.makedirs(out_dir, exist_ok=True)
+    jsx = jsx_export(psd, args.format, args.quality, out_dir)
+    print(f"Exporting {Path(psd).name} → {out_dir} ({args.format.upper()}, q={args.quality})")
+    run_jsx(jsx, ps_app)
+    print("Done.")
+
+
+def cmd_resize(args, ps_app):
+    psd = str(Path(args.file).resolve())
+    out = str(Path(args.out).resolve()) if args.out else psd.replace(".psd", f"_{args.width}x{args.height}.psd")
+    jsx = jsx_resize(psd, args.width, args.height, out)
+    print(f"Resizing {Path(psd).name} → {args.width}×{args.height} → {out}")
+    run_jsx(jsx, ps_app)
+    print("Done.")
+
+
+def cmd_text(args, ps_app):
+    psd = str(Path(args.file).resolve())
+    out = str(Path(args.out).resolve()) if args.out else psd
+    jsx = jsx_text(psd, args.layer, args.text, out)
+    print(f"Setting text on layer '{args.layer}' in {Path(psd).name}")
+    run_jsx(jsx, ps_app)
+    print("Done.")
+
+
+def cmd_action(args, ps_app):
+    psd = str(Path(args.file).resolve())
+    jsx = jsx_action(psd, args.action, args.set)
+    print(f"Running action '{args.action}' ({args.set}) on {Path(psd).name}")
+    run_jsx(jsx, ps_app)
+    print("Done.")
+
+
+def cmd_batch(args, ps_app):
+    folder = str(Path(args.folder).resolve())
+    out_dir = str(Path(args.out).resolve()) if args.out else folder
+    os.makedirs(out_dir, exist_ok=True)
+    jsx = jsx_batch(folder, args.format, args.quality, out_dir)
+    print(f"Batch exporting *.psd from {folder} → {out_dir} ({args.format.upper()})")
+    run_jsx(jsx, ps_app)
+    print("Done.")
+
+
+def cmd_layers(args, ps_app):
+    psd = str(Path(args.file).resolve())
+    jsx = jsx_layers(psd)
+    # Capture output by redirecting Photoshop's $.writeln to a temp file
+    with tempfile.NamedTemporaryFile(suffix=".jsx", mode="w", delete=False, encoding="utf-8") as f:
+        out_tmp = f.name + ".txt"
+        wrapped = jsx.replace("$.writeln(result.join", f'var outFile = new File("{out_tmp}"); outFile.open("w"); outFile.write(result.join')
+        wrapped = wrapped.replace('"\\n"));', '"\\n")); outFile.close();')
+        f.write(wrapped)
+        jsx_tmp = f.name
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ps_app}" to do javascript file "{jsx_tmp}"'],
+            check=True,
+        )
+        if os.path.exists(out_tmp):
+            print(open(out_tmp).read())
+            os.unlink(out_tmp)
+        else:
+            print("(no layers output — check the PSD path)")
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Failed (exit {e.returncode})")
+    finally:
+        os.unlink(jsx_tmp)
+
+
+def cmd_run(args, ps_app):
+    print(f"Running {args.script} in {ps_app}")
+    run_jsx_file(args.script, ps_app)
+    print("Done.")
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(prog="ps", description="Local Photoshop CLI (macOS)")
+    parser.add_argument("--app", help="Photoshop app name (auto-detected if omitted)")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    # export
+    p = sub.add_parser("export", help="Export PSD to JPG or PNG")
+    p.add_argument("file")
+    p.add_argument("--format", choices=["jpg", "png"], default="jpg")
+    p.add_argument("--quality", type=int, default=85)
+    p.add_argument("--out", help="Output directory (default: same as PSD)")
+
+    # resize
+    p = sub.add_parser("resize", help="Resize a PSD and save")
+    p.add_argument("file")
+    p.add_argument("width", type=int)
+    p.add_argument("height", type=int)
+    p.add_argument("--out", help="Output file path (default: overwrites original)")
+
+    # text
+    p = sub.add_parser("text", help="Update a text layer")
+    p.add_argument("file")
+    p.add_argument("layer", help="Layer name")
+    p.add_argument("text", help="New text content")
+    p.add_argument("--out", help="Output file (default: overwrites original)")
+
+    # action
+    p = sub.add_parser("action", help="Run a recorded Photoshop Action")
+    p.add_argument("file")
+    p.add_argument("action", help="Action name")
+    p.add_argument("set", help="Action set name")
+
+    # batch
+    p = sub.add_parser("batch", help="Batch export all PSDs in a folder")
+    p.add_argument("folder")
+    p.add_argument("--format", choices=["jpg", "png"], default="jpg")
+    p.add_argument("--quality", type=int, default=85)
+    p.add_argument("--out", help="Output directory (default: same as input folder)")
+
+    # layers
+    p = sub.add_parser("layers", help="List all layers in a PSD")
+    p.add_argument("file")
+
+    # run
+    p = sub.add_parser("run", help="Run an arbitrary .jsx script")
+    p.add_argument("script")
+
+    args = parser.parse_args()
+    ps_app = args.app or find_photoshop()
+
+    dispatch = {
+        "export": cmd_export,
+        "resize": cmd_resize,
+        "text": cmd_text,
+        "action": cmd_action,
+        "batch": cmd_batch,
+        "layers": cmd_layers,
+        "run": cmd_run,
+    }
+    dispatch[args.cmd](args, ps_app)
+
+
+if __name__ == "__main__":
+    main()
