@@ -1,10 +1,6 @@
-# Tweakpane API Reference
+# Tweakpane v4 API Reference
 
 ## Pane Class
-
-The root pane of Tweakpane, extends `RootApi`.
-
-### Constructor
 
 ```typescript
 const pane = new Pane(config?: PaneConfig);
@@ -14,221 +10,350 @@ const pane = new Pane(config?: PaneConfig);
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `children` | `BladeApi[]` | Array of blade APIs in container |
+| `children` | `BladeApi[]` | Blade APIs in container |
 | `disabled` | `boolean` | Enable/disable the pane |
-| `document` | `Document` | The document object |
-| `element` | `HTMLElement` | The root HTML element |
+| `element` | `HTMLElement` | Root HTML element |
 | `expanded` | `boolean` | Expansion state |
-| `hidden` | `boolean` | Visibility state |
+| `hidden` | `boolean` | Visibility |
 | `title` | `string \| undefined` | Pane title |
 
-### Methods
+## Auto-Detection Rules
 
-#### Content Addition
+Tweakpane picks controls based on the JS type of the bound value + options provided:
 
-**addBinding(object, key, params?)**
+| Value Type | Options | Resulting Control |
+|------------|---------|-------------------|
+| `number` | none | Text input (number) |
+| `number` | `min` + `max` | **Slider** + text |
+| `number` | `options: {...}` | **Dropdown** |
+| `number` | `view: 'color'` | **Color picker** |
+| `string` | none (not color-like) | Text input |
+| `string` | none (CSS color string) | **Color picker** (auto) |
+| `string` | `view: 'text'` | Text input (forced) |
+| `string` | `options: {...}` | **Dropdown** |
+| `boolean` | none | **Checkbox** |
+| `{r, g, b}` | none | **Color picker** (auto) |
+| `{r, g, b, a}` | none | **Color picker** + alpha |
+| `{x, y}` | none | **Point 2D** picker |
+| `{x, y, z}` | none | **Point 3D** fields |
+| `{x, y, z, w}` | none | **Point 4D** fields |
+
+## addBinding — Input Bindings
+
+### Number
+
 ```typescript
-pane.addBinding(obj, 'property', {
+// Text input (unbounded)
+pane.addBinding(params, 'seed');
+
+// Slider (bounded range)
+pane.addBinding(params, 'speed', { min: 0, max: 100 });
+
+// Slider with step
+pane.addBinding(params, 'gridSize', { min: 8, max: 64, step: 8 });
+
+// Dropdown (named values)
+pane.addBinding(params, 'quality', {
+  options: { Low: 1, Medium: 2, High: 3 },
+});
+
+// Custom display format
+pane.addBinding(params, 'angle', {
+  min: 0, max: 360,
+  format: (v) => `${v.toFixed(0)}°`,
+});
+```
+
+Options: `min`, `max`, `step`, `format: (v) => string`, `options: { label: value }`
+
+### String
+
+```typescript
+// Text input (free text)
+pane.addBinding(params, 'name');
+
+// Dropdown (fixed choices)
+pane.addBinding(params, 'easing', {
+  options: { Linear: 'linear', Ease: 'ease-in-out', Bounce: 'bounce' },
+});
+
+// Force text input on color-like string
+pane.addBinding(params, 'cssVar', { view: 'text' });
+```
+
+Options: `options: { label: value }`, `view: 'text'`
+
+### Boolean
+
+```typescript
+// Checkbox (always)
+pane.addBinding(params, 'enabled');
+```
+
+No additional options.
+
+### Color
+
+```typescript
+// Auto-detected from CSS string
+pane.addBinding(params, 'color');  // '#ff0055'
+
+// Auto-detected from object
+pane.addBinding(params, 'bg');  // { r: 255, g: 0, b: 85 }
+
+// Force color on hex number
+pane.addBinding(params, 'tint', { view: 'color' });  // 0xff0055
+
+// Float range for shaders (0.0-1.0 instead of 0-255)
+pane.addBinding(params, 'diffuse', { color: { type: 'float' } });
+
+// With alpha channel
+pane.addBinding(params, 'overlay', { color: { alpha: true } });
+
+// Inline picker (always visible)
+pane.addBinding(params, 'color', { picker: 'inline', expanded: true });
+```
+
+Options: `view: 'color'`, `color: { type: 'int'|'float', alpha: boolean }`, `picker: 'inline'`, `expanded: boolean`
+
+### Point 2D
+
+```typescript
+// Auto-detected from {x, y}
+pane.addBinding(params, 'position');
+
+// With axis constraints
+pane.addBinding(params, 'pos', {
+  x: { min: -100, max: 100, step: 1 },
+  y: { min: -100, max: 100, step: 1, inverted: true },
+  picker: 'inline',
+});
+```
+
+Options: `x: { min, max, step }`, `y: { min, max, step, inverted }`, `picker: 'inline'`, `expanded`
+
+### Point 3D / 4D
+
+```typescript
+pane.addBinding(params, 'rotation');  // { x, y, z }
+pane.addBinding(params, 'quat');     // { x, y, z, w }
+// Per-axis: x/y/z/w: { min, max, step }
+```
+
+## addBinding — Monitor Bindings (readonly)
+
+Add `readonly: true` to create non-editable displays.
+
+```typescript
+// Numeric display
+pane.addBinding(params, 'fps', { readonly: true });
+
+// Numeric graph
+pane.addBinding(params, 'frameTime', {
+  readonly: true,
+  view: 'graph',
+  min: 0,
+  max: 33,
+});
+
+// Text display
+pane.addBinding(params, 'status', { readonly: true });
+
+// Multiline log
+pane.addBinding(params, 'log', {
+  readonly: true,
+  multiline: true,
+  rows: 5,
+});
+
+// Custom poll interval (default 200ms)
+pane.addBinding(params, 'memory', {
+  readonly: true,
+  interval: 500,
+});
+
+// Buffer size (keep last N values for graph)
+pane.addBinding(params, 'cpu', {
+  readonly: true,
+  view: 'graph',
   min: 0,
   max: 100,
-  step: 1,
-  label: 'Custom Label'
+  bufferSize: 120,
 });
 ```
 
-**addFolder(params)**
+Monitor options: `readonly: true`, `view: 'graph'`, `multiline: boolean`, `rows: number`, `interval: number`, `bufferSize: number`
+
+## Structural Controls
+
+### Folder
+
 ```typescript
-const folder = pane.addFolder({
-  title: 'Folder Name',
-  expanded: true
-});
+const folder = pane.addFolder({ title: 'Advanced', expanded: false });
+folder.addBinding(params, 'key');
 ```
 
-**addBlade(params)**
-```typescript
-pane.addBlade({
-  view: 'separator'
-});
+### Button
 
+```typescript
+const btn = pane.addButton({ title: 'Reset', label: 'action' });
+btn.on('click', () => { /* ... */ });
+```
+
+### Tab
+
+```typescript
+const tab = pane.addTab({
+  pages: [{ title: 'General' }, { title: 'Advanced' }],
+});
+tab.pages[0].addBinding(params, 'key');
+```
+
+## Blade Types (addBlade)
+
+Standalone UI elements not bound to data.
+
+```typescript
+// Separator
+pane.addBlade({ view: 'separator' });
+
+// Text blade
 pane.addBlade({
   view: 'text',
   label: 'info',
   parse: (v) => String(v),
-  value: 'hello'
+  value: 'hello',
+});
+
+// List blade (standalone dropdown)
+// Note: uses [{text, value}] format, not {label: value}
+pane.addBlade({
+  view: 'list',
+  label: 'scene',
+  options: [
+    { text: 'Loading', value: 'ldg' },
+    { text: 'Menu', value: 'mnu' },
+  ],
+  value: 'ldg',
+});
+
+// Slider blade (standalone slider)
+pane.addBlade({
+  view: 'slider',
+  label: 'brightness',
+  min: 0, max: 1, value: 0.5,
 });
 ```
 
-**addButton(params)**
-```typescript
-const btn = pane.addButton({
-  title: 'Click Me',
-  label: 'action'
-});
-btn.on('click', () => console.log('clicked'));
-```
+## Plugin: @tweakpane/plugin-essentials
 
-**addTab(params)**
-```typescript
-const tab = pane.addTab({
-  pages: [
-    { title: 'Page 1' },
-    { title: 'Page 2' }
-  ]
-});
-tab.pages[0].addBinding(obj, 'prop');
-```
-
-#### Utilities
-
-**on(eventName, handler)** / **off(eventName, handler)**
-```typescript
-pane.on('change', (ev) => {
-  console.log(ev.value);
-});
-```
-
-**refresh()**
-```typescript
-// Update display after external changes
-params.value = newValue;
-pane.refresh();
-```
-
-**dispose()**
-```typescript
-pane.dispose(); // Clean up resources
-```
-
-**exportState()** / **importState(state)**
-```typescript
-const state = pane.exportState();
-localStorage.setItem('pane', JSON.stringify(state));
-
-// Later...
-pane.importState(JSON.parse(localStorage.getItem('pane')));
-```
-
-**registerPlugin(bundle)**
 ```typescript
 import * as EssentialsPlugin from '@tweakpane/plugin-essentials';
 pane.registerPlugin(EssentialsPlugin);
 ```
 
-## Input Binding Parameters
-
-### Number
+### FPS Graph
 
 ```typescript
-{
-  min: number,           // Minimum value
-  max: number,           // Maximum value (with min creates slider)
-  step: number,          // Step increment
-  format: (v) => string, // Display format
-  options: {}            // Creates dropdown instead
-}
+const fps = pane.addBlade({ view: 'fpsgraph', label: 'fps', rows: 2 });
+// Call fps.begin() / fps.end() each frame
 ```
 
-### String
+### Interval (range with two handles)
 
 ```typescript
-{
-  options: string[] | { label: value }  // Creates dropdown
-}
+// Value must be { min: number, max: number }
+pane.addBinding(params, 'range', { min: 0, max: 100, step: 1 });
 ```
 
-### Boolean
-
-No additional parameters (checkbox by default).
-
-### Color
-
-```typescript
-{
-  color: {
-    alpha: boolean,     // Enable alpha channel
-    type: 'int' | 'float'  // Value range (0-255 or 0-1)
-  },
-  view: 'color',        // Force color view
-  picker: 'inline',     // Inline picker
-  expanded: boolean     // Expand by default
-}
-```
-
-### Point 2D/3D/4D
-
-```typescript
-{
-  x: { min, max, step },
-  y: { min, max, step, inverted: boolean },
-  z: { min, max, step },  // 3D+
-  w: { min, max, step },  // 4D only
-  picker: 'inline'
-}
-```
-
-## Blade Types
-
-### Separator
-
-```typescript
-pane.addBlade({ view: 'separator' });
-```
-
-### Text
+### Radio Grid
 
 ```typescript
 pane.addBlade({
-  view: 'text',
-  label: 'name',
-  parse: (v) => String(v),
-  value: 'initial'
+  view: 'radiogrid',
+  groupName: 'theme',
+  size: [3, 1],
+  cells: (x, y) => ({
+    title: ['Light', 'Dark', 'Auto'][x],
+    value: ['light', 'dark', 'auto'][x],
+  }),
+  label: 'Theme',
 });
 ```
 
-### List
+### Button Grid
 
 ```typescript
-pane.addBlade({
-  view: 'list',
-  label: 'choice',
-  options: [
-    { text: 'Option A', value: 'a' },
-    { text: 'Option B', value: 'b' }
-  ],
-  value: 'a'
+const grid = pane.addBlade({
+  view: 'buttongrid',
+  size: [3, 1],
+  cells: (x, y) => ({ title: ['Undo', 'Redo', 'Reset'][x] }),
+  label: 'Actions',
 });
+grid.on('click', (ev) => console.log(ev.index));
 ```
 
-### Slider
+### Cubic Bezier
 
 ```typescript
-pane.addBlade({
-  view: 'slider',
-  label: 'value',
-  min: 0,
-  max: 100,
-  value: 50
+// Value must be [x1, y1, x2, y2] array
+pane.addBinding(params, 'easing', {
+  view: 'cubicbezier',
+  expanded: true,
 });
 ```
+
+## Plugin: @tweakpane/plugin-camerakit
+
+```typescript
+import * as CamerakitPlugin from '@tweakpane/plugin-camerakit';
+pane.registerPlugin(CamerakitPlugin);
+```
+
+### Camera Ring
+
+```typescript
+pane.addBinding(params, 'angle', {
+  view: 'cameraring',
+  series: 0, // 0, 1, or 2 (appearance)
+});
+```
+
+### Camera Wheel
+
+```typescript
+pane.addBinding(params, 'zoom', {
+  view: 'camerawheel',
+  amount: 10, // value change per pixel
+});
+```
+
+## Universal Options
+
+Apply to any `addBinding()` call:
+
+| Option | Type | Effect |
+|--------|------|--------|
+| `label` | `string` | Custom display label |
+| `disabled` | `boolean` | Grey out control |
+| `hidden` | `boolean` | Hide control |
+| `index` | `number` | Insert position |
 
 ## Events
 
-### Change Event
-
 ```typescript
-pane.on('change', (ev) => {
-  console.log('changed:', ev.presetKey, ev.value);
-});
-
 // On specific binding
 binding.on('change', (ev) => {
-  console.log(ev.value);
+  ev.value;  // new value
+  ev.last;   // true if final change in drag sequence
 });
-```
 
-### Fold Event
+// On pane (all changes)
+pane.on('change', (ev) => {
+  console.log(ev.presetKey, ev.value);
+});
 
-```typescript
+// Folder fold
 folder.on('fold', (ev) => {
   console.log('expanded:', ev.expanded);
 });
@@ -241,11 +366,10 @@ folder.on('fold', (ev) => {
 ```typescript
 const presets = {
   default: { speed: 50, color: '#fff' },
-  fast: { speed: 100, color: '#f00' }
+  fast: { speed: 100, color: '#f00' },
 };
-
 pane.addBinding(params, 'preset', {
-  options: Object.keys(presets)
+  options: Object.keys(presets).reduce((o, k) => ({ ...o, [k]: k }), {}),
 }).on('change', (ev) => {
   Object.assign(params, presets[ev.value]);
   pane.refresh();
@@ -264,8 +388,26 @@ pane.addBinding(params, 'showAdvanced').on('change', (ev) => {
 ### Real-time Monitoring
 
 ```typescript
+// Option A: readonly binding with interval
+pane.addBinding(params, 'fps', {
+  readonly: true,
+  view: 'graph',
+  min: 0, max: 120,
+  interval: 100,
+});
+
+// Option B: manual refresh
 setInterval(() => {
   params.fps = calculateFPS();
   pane.refresh();
 }, 100);
+```
+
+### State Persistence
+
+```typescript
+const state = pane.exportState();
+localStorage.setItem('pane', JSON.stringify(state));
+
+pane.importState(JSON.parse(localStorage.getItem('pane')));
 ```
