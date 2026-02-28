@@ -12,7 +12,7 @@ Orchestrate a full optimization pipeline on the current project. No user input n
 
 ## Pipeline
 
-Run phases in order. Skip phases that don't apply.
+Run ALL phases in order. Each phase describes its own skip condition — do not skip unless that specific condition is met.
 
 ### Phase 1 — Discover (parallel, read-only)
 
@@ -27,19 +27,22 @@ After all three return, synthesise findings into a **ranked hit list**:
 - Sort by impact (highest first)
 - Present to user as a brief table before touching anything
 
-### Phase 2 — Simplify (conditional)
+### Phase 2 — Simplify
 
-If repomap or dev-refactor flagged complexity issues (files >150 lines, nested logic, duplicates):
+If repomap or dev-refactor flagged ANY complexity issues (files >150 lines, nested logic, duplicates):
 → Invoke **`codebase-simplify`**
 
-Skip if codebase is already lean (< 5 files flagged).
+Do NOT skip because complexity is "pre-existing" or "not introduced by recent changes" — the goal is to improve the codebase as it stands now. Only skip if zero files were flagged for complexity.
 
-### Phase 3 — Docs Audit (conditional)
+### Phase 3 — Docs Audit
 
-If the project has any of: `README.md`, `docs/`, `CHANGELOG.md`, JSDoc, docstrings:
 → Invoke **`audit-docs`**
 
-Skip if no documentation exists.
+If the project has `README.md`, `docs/`, `CHANGELOG.md`, JSDoc, docstrings, or `CLAUDE.md`:
+→ Audit existing docs for accuracy and completeness.
+
+If the project has NO documentation at all:
+→ Flag this as a finding and create a minimal `README.md` with project name, description, and usage. Do NOT skip.
 
 ### Phase 4 — Verify
 
