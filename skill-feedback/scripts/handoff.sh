@@ -42,13 +42,21 @@ claude --dangerously-skip-permissions --chrome "\$(cat '$PROMPT_FILE')"
 rm -f "$PROMPT_FILE"
 
 echo ""
-echo "Feedback processed. Notifying original session..."
+echo "Feedback processed. Restarting original session..."
 echo ""
 
-# Send completion message to the original Claude session via iTerm2
-it2 send -s "$RAW_SESSION_ID" "Skill feedback for $SKILL_NAME has been processed. Changes are committed in the skills repo."
+# Exit Claude in the original session, then restart it
+it2 send -s "$RAW_SESSION_ID" $'/exit\n'
+sleep 2
+it2 send -s "$RAW_SESSION_ID" $'echo "Skill feedback for $SKILL_NAME has been processed. Restarting Claude..."\n'
+sleep 1
+it2 send -s "$RAW_SESSION_ID" $'claude --resume\n'
 
 rm -f "$CONT_SCRIPT"
+
+# Close the feedback tab
+sleep 1
+exit 0
 SCRIPT
 chmod +x "$CONT_SCRIPT"
 
