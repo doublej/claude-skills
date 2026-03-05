@@ -1,11 +1,13 @@
 ---
 name: skill-feedback
-description: Report feedback on skills from any project. Choose between spawning a Claude Code session to act immediately or creating a beads ticket for later.
+description: Report feedback on a skill. Spawns a Claude session in the skills project to process the feedback, then resumes your original session.
+arguments: "<skillname> <feedback>"
 ---
 
 # Skill Feedback
 
 Report feedback (bugs, improvements, ideas) on any skill — from whatever project you're in.
+Hands off to a new Claude session in the skills project, then resumes yours.
 
 ## Path Resolution
 
@@ -19,76 +21,54 @@ Use `$SKILLS_ROOT` for all operations below. Never hardcode paths.
 
 ## Workflow
 
-### 1. Gather feedback
+### 1. Parse arguments
 
-Ask the user (prefer consult-user-mcp if available):
+`$ARGUMENTS` format: `<skillname> <feedback text>`
 
-- **Which skill?** — free text (skill name or folder)
-- **What feedback?** — free text describing the bug, idea, or improvement
-- **Mode?** — "Act now" or "Create ticket"
+If `$ARGUMENTS` is empty, use consult-user-mcp `ask` with a form:
+- **skill** (text): Which skill? (name or folder)
+- **feedback** (text): What's the issue or improvement?
 
-### 2a. Act now (tmux + claude -p)
+### 2. Validate skill
 
-Spawn a headless Claude Code session in tmux targeting the skills project.
+Check that `$SKILLS_ROOT/<skillname>/SKILL.md` exists.
 
-**Important:** Run all commands in a single Bash call so variables persist. Write the prompt to a temp file to avoid quoting issues with `send-keys`.
-
-```bash
-# Resolve paths
-SKILLS_ROOT="$(dirname "$(readlink -f ~/.claude/skills/skill-feedback)")"
-SOCKET_DIR="${TMPDIR:-/tmp}/claude-tmux-sockets"
-mkdir -p "$SOCKET_DIR"
-SOCKET="$SOCKET_DIR/claude.sock"
-SESSION="claude-skill-feedback"
-
-# Write prompt to temp file (avoids send-keys quoting problems)
-PROMPT_FILE="$(mktemp)"
-cat > "$PROMPT_FILE" << 'PROMPT'
-Skill: <skill_name>. Feedback: <feedback_text>. Investigate and fix or improve as described.
-PROMPT
-
-# Kill stale session if it exists
-tmux -S "$SOCKET" kill-session -t "$SESSION" 2>/dev/null || true
-
-# Start new session in the skills project
-tmux -S "$SOCKET" new-session -d -s "$SESSION" -c "$SKILLS_ROOT"
-
-# Run Claude with prompt from file (cat piped to claude -p)
-tmux -S "$SOCKET" send-keys -t "$SESSION" \
-  "cat '$PROMPT_FILE' | claude -p --permission-mode acceptEdits; rm '$PROMPT_FILE'" Enter
-
-# Print the ACTUAL resolved socket path for the user
-echo "To monitor this session:"
-echo "  tmux -S $SOCKET attach -t $SESSION"
-```
-
-Print the monitor command with the **resolved** `$SOCKET` path (not hardcoded `/tmp/`). Then poll for completion using `capture-pane` — check for the shell prompt `$` appearing after the claude command finishes. Report the result summary back to the user.
-
-### 2b. Create ticket (beads)
-
-Create a beads issue in the skills project:
+If not found, list available skills and ask user to pick:
 
 ```bash
-cd "$SKILLS_ROOT"
-bd create "<skill_name>: <short_title>"
+ls -d "$SKILLS_ROOT"/*/SKILL.md 2>/dev/null | xargs -I{} dirname {} | xargs -I{} basename {}
 ```
 
-Then optionally set description and labels:
+### 3. Validate environment
+
+Check that `$ITERM_SESSION_ID` is set. If empty, abort with:
+> "ITERM_SESSION_ID not set — this skill requires iTerm2."
+
+### 4. Hand off
+
+Run the handoff script:
 
 ```bash
-# Get the issue ID from the create output
-bd update <issue_id> --description "<full feedback text>"
-bd label add <issue_id> feedback
+bash "$SKILLS_ROOT/skill-feedback/scripts/handoff.sh" \
+  "$SKILLS_ROOT" \
+  "$PWD" \
+  "$ITERM_SESSION_ID" \
+  "<skillname>" \
+  "<feedback>"
 ```
 
-Confirm to the user with the issue ID and a reminder they can view it with `bd list` in the skills project.
+**Important:** Pass feedback as a single quoted argument. The script writes it to a temp file internally to avoid shell escaping issues.
+
+### 5. Inform user
+
+After launching the handoff script, tell the user:
+
+> Feedback session launched in a new iTerm2 tab. Your current session continues normally.
+> When the feedback is processed, it will resume this session in that tab.
 
 ## Rules
 
-- Always resolve `SKILLS_ROOT` dynamically — never hardcode
-- **Run all tmux setup + send-keys in a single Bash call** so variables persist across commands
-- **Never hardcode socket paths** — always use the resolved `$SOCKET` variable when printing monitor commands
-- Write long prompts to a temp file and pipe to `claude -p` to avoid send-keys quoting breakage
-- Always print the tmux monitor command immediately after spawning
-- Keep ticket titles short; put details in the description
-- If `bd` is not found, fall back to creating a markdown file at `$SKILLS_ROOT/.beads/manual/<skill_name>-<timestamp>.md`
+- Always resolve `$SKILLS_ROOT` dynamically — never hardcode
+- Never continue after launching the handoff — exit immediately
+- The handoff script runs in the background; do not wait for it
+- All feedback text flows through temp files, never inline shell args

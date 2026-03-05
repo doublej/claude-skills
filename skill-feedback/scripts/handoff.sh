@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Hands off from the current Claude session to a feedback-processing session
-# in the skills project, then resumes the original session.
+# Opens a new iTerm2 tab to process skill feedback via Claude,
+# leaving the current session untouched.
 #
 # Usage: handoff.sh SKILLS_ROOT ORIG_DIR ITERM_SESSION_ID SKILL_NAME FEEDBACK
 
@@ -11,9 +11,6 @@ ORIG_DIR="$2"
 RAW_SESSION_ID="$3"
 SKILL_NAME="$4"
 FEEDBACK="$5"
-
-# Extract UUID from ITERM_SESSION_ID (format: w0t0p0:UUID)
-PANE_ID="${RAW_SESSION_ID##*:}"
 
 # --- Resolve original Claude Code session ID ---
 ENCODED_DIR="$(echo "$ORIG_DIR" | sed 's|[/_.]|-|g')"
@@ -55,7 +52,7 @@ Instructions:
 7. Exit when done — do NOT start another task
 PROMPT
 
-# --- Write continuation script ---
+# --- Write the command to run in the new tab ---
 CONT_SCRIPT="$(mktemp)"
 cat > "$CONT_SCRIPT" <<SCRIPT
 #!/usr/bin/env bash
@@ -66,6 +63,10 @@ cd "$SKILLS_ROOT"
 claude --dangerously-skip-permissions --chrome "\$(cat '$PROMPT_FILE')"
 rm -f "$PROMPT_FILE"
 
+echo ""
+echo "Feedback processed. Resuming original session..."
+echo ""
+
 # Resume original session
 cd "$ORIG_DIR"
 claude --dangerously-skip-permissions --chrome -r "$SESSION_ID"
@@ -74,14 +75,7 @@ rm -f "$CONT_SCRIPT"
 SCRIPT
 chmod +x "$CONT_SCRIPT"
 
-# --- Kill current session via Ctrl-C, then launch handoff ---
-nohup bash -c "
-  sleep 2
-  it2 send -s '$PANE_ID' \$'\x03'
-  sleep 1
-  it2 send -s '$PANE_ID' \$'\x03'
-  sleep 3
-  it2 run -s '$PANE_ID' 'bash $CONT_SCRIPT'
-" >/dev/null 2>&1 &
+# --- Open a new tab and run the feedback session there ---
+it2 newtab -c "bash $CONT_SCRIPT"
 
-echo "Handoff launched (pid $!). Session will switch in ~6 seconds."
+echo "Feedback session launched in a new tab."
