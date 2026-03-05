@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Opens a new iTerm2 tab to process skill feedback via Claude,
+# Opens an iTerm2 split pane to process skill feedback via Claude,
 # leaving the current session untouched.
 #
 # Usage: handoff.sh SKILLS_ROOT ORIG_DIR ITERM_SESSION_ID SKILL_NAME FEEDBACK
@@ -46,21 +46,23 @@ echo "Feedback processed. Restarting original session..."
 echo ""
 
 # Exit Claude in the original session, then restart it
+it2 send -s "$RAW_SESSION_ID" $'\x03'
+sleep 1
 it2 send -s "$RAW_SESSION_ID" $'/exit\n'
 sleep 2
-it2 send -s "$RAW_SESSION_ID" $'echo "Skill feedback for $SKILL_NAME has been processed. Restarting Claude..."\n'
+it2 send -s "$RAW_SESSION_ID" $'echo "Skill feedback for $SKILL_NAME has been processed."\n'
 sleep 1
 it2 send -s "$RAW_SESSION_ID" $'claude --resume\n'
 
 rm -f "$CONT_SCRIPT"
 
-# Close the feedback tab
+# Close this feedback pane
 sleep 1
-exit 0
+osascript -e 'tell application "iTerm2" to tell current session of current window to close'
 SCRIPT
 chmod +x "$CONT_SCRIPT"
 
 # --- Open a new tab and run the feedback session there ---
-it2 newtab -c "bash $CONT_SCRIPT"
+it2 hsplit -c "bash $CONT_SCRIPT"
 
-echo "Feedback session launched in a new tab."
+echo "Feedback session launched in a split pane."
