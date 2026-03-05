@@ -8,7 +8,8 @@ set -euo pipefail
 
 SKILLS_ROOT="$1"
 ORIG_DIR="$2"
-RAW_SESSION_ID="$3"
+# Strip w0t0p0: prefix from ITERM_SESSION_ID — it2 CLI expects bare UUID
+RAW_SESSION_ID="${3##*:}"
 SKILL_NAME="$4"
 FEEDBACK="$5"
 
