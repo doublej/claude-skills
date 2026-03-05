@@ -30,7 +30,14 @@ Instructions:
 7. Exit when done — the handoff script will notify the original session that feedback was processed
 PROMPT
 
-# --- Write the command to run in the new tab ---
+# --- Split pane next to source session ---
+PANE_ID=$(it2 vsplit -s "$RAW_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
+if [ -z "$PANE_ID" ]; then
+  echo "Failed to create split pane" >&2
+  exit 1
+fi
+
+# --- Write the command to run in the split pane ---
 CONT_SCRIPT="$(mktemp)"
 cat > "$CONT_SCRIPT" <<SCRIPT
 #!/usr/bin/env bash
@@ -42,10 +49,10 @@ claude --dangerously-skip-permissions --chrome "\$(cat '$PROMPT_FILE')"
 rm -f "$PROMPT_FILE"
 
 echo ""
-echo "Feedback processed. Restarting original session..."
+echo "Feedback processed. Notifying original session..."
 echo ""
 
-# Exit Claude in the original session, then restart it
+# Notify the original session
 it2 send -s "$RAW_SESSION_ID" $'\x03'
 sleep 1
 it2 send -s "$RAW_SESSION_ID" $'/exit\n'
@@ -58,11 +65,11 @@ rm -f "$CONT_SCRIPT"
 
 # Close this feedback pane
 sleep 1
-osascript -e 'tell application "iTerm2" to tell current session of current window to close'
+it2 session close -s "$PANE_ID" -f
 SCRIPT
 chmod +x "$CONT_SCRIPT"
 
-# --- Open a new tab and run the feedback session there ---
-it2 hsplit -c "bash $CONT_SCRIPT"
+# --- Run the feedback session in the split pane ---
+it2 run -s "$PANE_ID" "bash $CONT_SCRIPT"
 
-echo "Feedback session launched in a split pane."
+echo "Feedback session launched in split pane."
