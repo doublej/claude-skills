@@ -49,7 +49,7 @@ Instructions:
 4. Run any relevant checks (lint, test)
 5. Commit the changes with a descriptive message
 6. Run ./install-skill.sh $SKILL_NAME
-7. Exit when done — do NOT start another task
+7. Exit when done — the handoff script will automatically resume the original session that triggered this feedback
 PROMPT
 
 # --- Write the command to run in the new tab ---
