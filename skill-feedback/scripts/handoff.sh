@@ -12,28 +12,6 @@ RAW_SESSION_ID="$3"
 SKILL_NAME="$4"
 FEEDBACK="$5"
 
-# --- Resolve original Claude Code session ID ---
-ENCODED_DIR="$(echo "$ORIG_DIR" | sed 's|[/_.]|-|g')"
-SESSIONS_FILE="$HOME/.claude/projects/$ENCODED_DIR/sessions-index.json"
-
-if [[ ! -f "$SESSIONS_FILE" ]]; then
-  echo "Error: No sessions-index.json found at $SESSIONS_FILE" >&2
-  exit 1
-fi
-
-SESSION_ID=$(python3 -c "
-import json, sys
-d = json.load(open('$SESSIONS_FILE'))
-entries = [e for e in d.get('entries', []) if not e.get('isSidechain', False)]
-if not entries:
-    sys.exit(1)
-entries.sort(key=lambda e: e.get('modified', ''), reverse=True)
-print(entries[0]['sessionId'])
-") || {
-  echo "Error: Could not extract session ID from $SESSIONS_FILE" >&2
-  exit 1
-}
-
 # --- Write prompt file ---
 PROMPT_FILE="$(mktemp)"
 cat > "$PROMPT_FILE" <<PROMPT
@@ -49,7 +27,7 @@ Instructions:
 4. Run any relevant checks (lint, test)
 5. Commit the changes with a descriptive message
 6. Run ./install-skill.sh $SKILL_NAME
-7. Exit when done — the handoff script will automatically resume the original session that triggered this feedback
+7. Exit when done — the handoff script will notify the original session that feedback was processed
 PROMPT
 
 # --- Write the command to run in the new tab ---
@@ -64,12 +42,11 @@ claude --dangerously-skip-permissions --chrome "\$(cat '$PROMPT_FILE')"
 rm -f "$PROMPT_FILE"
 
 echo ""
-echo "Feedback processed. Resuming original session..."
+echo "Feedback processed. Notifying original session..."
 echo ""
 
-# Resume original session
-cd "$ORIG_DIR"
-claude --dangerously-skip-permissions --chrome -r "$SESSION_ID"
+# Send completion message to the original Claude session via iTerm2
+it2 send -s "$RAW_SESSION_ID" "Skill feedback for $SKILL_NAME has been processed. Changes are committed in the skills repo."
 
 rm -f "$CONT_SCRIPT"
 SCRIPT

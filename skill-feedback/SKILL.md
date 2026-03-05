@@ -64,7 +64,7 @@ bash "$SKILLS_ROOT/skill-feedback/scripts/handoff.sh" \
 After launching the handoff script, tell the user:
 
 > Feedback session launched in a new iTerm2 tab. Your current session continues normally.
-> When the feedback is processed, it will resume this session in that tab.
+> When the feedback is processed, a completion message will be sent to this session.
 
 ## Rules
 
