@@ -1,0 +1,6 @@
+# Example Asset File
+
+This placeholder represents where asset files would be stored.
+Replace with actual asset files (templates, images, fonts, etc.) or delete if not needed.
+
+Asset files are NOT loaded into context, but used within output Claude produces.

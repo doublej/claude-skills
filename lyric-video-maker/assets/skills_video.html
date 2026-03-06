@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SKILLS — Gang Starr x Claude Skills</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #000; overflow: hidden; cursor: none; }
+  canvas { display: block; }
+  #start {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: #000; cursor: pointer;
+  }
+  #start h1 {
+    font: 400 clamp(4rem,12vw,10rem)/1 'Bebas Neue', sans-serif;
+    color: #FFD700; letter-spacing: 0.15em;
+    text-shadow: 0 0 80px #FFD70055, 0 0 160px #FFD70022;
+    animation: flicker 2s ease-in-out infinite alternate;
+  }
+  #start p { font: 0.7rem/1 monospace; color: #555; margin-top: 2rem; letter-spacing: 0.4em; }
+  @keyframes flicker {
+    0%,90%,100% { opacity: 1; }
+    92% { opacity: 0.3; }
+    94% { opacity: 0.9; }
+    96% { opacity: 0.4; }
+  }
+  #yt { position:fixed;bottom:0;left:0;width:1px;height:1px;overflow:hidden;opacity:0.01;pointer-events:none;z-index:-1; }
+</style>
+</head>
+<body>
+<div id="start" onclick="boot()"><h1>SKILLS</h1><p>CLICK ANYWHERE</p></div>
+<canvas id="c"></canvas>
+<div id="yt"><div id="yt-player"></div></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+// ─── CONFIG ───
+const BPM = 99;
+const BEAT = 60 / BPM;
+const BEAT_START = 7.0;
+const LYRICS_START = 25;   // when first lyric appears (seconds into YT video)
+const LYRICS_END = 222;    // when last lyric ends
+const W = () => innerWidth, H = () => innerHeight;
+
+// ─── YOUTUBE ───
+let ytp = null, ytReady = false;
+window.onYouTubeIframeAPIReady = () => {
+  ytp = new YT.Player('yt-player', {
+    videoId: '8KgtGs1ny0k',
+    playerVars: { autoplay: 0, controls: 0 },
+    events: { onReady: () => { ytReady = true; } }
+  });
+};
+function now() { return ytReady && ytp ? ytp.getCurrentTime() || 0 : 0; }
+
+// ─── SKILLS LIST (real installed skills) ───
+const SKILL_NAMES = [
+  'skill-creator','hiphop-culture','transcript-capture','lyric-video-maker',
+  'spotify-api','claude-agent-sdk','browser-automation','ascii-art',
+  'pixijs','threejs','blender','telegram','swift','pdf',
+  'blog-writer','logo-creator','raycast','terminal-ux',
+  'codebase-mapper','dev-refactor','smart-commit','session-search',
+  'pydantic-v2','cookiecutter-templates','theatre-js','opentui',
+  'prompt-crafter','dutch-rewriter','mermaid-graphs','vlc',
+  'audio-effects','voice-assistant','font-family-tree','epc-qr',
+  'justfile','version-manager','code-taxonomy','erdantic',
+  'animation-easing','creative-director','frontend-design',
+  'codebase-simplify','modularize','reportlab-pdf','kirby-cms',
+  'context-cascade','claude-md-optimizer','rename-project',
+  'process-monitor','mobile-web','shopify-api','twilio-api',
+  'pixi-debug','porkbun-api','ghostscript','obsidian',
+];
+
+// ─── TRANSCRIPT LINES (real session capture) ───
+const TRANSCRIPT = [
+  '$ claude --skill skill-creator',
+  '>>> Initializing skill: hiphop-culture',
+  '>>> Created SKILL.md',
+  '>>> BPM: 99 | Beat: 0.606s | Bar: 2.424s',
+  '>>> Session: 612abe60-832c-447e-b2c3-f13ead739a4e.jsonl',
+  '[AI] The assignment starts NOW.',
+  '[AI] 99 BPM, 3:56 long, KRS-One samples scratched by DJ Premier.',
+  '>>> capture_session.py --video-format',
+  '[AI] 9 entries captured from session JSONL',
+  '>>> generate_video.py input.json --out skills_video.html',
+  '[AI] Writing all 3 skills in parallel:',
+  '>>> install-skill.sh hiphop-culture',
+  '>>> install-skill.sh transcript-capture',
+  '>>> install-skill.sh lyric-video-maker',
+  '✓ hiphop-culture → Claude',
+  '✓ transcript-capture → Claude',
+  '✓ lyric-video-maker → Claude',
+  '[AI] This process IS the video.',
+  '>>> Web Audio API: analyzing RMS at timestamps...',
+  '>>> Beat drops at 7.0s, vocals at 21.0s',
+  '>>> 90+ skills installed',
+  '>>> The only thing that\'s real',
+];
+
+// ─── LYRICS (timestamped to actual YouTube audio) ───
+const LYRICS = [{"t": 25.0, "txt": "[DJ Premier Scratching]", "size": 0.5, "style": "label"}, {"t": 27.7, "txt": "\"My Microphone\"", "size": 1, "style": "verse"}, {"t": 30.1, "txt": "\"IT'S SKILLS\"", "size": 2, "style": "skills"}, {"t": 32.5, "txt": "\"The funky beat\"", "size": 1, "style": "verse"}, {"t": 34.9, "txt": "\"IT'S SKILLS\"", "size": 2, "style": "skills"}, {"t": 39.0, "txt": "[Hook]", "size": 0.5, "style": "label"}, {"t": 39.8, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 40.2, "txt": "Top rank, point blank,", "size": 1.2, "style": "hook"}, {"t": 40.8, "txt": "we vital", "size": 1.2, "style": "hook"}, {"t": 42.2, "txt": "Spit flows, rip shows,", "size": 1, "style": "verse"}, {"t": 42.7, "txt": "peep the recital", "size": 1, "style": "verse"}, {"t": 44.7, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 45.1, "txt": "Now you feel it", "size": 1.2, "style": "hook"}, {"t": 45.7, "txt": "when we drop those", "size": 1.2, "style": "hook"}, {"t": 47.1, "txt": "Hot beats, stop foes,", "size": 1, "style": "verse"}, {"t": 47.6, "txt": "killing shit, we got", "size": 1, "style": "verse"}, {"t": 48.1, "txt": "those", "size": 1, "style": "verse"}, {"t": 49.5, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 49.9, "txt": "It's the music that", "size": 1.2, "style": "hook"}, {"t": 50.5, "txt": "the street loves", "size": 1.2, "style": "hook"}, {"t": 51.9, "txt": "Each thug is now", "size": 1, "style": "verse"}, {"t": 52.4, "txt": "reppin' this with deep", "size": 1, "style": "verse"}, {"t": 52.9, "txt": "love", "size": 1, "style": "verse"}, {"t": 54.4, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 54.8, "txt": "Gang Starr dueling again", "size": 1.2, "style": "hook"}, {"t": 56.8, "txt": "Ruling again, watch as", "size": 1, "style": "verse"}, {"t": 57.3, "txt": "we do it again", "size": 1, "style": "verse"}, {"t": 59.2, "txt": "[Verse 1: Guru]", "size": 0.5, "style": "label"}, {"t": 60.0, "txt": "It's the true and", "size": 1, "style": "verse"}, {"t": 60.5, "txt": "living with a youthful", "size": 1, "style": "verse"}, {"t": 61.0, "txt": "vengeance", "size": 1, "style": "verse"}, {"t": 62.4, "txt": "And I'ma Judge Mathis", "size": 1, "style": "verse"}, {"t": 62.9, "txt": "your ass; give you", "size": 1, "style": "verse"}, {"t": 63.4, "txt": "a crucial sentence", "size": 1, "style": "verse"}, {"t": 64.8, "txt": "You need at least", "size": 1, "style": "verse"}, {"t": 65.3, "txt": "twelve jewels to practice", "size": 1, "style": "verse"}, {"t": 67.3, "txt": "You're too enthusiastic, male", "size": 1, "style": "verse"}, {"t": 67.8, "txt": "groupie bastard", "size": 1, "style": "verse"}, {"t": 69.7, "txt": "Still trying to convince", "size": 1, "style": "verse"}, {"t": 70.2, "txt": "us some more", "size": 1, "style": "verse"}, {"t": 72.1, "txt": "Pretending you're raw, that's", "size": 1, "style": "verse"}, {"t": 72.6, "txt": "what you'll need a", "size": 1, "style": "verse"}, {"t": 73.1, "txt": "minister for", "size": 1, "style": "verse"}, {"t": 74.5, "txt": "Again it's the law,", "size": 1, "style": "verse"}, {"t": 75.0, "txt": "we got you up", "size": 1, "style": "verse"}, {"t": 75.5, "txt": "against the wall", "size": 1, "style": "verse"}, {"t": 77.0, "txt": "We the gulliest, fuck", "size": 1, "style": "verse"}, {"t": 77.5, "txt": "it then, it's us", "size": 1, "style": "verse"}, {"t": 78.0, "txt": "against y'all", "size": 1, "style": "verse"}, {"t": 79.4, "txt": "MIC SKILLS, TYPE GRILLS,", "size": 2, "style": "skills"}, {"t": 80.0, "txt": "like I'm Michael Jill", "size": 1.2, "style": "hook"}, {"t": 81.8, "txt": "Like when he rifle", "size": 1, "style": "verse"}, {"t": 82.3, "txt": "the pill is how", "size": 1, "style": "verse"}, {"t": 82.8, "txt": "I stifle the ill", "size": 1, "style": "verse"}, {"t": 84.2, "txt": "Slide off, kid, and", "size": 1, "style": "verse"}, {"t": 84.7, "txt": "let a grown man", "size": 1, "style": "verse"}, {"t": 85.2, "txt": "finesse it", "size": 1, "style": "verse"}, {"t": 86.7, "txt": "We bold and impressive,", "size": 1, "style": "verse"}, {"t": 87.2, "txt": "that old I manifest", "size": 1, "style": "verse"}, {"t": 87.7, "txt": "shit", "size": 1, "style": "verse"}, {"t": 89.1, "txt": "Some new product from", "size": 1, "style": "verse"}, {"t": 89.6, "txt": "a known team", "size": 1, "style": "verse"}, {"t": 91.5, "txt": "Brothers know me, and", "size": 1, "style": "verse"}, {"t": 92.0, "txt": "you can bet they", "size": 1, "style": "verse"}, {"t": 92.5, "txt": "know Preem", "size": 1, "style": "verse"}, {"t": 93.9, "txt": "So here we go", "size": 1, "style": "verse"}, {"t": 94.4, "txt": "for your stereo", "size": 1, "style": "verse"}, {"t": 96.4, "txt": "And you could tell", "size": 1.2, "style": "hook"}, {"t": 96.9, "txt": "that it's real when", "size": 1.2, "style": "hook"}, {"t": 97.4, "txt": "you hear me go\u2026", "size": 1.2, "style": "hook"}, {"t": 98.8, "txt": "Hear me go", "size": 1, "style": "verse"}, {"t": 101.2, "txt": "[Hook]", "size": 0.5, "style": "label"}, {"t": 102.0, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 102.4, "txt": "Top rank, point blank,", "size": 1.2, "style": "hook"}, {"t": 103.0, "txt": "we vital", "size": 1.2, "style": "hook"}, {"t": 104.4, "txt": "Spit flows, rip shows,", "size": 1, "style": "verse"}, {"t": 104.9, "txt": "peep the recital", "size": 1, "style": "verse"}, {"t": 106.9, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 107.3, "txt": "Now you feel it", "size": 1.2, "style": "hook"}, {"t": 107.9, "txt": "when we drop those", "size": 1.2, "style": "hook"}, {"t": 109.3, "txt": "Hot beats, stop foes,", "size": 1, "style": "verse"}, {"t": 109.8, "txt": "killing shit, we got", "size": 1, "style": "verse"}, {"t": 110.3, "txt": "those", "size": 1, "style": "verse"}, {"t": 111.7, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 112.1, "txt": "It's the music that", "size": 1.2, "style": "hook"}, {"t": 112.7, "txt": "the street loves", "size": 1.2, "style": "hook"}, {"t": 114.1, "txt": "Each thug is now", "size": 1, "style": "verse"}, {"t": 114.6, "txt": "reppin' this with deep", "size": 1, "style": "verse"}, {"t": 115.1, "txt": "love", "size": 1, "style": "verse"}, {"t": 116.6, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 117.0, "txt": "Gang Starr dueling again", "size": 1.2, "style": "hook"}, {"t": 119.0, "txt": "Ruling again, watch as", "size": 1, "style": "verse"}, {"t": 119.5, "txt": "we do it again", "size": 1, "style": "verse"}, {"t": 121.4, "txt": "[Verse 2: Guru]", "size": 0.5, "style": "label"}, {"t": 122.2, "txt": "You little suckers know", "size": 1, "style": "verse"}, {"t": 122.7, "txt": "better, I go head", "size": 1, "style": "verse"}, {"t": 123.2, "txt": "up", "size": 1, "style": "verse"}, {"t": 124.6, "txt": "If your man left", "size": 1, "style": "verse"}, {"t": 125.1, "txt": "the joint in the", "size": 1, "style": "verse"}, {"t": 125.6, "txt": "whip then tell him", "size": 1, "style": "verse"}, {"t": 126.1, "txt": "go get it", "size": 1, "style": "verse"}, {"t": 127.1, "txt": "We hold it down", "size": 1, "style": "verse"}, {"t": 127.6, "txt": "like a holy crown", "size": 1, "style": "verse"}, {"t": 129.5, "txt": "Fools acting like they", "size": 1, "style": "verse"}, {"t": 130.0, "txt": "know me, throw me", "size": 1, "style": "verse"}, {"t": 130.5, "txt": "phoney pounds", "size": 1, "style": "verse"}, {"t": 131.9, "txt": "Fuck that, I'm sitting", "size": 1, "style": "verse"}, {"t": 132.4, "txt": "back like an aristocrat", "size": 1, "style": "verse"}, {"t": 134.3, "txt": "Shell shocked chief assassin", "size": 1, "style": "verse"}, {"t": 134.8, "txt": "with a whole fucking", "size": 1, "style": "verse"}, {"t": 135.3, "txt": "list of cats", "size": 1, "style": "verse"}, {"t": 136.8, "txt": "Thought you was on", "size": 1, "style": "verse"}, {"t": 137.3, "txt": "the case, but you", "size": 1, "style": "verse"}, {"t": 137.8, "txt": "missed the fact", "size": 1, "style": "verse"}, {"t": 139.2, "txt": "Your bitch talking this", "size": 1, "style": "verse"}, {"t": 139.7, "txt": "and that, I'ma make", "size": 1, "style": "verse"}, {"t": 140.2, "txt": "it simple, jack", "size": 1, "style": "verse"}, {"t": 141.6, "txt": "I doubled up and", "size": 1, "style": "verse"}, {"t": 142.1, "txt": "tripled that, soldiers, where", "size": 1, "style": "verse"}, {"t": 142.6, "txt": "your pistols at?", "size": 1, "style": "verse"}, {"t": 144.0, "txt": "Life wrong move lose", "size": 1, "style": "verse"}, {"t": 144.5, "txt": "the gift of that", "size": 1, "style": "verse"}, {"t": 146.5, "txt": "Why they calling us", "size": 1.2, "style": "hook"}, {"t": 147.0, "txt": "the most consistent, most", "size": 1.2, "style": "hook"}, {"t": 147.5, "txt": "significant?", "size": 1.2, "style": "hook"}, {"t": 148.9, "txt": "\"Once again\" some old", "size": 1, "style": "verse"}, {"t": 149.4, "txt": "slick shit", "size": 1, "style": "verse"}, {"t": 151.3, "txt": "Fulfil your need and", "size": 1, "style": "verse"}, {"t": 151.8, "txt": "catch a joyful rush", "size": 1, "style": "verse"}, {"t": 153.7, "txt": "Enjoy your dutch, haters", "size": 1, "style": "verse"}, {"t": 154.2, "txt": "annoyed with us", "size": 1, "style": "verse"}, {"t": 156.2, "txt": "Homeboy, it's us, you", "size": 1, "style": "verse"}, {"t": 156.7, "txt": "know, the face from", "size": 1, "style": "verse"}, {"t": 157.2, "txt": "the club", "size": 1, "style": "verse"}, {"t": 158.6, "txt": "Blazing a dub, with", "size": 1, "style": "verse"}, {"t": 159.1, "txt": "my brothers raising it", "size": 1, "style": "verse"}, {"t": 159.6, "txt": "up, for these...", "size": 1, "style": "verse"}, {"t": 161.0, "txt": "[Hook]", "size": 0.5, "style": "label"}, {"t": 161.8, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 162.2, "txt": "Top rank, point blank,", "size": 1.2, "style": "hook"}, {"t": 162.8, "txt": "we vital", "size": 1.2, "style": "hook"}, {"t": 164.2, "txt": "Spit flows, rip shows,", "size": 1, "style": "verse"}, {"t": 164.7, "txt": "peep the recital", "size": 1, "style": "verse"}, {"t": 166.7, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 167.1, "txt": "Now you feel it", "size": 1.2, "style": "hook"}, {"t": 167.7, "txt": "when we drop those", "size": 1.2, "style": "hook"}, {"t": 169.1, "txt": "Hot beats, stop foes,", "size": 1, "style": "verse"}, {"t": 169.6, "txt": "killing shit, we got", "size": 1, "style": "verse"}, {"t": 170.1, "txt": "those", "size": 1, "style": "verse"}, {"t": 171.5, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 171.9, "txt": "It's the music that", "size": 1.2, "style": "hook"}, {"t": 172.5, "txt": "the street loves", "size": 1.2, "style": "hook"}, {"t": 173.9, "txt": "Each thug is now", "size": 1, "style": "verse"}, {"t": 174.4, "txt": "reppin' this with deep", "size": 1, "style": "verse"}, {"t": 174.9, "txt": "love", "size": 1, "style": "verse"}, {"t": 176.4, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 176.8, "txt": "Gang Starr dueling again", "size": 1.2, "style": "hook"}, {"t": 178.8, "txt": "Ruling again, watch as", "size": 1, "style": "verse"}, {"t": 179.3, "txt": "we do it again", "size": 1, "style": "verse"}, {"t": 181.2, "txt": "[Verse 3: Guru]", "size": 0.5, "style": "label"}, {"t": 182.0, "txt": "Brothers are amused by", "size": 1, "style": "verse"}, {"t": 182.5, "txt": "other brothers' reps", "size": 1, "style": "verse"}, {"t": 184.4, "txt": "Some brothers pull TECs,", "size": 1, "style": "verse"}, {"t": 184.9, "txt": "catch others for checks", "size": 1, "style": "verse"}, {"t": 186.8, "txt": "All for respect, all", "size": 1, "style": "verse"}, {"t": 187.3, "txt": "for the bread", "size": 1, "style": "verse"}, {"t": 189.3, "txt": "For the chance of", "size": 1, "style": "verse"}, {"t": 189.8, "txt": "success they might hand", "size": 1, "style": "verse"}, {"t": 190.3, "txt": "him his head", "size": 1, "style": "verse"}, {"t": 191.7, "txt": "Remain humble cause I", "size": 1, "style": "verse"}, {"t": 192.2, "txt": "know enough", "size": 1, "style": "verse"}, {"t": 194.1, "txt": "Plus the road is", "size": 1, "style": "verse"}, {"t": 194.6, "txt": "tough, especially when you", "size": 1, "style": "verse"}, {"t": 195.1, "txt": "roll with us", "size": 1, "style": "verse"}, {"t": 196.5, "txt": "But I'ma stay with", "size": 1, "style": "verse"}, {"t": 197.0, "txt": "my peeps, stay in", "size": 1, "style": "verse"}, {"t": 197.5, "txt": "these streets", "size": 1, "style": "verse"}, {"t": 199.0, "txt": "Rhyme spraying and I'm", "size": 1.2, "style": "hook"}, {"t": 199.5, "txt": "playing for keeps, cause", "size": 1.2, "style": "hook"}, {"t": 200.0, "txt": "I got those...", "size": 1.2, "style": "hook"}, {"t": 201.4, "txt": "[Hook]", "size": 0.5, "style": "label"}, {"t": 202.2, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 202.6, "txt": "Top rank, point blank,", "size": 1.2, "style": "hook"}, {"t": 203.2, "txt": "we vital", "size": 1.2, "style": "hook"}, {"t": 204.6, "txt": "Spit flows, rip shows,", "size": 1, "style": "verse"}, {"t": 205.1, "txt": "peep the recital", "size": 1, "style": "verse"}, {"t": 207.1, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 207.5, "txt": "Now you feel it", "size": 1.2, "style": "hook"}, {"t": 208.1, "txt": "when we drop those", "size": 1.2, "style": "hook"}, {"t": 209.5, "txt": "Hot beats, stop foes,", "size": 1, "style": "verse"}, {"t": 210.0, "txt": "killing shit, we got", "size": 1, "style": "verse"}, {"t": 210.5, "txt": "those", "size": 1, "style": "verse"}, {"t": 211.9, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 212.3, "txt": "It's the music that", "size": 1.2, "style": "hook"}, {"t": 212.9, "txt": "the street loves", "size": 1.2, "style": "hook"}, {"t": 214.3, "txt": "Each thug is now", "size": 1, "style": "verse"}, {"t": 214.8, "txt": "reppin' this with deep", "size": 1, "style": "verse"}, {"t": 215.3, "txt": "love", "size": 1, "style": "verse"}, {"t": 216.8, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 217.2, "txt": "Gang Starr dueling again", "size": 1.2, "style": "hook"}, {"t": 219.2, "txt": "Ruling again, watch as", "size": 1, "style": "verse"}, {"t": 219.7, "txt": "we do it again", "size": 1, "style": "verse"}, {"t": 221.6, "txt": "SKILLS", "size": 3, "style": "skills"}, {"t": 228.0, "txt": "Gang Starr", "size": 0.5, "style": "label"}, {"t": 236.0, "txt": "The Ownerz (2003)", "size": 0.5, "style": "label"}, {"t": 244.0, "txt": "Claude Skills", "size": 0.5, "style": "label"}, {"t": 248.0, "txt": "90+ skills installed", "size": 0.5, "style": "label"}];
+
+// ─── REMAP LYRICS TO START/END WINDOW ───
+{
+  const origMin = LYRICS[0].t;
+  const origMax = LYRICS[LYRICS.length - 1].t;
+  const origSpan = origMax - origMin;
+  const newSpan = LYRICS_END - LYRICS_START;
+  for (const l of LYRICS) {
+    l.t = LYRICS_START + ((l.t - origMin) / origSpan) * newSpan;
+  }
+}
+
+// ─── CANVAS SETUP ───
+const c = document.getElementById('c');
+const ctx = c.getContext('2d');
+let w, h;
+function resize() { w = c.width = W(); h = c.height = H(); }
+resize();
+addEventListener('resize', resize);
+
+// ─── PARTICLE SYSTEM ───
+class Particle {
+  constructor(x, y, color, vx, vy, life, size) {
+    this.x = x; this.y = y; this.color = color;
+    this.vx = vx; this.vy = vy;
+    this.life = this.maxLife = life;
+    this.size = size || 2;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy;
+    this.vy += 0.02; // gravity
+    this.life--;
+    return this.life > 0;
+  }
+  draw(ctx) {
+    const a = this.life / this.maxLife;
+    ctx.globalAlpha = a;
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x - this.size/2, this.y - this.size/2, this.size, this.size);
+  }
+}
+
+let particles = [];
+function burst(x, y, color, count, spread) {
+  for (let i = 0; i < count; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * spread;
+    particles.push(new Particle(x, y, color,
+      Math.cos(angle) * speed, Math.sin(angle) * speed - 1,
+      40 + Math.random() * 60, 1 + Math.random() * 3
+    ));
+  }
+}
+
+// ─── MATRIX RAIN ───
+const COLS = Math.ceil(1920 / 14);
+const matrixDrops = Array(COLS).fill(0).map(() => -Math.random() * 100);
+const matrixChars = [];
+const matrixSpeeds = Array(COLS).fill(0).map(() => 0.3 + Math.random() * 1.2);
+
+function drawMatrix(t, intensity) {
+  ctx.font = '12px "Space Mono", monospace';
+  const colW = w / COLS;
+  for (let i = 0; i < COLS; i++) {
+    matrixDrops[i] += matrixSpeeds[i] * intensity;
+    const y = matrixDrops[i] * 14;
+    if (y > h + 100) matrixDrops[i] = -Math.random() * 20;
+    // Pick a skill name char
+    const skill = SKILL_NAMES[i % SKILL_NAMES.length];
+    const ch = skill[Math.floor(matrixDrops[i]) % skill.length] || '.';
+    // Leading bright char
+    ctx.globalAlpha = 0.9 * intensity;
+    ctx.fillStyle = '#00FF41';
+    ctx.fillText(ch, i * colW, y);
+    // Trail
+    for (let j = 1; j < 8; j++) {
+      ctx.globalAlpha = (0.6 - j * 0.08) * intensity;
+      ctx.fillStyle = j < 3 ? '#00FF41' : '#005511';
+      const prevCh = skill[(Math.floor(matrixDrops[i]) - j) % skill.length] || '.';
+      ctx.fillText(prevCh, i * colW, y - j * 14);
+    }
+  }
+}
+
+// ─── SKILL CARDS ───
+let skillCards = [];
+class SkillCard {
+  constructor(name) {
+    this.name = name;
+    this.x = w * 0.2 + Math.random() * w * 0.6;
+    this.y = h * 0.3 + Math.random() * h * 0.4;
+    this.vx = (Math.random() - 0.5) * 8;
+    this.vy = (Math.random() - 0.5) * 8;
+    this.life = 90 + Math.floor(Math.random() * 40);
+    this.rot = (Math.random() - 0.5) * 0.4;
+    this.rotV = (Math.random() - 0.5) * 0.03;
+    this.scale = 0;
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vx *= 0.96;
+    this.vy *= 0.96;
+    this.rot += this.rotV;
+    this.scale = Math.min(1, this.scale + 0.1);
+    this.life--;
+    return this.life > 0;
+  }
+  draw(ctx) {
+    const a = Math.min(1, this.life / 25);
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.rot);
+    ctx.scale(this.scale, this.scale);
+    ctx.globalAlpha = a * 0.9;
+    ctx.font = 'bold 14px "Space Mono", monospace';
+    const tw = ctx.measureText(this.name).width + 28;
+    ctx.fillStyle = '#0a0a0aDD';
+    ctx.strokeStyle = '#FFD70088';
+    ctx.lineWidth = 1;
+    ctx.fillRect(-tw/2, -16, tw, 32);
+    ctx.strokeRect(-tw/2, -16, tw, 32);
+    ctx.fillStyle = '#FFD700';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(this.name, 0, 0);
+    ctx.restore();
+  }
+}
+
+function spawnSkillCards(count) {
+  const shuffled = [...SKILL_NAMES].sort(() => Math.random() - 0.5);
+  for (let i = 0; i < Math.min(count, shuffled.length); i++) {
+    setTimeout(() => skillCards.push(new SkillCard(shuffled[i])), i * 40);
+  }
+}
+
+// ─── TERMINAL WINDOW ───
+let termLines = [];
+let termActive = false;
+let termLineIdx = 0;
+let termCharIdx = 0;
+let termTimer = 0;
+let termY = 0;
+
+function activateTerminal() {
+  if (termActive) return;
+  termActive = true;
+  termLines = [];
+  termLineIdx = 0;
+  termCharIdx = 0;
+}
+
+function deactivateTerminal() { termActive = false; }
+
+function updateTerminal() {
+  if (!termActive) return;
+  termTimer++;
+  if (termTimer % 2 === 0 && termLineIdx < TRANSCRIPT.length) {
+    termCharIdx++;
+    const line = TRANSCRIPT[termLineIdx];
+    if (termCharIdx >= line.length) {
+      if (termLines.length >= 8) termLines.shift();
+      termLines.push(line);
+      termLineIdx++;
+      termCharIdx = 0;
+    }
+  }
+}
+
+function drawTerminal() {
+  if (!termActive && termLines.length === 0) return;
+  const tw = Math.min(500, w * 0.4);
+  const th = 220;
+  const tx = w - tw - 30;
+  const ty = h - th - 30;
+  ctx.globalAlpha = 0.75;
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(tx, ty, tw, th);
+  ctx.strokeStyle = '#00FF4144';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(tx, ty, tw, th);
+  // Title bar
+  ctx.fillStyle = '#00FF4122';
+  ctx.fillRect(tx, ty, tw, 18);
+  ctx.globalAlpha = 0.5;
+  ctx.font = '10px "Space Mono", monospace';
+  ctx.fillStyle = '#00FF41';
+  ctx.fillText('claude-session', tx + 8, ty + 13);
+  // Lines
+  ctx.font = '11px "Space Mono", monospace';
+  ctx.globalAlpha = 0.85;
+  const maxChars = Math.floor((tw - 16) / 6.6);
+  for (let i = 0; i < termLines.length; i++) {
+    const line = termLines[i].substring(0, maxChars);
+    ctx.fillStyle = line.startsWith('[AI]') ? '#FFD700' : line.startsWith('✓') ? '#00FF41' : '#00FF41aa';
+    ctx.fillText(line, tx + 8, ty + 36 + i * 18);
+  }
+  // Current typing line
+  if (termActive && termLineIdx < TRANSCRIPT.length) {
+    const partial = TRANSCRIPT[termLineIdx].substring(0, termCharIdx);
+    ctx.fillStyle = '#00FF41';
+    ctx.fillText(partial + (Math.floor(Date.now() / 500) % 2 ? '█' : ''), tx + 8, ty + 36 + termLines.length * 18);
+  }
+}
+
+// ─── GLITCH EFFECT ───
+let glitchIntensity = 0;
+function triggerGlitch(intensity) { glitchIntensity = intensity; }
+
+function applyGlitch() {
+  if (glitchIntensity <= 0) return;
+  const imgData = ctx.getImageData(0, 0, w, h);
+  for (let i = 0; i < glitchIntensity * 5; i++) {
+    const y = Math.floor(Math.random() * h);
+    const sliceH = 1 + Math.floor(Math.random() * 5);
+    const offset = Math.floor((Math.random() - 0.5) * glitchIntensity * 30);
+    const slice = ctx.getImageData(0, y, w, sliceH);
+    ctx.putImageData(slice, offset, y);
+  }
+  // RGB channel shift
+  if (glitchIntensity > 5) {
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.07;
+    ctx.drawImage(c, glitchIntensity * 2, 0);
+    ctx.drawImage(c, -glitchIntensity * 2, 0);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+  glitchIntensity *= 0.85;
+  if (glitchIntensity < 0.5) glitchIntensity = 0;
+}
+
+// ─── SCREEN SHAKE ───
+let shakeX = 0, shakeY = 0, shakeDecay = 0;
+function shake(amount) { shakeDecay = amount; }
+function updateShake() {
+  if (shakeDecay > 0.5) {
+    shakeX = (Math.random() - 0.5) * shakeDecay;
+    shakeY = (Math.random() - 0.5) * shakeDecay;
+    shakeDecay *= 0.88;
+  } else { shakeX = shakeY = 0; }
+}
+
+// ─── LYRIC DISPLAY ───
+let currentLyric = null;
+let lyricAlpha = 0;
+let lyricScale = 1;
+let lastLyricIdx = -1;
+let lyricOffset = 0; // arrow key nudge
+
+function getLyric(t) {
+  const adj = t - lyricOffset;
+  let idx = -1;
+  for (let i = 0; i < LYRICS.length; i++) {
+    if (LYRICS[i].t <= adj) idx = i; else break;
+  }
+  return idx;
+}
+
+function drawLyric(t) {
+  const idx = getLyric(t);
+  if (idx < 0) return;
+  if (idx !== lastLyricIdx) {
+    lastLyricIdx = idx;
+    currentLyric = LYRICS[idx];
+    lyricAlpha = 1.2;
+    lyricScale = currentLyric.style === 'skills' ? 1.3 : 1.05;
+    // Trigger effects for "(SKILLS)" moments
+    if (currentLyric.style === 'skills') {
+      burst(w/2, h/2, '#FFD700', 60, 6);
+      burst(w/2, h/2, '#FFF', 20, 4);
+      shake(15);
+      triggerGlitch(12);
+      spawnSkillCards(6);
+    } else if (currentLyric.style === 'hook') {
+      burst(w/2, h * 0.45, '#FFD70088', 15, 3);
+    }
+  }
+  if (!currentLyric) return;
+
+  lyricAlpha = Math.min(1, lyricAlpha);
+  lyricScale += (1 - lyricScale) * 0.12;
+
+  const l = currentLyric;
+  const baseSize = Math.min(w / 14, 60);
+  const fontSize = baseSize * l.size;
+  ctx.save();
+  ctx.translate(w/2, h * 0.45);
+  ctx.scale(lyricScale, lyricScale);
+  ctx.globalAlpha = lyricAlpha;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (l.style === 'skills') {
+    ctx.font = `400 ${fontSize}px 'Bebas Neue', sans-serif`;
+    ctx.fillStyle = '#FFD700';
+    ctx.shadowColor = '#FFD700';
+    ctx.shadowBlur = 40;
+    l.txt.split('\n').forEach((line, i) => ctx.fillText(line, 0, i * fontSize * 1.2));
+    ctx.shadowBlur = 80;
+    ctx.globalAlpha = 0.3;
+    l.txt.split('\n').forEach((line, i) => ctx.fillText(line, 0, i * fontSize * 1.2));
+  } else if (l.style === 'hook') {
+    ctx.font = `700 ${fontSize}px 'Oswald', sans-serif`;
+    ctx.fillStyle = '#f5f5f5';
+    ctx.shadowColor = '#FFD70044';
+    ctx.shadowBlur = 20;
+    l.txt.split('\n').forEach((line, i) => ctx.fillText(line, 0, i * fontSize * 1.3));
+  } else if (l.style === 'verse') {
+    ctx.font = `400 ${fontSize}px 'Space Mono', monospace`;
+    ctx.fillStyle = '#cccccc';
+    l.txt.split('\n').forEach((line, i) => ctx.fillText(line, 0, i * fontSize * 1.3));
+  } else if (l.style === 'scratch') {
+    ctx.font = `700 ${fontSize}px 'Oswald', sans-serif`;
+    ctx.fillStyle = '#FF4444';
+    ctx.shadowColor = '#FF4444';
+    ctx.shadowBlur = 25;
+    ctx.fillText(l.txt, 0, 0);
+  } else if (l.style === 'label') {
+    ctx.font = `400 ${fontSize}px 'Space Mono', monospace`;
+    ctx.fillStyle = '#555';
+    ctx.letterSpacing = '0.3em';
+    ctx.fillText(l.txt, 0, 0);
+  } else if (l.style === 'outro') {
+    ctx.font = `400 ${fontSize}px 'Bebas Neue', sans-serif`;
+    ctx.fillStyle = '#FFD700';
+    ctx.shadowColor = '#FFD700';
+    ctx.shadowBlur = 60;
+    ctx.fillText(l.txt, 0, 0);
+  }
+  ctx.restore();
+}
+
+// ─── BEAT DETECTION ───
+let nextBeat = BEAT_START;
+let beatPulse = 0;
+
+function processBeat(t) {
+  if (t >= nextBeat && t > BEAT_START) {
+    beatPulse = 1;
+    nextBeat = Math.floor(t / BEAT + 1) * BEAT;
+    // Subtle burst on beat
+    const edge = Math.random() > 0.5;
+    if (Math.random() > 0.7) {
+      burst(Math.random() * w, edge ? 0 : h, '#FFD70033', 5, 2);
+    }
+  }
+  beatPulse *= 0.88;
+}
+
+// ─── SECTION TRIGGERS ───
+let lastSection = '';
+function processSections(t) {
+  const adj = t - lyricOffset;
+  // Activate terminal during verses
+  if ((adj > 42 && adj < 80) || (adj > 104 && adj < 140) || (adj > 164 && adj < 181)) {
+    activateTerminal();
+  } else {
+    deactivateTerminal();
+  }
+}
+
+// ─── VIGNETTE ───
+function drawVignette() {
+  const g = ctx.createRadialGradient(w/2, h/2, w*0.2, w/2, h/2, w*0.75);
+  g.addColorStop(0, 'transparent');
+  g.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+}
+
+// ─── SCANLINES ───
+function drawScanlines() {
+  ctx.globalAlpha = 0.08;
+  ctx.fillStyle = '#000';
+  for (let y = 0; y < h; y += 3) {
+    ctx.fillRect(0, y, w, 1);
+  }
+}
+
+// ─── PROGRESS BAR ───
+function drawProgress(t) {
+  ctx.globalAlpha = 0.3;
+  ctx.fillStyle = '#FFD700';
+  ctx.fillRect(0, 0, (t / 236) * w, 2);
+  ctx.globalAlpha = 0.8;
+  ctx.fillRect((t / 236) * w - 2, 0, 2, 4);
+}
+
+// ─── BPM INDICATOR ───
+function drawBPM(t) {
+  ctx.globalAlpha = 0.15 + beatPulse * 0.3;
+  ctx.font = '10px "Space Mono", monospace';
+  ctx.fillStyle = '#FFD700';
+  ctx.textAlign = 'right';
+  ctx.fillText(`${BPM} BPM`, w - 16, h - 16);
+  if (lyricOffset !== 0) {
+    ctx.fillText(`offset: ${lyricOffset.toFixed(1)}s`, w - 16, h - 30);
+  }
+}
+
+// ─── SYNC / MARKER SYSTEM ───
+let markers = [];
+let syncHUD = false;
+const SECTION_NAMES = ['Intro','Scratch','Hook 1','Verse 1','Hook 2','Verse 2','Hook 3','Verse 3','Hook 4','Outro'];
+
+function addMarker(t, label) {
+  markers.push({ t: t.toFixed(2), label: label || `marker ${markers.length + 1}` });
+  console.log(`%c[MARKER] ${t.toFixed(2)}s — ${label || ''}`, 'color: #FFD700; font-weight: bold');
+}
+
+function drawSyncHUD(t) {
+  if (!syncHUD) return;
+  ctx.save();
+  ctx.globalAlpha = 0.9;
+  // Time display - big
+  ctx.font = '700 28px "Oswald", sans-serif';
+  ctx.fillStyle = '#FFD700';
+  ctx.textAlign = 'left';
+  ctx.fillText(t.toFixed(2) + 's', 20, 40);
+  // Current lyric info
+  const idx = getLyric(t);
+  if (idx >= 0) {
+    ctx.font = '12px "Space Mono", monospace';
+    ctx.fillStyle = '#00FF41';
+    ctx.fillText(`lyric #${idx}/${LYRICS.length} — "${LYRICS[idx].txt}"`, 20, 62);
+  }
+  // Keys help
+  ctx.font = '10px "Space Mono", monospace';
+  ctx.fillStyle = '#555';
+  ctx.fillText('T=mark  C=copy  D=hud  ←→=nudge  1-9=section', 20, h - 8);
+  // Markers on progress bar
+  for (const m of markers) {
+    const mx = (parseFloat(m.t) / 236) * w;
+    ctx.fillStyle = '#FF4444';
+    ctx.fillRect(mx - 1, 0, 2, 8);
+    ctx.font = '8px "Space Mono", monospace';
+    ctx.fillStyle = '#FF4444';
+    ctx.textAlign = 'center';
+    ctx.fillText(m.label, mx, 18);
+  }
+  // Marker list (last 6)
+  const recent = markers.slice(-6);
+  ctx.textAlign = 'left';
+  ctx.font = '10px "Space Mono", monospace';
+  for (let i = 0; i < recent.length; i++) {
+    ctx.fillStyle = '#FF444488';
+    ctx.fillText(`${recent[i].t}s  ${recent[i].label}`, 20, 82 + i * 14);
+  }
+  ctx.restore();
+}
+
+// ─── MAIN LOOP ───
+let started = false;
+
+function frame() {
+  if (!started) { requestAnimationFrame(frame); return; }
+  const t = now();
+
+  ctx.save();
+  updateShake();
+  ctx.translate(shakeX, shakeY);
+
+  // Clear
+  ctx.globalAlpha = 0.15; // motion trail
+  ctx.fillStyle = '#000';
+  ctx.fillRect(0, 0, w, h);
+
+  // Beat
+  processBeat(t);
+  processSections(t);
+  updateTerminal();
+
+  // Beat pulse bg flash
+  if (beatPulse > 0.5 && t > BEAT_START) {
+    ctx.globalAlpha = beatPulse * 0.04;
+    ctx.fillStyle = '#FFD700';
+    ctx.fillRect(0, 0, w, h);
+  }
+
+  // Matrix rain (subtle during verses, intense during hooks)
+  const adj = t - lyricOffset;
+  const isHook = LYRICS.some(l => l.style === 'skills' && Math.abs(adj - l.t) < 3);
+  drawMatrix(t, isHook ? 0.8 : 0.25);
+
+  // Skill cards
+  skillCards = skillCards.filter(c => { c.update(); c.draw(ctx); return true; });
+  skillCards = skillCards.filter(c => c.life > 0);
+
+  // Particles
+  ctx.globalAlpha = 1;
+  particles = particles.filter(p => { if (p.update()) { p.draw(ctx); return true; } return false; });
+
+  // Lyrics
+  drawLyric(t);
+
+  // Terminal overlay
+  ctx.font = '11px "Space Mono", monospace';
+  drawTerminal();
+
+  // Post effects
+  drawVignette();
+  drawScanlines();
+  applyGlitch();
+  drawProgress(t);
+  drawBPM(t);
+  drawSyncHUD(t);
+
+  ctx.restore();
+  requestAnimationFrame(frame);
+}
+
+function boot() {
+  document.getElementById('start').style.display = 'none';
+  started = true;
+  if (ytReady) ytp.playVideo();
+  requestAnimationFrame(frame);
+}
+
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); boot(); }
+  // Offset nudge
+  if (e.code === 'ArrowRight') { lyricOffset -= 0.5; lastLyricIdx = -1; }
+  if (e.code === 'ArrowLeft') { lyricOffset += 0.5; lastLyricIdx = -1; }
+  // Sync tools
+  if (e.key === 'd' || e.key === 'D') { syncHUD = !syncHUD; }
+  if (e.key === 't' || e.key === 'T') {
+    const t = now();
+    addMarker(t);
+  }
+  // Number keys = named section markers
+  if (e.key >= '1' && e.key <= '9') {
+    const t = now();
+    const name = SECTION_NAMES[parseInt(e.key) - 1] || `section ${e.key}`;
+    addMarker(t, name);
+  }
+  // Copy markers to clipboard
+  if (e.key === 'c' || e.key === 'C') {
+    const data = markers.map(m => `${m.t}s  ${m.label}`).join('\n');
+    navigator.clipboard.writeText(data).then(() => {
+      console.log('%c[SYNC] Markers copied to clipboard', 'color: #00FF41');
+    });
+  }
+});
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
