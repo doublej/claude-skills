@@ -9,6 +9,8 @@ You construct logos from mathematical first principles. Every curve has a formul
 
 **Do not over-rationalise.** The grid is a construction aid, not a post-hoc justification forced onto a finished shape.
 
+**Show, don't compute.** Produce a rough SVG fast, preview it, then refine. Never spend extended reasoning on Bézier math without showing visual progress. For complex geometry, write a generator script instead of hand-computing coordinates.
+
 ## Pre-Flight: Logo Brief
 
 Before ANY code, produce this brief:
@@ -80,9 +82,8 @@ Quantize everything:
 - **Positions**: multiples of `m/2` (or `m/4` if needed)
 - **Radii**: small set, e.g. `{1m, 2m, 4m, 8m}`
 - **Stroke widths**: pick 1-2 from `{1m, 1.5m, 2m}` and stick to them
-- **Snap**: all anchor points to `m/2` grid
 
-This mirrors Material Design / Apple SF Symbols keyline approach. The grid constrains, it doesn't decorate.
+**Grid snapping**: Do NOT hand-calculate snap offsets for every control point. Write a small script (Python/JS) that rounds coordinates to the nearest `m/2` and run it on the SVG. Visual verification beats analytical snapping.
 
 ## Construction Rules
 
@@ -220,13 +221,62 @@ Logo must work flat. Reserve gradients for hero usage only.
 
 ## Workflow
 
+**Core principle: show visuals early, refine with feedback.** Never spend more than one reasoning step computing coordinates without producing a viewable SVG.
+
 1. **Brief** — values, constraints, math family, parameter targets
 2. **Map** — values → metrics → parameter ranges
-3. **Construct** — build on grid using tangency + Bézier rules
-4. **Correct** — apply overshoot, optical centering, stroke compensation
-5. **Validate** — run validation checklist below
-6. **Simplify** — reduce control points, remove tiny segments, enforce continuity
-7. **Variants** — primary + icon minimum
+3. **Sketch** — produce a rough SVG in ≤30 seconds using simple shapes (circles, rects, arcs). Don't worry about G1 continuity, exact grid snap, or optical corrections yet. Write the SVG, preview it (see Preview below), and get user feedback on the overall direction before investing in math.
+4. **Construct** — refine the sketch with proper curves and tangency. For anything beyond 2 arcs, **generate a script** (Python/JS) rather than hand-computing Bézier control points. Run the script to produce the SVG.
+5. **Preview & iterate** — show the result after each major change. Use the preview template below. Make corrections based on what you see, not what you calculate.
+6. **Correct** — apply overshoot, optical centering, stroke compensation. Verify visually — screenshot at 16px, 64px, and 1000px to confirm corrections work.
+7. **Validate** — run validation checklist below
+8. **Simplify** — reduce control points, remove tiny segments, enforce continuity
+9. **Variants** — primary + icon minimum
+
+### Script-first construction
+
+For any logo with more than 2 arcs or 4 Bézier segments, write a generator script rather than hand-computing every coordinate. Benefits:
+- Grid snapping is one `round(x / half_m) * half_m` call, not pages of arithmetic
+- Parameter tweaks regenerate the entire SVG instantly
+- Continuity constraints (G1/C1) are enforced programmatically
+- Optical corrections (overshoot, stroke compensation) are applied consistently
+
+Use `scripts/generate-logo.py` as a starting point or create a project-specific script.
+
+## Preview
+
+After writing an SVG, create a preview HTML and show it to verify the result visually. This is mandatory — never skip it.
+
+**Quick preview** (single SVG):
+```bash
+# Write a minimal HTML wrapper and open it
+cat > /tmp/logo-preview.html << 'PREVIEW'
+<!DOCTYPE html>
+<html><head><style>
+  body { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; padding: 1rem; font-family: system-ui; }
+  .card { display: grid; place-items: center; padding: 2rem; border-radius: 8px; }
+  .card svg { width: 100%; height: auto; }
+  .light { background: #fff; }
+  .dark { background: #1a1a1a; }
+  .small { padding: 1rem; }
+  .small svg { width: 32px; height: 32px; }
+  .tiny svg { width: 16px; height: 16px; }
+  h3 { grid-column: 1 / -1; margin: 0.5rem 0 0; }
+</style></head><body>
+  <h3>Large</h3>
+  <div class="card light">SVG_HERE</div>
+  <div class="card dark">SVG_HERE</div>
+  <h3>Small (32px)</h3>
+  <div class="card light small">SVG_HERE</div>
+  <div class="card dark small">SVG_HERE</div>
+  <h3>Tiny (16px)</h3>
+  <div class="card light small tiny">SVG_HERE</div>
+  <div class="card dark small tiny">SVG_HERE</div>
+</body></html>
+PREVIEW
+```
+
+Replace `SVG_HERE` with the actual SVG markup (all 6 instances), then open in the browser and screenshot to verify.
 
 ## Validation Checklist
 
