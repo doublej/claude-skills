@@ -156,10 +156,13 @@ npm install @jjverlaan/consult-user-mcp
 Extract: `"npm install @jjverlaan/consult-user-mcp"`
 
 **Fallback:**
-Generate from package.json:
-- Node.js: `npm install ${packageName}`
-- Python: `pip install ${packageName}`
-- Rust: `cargo install ${packageName}`
+Generate from package.json + git remote:
+- Node.js (published to npm): `bun install ${packageName}`
+- Node.js (NOT on npm — default): `bun install github:${githubOwner}/${repoName}`
+- Python: `pip install git+https://github.com/${githubOwner}/${repoName}.git`
+- Rust: `cargo install --git https://github.com/${githubOwner}/${repoName}`
+
+**Important:** Most projects are NOT published to npm/PyPI/crates.io. Always check if the package is actually published before using a registry install command. When in doubt, use the git-based installer.
 
 ### Getting Started Steps
 
@@ -422,8 +425,8 @@ If README is missing or very short (< 200 characters):
 ```javascript
 [
   {
-    title: "Install globally",
-    code: "npm install -g ${packageName}"
+    title: "Install from GitHub",
+    code: "bun install -g github:${githubOwner}/${repoName}"
   },
   {
     title: "Run the CLI",
@@ -441,7 +444,7 @@ If README is missing or very short (< 200 characters):
 [
   {
     title: "Install the package",
-    code: "npm install ${packageName}"
+    code: "bun install github:${githubOwner}/${repoName}"
   },
   {
     title: "Import and use",

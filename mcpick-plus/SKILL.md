@@ -1,6 +1,6 @@
 ---
 name: mcpick-plus
-description: Manage MCP integrations across Claude Code configuration layers. Use when enabling/disabling MCP servers, creating agents with MCP capabilities, managing profiles, or inspecting layer configs.
+description: "Enable, disable, inspect MCP integrations across Claude Code config layers"
 ---
 
 # mcpick-plus

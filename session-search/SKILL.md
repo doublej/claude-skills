@@ -1,6 +1,6 @@
 ---
 name: session-search
-description: "Search and analyse Claude Code session history with multi-project support. Use when (1) User wants to find past conversations about a topic, (2) User asks 'when did I work on X', (3) User wants a summary of what they worked on, (4) User needs to recall or analyse previous sessions. Triggers on 'search history', 'find in sessions', 'when did I', 'what did I work on', 'summarize history', 'analyze session', 'session timeline'."
+description: "Search and analyze past Claude Code session history across projects"
 ---
 
 # Session Search & Analyzer

@@ -1,6 +1,6 @@
 ---
 name: version-manager
-description: Set up versioning, bump versions, create releases, manage git tags, and generate changelogs across Python, Node, Rust, Go, Swift, and multi-component projects. Supports four progressive patterns from simple (VERSION file) to fully automated (semantic-release). Use when initializing version tracking, bumping version numbers, creating release tags, or automating changelog generation.
+description: "Bump versions, releases, git tags, changelogs. Python/Node/Rust/Go/Swift"
 ---
 
 # Version Manager

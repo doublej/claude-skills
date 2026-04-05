@@ -1,6 +1,6 @@
 ---
 name: rename-project
-description: Safely rename a project across folder, GitHub repo, git remote, package manifests, Python packages, imports, lock files, venv, and docs. Use when renaming a project end-to-end.
+description: "Rename end-to-end: folder, GitHub repo, remote, manifests, imports, venv"
 ---
 
 # Rename Project

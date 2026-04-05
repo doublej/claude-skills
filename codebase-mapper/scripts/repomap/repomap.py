@@ -128,8 +128,8 @@ Examples:
     parser.add_argument(
         "--map-tokens",
         type=int,
-        default=8192*4,
-        help="Maximum tokens for the generated map (default: 32768)"
+        default=65536,
+        help="Maximum tokens for the generated map (default: 65536)"
     )
 
     parser.add_argument(

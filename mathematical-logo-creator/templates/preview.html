@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Preview — {{BRAND_NAME}}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  :root { --grid-color: rgba(0, 120, 255, 0.15); --grid-color-strong: rgba(0, 120, 255, 0.3); }
+  body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #333; padding: 2rem; }
+  h1 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.25rem; }
+  .subtitle { font-size: 0.8rem; color: #888; margin-bottom: 1.5rem; }
+
+  /* Controls bar */
+  .controls { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .controls label { display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; cursor: pointer; user-select: none; }
+  .controls input[type="checkbox"] { accent-color: #0066ff; width: 16px; height: 16px; }
+  .controls .sep { width: 1px; height: 20px; background: #ddd; }
+  .controls select { font-size: 0.85rem; padding: 0.25rem 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
+
+  /* Grid layout */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 900px; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Cards */
+  .card { border-radius: 12px; overflow: hidden; position: relative; }
+  .card-label { position: absolute; top: 8px; left: 12px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.5; z-index: 2; }
+  .card.light { background: #ffffff; border: 1px solid #e0e0e0; }
+  .card.light .card-label { color: #333; }
+  .card.dark { background: #1a1a1a; border: 1px solid #333; }
+  .card.dark .card-label { color: #aaa; }
+  .card.mid { background: #808080; border: 1px solid #999; }
+  .card.mid .card-label { color: #ddd; }
+
+  /* SVG container */
+  .logo-wrap { display: grid; place-items: center; padding: 2.5rem 2rem 2rem; position: relative; }
+  .logo-wrap svg { width: 100%; height: auto; display: block; position: relative; z-index: 1; }
+
+  /* Size variants */
+  .size-row { display: flex; gap: 1rem; align-items: end; flex-wrap: wrap; margin-top: 1.5rem; }
+  .size-card { border-radius: 8px; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+  .size-card.light { background: #fff; border: 1px solid #e0e0e0; }
+  .size-card.dark { background: #1a1a1a; border: 1px solid #333; }
+  .size-label { font-size: 0.7rem; color: #888; padding-bottom: 0.5rem; }
+  .size-card svg { display: block; }
+  .size-box { display: grid; place-items: center; aspect-ratio: 1; }
+  .size-box-64 { width: 96px; height: 96px; }
+  .size-box-32 { width: 64px; height: 64px; }
+  .size-box-16 { width: 48px; height: 48px; }
+
+  /* Grid overlay */
+  .grid-overlay { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+  .grid-overlay.visible { opacity: 1; }
+
+  /* Crosshair (center lines) */
+  .crosshair { position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: 0; transition: opacity 0.2s; }
+  .crosshair.visible { opacity: 1; }
+  .crosshair::before, .crosshair::after {
+    content: ''; position: absolute; background: rgba(255, 0, 0, 0.25);
+  }
+  .crosshair::before { left: 50%; top: 0; bottom: 0; width: 1px; }
+  .crosshair::after { top: 50%; left: 0; right: 0; height: 1px; }
+</style>
+</head>
+<body>
+
+<h1>{{BRAND_NAME}}</h1>
+<p class="subtitle">Mathematical Logo Preview — Grid {{GRID_N}} (module {{MODULE_SIZE}})</p>
+
+<div class="controls">
+  <label><input type="checkbox" id="toggle-grid"> Grid overlay</label>
+  <label><input type="checkbox" id="toggle-center"> Center lines</label>
+  <span class="sep"></span>
+  <label>
+    Grid:
+    <select id="grid-select">
+      <option value="24">24</option>
+      <option value="32">32</option>
+      <option value="40">40</option>
+      <option value="48">48</option>
+    </select>
+  </label>
+</div>
+
+<div class="grid">
+  <div class="card light">
+    <span class="card-label">Light</span>
+    <div class="logo-wrap" id="wrap-light">
+      <div class="grid-overlay" id="grid-light"></div>
+      <div class="crosshair" id="cross-light"></div>
+      {{SVG}}
+    </div>
+  </div>
+  <div class="card dark">
+    <span class="card-label">Dark</span>
+    <div class="logo-wrap" id="wrap-dark">
+      <div class="grid-overlay" id="grid-dark"></div>
+      <div class="crosshair" id="cross-dark"></div>
+      {{SVG}}
+    </div>
+  </div>
+  <div class="card mid">
+    <span class="card-label">50% Gray</span>
+    <div class="logo-wrap" id="wrap-mid">
+      <div class="grid-overlay" id="grid-mid"></div>
+      <div class="crosshair" id="cross-mid"></div>
+      {{SVG}}
+    </div>
+  </div>
+</div>
+
+<div class="size-row">
+  <div class="size-card light">
+    <div class="size-box size-box-64"><div style="width:64px;height:64px">{{SVG}}</div></div>
+    <span class="size-label">64px</span>
+  </div>
+  <div class="size-card dark">
+    <div class="size-box size-box-64"><div style="width:64px;height:64px">{{SVG}}</div></div>
+    <span class="size-label">64px</span>
+  </div>
+  <div class="size-card light">
+    <div class="size-box size-box-32"><div style="width:32px;height:32px">{{SVG}}</div></div>
+    <span class="size-label">32px</span>
+  </div>
+  <div class="size-card dark">
+    <div class="size-box size-box-32"><div style="width:32px;height:32px">{{SVG}}</div></div>
+    <span class="size-label">32px</span>
+  </div>
+  <div class="size-card light">
+    <div class="size-box size-box-16"><div style="width:16px;height:16px">{{SVG}}</div></div>
+    <span class="size-label">16px</span>
+  </div>
+  <div class="size-card dark">
+    <div class="size-box size-box-16"><div style="width:16px;height:16px">{{SVG}}</div></div>
+    <span class="size-label">16px</span>
+  </div>
+</div>
+
+<script>
+const CANVAS = {{CANVAS_SIZE}};
+const gridSelect = document.getElementById('grid-select');
+const toggleGrid = document.getElementById('toggle-grid');
+const toggleCenter = document.getElementById('toggle-center');
+
+gridSelect.value = '{{GRID_N}}';
+
+function buildGridSVG(n, strokeColor) {
+  const m = CANVAS / n;
+  let lines = '';
+  for (let i = 0; i <= n; i++) {
+    const pos = i * m;
+    const strong = i % 4 === 0;
+    const c = strong ? strokeColor.replace(/[\d.]+\)$/, '0.3)') : strokeColor;
+    const w = strong ? 1.5 : 0.5;
+    lines += `<line x1="${pos}" y1="0" x2="${pos}" y2="${CANVAS}" stroke="${c}" stroke-width="${w}"/>`;
+    lines += `<line x1="0" y1="${pos}" x2="${CANVAS}" y2="${pos}" stroke="${c}" stroke-width="${w}"/>`;
+  }
+  return `<svg viewBox="0 0 ${CANVAS} ${CANVAS}" xmlns="http://www.w3.org/2000/svg" style="position:absolute;inset:0;width:100%;height:100%">${lines}</svg>`;
+}
+
+function updateGrids() {
+  const n = parseInt(gridSelect.value);
+  document.getElementById('grid-light').innerHTML = buildGridSVG(n, 'rgba(0,120,255,0.12)');
+  document.getElementById('grid-dark').innerHTML = buildGridSVG(n, 'rgba(80,160,255,0.2)');
+  document.getElementById('grid-mid').innerHTML = buildGridSVG(n, 'rgba(0,100,255,0.18)');
+}
+
+toggleGrid.addEventListener('change', () => {
+  document.querySelectorAll('.grid-overlay').forEach(el => el.classList.toggle('visible', toggleGrid.checked));
+});
+
+toggleCenter.addEventListener('change', () => {
+  document.querySelectorAll('.crosshair').forEach(el => el.classList.toggle('visible', toggleCenter.checked));
+});
+
+gridSelect.addEventListener('change', updateGrids);
+
+updateGrids();
+</script>
+</body>
+</html>

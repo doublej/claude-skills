@@ -1,6 +1,6 @@
 ---
 name: cookiecutter-templates
-description: Build rock-solid, never-failing cookiecutter templates optimized for Claude Code agents. Use this skill when creating new cookiecutter templates, debugging template generation failures, reviewing existing templates for best practices, or integrating templates with AI-assisted workflows.
+description: "Build and debug templates optimized for Claude Code agents"
 license: MIT
 allowed-tools:
   - Bash

@@ -1,6 +1,6 @@
 ---
 name: tweakpane-builder
-description: Build Tweakpane debug UIs with intelligent control suggestions based on data types
+description: "Debug UIs with smart control suggestions from data types"
 ---
 
 # Tweakpane Builder Skill

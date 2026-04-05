@@ -1,6 +1,6 @@
 ---
 name: mobile-web
-description: Mobile website optimization best practices. Use when building or auditing HTML pages for mobile — covers viewport, meta tags, safe areas, touch targets, dark mode, forms, fonts, images, PWA, and performance.
+description: "Mobile HTML optimization: viewport, safe areas, touch targets, dark mode, PWA"
 ---
 
 # Mobile Web Optimization
@@ -93,6 +93,9 @@ Both the `<meta name="color-scheme">` tag AND the CSS `color-scheme` property ar
 ```css
 /* Remove tap highlight on mobile */
 * { -webkit-tap-highlight-color: transparent; }
+
+/* Block double-tap-to-zoom delay without disabling pinch zoom */
+html { touch-action: manipulation; }
 
 /* Prevent pull-to-refresh and overscroll bounce */
 html { overscroll-behavior: none; }

@@ -1,6 +1,6 @@
 ---
 name: shopify-api
-description: Build Shopify integrations using Admin REST/GraphQL APIs. Use when creating products, managing orders, updating inventory, handling customers, or automating store operations. Covers authentication, rate limiting, webhooks, and common e-commerce workflows.
+description: "Admin REST/GraphQL API: products, orders, inventory, webhooks, rate limits"
 ---
 
 # Shopify API

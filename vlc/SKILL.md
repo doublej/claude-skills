@@ -1,6 +1,6 @@
 ---
 name: vlc
-description: Control and configure VLC media player. Use when playing media, controlling playback, streaming, converting, managing playlists, adjusting audio/video, or automating VLC via CLI, AppleScript, or HTTP API.
+description: "Control playback, streaming, converting via CLI, AppleScript, HTTP API"
 ---
 
 # VLC Media Player

@@ -1,6 +1,6 @@
 ---
 name: twilio-api
-description: "Expert guidance for implementing Twilio API integrations including SMS, voice calls, WhatsApp, email, and video. Use when building communication features with Twilio services."
+description: "SMS, voice, WhatsApp, email, video communication integrations"
 license: MIT
 allowed-tools:
   - Bash

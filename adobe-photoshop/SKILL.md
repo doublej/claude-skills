@@ -1,6 +1,6 @@
 ---
 name: adobe-photoshop
-description: Automate local Adobe Photoshop on macOS via ExtendScript (.jsx) or UXP Scripts (.psjs), triggered from the terminal using osascript. Use when editing PSDs, batch processing images, manipulating layers, exporting files, or running Photoshop actions programmatically.
+description: "ExtendScript (.jsx) or UXP (.psjs) automation via osascript on macOS"
 ---
 
 # Adobe Photoshop (Local Automation — macOS)

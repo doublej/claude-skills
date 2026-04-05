@@ -1,6 +1,6 @@
 ---
 name: note-refiner
-description: Scan folders of messy notes/documents and organize them at two levels — file system (rename, move, merge, split) and file content (restructure into clean markdown). Uses consult-user-mcp for decisions. Use when organizing notes, cleaning up docs, restructuring project files, or tidying braindumps.
+description: "Organize messy notes: rename, merge, split files, restructure into markdown"
 ---
 
 # Note Refiner

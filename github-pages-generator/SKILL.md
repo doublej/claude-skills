@@ -1,6 +1,6 @@
 ---
 name: github-pages-generator
-description: Generate beautiful, animated GitHub Pages docs using SvelteKit. Analyzes project structure, creates responsive sites with proven design patterns (Instrument Sans, fadeSlideUp animations, feature showcases), sets up automated GitHub Actions deployment.
+description: "Generate animated docs site with SvelteKit and GitHub Actions deploy"
 allowed-tools: [Bash, Read, Write, Glob, Grep, Edit]
 ---
 
@@ -71,7 +71,7 @@ Automatically classify:
 
 If information is missing:
 - No features in README? Extract from description or create generic ones
-- No installation command? Generate standard one (npm install, pip install, etc.)
+- No installation command? Generate git-based installer (e.g. `bun install github:owner/repo`). Only use registry installs (npm/PyPI/crates) if the package is confirmed published there.
 - No repository URL? Use GitHub API to find it from package name
 - No description? Use package.json description
 
@@ -80,10 +80,18 @@ If information is missing:
 ### 2.1 Create Directory Structure
 
 ```bash
-mkdir -p docs/{src/{routes,lib/{components,styles,assets}},static,.github/workflows}
+mkdir -p docs/{src/{routes,lib/{components,styles,assets,vendor/orphan-obliterator}},static,.github/workflows}
 ```
 
-### 2.2 Initialize SvelteKit Project
+### 2.2 Vendor orphan-obliterator
+
+Copy the built dist from the local lib into the docs vendor directory:
+
+```bash
+cp ~/Documents/development/node/orphan-obliterator/dist/{index.js,index.d.ts} docs/src/lib/vendor/orphan-obliterator/
+```
+
+### 2.3 Initialize SvelteKit Project
 
 Create `docs/package.json`:
 
@@ -109,7 +117,7 @@ Create `docs/package.json`:
 }
 ```
 
-### 2.3 Configure SvelteKit for Static Export
+### 2.4 Configure SvelteKit for Static Export
 
 Create `docs/svelte.config.js`:
 
@@ -135,7 +143,7 @@ const config = {
 export default config;
 ```
 
-### 2.4 Configure Vite
+### 2.5 Configure Vite
 
 Create `docs/vite.config.ts`:
 
@@ -148,7 +156,7 @@ export default defineConfig({
 });
 ```
 
-### 2.5 Configure TypeScript
+### 2.6 Configure TypeScript
 
 Create `docs/tsconfig.json`:
 
@@ -169,7 +177,7 @@ Create `docs/tsconfig.json`:
 }
 ```
 
-### 2.6 Install Dependencies
+### 2.7 Install Dependencies
 
 ```bash
 cd docs
@@ -224,6 +232,7 @@ Create `docs/src/app.html`:
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script defer src="https://umami-inky-two.vercel.app/script.js" data-website-id="YOUR_WEBSITE_ID"></script>
   %sveltekit.head%
 </head>
 <body>
@@ -238,8 +247,16 @@ Create `docs/src/routes/+layout.svelte`:
 
 ```svelte
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { obliterate } from '$lib/vendor/orphan-obliterator/index.js';
   import '../lib/styles/global.css';
+
   let { children } = $props();
+
+  onMount(() => {
+    const orphans = obliterate('p, li, h2, h3');
+    return () => orphans.destroy();
+  });
 </script>
 
 {@render children()}
@@ -688,10 +705,12 @@ Parse bullet points:
 
 **Extract installation:**
 Look for code blocks containing:
-- `npm install`
-- `pip install`
-- `cargo install`
-- `bun add`
+- `bun install github:owner/repo` (preferred for unpublished packages)
+- `npm install` / `bun add` (only if published to npm)
+- `pip install` / `pip install git+https://...`
+- `cargo install` / `cargo install --git`
+
+**Default:** If no install command found, use `bun install github:${owner}/${repo}` (most projects are NOT on npm).
 
 **Extract getting started:**
 Look for sections titled:
@@ -742,6 +761,8 @@ The skill should produce:
 - Accessibility features (reduced-motion, semantic HTML)
 - All sections populated with extracted content
 - Copy button for installation command
+- Umami analytics tracking snippet in `app.html`
+- Orphan-obliterator active in root layout (no orphaned words on last lines)
 
 ## Troubleshooting
 
@@ -764,3 +785,8 @@ The skill should produce:
 - Check workflow file is in `.github/workflows/`
 - Verify permissions in workflow (contents: read, pages: write)
 - Check GitHub Pages is enabled in repo settings
+
+## Post-Deploy Reminder
+
+After the docs site is live, remind the user:
+- Replace `YOUR_WEBSITE_ID` in `docs/src/app.html` with the actual ID from the Umami dashboard (`https://umami-inky-two.vercel.app`)

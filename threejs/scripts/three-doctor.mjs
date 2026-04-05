@@ -23,18 +23,40 @@ async function readJson(p) {
 }
 
 async function findRepoRoot(startDir) {
-  let dir = path.resolve(startDir);
-  for (let i = 0; i < 8; i++) {
-    if (await exists(path.join(dir, "package.json"))) return dir;
+  const resolved = path.resolve(startDir);
+
+  // If startDir itself has a package.json, use it directly
+  if (await exists(path.join(resolved, "package.json"))) return resolved;
+
+  // Try git root (safer than walking to any ancestor package.json)
+  try {
+    const { execSync } = await import("node:child_process");
+    const gitRoot = execSync("git rev-parse --show-toplevel", {
+      cwd: resolved, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"]
+    }).trim();
+    if (await exists(path.join(gitRoot, "package.json"))) return gitRoot;
+  } catch { /* not a git repo */ }
+
+  // Walk up max 3 levels (not 8) to limit blast radius
+  let dir = resolved;
+  for (let i = 0; i < 3; i++) {
     const parent = path.dirname(dir);
     if (parent === dir) break;
     dir = parent;
+    if (await exists(path.join(dir, "package.json"))) return dir;
   }
-  return path.resolve(startDir);
+
+  return resolved;
 }
 
 async function walk(dir, onFile) {
-  const entries = await fsp.readdir(dir, { withFileTypes: true });
+  let entries;
+  try {
+    entries = await fsp.readdir(dir, { withFileTypes: true });
+  } catch (err) {
+    if (err.code === "EACCES") return; // skip unreadable directories
+    throw err;
+  }
   for (const ent of entries) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory() && !IGNORED_DIRS.has(ent.name)) await walk(p, onFile);
@@ -159,4 +181,4 @@ async function main() {
   console.log("\n");
 }
 
-main().catch(console.error);
+main().catch((err) => { console.error(err); process.exitCode = 1; });

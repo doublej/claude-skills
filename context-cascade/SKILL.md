@@ -1,6 +1,6 @@
 ---
 name: context-cascade
-description: "Visualize the CLAUDE.md file hierarchy with token counts and inheritance. Use when user asks about their context, CLAUDE.md files, context cascade, or wants to understand what instructions are loaded."
+description: "Visualize CLAUDE.md hierarchy with token counts and inheritance chain"
 ---
 
 # Context Cascade

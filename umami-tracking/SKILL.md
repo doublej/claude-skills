@@ -1,30 +1,42 @@
 ---
 name: umami-tracking
-description: Add Umami analytics tracking to any website project. Use when user wants to add tracking, analytics, or Umami to a site.
+description: "Add Umami analytics tracking to any website project"
 ---
 
 # Umami Tracking Injection
 
-Add Umami analytics to any website. No questions asked — uses the default instance URL and a placeholder website ID that can be filled in later.
+Add Umami analytics to any website. Automatically registers the site in the Umami dashboard and injects the tracking snippet with the real website ID.
 
 ## Defaults
 
 - **Umami URL**: `https://umami-inky-two.vercel.app`
-- **Website ID**: `YOUR_WEBSITE_ID` (placeholder — user fills in from Umami dashboard later)
+- **Dashboard**: `https://umami-inky-two.vercel.app/websites`
 
 ## Workflow
 
 1. Detect the project type (framework or static HTML)
-2. Inject the tracking snippet immediately using defaults
-3. Report which files were modified and remind user to replace `YOUR_WEBSITE_ID`
+2. Determine the site name and domain from the project (package.json name, deploy config, or folder name)
+3. Register the website via `register_website.py` to get a real website ID
+4. Inject the tracking snippet with the actual website ID
+5. Report which files were modified and link to the dashboard
 
-Do NOT ask for the Umami URL or website ID. Just inject with defaults.
+Do NOT ask for credentials, URL, or website ID. Everything is preconfigured.
 
-## Injection
+## Step 1: Register the Website
 
-### Framework Projects (preferred — detect these first)
+```bash
+python3 <skill_dir>/scripts/register_website.py "<site-name>" "<domain>"
+```
 
-Check for framework markers and add the snippet directly to the app shell:
+- `site-name`: Human-readable name (e.g. "My Portfolio")
+- `domain`: The deployment domain (e.g. "portfolio.example.com")
+- Prints the website ID (UUID) to stdout
+
+If the domain is unknown, use the project/folder name as both name and domain.
+
+## Step 2: Inject Tracking
+
+### Framework Projects (detect these first)
 
 | Framework | Marker | File |
 |-----------|--------|------|
@@ -35,22 +47,17 @@ Check for framework markers and add the snippet directly to the app shell:
 
 Add inside `<head>`:
 ```html
-<script defer src="https://umami-inky-two.vercel.app/script.js" data-website-id="YOUR_WEBSITE_ID"></script>
+<script defer src="https://umami-inky-two.vercel.app/script.js" data-website-id="WEBSITE_ID"></script>
 ```
 
 ### Static HTML Projects
 
-Run the bundled script:
-
 ```bash
-python3 <skill_dir>/scripts/inject_tracking.py <project_dir> YOUR_WEBSITE_ID [--auto]
+python3 <skill_dir>/scripts/inject_tracking.py <project_dir> <website_id> [--auto]
 ```
-
-- Tries placeholder replacement (`<!-- TRACKING_PLACEHOLDER -->`) first
-- Falls back to auto-inject before `</head>` if no placeholders found
 
 ## Post-Injection
 
-Notify the user: "Tracking added. Replace `YOUR_WEBSITE_ID` with your actual ID from the Umami dashboard."
+Notify the user: "Tracking added for **<site-name>**. View stats at https://umami-inky-two.vercel.app/websites"
 
-The script is idempotent — files already containing the snippet are skipped.
+The inject script is idempotent — files already containing the snippet are skipped.

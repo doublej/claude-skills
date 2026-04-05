@@ -1,6 +1,6 @@
 ---
 name: voice-assistant
-description: Build conversational voice assistants with real-time speech-to-speech capabilities. Covers Pipecat, LiveKit Agents, OpenAI Realtime API, and ElevenLabs. Use when building voice AI agents, real-time speech interfaces, AI companions, customer support bots, or multimodal conversational systems.
+description: "Real-time voice AI agents with Pipecat, LiveKit, OpenAI Realtime, ElevenLabs"
 ---
 
 # Conversational Voice Assistant Development

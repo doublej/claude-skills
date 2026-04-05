@@ -1,10 +1,6 @@
 ---
 name: pdf
-description: >
-  Unified PDF skill. Use when:
-  (1) generating PDFs programmatically with ReportLab — Canvas API, Platypus layouts, tables, charts, fonts, images;
-  (2) managing ICC color profiles and color spaces — RGB-to-CMYK conversion, profile embedding/extraction, PDF/X and PDF/A output intents, ink coverage, preflight;
-  (3) processing PDFs with Ghostscript CLI — merging, splitting, compression, format conversion, rasterization, OCR, batch operations.
+description: "ReportLab generation, ICC color profiles, Ghostscript processing (unified)"
   Replaces reportlab-pdf, icc-color-pdf, ghostscript.
 ---
 

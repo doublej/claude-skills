@@ -1,6 +1,6 @@
 ---
 name: hiphop-culture
-description: Analyze hip-hop tracks for culture context, lyrical themes, BPM timing, and visual aesthetic language. Use when creating hip-hop adjacent projects, lyric videos, music analysis, or mapping rap lyrics to timestamps for visual sync.
+description: "Analyze tracks: culture context, BPM, lyrics, visual aesthetic sync"
 ---
 
 # Hip-Hop Culture

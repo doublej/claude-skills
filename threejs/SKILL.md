@@ -1,6 +1,6 @@
 ---
 name: threejs
-description: "Unified Three.js/WebGL/WebGPU development skill. Use when: (1) building Three.js applications \u2014 rendering, glTF assets, color management, postprocessing, shaders, interaction, performance; (2) animating 3D/DOM with Theatre.js \u2014 timelines, keyframes, Studio editor, @theatre/r3f; (3) choosing animation easing and timing; (4) working with 3D space, positioning, transforms, or camera setup. Covers vanilla, React Three Fiber, and production deployment."
+description: "WebGL/WebGPU rendering, glTF, shaders, R3F, postprocessing, 3D transforms"
 ---
 
 # Three.js Development
@@ -40,7 +40,7 @@ Target API: `createThreeApp(canvas) -> { resize(), update(dt), render(), dispose
 - Direct rendering -> renderer output settings apply
 - EffectComposer (WebGL) -> OutputPass handles tone mapping; passes needing sRGB (e.g., FXAA) go AFTER OutputPass
 - WebGL and WebGPU postprocessing stacks differ -- do not mix
-- Color textures -> sRGB; data textures (normal, roughness) -> linear
+- Color textures -> `SRGBColorSpace`; data textures (normal, roughness, AO) -> `NoColorSpace` (leave untouched, do NOT set `LinearSRGBColorSpace`)
 
 ### Assets
 
@@ -187,11 +187,15 @@ export function createThreeApp(canvas: HTMLCanvasElement) {
   function update(dt: number) { /* animate */ }
   function render() { renderer.render(scene, camera); }
 
-  function tick(prev = performance.now()) {
-    rafId = requestAnimationFrame(() => tick(prev));
-    const now = performance.now();
-    update(Math.min((now - prev) / 1000, 0.05));
-    render();
+  function tick() {
+    let prev = performance.now();
+    (function loop() {
+      rafId = requestAnimationFrame(loop);
+      const now = performance.now();
+      update(Math.min((now - prev) / 1000, 0.05));
+      prev = now;
+      render();
+    })();
   }
 
   function dispose() {
@@ -232,16 +236,28 @@ export function disposeObject3D(root: THREE.Object3D) {
 
 ### glTF Loading (DRACO/KTX2)
 
+**Version detection** — read the project's Three.js version before writing loader paths:
+```bash
+node -p "require('./node_modules/three/package.json').version"
+```
+
+**Decoder paths** must point to a **served URL**, not a bare package path. Bundlers don't
+serve WASM/worker files from `node_modules` automatically — copy them to `public/` or use a
+CDN URL matched to the installed Three.js version.
+
 ```ts
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
 
+// Option A: copy decoders to public/ (recommended — offline, version-locked)
+//   cp node_modules/three/examples/jsm/libs/draco/gltf/* public/draco/
+//   cp node_modules/three/examples/jsm/libs/basis/*       public/basis/
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
+dracoLoader.setDecoderPath("/draco/");
 
 const ktx2Loader = new KTX2Loader();
-ktx2Loader.setTranscoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/basis/");
+ktx2Loader.setTranscoderPath("/basis/");
 ktx2Loader.detectSupport(renderer);
 
 const gltfLoader = new GLTFLoader();
@@ -416,6 +432,197 @@ if (import.meta.env.DEV) { studio.initialize(); studio.extend(extension) }
 - Always support `prefers-reduced-motion`
 - Mobile 300ms baseline, desktop 200ms baseline
 
+## Animation & Ticker Anti-Patterns
+
+### Mixed Ticker Sources
+
+Never combine multiple animation drivers in the same scene. Pick ONE:
+
+| Approach | When to Use |
+|----------|-------------|
+| Manual `requestAnimationFrame` | Vanilla Three.js (recommended default) |
+| `renderer.setAnimationLoop(fn)` | WebXR — **required** (RAF doesn't fire in XR sessions) |
+| R3F `useFrame` | React Three Fiber — **only option** (Canvas owns the loop) |
+| Theatre.js `rafDriver` | When Theatre.js controls playback timing |
+
+```ts
+// WRONG: mixed tickers — two loops fighting over the same scene
+renderer.setAnimationLoop(render);
+requestAnimationFrame(tick); // second loop causes double renders, timing bugs
+
+// WRONG: manual RAF inside R3F — bypasses fiber's scheduler
+useEffect(() => {
+  const id = requestAnimationFrame(animate); // fights useFrame
+  return () => cancelAnimationFrame(id);
+}, []);
+
+// RIGHT: one loop, one owner
+function tick() {
+  rafId = requestAnimationFrame(tick);
+  update();
+  renderer.render(scene, camera);
+}
+```
+
+### THREE.Clock Pitfalls
+
+`THREE.Clock` keeps accumulating time even when the browser tab is hidden. On tab-switch back, `getDelta()` returns a massive spike (seconds or minutes):
+
+```ts
+// WRONG: clock accumulates time during tab switch
+const clock = new THREE.Clock();
+function tick() {
+  requestAnimationFrame(tick);
+  const dt = clock.getDelta(); // returns 30+ seconds after tab switch
+  physics.step(dt);            // simulation explodes
+}
+
+// RIGHT: manual delta with clamp
+let prev = performance.now();
+function tick() {
+  requestAnimationFrame(tick);
+  const now = performance.now();
+  const dt = Math.min((now - prev) / 1000, 0.05); // cap at 50ms
+  prev = now;
+  physics.step(dt);
+}
+```
+
+If you must use `THREE.Clock`, clamp the result: `Math.min(clock.getDelta(), 0.05)`.
+
+### Wrong Browser APIs
+
+```ts
+// WRONG: setInterval/setTimeout for rendering — not synced to display refresh
+setInterval(() => renderer.render(scene, camera), 16); // drifts, jank, wastes battery
+
+// WRONG: Date.now() for delta — millisecond resolution, not monotonic
+const dt = (Date.now() - last) / 1000; // affected by system clock changes
+
+// RIGHT: performance.now() — sub-millisecond, monotonic, matches RAF timestamps
+const dt = (performance.now() - prev) / 1000;
+```
+
+**Never use `setInterval` or `setTimeout` for render loops.** They are not synced to `requestAnimationFrame` and cause:
+- Renders between display refreshes (tearing/jank)
+- Unnecessary GPU work when tab is hidden (RAF auto-pauses, setInterval doesn't)
+- Inconsistent frame pacing
+
+### Unclamped Delta Time
+
+Without a delta clamp, any pause (tab switch, debugger, heavy GC) causes a time bomb:
+
+```ts
+// WRONG: raw delta passed to animation
+object.position.x += speed * dt; // dt=30s after tab switch → teleportation
+
+// WRONG: AnimationMixer without clamp
+mixer.update(dt); // skeletal animation jumps to end and wraps unpredictably
+
+// RIGHT: always clamp delta for gameplay/physics/animation
+const clampedDt = Math.min(dt, 0.05); // 50ms = 20fps floor
+mixer.update(clampedDt);
+object.position.x += speed * clampedDt;
+```
+
+### Render Loop Leaks
+
+```ts
+// WRONG: starting loop without storing the handle
+requestAnimationFrame(tick); // can't cancel — loop runs forever after unmount
+
+// WRONG: React useEffect without cleanup
+useEffect(() => {
+  renderer.setAnimationLoop(render);
+  // missing return — loop survives component unmount
+}, []);
+
+// WRONG: multiple resize listeners stacking up
+window.addEventListener("resize", onResize); // called every mount, never removed
+
+// RIGHT: store handles, clean up everything
+let rafId: number;
+function tick() { rafId = requestAnimationFrame(tick); render(); }
+function dispose() {
+  cancelAnimationFrame(rafId);
+  window.removeEventListener("resize", onResize);
+  renderer.setAnimationLoop(null); // if using setAnimationLoop
+  renderer.dispose();
+}
+```
+
+### R3F-Specific Traps
+
+```tsx
+// WRONG: creating objects inside useFrame — GC pressure every frame
+useFrame(() => {
+  const v = new THREE.Vector3(); // allocates 60×/sec
+  mesh.current.position.copy(v);
+});
+
+// RIGHT: hoist allocations outside the loop
+const _v = new THREE.Vector3();
+useFrame(() => {
+  mesh.current.position.copy(_v.set(0, 1, 0));
+});
+
+// WRONG: heavy work in useFrame without priority
+useFrame(() => {
+  // physics + AI + particles all at default priority
+  // no way to control execution order
+});
+
+// RIGHT: use priority to order execution (lower runs first)
+useFrame(() => { physics.step(dt); }, -1);   // physics first
+useFrame(() => { updateAI(); }, 0);           // then AI
+useFrame(() => { particles.update(); }, 1);   // then particles
+```
+
+### Mixing AnimationMixer with Manual Transforms
+
+```ts
+// WRONG: manually setting position on a bone/mesh that AnimationMixer controls
+mixer.clipAction(walkClip).play();
+model.position.y = 2; // overwritten every frame by the mixer
+
+// RIGHT: use an outer group for manual transforms
+const group = new THREE.Group();
+group.position.y = 2;
+group.add(model);
+scene.add(group);
+mixer.clipAction(walkClip).play(); // mixer controls model, you control group
+```
+
+### Resize Observer vs window.resize
+
+```ts
+// WRONG: window resize only — misses container-level size changes
+window.addEventListener("resize", onResize);
+
+// BETTER: ResizeObserver on the canvas container
+const ro = new ResizeObserver(([entry]) => {
+  const { width, height } = entry.contentRect;
+  renderer.setSize(width, height, false);
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+});
+ro.observe(canvas.parentElement!);
+
+// Clean up
+ro.disconnect();
+```
+
+### Summary Checklist
+
+- [ ] Only ONE animation driver per scene (no mixed RAF + setAnimationLoop)
+- [ ] Delta time clamped to max ~50ms
+- [ ] Using `performance.now()`, never `Date.now()` or `setInterval`
+- [ ] All RAF handles stored and cancelled on dispose
+- [ ] No per-frame allocations in hot path
+- [ ] `AnimationMixer` and manual transforms on separate objects
+- [ ] Resize via `ResizeObserver`, not just `window.resize`
+- [ ] React: cleanup in `useEffect` return, allocations hoisted out of `useFrame`
+
 ## Quality Gates
 
 ### Build & Runtime
@@ -429,7 +636,7 @@ if (import.meta.env.DEV) { studio.initialize(); studio.extend(extension) }
 
 ### Color & Postprocessing
 - [ ] No double tone mapping
-- [ ] Texture color spaces correct (color=sRGB, data=linear)
+- [ ] Texture color spaces correct (color=SRGBColorSpace, data=NoColorSpace default)
 - [ ] Composer resized correctly
 
 ### Performance

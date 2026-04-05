@@ -1,6 +1,6 @@
 ---
 name: iterm2
-description: >-
+description: "Manage via it2 CLI: tabs, panes, send text, profiles, arrangements"
   Manage iTerm2 via it2 CLI - create/close tabs, split panes, send text, read output,
   manage profiles, arrangements, and appearance. Use when organizing terminal workspace,
   automating iTerm2 layouts, or controlling terminal sessions.

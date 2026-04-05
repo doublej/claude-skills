@@ -1,6 +1,6 @@
 ---
 name: epc-qr
-description: Generate EPC QR codes for European banking payments (SEPA) as ASCII art. Auto-detects IBAN, amount, recipient name, and payment reference from conversation context. Use when user mentions SEPA payment, bank transfer, IBAN, or requests a payment QR code.
+description: "Generate EPC QR codes for SEPA payments as ASCII art from IBAN and amount"
 ---
 
 # EPC QR Code Generator

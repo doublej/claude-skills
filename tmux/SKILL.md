@@ -1,6 +1,6 @@
 ---
 name: tmux
-description: "Remote control tmux sessions for interactive CLIs (python, gdb, etc.) by sending keystrokes and scraping pane output."
+description: "Remote-control sessions: send keystrokes, scrape pane output for CLIs"
 license: Vibecoded
 ---
 

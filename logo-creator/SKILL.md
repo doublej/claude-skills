@@ -1,6 +1,6 @@
 ---
 name: logo-creator
-description: Create distinctive, production-ready logos as SVG code. Use when user needs a logo, icon, wordmark, monogram, or visual identity. Generates geometric, scalable vector graphics with no external dependencies. Triggers on "create logo", "design logo", "make icon", "brand identity", "logomark", "wordmark".
+description: "Create logos, icons, wordmarks, monograms as production-ready SVG code"
 ---
 
 # Logo Creator

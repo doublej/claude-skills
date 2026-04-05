@@ -1,6 +1,6 @@
 ---
 name: mermaid-graphs
-description: Create Mermaid diagrams (flowcharts, sequence, class, state, ER, gantt, pie, mindmap, etc.) and render visually. Use when creating diagrams, visualizing workflows, or documenting architecture. Triggers on "diagram", "flowchart", "visualize", "chart", "graph".
+description: "Create and render diagrams: flowcharts, sequence, ER, gantt, mindmaps"
 ---
 
 # Mermaid Graphs

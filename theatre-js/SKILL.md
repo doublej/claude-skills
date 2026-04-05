@@ -1,6 +1,6 @@
 ---
 name: theatre-js
-description: Use when implementing motion design, timeline animations, visual animation editors, animating Three.js/R3F scenes, creating keyframe animations, or using Theatre.js, @theatre/core, @theatre/studio, @theatre/r3f, theatric, or building animation tooling for the web.
+description: "Timeline animations, keyframes, Studio editor, @theatre/r3f, motion design"
 ---
 
 # Theatre.js Best Practices

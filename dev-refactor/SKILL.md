@@ -1,6 +1,6 @@
 ---
 name: dev-refactor
-description: Analyzes existing codebases against standards to identify gaps in architecture, code quality, testing, and DevOps. Auto-detects project language and generates refactoring tasks. Use when refactoring legacy projects, auditing codebases, or modernizing existing code.
+description: "Audit codebase against standards, auto-detect language, generate refactor tasks"
 ---
 
 # Dev Refactor

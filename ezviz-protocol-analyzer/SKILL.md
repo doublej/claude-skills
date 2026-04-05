@@ -2,7 +2,7 @@
 name: ezviz-protocol-analyzer
 version: 1.0.0
 author: JJ
-description: Reverse-engineer Hikvision/EZVIZ camera SDK protocol from Android emulator traffic captures
+description: "Reverse-engineer Hikvision/EZVIZ camera SDK protocol from pcap captures"
 tags: [protocol-analysis, reverse-engineering, video-streaming, pcap, binary-protocols]
 ---
 

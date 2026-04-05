@@ -20,7 +20,7 @@ Check for:
 | Type | Color Space |
 |------|-------------|
 | baseColor/albedo, emissive | sRGB |
-| normal, roughness, metalness, AO, height | linear (no transform) |
+| normal, roughness, metalness, AO, height | `NoColorSpace` (leave default — do NOT set `LinearSRGBColorSpace`) |
 
 If normal map treated as sRGB → shading looks wrong.
 
@@ -42,11 +42,9 @@ renderer.outputEncoding = THREE.sRGBEncoding;
 // Color textures (sRGB)
 texture.colorSpace = THREE.SRGBColorSpace;
 
-// Data textures (linear)
-normalMap.colorSpace = THREE.LinearSRGBColorSpace;
-roughnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-metalnessMap.colorSpace = THREE.LinearSRGBColorSpace;
-aoMap.colorSpace = THREE.LinearSRGBColorSpace;
+// Data textures — leave at default (NoColorSpace), do NOT explicitly set
+// normalMap, roughnessMap, metalnessMap, aoMap already default to NoColorSpace
+// Setting LinearSRGBColorSpace is wrong and causes incorrect shading
 ```
 
 ## Tone Mapping Options

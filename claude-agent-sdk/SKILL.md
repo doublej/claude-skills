@@ -1,173 +1,213 @@
 ---
 name: claude-agent-sdk
-description: Builds production-ready AI agents with Claude Agent SDK. Covers installation, authentication, tool permissions, MCP integration, and agent patterns. Use when building custom AI agents, integrating Claude as an autonomous agent, or extending Claude Code capabilities.
+description: "Build AI agents: auth, query API, hooks, subagents, MCP, sessions"
 ---
 
-# Claude Agent SDK Skill
+# Claude Agent SDK
 
-## Overview
-Build production-ready custom AI agents with the Claude Agent SDK. Built on the agent harness that powers Claude Code, it provides everything needed for building autonomous agents with advanced capabilities.
-
-**Key advantage**: Automatic context management, rich tool ecosystem, fine-grained permissions, and built-in error handling.
+Build AI agents using the same tools and agent loop that power Claude Code, programmable in Python and TypeScript.
 
 ## Installation
 
-### TypeScript
 ```bash
+# TypeScript (Node.js 18+)
 npm install @anthropic-ai/claude-agent-sdk
-```
 
-### Python
-```bash
+# Python (3.10+)
 pip install claude-agent-sdk
 ```
 
-## SDK Forms Available
-- **TypeScript SDK** - For Node.js and web applications
-- **Python SDK** - For Python applications and data science
-- **Streaming vs Single Mode** - Choose input mode based on your use case
+## Authentication
 
-## Why Use Claude Agent SDK?
+Priority order:
+1. `ANTHROPIC_API_KEY` env var (if set — **overrides everything**)
+2. Claude Code keychain credentials (default — works if logged into `claude` CLI)
 
-### Built-in Capabilities
-- **Context Management**: Automatic compaction and context management prevents running out of context
-- **Rich Tool Ecosystem**: File operations, code execution, web search, MCP extensibility
-- **Advanced Permissions**: Fine-grained control over agent capabilities
-- **Production Essentials**: Error handling, session management, monitoring
-- **Performance**: Automatic prompt caching and optimizations
+**IMPORTANT**: Do NOT create a `.env` with a placeholder API key — it overrides working keychain auth and causes "Invalid API key" errors. If authenticated via `claude` CLI, you likely don't need `ANTHROPIC_API_KEY` at all.
 
-## Authentication Methods
+Third-party providers:
+- **Amazon Bedrock**: `CLAUDE_CODE_USE_BEDROCK=1` + AWS credentials
+- **Google Vertex AI**: `CLAUDE_CODE_USE_VERTEX=1` + Google Cloud credentials
+- **Microsoft Azure**: `CLAUDE_CODE_USE_FOUNDRY=1` + Azure credentials
 
-### Primary (Anthropic API)
+API keys: https://platform.claude.com/
+
+## Quick Start
+
+### TypeScript
+
+```typescript
+import { query } from "@anthropic-ai/claude-agent-sdk";
+
+for await (const message of query({
+  prompt: "Find and fix the bug in auth.py",
+  options: { allowedTools: ["Read", "Edit", "Bash"] }
+})) {
+  if ("result" in message) console.log(message.result);
+}
 ```
-Set ANTHROPIC_API_KEY environment variable
-Get key from: https://platform.claude.com/api
+
+### Python
+
+```python
+import asyncio
+from claude_agent_sdk import query, ClaudeAgentOptions
+
+async def main():
+    async for message in query(
+        prompt="Find and fix the bug in auth.py",
+        options=ClaudeAgentOptions(allowed_tools=["Read", "Edit", "Bash"]),
+    ):
+        if hasattr(message, "result"):
+            print(message.result)
+
+asyncio.run(main())
 ```
 
-### Third-Party Providers
-- **Amazon Bedrock**: Set `CLAUDE_CODE_USE_BEDROCK=1` + AWS credentials
-- **Google Vertex AI**: Set `CLAUDE_CODE_USE_VERTEX=1` + Google Cloud credentials
-- **Microsoft Foundry**: Set `CLAUDE_CODE_USE_FOUNDRY=1` + Azure credentials
+## query() Options
 
-## Core Concepts
+### TypeScript
 
-### Agent Structure
-1. **System Prompt**: Define role, expertise, behavior
-2. **Tool Permissions**: Control which tools agent can use
-3. **Context Management**: Handle large conversations
-4. **Session Management**: Track agent state
+```typescript
+query({
+  prompt: "string" | AsyncIterable<SDKUserMessage>,  // string or iterator for multi-turn
+  options: {
+    cwd: process.cwd(),
+    systemPrompt: "You are...",
+    allowedTools: ["Read", "Edit", "Bash"],
+    disallowedTools: ["Write"],
+    permissionMode: "bypassPermissions",    // or "acceptEdits", "default"
+    allowDangerouslySkipPermissions: true,  // required for bypassPermissions
+    settingSources: ["user", "project"],
+    maxTurns: 10,
+    resume: sessionId,
+    mcpServers: { ... },
+    hooks: { ... },
+    agents: { ... },
+  }
+})
+```
 
-### Tool Permissions
-- `allowedTools` - Explicitly allow specific tools
-- `disallowedTools` - Block specific tools
-- `permissionMode` - Set overall permission strategy
+### Python
 
-## Full Claude Code Feature Support
+```python
+ClaudeAgentOptions(
+    cwd="/path/to/project",
+    system_prompt="You are...",
+    allowed_tools=["Read", "Edit", "Bash"],
+    disallowed_tools=["Write"],
+    permission_mode="bypassPermissions",
+    allow_dangerously_skip_permissions=True,
+    setting_sources=["user", "project"],
+    max_turns=10,
+    resume=session_id,
+    mcp_servers={ ... },
+    hooks={ ... },
+    agents={ ... },
+)
+```
 
-The SDK provides access to all Claude Code features:
-- **Subagents** (`./.claude/agents/`) - Specialized agents
-- **Agent Skills** (`./.claude/skills/`) - Extended capabilities
-- **Hooks** (`./.claude/settings.json`) - Custom command execution
-- **Slash Commands** (`./.claude/commands/`) - Custom commands
-- **Plugins** - Load custom extensions programmatically
-- **Memory (CLAUDE.md)** - Project context persistence
+### settingSources
 
-Set `settingSources: ['project']` (TypeScript) or `setting_sources=["project"]` (Python) to load CLAUDE.md files.
+- `"user"` — `~/.claude/settings.json` + **keychain credentials**
+- `"project"` — `.claude/settings.json` + `CLAUDE.md`
+- `"local"` — `.claude/settings.local.json`
 
-## Model Context Protocol (MCP)
+Recommended: `["user", "project"]` — loads credentials AND project config.
 
-Extend agents with custom tools through MCP servers:
-- Connect to databases
-- Integrate external APIs
-- Add specialized capabilities
-- Custom service integrations
+## Built-in Tools
 
-## Example Agent Types
+| Tool | Description |
+|------|-------------|
+| Read | Read any file |
+| Write | Create new files |
+| Edit | Precise edits to existing files |
+| Bash | Run terminal commands |
+| Glob | Find files by pattern |
+| Grep | Search file contents with regex |
+| WebSearch | Search the web |
+| WebFetch | Fetch and parse web pages |
+| Agent | Spawn subagents |
+| AskUserQuestion | Ask user clarifying questions |
 
-### Coding Agents
-- SRE agents for production issue diagnosis and fixes
-- Security review bots auditing code for vulnerabilities
-- Oncall engineering assistants for incident triage
-- Code review agents enforcing style and best practices
+## Message Types
 
-### Business Agents
-- Legal assistants reviewing contracts and compliance
-- Finance advisors analyzing reports and forecasts
-- Customer support agents resolving technical issues
-- Content creation assistants for marketing teams
+### TypeScript
 
-## Quick Start Pattern
+```typescript
+for await (const msg of query({ prompt, options })) {
+  switch (msg.type) {
+    case "system":    // init with session_id
+      if (msg.subtype === "init") sessionId = msg.session_id;
+      break;
+    case "assistant": // Claude's response — msg.message.content is ContentBlock[]
+      break;
+    case "result":    // turn complete — msg.result has final text
+      break;
+  }
+}
+```
 
-1. **Set up authentication**
-   - Export `ANTHROPIC_API_KEY` or configure third-party provider
+### Python
 
-2. **Define system prompt**
-   - Specify agent role and capabilities
+```python
+from claude_agent_sdk import AssistantMessage, ResultMessage, TextBlock
 
-3. **Configure tool permissions**
-   - Use `allowedTools` or `disallowedTools`
+async for message in query(prompt=prompt, options=options):
+    if isinstance(message, AssistantMessage):
+        for block in message.content:
+            if isinstance(block, TextBlock):
+                print(block.text)
+    elif isinstance(message, ResultMessage):
+        print(message.result)
+```
 
-4. **Initialize agent**
-   - Create agent instance with desired configuration
+### Error Types (Python)
 
-5. **Handle input/output**
-   - Choose streaming or single mode based on use case
+```python
+from claude_agent_sdk import (
+    ClaudeSDKError,      # base
+    CLINotFoundError,    # Claude Code CLI missing
+    CLIConnectionError,  # connection issues
+    ProcessError,        # process failed (.exit_code)
+    CLIJSONDecodeError,  # JSON parsing
+)
+```
 
-## Best Practices
+## Advanced features
 
-- **Start minimal**: Begin with essential tools, add features as needed
-- **Test permissions**: Verify agent can only access intended tools
-- **Handle errors**: Implement proper error handling at system boundaries
-- **Monitor context**: Watch for context growth in long-running agents
-- **Use MCP wisely**: Extend capabilities through MCP for custom integrations
-- **Document prompts**: Keep system prompts clear and maintainable
+See `references/` for detailed patterns:
+- **Hooks** — programmatic lifecycle hooks (PreToolUse, PostToolUse, Stop, etc.)
+- **Subagents** — inline specialized agents via `agents` option
+- **MCP** — external tool servers + Python in-process SDK MCP servers
+- **Sessions** — resume/fork conversations
+- **Multi-turn** — bidirectional conversations via async iterators (TS) or ClaudeSDKClient (Python)
 
-## Configuration Files
+## Common Gotchas
 
-### CLAUDE.md (Project-level instructions)
-Place in `.claude/CLAUDE.md` or project root. Loaded when `settingSources: ['project']` is set.
+### Nested Session Prevention
 
-### .claude/settings.json
-Configure hooks, commands, and settings for agent behavior.
+When running SDK from within a Claude Code terminal, inherited env vars cause issues:
+```typescript
+// Top of entry file, before other imports
+delete process.env.CLAUDECODE;
+delete process.env.CLAUDE_CODE_ENTRYPOINT;
+```
+Or: `CLAUDECODE= CLAUDE_CODE_ENTRYPOINT= bun src/index.ts`
 
-### Environment Variables
-- `ANTHROPIC_API_KEY` - Anthropic API authentication
-- `CLAUDE_CODE_USE_BEDROCK` - Enable Amazon Bedrock
-- `CLAUDE_CODE_USE_VERTEX` - Enable Google Vertex AI
-- `CLAUDE_CODE_USE_FOUNDRY` - Enable Microsoft Foundry
+### Version Pinning
 
-## Streaming vs Single Mode
+Pin your version — breaking changes occur between releases. TS SDK is on **0.2.x**, Python on **0.1.x**. Check changelogs before upgrading.
 
-- **Streaming Mode**: Real-time output, better UX for long operations
-- **Single Mode**: Complete response at once, simpler integration
+### Claude Code Features
 
-Choose based on your application's needs and interaction patterns.
+With `settingSources: ["project"]`, agents get access to:
+- Subagents (`.claude/agents/`), Skills (`.claude/skills/`), Hooks (`.claude/settings.json`)
+- Slash Commands (`.claude/commands/`), Memory (`CLAUDE.md`), Plugins (via `plugins` option)
 
 ## Resources
 
-- **Documentation**: https://platform.claude.com/docs/en/agent-sdk/overview
-- **TypeScript GitHub**: https://github.com/anthropics/claude-agent-sdk-typescript
+- **Docs**: https://platform.claude.com/docs/en/agent-sdk/overview
+- **TS GitHub**: https://github.com/anthropics/claude-agent-sdk-typescript
 - **Python GitHub**: https://github.com/anthropics/claude-agent-sdk-python
-- **Changelog**: Check GitHub repos for latest updates
-- **Support**: Report issues on GitHub issue trackers
-
-## Branding Guidelines (for partners)
-
-**Allowed naming**:
-- "Claude Agent" (preferred)
-- "Claude" (in agent menus)
-- "{YourAgentName} Powered by Claude"
-
-**Not allowed**:
-- "Claude Code" or "Claude Code Agent"
-- Claude Code branded elements
-
-## Key Takeaways
-
-✓ Production-ready agent building
-✓ Automatic context and session management
-✓ Fine-grained tool permissions
-✓ MCP extensibility for custom integrations
-✓ Full Claude Code feature parity
-✓ Multiple authentication methods
-✓ Optimized performance with prompt caching
+- **Examples**: https://github.com/anthropics/claude-agent-sdk-demos

@@ -1,6 +1,6 @@
 ---
 name: nas-deploy
-description: Deploy static sites and Node.js apps to NAS Caddy via mounted volume at /Volumes/Container/caddy
+description: "Deploy static sites and Node.js apps to NAS Caddy via mounted volume"
 allowed-tools:
   - Bash
   - Read

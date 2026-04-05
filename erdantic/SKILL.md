@@ -1,6 +1,6 @@
 ---
 name: erdantic
-description: Generate entity relationship diagrams (ERDs) from Python data model classes. Use when visualizing data models (Pydantic, dataclasses, attrs, msgspec), creating documentation diagrams, or understanding relationships between model classes. Triggers on requests like "create ERD", "visualize models", "diagram for dataclass", or "show relationships between classes".
+description: "Generate ERD diagrams from Python data models (Pydantic, dataclasses, attrs)"
 ---
 
 # Erdantic

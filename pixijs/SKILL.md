@@ -1,10 +1,6 @@
 ---
 name: pixijs
-description: >
-  Unified PixiJS development skill. Use when:
-  (1) building PixiJS applications — sprites, textures, containers, animations, interactions;
-  (2) analyzing PixiJS code for performance bottlenecks, memory leaks, or rendering inefficiencies;
-  (3) debugging a running PixiJS app in the browser via Claude-in-Chrome — scene stats, textures, benchmarks.
+description: "Sprites, animations, performance analysis, in-browser debug (unified)"
   Replaces pixijs-dev, pixijs-perf, pixi-debug.
 ---
 

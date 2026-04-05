@@ -1,6 +1,6 @@
 ---
 name: telegram
-description: Build Telegram bots and integrate with the Telegram Bot API. Covers python-telegram-bot, Telethon (async), Telegraf.js (Node), and raw HTTP API. Use when creating Telegram bots, handling commands/messages, implementing inline keyboards, processing media, setting up webhooks, or managing conversation state.
+description: "Bots with python-telegram-bot, Telethon, Telegraf.js, webhooks, conversations"
 ---
 
 # Telegram Bot Development

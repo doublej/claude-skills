@@ -1,6 +1,6 @@
 ---
 name: obsidian
-description: Manage Obsidian vaults via MCP - read, write, search, tag, and organize notes. Use when user asks to interact with Obsidian notes, create/update vault content, search knowledge base, or manage note metadata. Checks MCP availability and guides setup if missing.
+description: "Manage vaults: read, write, search, tag, organize notes via MCP"
 allowed-tools:
   - Bash
   - Read

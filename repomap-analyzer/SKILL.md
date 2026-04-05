@@ -1,6 +1,6 @@
 ---
 name: repomap-analyzer
-description: Analyze repository for deprecated patterns, mixed conventions, dead code, and duplicate methods using repomap call graph. Use when auditing code quality, finding dead code, identifying naming inconsistencies, or generating quality reports.
+description: "Audit code quality via call graph: dead code, duplicates, naming issues"
 ---
 
 # Repomap Analyzer

@@ -1,6 +1,6 @@
 ---
 name: opentui
-description: Build terminal user interfaces (TUIs) with OpenTUI. Use when creating CLI applications with interactive components, forms, text displays, or custom graphics in TypeScript.
+description: "Build terminal UIs (TUIs) with OpenTUI: forms, components in TypeScript"
 ---
 
 # OpenTUI Skill

@@ -1,6 +1,6 @@
 ---
 name: kirby-cms
-description: Build and customize Kirby CMS websites - flat-file CMS with Panel admin, blueprints, templates, and headless capabilities. Use when creating Kirby sites, configuring blueprints, writing templates/snippets, or integrating the REST API.
+description: "Flat-file CMS with Panel, blueprints, templates, headless API"
 ---
 
 # Kirby CMS Skill

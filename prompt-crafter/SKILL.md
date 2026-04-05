@@ -1,6 +1,6 @@
 ---
 name: prompt-crafter
-description: Craft effective prompts for Claude Code — interactive sessions, CLAUDE.md files, system prompts, and CLI automation. Use when writing or improving prompts, structuring context, authoring CLAUDE.md rules, or optimising prompt performance. Covers prompt patterns, context engineering, few-shot design, chain-of-thought, reflexion, and token efficiency.
+description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design"
 ---
 
 # Prompt Crafter

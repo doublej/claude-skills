@@ -1,6 +1,6 @@
 ---
 name: social-promotion
-description: Write social promotion content for apps, tools, and products across X.com, Threads, and Substack. Use when creating launch posts, product updates, feature announcements, or ongoing social content campaigns.
+description: "Write social posts for X.com, Threads, and Substack launches"
 ---
 
 # Social Promotion
@@ -27,6 +27,14 @@ Gather before writing:
 - **Tone** — the user's voice (default: direct, confident, no hype)
 
 ## Step 2: Angle
+
+Every post must pass the **Three Pillars Test** before drafting:
+
+1. **Felt problem** — Does the hook reference a frustration the audience has personally experienced?
+2. **Visual self-evidence** — Can someone grasp the value from a screenshot/demo without reading explanation?
+3. **Right audience** — Is this posted to a community primed to care about this specific thing?
+
+Posts that nail all three break out. Posts that miss two or more flatline. This is the single strongest predictor of engagement.
 
 Pick ONE angle per post. Never combine.
 
@@ -67,6 +75,15 @@ Check every draft against these filters:
 - [ ] Is there exactly ONE clear idea?
 - [ ] Is there a reason to engage (reply, share, click)?
 - [ ] Is it the right length for the platform?
+- [ ] Does it pass the Three Pillars Test? (felt problem + visual self-evidence + right audience)
+
+### Kill Patterns (proven engagement killers)
+
+- **Self-defeating hooks** — Never open by downplaying your own post ("not a productivity feature", "this is niche but..."). You pre-disqualify before the reader has any reason to care.
+- **Explanation-heavy copy** — If the concept requires dense explanation to understand, the post needs a stronger visual or a simpler hook. Abstract ideas without visual payoff flatline.
+- **Support-ticket tone** — Questions that read like bug reports get views but zero interaction. Frame questions as shared experiences, not isolated problems.
+- **Audience mismatch** — A technically impressive tool posted to the wrong community gets zero engagement. Match the content to the community that would actually use it.
+- **Code screenshots as primary visuals** — UI demos and product screenshots outperform terminal/code screenshots. People grasp a slider panel instantly; a code block requires cognitive investment.
 
 Cut ruthlessly. If a sentence doesn't earn its place, delete it.
 

@@ -1,6 +1,6 @@
 ---
 name: usability-fundamentals
-description: Apply usability principles to UI/UX design without sacrificing aesthetics. Covers Nielsen's 10 heuristics, Laws of UX, Don Norman's design principles, and practical evaluation checklists. Use when reviewing interfaces, designing user flows, evaluating prototypes, or when users ask about usability best practices. This skill balances usability with visual design quality.
+description: "Nielsen heuristics, Laws of UX, Norman principles for UI review and design"
 ---
 
 # Usability Fundamentals: Design-Aware UX Principles

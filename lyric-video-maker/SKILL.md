@@ -1,6 +1,6 @@
 ---
 name: lyric-video-maker
-description: Generate lyric-synced HTML5 video pages from timestamped lyric data and audio. Produces a self-contained HTML file with CSS animations, beat-synced text transitions, and optional overlay content. Use when creating music videos, lyric visualizers, or timed text animations.
+description: "Lyric-synced HTML5 video pages with CSS animations from timed text"
 ---
 
 # Lyric Video Maker

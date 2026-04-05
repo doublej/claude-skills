@@ -1,6 +1,6 @@
 ---
 name: pydantic-v2
-description: Build robust data validation with Pydantic v2. Use when creating models, validators, serialization logic, API schemas, or migrating from v1. Covers BaseModel, Field, validators, TypeAdapter, strict mode, and JSON Schema generation.
+description: "Models, validators, TypeAdapter, strict mode, serialization, v1 migration"
 license: MIT
 allowed-tools:
   - Bash

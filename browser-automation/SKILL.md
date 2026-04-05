@@ -1,6 +1,6 @@
 ---
 name: browser-automation
-description: Browser automation with Puppeteer or Playwright for LLM visual navigation and E2E testing. Use when building AI web agents, screenshot annotation, element labeling, visual web scraping, or end-to-end tests.
+description: "Puppeteer/Playwright for AI web agents and E2E testing"
 ---
 
 # Browser Automation

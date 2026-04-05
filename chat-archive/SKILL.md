@@ -1,6 +1,6 @@
 ---
 name: chat-archive
-description: "Search through exported ChatGPT and Claude.ai conversations using SQLite FTS5. Use when user wants to search chat history exports, import conversation archives, find past discussions, or query across AI conversation platforms."
+description: "Search exported ChatGPT/Claude.ai conversations via SQLite FTS5"
 ---
 
 # Chat Archive

@@ -1,12 +1,6 @@
 ---
 name: swift
-description: >
-  Unified Swift/SwiftUI development skill. Use when:
-  (1) generating SwiftUI feature modules with @Observable MVVM, or refactoring ObservableObject code;
-  (2) building app architecture — data flow, networking, persistence, DI, or testing;
-  (3) implementing iOS/iPadOS/macOS/watchOS/tvOS UI components with HIG compliance;
-  (4) designing distinctive brand aesthetics — palette, motion, and haptics.
-  Replaces swift-app-arch, swift-app-ui, swift-design, swiftui-codegen.
+description: "SwiftUI @Observable MVVM, app architecture, UI/animations, Liquid Glass"
 license: MIT
 ---
 
@@ -20,8 +14,8 @@ Four branches. Pick the right one, or combine.
 |------|--------|
 | New feature module, @Observable codegen, refactor prompts | [Codegen](#codegen) |
 | Architecture, networking, persistence, DI, testing | [Architecture](#architecture) |
-| UI components, HIG, navigation, SF Symbols, accessibility | [UI](#ui) |
-| Bold brand identity, palette, motion, haptics | [Design](#design) |
+| UI — layouts, animations, gestures, navigation, drawing, performance | [UI](#ui) |
+| Bold brand identity, palette, motion, haptics, visual features | [Design](#design) |
 
 ---
 
@@ -163,7 +157,6 @@ protocol UserRepositoryProtocol {
 ### Error Handling
 
 ```swift
-// Domain errors
 enum AppError: LocalizedError {
     case network(APIError)
     case validation(String)
@@ -178,31 +171,68 @@ See `references/architecture-patterns.md` for complete networking, persistence, 
 
 ## UI
 
-HIG-compliant SwiftUI components. Use when building interfaces, not defining brand.
+Comprehensive SwiftUI interface engineering. iOS 18+ baseline. Covers layouts, animations, gestures, navigation, drawing, and performance.
+
+### Layout Selection
+
+| Need | API | iOS |
+|------|-----|-----|
+| Standard stack | `VStack` / `HStack` / `ZStack` | 13+ |
+| Lazy scroll | `LazyVStack` / `LazyHStack` | 14+ |
+| Lazy grid | `LazyVGrid` / `LazyHGrid` | 14+ |
+| Static grid | `Grid` + `GridRow` | 16+ |
+| Custom algorithm | `Layout` protocol | 16+ |
+| Adaptive sizing | `ViewThatFits` | 16+ |
+| Dynamic switch | `AnyLayout` | 16+ |
+| Custom container | `ForEach(subviewOf:)` | 18+ |
+| Scroll control | `ScrollView` + `ScrollPosition` | 18+ |
+
+### Animation Selection
+
+| Effect | API | iOS |
+|--------|-----|-----|
+| Simple toggle | `withAnimation` / `.animation` | 13+ |
+| Multi-step loop | `PhaseAnimator` | 17+ |
+| Precise timeline | `KeyframeAnimator` + `AnimationValues` | 17+ |
+| Enter/exit | Custom `Transition` protocol | 17+ |
+| Hero morph | `matchedGeometryEffect` | 14+ |
+| Nav zoom | `.navigationTransition(.zoom(...))` | 18+ |
+| Continuous draw | `TimelineView` + `Canvas` | 15+ |
+| Organic color | `MeshGradient` | 18+ |
+| Glass morph | `.glassEffect()` + `glassEffectID` | 26+ |
+
+### Gesture Composition
+
+```swift
+// Sequential: long press then drag
+LongPressGesture(minimumDuration: 0.5)
+    .sequenced(before: DragGesture())
+
+// Simultaneous: pinch + rotate
+MagnifyGesture().simultaneously(with: RotateGesture())
+```
+
+`@GestureState` for transient values (auto-reset). `@State` for persistent.
 
 ### Navigation
 
-| Pattern | Use when |
-|---------|----------|
-| Tab Bar | 3-5 equal sections, never hide on scroll |
-| Hierarchical (`NavigationStack`) | Tree-structured drill-down |
-| Modal | Self-contained focused task, clear dismiss affordance |
+| Pattern | When |
+|---------|------|
+| `NavigationStack(path:)` | Programmatic push/pop, deep linking |
+| `NavigationSplitView` | iPad/Mac sidebar + detail |
+| `.sheet` / `.fullScreenCover` | Modal self-contained task |
+| `.navigationDestination(for:)` | Type-safe routing |
+| Coordinator + `[Route]` enum | URL schemes, complex deep linking |
 
-### SF Symbols
+### Drawing
 
-- All icons via SF Symbols — match weight to adjacent text
-- Animate with `.symbolEffect()`
-- Rendering modes: monochrome, hierarchical, palette, multicolor
-
-### Key Modifiers
-
-```swift
-// Always prefer system semantics
-.font(.headline)                         // Dynamic Type auto-scaling
-.dynamicTypeSize(.small ... .xLarge)    // Constrain if needed
-.background(.regularMaterial)           // Depth via material
-.foregroundStyle(.primary)              // Semantic color
-```
+| Tool | When |
+|------|------|
+| `Shape` / `Path` | Vector shapes, clip masks |
+| `Canvas` | High-perf 2D (hundreds of elements) |
+| `TimelineView` | Clock-driven real-time |
+| `MeshGradient` | Dynamic color fields |
+| `GeometryReader` | Measure parent — use sparingly |
 
 ### State Skeleton Pattern
 
@@ -213,17 +243,38 @@ else if let items {
 } else { SkeletonView() } // Never just ProgressView()
 ```
 
-### System Materials
+### Performance
 
-For translucent surfaces, prefer built-in materials (`.thinMaterial`, `.regularMaterial`, `.ultraThinMaterial`) so blur, contrast, and color adaptation stay platform-correct across OS releases.
+- `LazyVStack`/`LazyHStack` for scrolling — never plain stacks in scroll
+- Stable `id` on `ForEach` (no index-based)
+- Extract subviews to isolate `@State` (prevent parent recomputation)
+- `drawingGroup()` for complex hierarchies → single render layer
+- `equatable()` on expensive view bodies
+- `Self._printChanges()` to debug recomputation
+- Avoid `GeometryReader` inside scroll content
+- Profile: Instruments → SwiftUI template
 
-See `references/ui-components.md` for design systems, component library, SwiftUI API reference, and anti-patterns.
+### Platform Features
+
+| Feature | Framework | iOS |
+|---------|-----------|-----|
+| Home widgets | WidgetKit + `TimelineProvider` | 14+ |
+| Lock screen widgets | WidgetKit accessory families | 16+ |
+| Live Activities | ActivityKit + `ActivityAttributes` | 16.1+ |
+| Interactive widgets | WidgetKit + `AppIntent` in controls | 17+ |
+| StoreKit views | `StoreView`, `SubscriptionStoreView` | 17+ |
+| TipKit | `TipView`, `.popoverTip` | 17+ |
+| Control Center | WidgetKit `ControlWidget` | 18+ |
+
+See `references/ui-layouts.md` for Layout protocol, custom containers, scroll patterns.
+See `references/ui-animations.md` for animators, transitions, gestures, Canvas, MeshGradient.
+See `references/ui-platform.md` for widgets, Live Activities, deep linking, StoreKit, performance.
 
 ---
 
 ## Design
 
-For brand identity and visual distinction. Skip this branch for enterprise, system utilities, or accessibility-focused apps — use UI branch instead.
+For brand identity and visual distinction. Skip for enterprise/utilities — use UI branch.
 
 ### Design Brief (output before any code)
 
@@ -267,11 +318,53 @@ extension Color {
 // Tint grays (add 0.02+ to one channel) — never Color.gray
 ```
 
+### iOS 18+ Visual Features
+
+```swift
+// MeshGradient — organic dynamic backgrounds
+MeshGradient(
+    width: 3, height: 3,
+    points: [
+        [0, 0], [0.5, 0], [1, 0],
+        [0, 0.5], [0.5, 0.5], [1, 0.5],
+        [0, 1], [0.5, 1], [1, 1]
+    ],
+    colors: [.indigo, .cyan, .purple, .orange, .white, .blue, .yellow, .green, .mint]
+)
+
+// Zoom transitions — cinematic navigation
+NavigationLink {
+    DetailView()
+        .navigationTransition(.zoom(sourceID: item.id, in: namespace))
+} label: {
+    CardView(item)
+        .matchedTransitionSource(id: item.id, in: namespace)
+}
+```
+
+### iOS 26 Liquid Glass (only when explicitly requested)
+
+```swift
+Text("Label").glassEffect()
+
+// Morphing between glass elements
+GlassEffectContainer {
+    if isExpanded {
+        ExpandedView().glassEffect().glassEffectID("card", in: ns)
+    } else {
+        CompactView().glassEffect().glassEffectID("card", in: ns)
+    }
+}
+.animation(.smooth, value: isExpanded)
+```
+
+Provide `.regularMaterial` fallback for < iOS 26.
+
 ### Motion Budget
 
 | Moment | Timing |
 |--------|--------|
-| Primary action completion | Custom spring or easeOut, 0.3–0.5s |
+| Primary action | Custom spring or easeOut, 0.3–0.5s |
 | Micro-interactions | easeOut, 0.15–0.25s |
 | Loading/skeleton | Linear, looping |
 
@@ -287,8 +380,6 @@ Max 2 bouncy springs per screen. No animation may block input. Always check `red
 | Error | `.notification(.error)` |
 | Boundary hit | `.impact(.rigid)` |
 
-Do not vibrate on every tap.
-
 ### Typography
 
 SF Pro required. Distinctive through weight contrast:
@@ -302,7 +393,10 @@ SF Pro required. Distinctive through weight contrast:
 
 - `references/codegen-patterns.md` — actor cache, task groups, Combine bridge, TCA, CI/CD, privacy manifest, SPM
 - `references/architecture-patterns.md` — networking, APIClient, persistence, DI, TCA, testing, project structure
-- `references/ui-components.md` — design systems, component library, SwiftUI API reference, anti-patterns, testing checklist
+- `references/ui-components.md` — design system components, spacing, color hierarchy, anti-patterns, testing checklist
+- `references/ui-layouts.md` — Layout protocol, Grid, custom containers, ScrollView, ViewThatFits, AnyLayout
+- `references/ui-animations.md` — PhaseAnimator, KeyframeAnimator, transitions, gestures, Canvas, MeshGradient, Liquid Glass
+- `references/ui-platform.md` — widgets, Live Activities, App Intents, StoreKit, TipKit, deep linking, performance
 
 ## Resources
 

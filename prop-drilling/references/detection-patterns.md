@@ -67,7 +67,39 @@ pattern: \$\$restProps
 pattern: \$\$props
 ```
 
-## 4. Prop forwarding patterns
+## 4. Python parameter signatures
+
+### Function parameters
+```
+pattern: def\s+(\w+)\s*\(([^)]+)\)
+```
+Extract param names, skip `self`, `cls`, `*args`, `**kwargs`.
+
+### __init__ parameters
+```
+pattern: def\s+__init__\s*\(\s*self\s*,([^)]+)\)
+```
+
+### Dataclass / Pydantic fields
+```
+pattern: (\w+)\s*:\s*\w+.*=\s*(?:Field|field)\(
+pattern: @dataclass
+pattern: class\s+\w+\(BaseModel\)
+```
+
+### FastAPI route parameters
+```
+pattern: @(?:app|router)\.(?:get|post|put|delete|patch)\(
+pattern: Depends\(\w+\)
+```
+
+### Self-assignment (stored for forwarding)
+```
+pattern: self\.(\w+)\s*=\s*(\1)
+```
+A param stored as `self.x = x` that is only used as `self.x` in calls to sub-objects is drilling.
+
+## 5. Prop forwarding patterns
 
 These indicate a component is passing props through without using them.
 
@@ -83,6 +115,13 @@ Svelte:  <Child {propName} />
          pattern: <(\w+)\s[^>]*\{(\w+)\}
 ```
 
+### Python explicit pass-through
+```
+Python:  child_func(config=config) or Child(db=self.db)
+         pattern: (\w+)\s*=\s*(?:self\.)?(\1)
+         pattern: \w+\(.*\b(\w+)\s*=\s*(?:self\.)?(\1)
+```
+
 ### Spread forwarding
 ```
 React:   {...props}
@@ -93,9 +132,13 @@ Vue:     v-bind="$attrs"
 
 Svelte:  {...$$restProps}
          pattern: \{\s*\.\.\.\$\$restProps\s*\}
+
+Python:  **kwargs
+         pattern: \*\*kwargs
+         pattern: \*\*\w+
 ```
 
-## 5. Child component rendering patterns
+## 6. Child component/function call patterns
 
 ### React JSX
 ```
@@ -118,7 +161,14 @@ pattern: <([A-Z]\w+)\s
 ```
 Same as React — PascalCase denotes components.
 
-## 6. False positive filters
+### Python function/constructor calls
+```
+pattern: (\w+)\(                    # function calls
+pattern: self\.(\w+)\s*=\s*(\w+)\(  # constructor assignment
+```
+Track which params from the current function are passed as arguments to these calls.
+
+## 7. False positive filters
 
 ### Callback/event handler props
 Skip props matching these patterns — they are intentional pass-down:
@@ -159,10 +209,35 @@ pattern: export\s+default\s+\w+\(\w+\)   # withRouter(Comp), connect()(Comp)
 pattern: \{\s*\.\.\.(?:props|rest)\s*\}   # full spread = intentional pass-through
 ```
 
-### Common non-drilling props
+### Python-specific false positives
+Skip these — they are NOT parameter drilling:
+
+```
+# self, cls — implicit instance/class reference
+pattern: ^(self|cls)$
+
+# *args, **kwargs — intentional forwarding
+pattern: ^\*
+
+# Logging/debug params — commonly passed everywhere
+pattern: ^(logger|log|verbose|debug|quiet)$
+
+# FastAPI Depends() — DI-resolved, not drilled
+pattern: Depends\(
+
+# Abstract/protocol method implementations — params required by interface
+# Check if class inherits ABC or Protocol
+pattern: class\s+\w+\(.*(?:ABC|Protocol)
+
+# Decorator-injected params (click, typer, etc.)
+pattern: @click\.|@typer\.
+```
+
+### Common non-drilling props/params
 Skip these utility props that are typically passed at every level:
 ```
-className, class, style, id, key, data-testid, aria-*, role, tabIndex
+Frontend: className, class, style, id, key, data-testid, aria-*, role, tabIndex
+Python:   self, cls, logger, verbose, debug
 ```
 
 ## Search strategy
@@ -179,3 +254,10 @@ className, class, style, id, key, data-testid, aria-*, role, tabIndex
 - For large codebases (500+ components), scan in batches of ~50 files
 - Use Grep with `files_with_matches` mode first to narrow candidates before reading full files
 - Skip files under 10 lines — too small to be intermediaries
+
+### Python-specific search strategy
+
+1. **Start with `__init__` methods** — classes storing params as `self.x = x` only to pass to sub-objects are the primary drilling pattern
+2. **Trace service layers** — route handler → service → repository chains are common drilling paths
+3. **Check config/settings objects** — a `config` param passed 3+ levels deep is often better served by DI or module-level access
+4. **Focus on non-`__init__` functions** — functions receiving params only to forward them to other functions

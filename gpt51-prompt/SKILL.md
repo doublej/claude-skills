@@ -1,6 +1,6 @@
 ---
 name: gpt51-prompt
-description: Optimize and refine prompts for OpenAI GPT-5.1. Use this skill when users want to improve prompt quality, fix prompt issues, optimize for reasoning modes (none/low/medium/high), or improve tool calling patterns. Covers instruction following, agentic steerability, parallel tool calling, and metaprompting techniques.
+description: "Optimize prompts for GPT-5.1: reasoning modes, tool calling, metaprompting"
 ---
 
 # GPT-5.1 Prompt Optimization

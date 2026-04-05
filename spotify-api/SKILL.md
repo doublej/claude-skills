@@ -1,8 +1,6 @@
 ---
 name: spotify-api
-description: >
-  Control Spotify playback, search music, and manage playlists via the Web API.
-  Use when user asks to play/pause/skip music, search Spotify, create playlists,
+description: "Control playback, search music, manage playlists via the Web API"
   or check what's playing.
 ---
 

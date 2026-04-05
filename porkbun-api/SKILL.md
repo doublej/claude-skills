@@ -1,6 +1,6 @@
 ---
 name: porkbun-api
-description: Manage Porkbun domains and DNS via API. Use for domain management, DNS records (A, CNAME, MX, TXT), nameservers, SSL certs, pricing, or URL forwarding on Porkbun. Triggers on "Porkbun", "add DNS record", "point domain to", "update nameservers".
+description: "Domain and DNS management: records, nameservers, SSL, URL forwarding"
 ---
 
 # Porkbun API

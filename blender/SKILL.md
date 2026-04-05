@@ -1,6 +1,6 @@
 ---
 name: blender
-description: Comprehensive Blender 4.x+ assistance including MCP integration, Python scripting (bpy), and modeling workflows. Use when working with Blender scenes, automating tasks, or integrating with asset libraries (PolyHaven, Sketchfab, Hyper3D, Hunyuan3D).
+description: "Python scripting (bpy), MCP integration, 4.x+ asset libraries"
 ---
 
 # Blender Skill

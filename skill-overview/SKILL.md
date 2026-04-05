@@ -1,6 +1,6 @@
 ---
 name: skill-overview
-description: Display a compact, scannable table of all available skills with names and descriptions. Use when user asks "what skills are available", "list skills", "show all skills", or needs to browse available capabilities.
+description: "Display a compact table of all available skills and descriptions"
 ---
 
 # Skill Overview

@@ -1,6 +1,6 @@
 ---
 name: skill-feedback
-description: Report feedback on a skill. Spawns a Claude session in the skills project to process the feedback, then resumes your original session.
+description: "Report feedback on a skill via spawned session. args: "<skillname> <feedback>""
 arguments: "<skillname> <feedback>"
 ---
 

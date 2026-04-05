@@ -1,6 +1,6 @@
 ---
 name: screenshot-pipeline
-description: Create polished promotional screenshots for apps, tools, and websites. Use when creating visual assets for social media, GitHub, App Store, or marketing. Covers full-page capture, individual element capture with transparency, device framing, compositing, manifest generation, and multi-platform export.
+description: "Polished promotional screenshots with device framing and compositing"
 ---
 
 # Screenshot Pipeline

@@ -1,6 +1,6 @@
 ---
 name: claude-code-cli
-description: Automates workflows with the Claude Code CLI. Covers interactive mode, print mode for scripting, conversation management, MCP configuration, multi-agent patterns, and JSON output schemas. Use when building automation scripts, configuring MCP servers, creating multi-agent workflows, or integrating Claude Code into CI/CD pipelines.
+description: "CLI automation: print mode, scripting, multi-agent, JSON output, CI/CD"
 ---
 
 # Claude Code CLI

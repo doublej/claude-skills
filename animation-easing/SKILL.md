@@ -1,6 +1,6 @@
 ---
 name: animation-easing
-description: Guide to animation easing functions, timing, and best practices. Covers ease-out, ease-in-out, bounce, elastic, and spring animations. Use when choosing easing for projects, designing UI transitions, or explaining animation techniques.
+description: "Easing functions and timing: ease-out, bounce, elastic, spring for UI motion"
 ---
 
 # Animation Easing: Theory & Practice

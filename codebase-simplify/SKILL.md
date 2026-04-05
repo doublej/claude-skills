@@ -1,6 +1,6 @@
 ---
 name: codebase-simplify
-description: Simplify an entire codebase for clarity and maintainability using parallel agents. Preserves ALL functionality. Use when reducing complexity across a project.
+description: "Simplify entire codebase for clarity using parallel agents, preserving behavior"
 ---
 
 # Codebase Simplify
@@ -11,8 +11,8 @@ Simplify an entire codebase using parallel agents. Read-only analysis phases, th
 
 ```
 Phase 1: SCOPE      lead (sonnet)            → detect language, determine scope
-Phase 2: SCAN       haiku Explore (×N)       → fast pattern inventory
-Phase 3: ANALYZE    sonnet Explore (×N)      → semantic analysis, proposals
+Phase 2: SCAN       sonnet Explore (×N)      → pattern inventory
+Phase 3: ANALYZE    opus Explore (×N)        → semantic analysis, proposals
 Phase 4: PLAN       lead (opus reasoning)    → prioritise, batch, present to user
 Phase 5: EXECUTE    sonnet general-purpose (×N) → apply simplifications
 Phase 6: VERIFY     lead (sonnet)            → run checks, commit atomically
@@ -78,7 +78,7 @@ For Medium+, distribute files evenly across scanner agents. Spawn all scanners i
 
 ```
 subagent_type: Explore
-model: haiku
+model: sonnet
 ```
 
 Each scanner prompt:
@@ -109,7 +109,7 @@ Distribute findings across analyser agents. Spawn all in a **single message**:
 
 ```
 subagent_type: Explore
-model: sonnet
+model: opus
 ```
 
 Each analyser prompt — load the reference file first:

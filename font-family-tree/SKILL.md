@@ -1,6 +1,6 @@
 ---
 name: font-family-tree
-description: Scan a project's style files for font-family declarations and generate a Mermaid LR flowchart showing the typography hierarchy. Use when analyzing font usage, auditing font stacks, or visualizing font-family overrides in CSS/SCSS/Svelte/Tailwind projects.
+description: "Scan style files for font-family declarations, generate Mermaid flowchart"
 ---
 
 # Font Family Tree

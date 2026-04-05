@@ -1,0 +1,428 @@
+#!/usr/bin/env python3
+"""
+ai — local Illustrator CLI for macOS
+Triggers ExtendScript (.jsx) via osascript.
+
+Usage:
+  ai export <file.ai> [--format svg|pdf|png|jpg] [--artboard N] [--out <dir>]
+  ai resize <file.ai> <width> <height> [--out <file>]
+  ai text <file.ai> <frame> <new-text> [--out <file>]
+  ai action <file.ai> <action-name> <action-set>
+  ai batch <folder> [--format svg|pdf|png|jpg] [--out <dir>]
+  ai layers <file.ai>
+  ai artboards <file.ai>
+  ai run <script.jsx>
+"""
+import argparse
+import os
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+
+# ---------------------------------------------------------------------------
+# Illustrator detection
+# ---------------------------------------------------------------------------
+
+def find_illustrator() -> str:
+    apps = Path("/Applications")
+    candidates = sorted(
+        [d.name for d in apps.iterdir() if "Illustrator" in d.name and d.suffix == ".app"],
+        reverse=True,
+    )
+    if not candidates:
+        sys.exit("Adobe Illustrator not found in /Applications")
+    return candidates[0].removesuffix(".app")
+
+
+# ---------------------------------------------------------------------------
+# Script runner
+# ---------------------------------------------------------------------------
+
+def run_jsx(jsx: str, ai_app: str) -> None:
+    with tempfile.NamedTemporaryFile(suffix=".jsx", mode="w", delete=False, encoding="utf-8") as f:
+        f.write(jsx)
+        tmp = f.name
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ai_app}" to do javascript file "{tmp}"'],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Illustrator script failed (exit {e.returncode})")
+    finally:
+        os.unlink(tmp)
+
+
+def run_jsx_file(path: str, ai_app: str) -> None:
+    abs_path = str(Path(path).resolve())
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ai_app}" to do javascript file "{abs_path}"'],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Illustrator script failed (exit {e.returncode})")
+
+
+# ---------------------------------------------------------------------------
+# JSX templates
+# ---------------------------------------------------------------------------
+
+def _esc(path: str) -> str:
+    return path.replace("\\", "/")
+
+
+def jsx_export(src: str, fmt: str, quality: int, out_dir: str, artboard: int | None) -> str:
+    src, out_dir = _esc(src), _esc(out_dir)
+    ext_map = {"svg": "svg", "pdf": "pdf", "png": "png", "jpg": "jpg"}
+    ext = ext_map[fmt]
+
+    if fmt == "svg":
+        opts = """var opts = new ExportOptionsSVG();
+opts.embedRasterImages = true;
+opts.fontSubsetting = SVGFontSubsetting.GLYPHSUSED;"""
+        export_type = "ExportType.SVG"
+    elif fmt == "png":
+        opts = """var opts = new ExportOptionsPNG24();
+opts.artBoardClipping = true;
+opts.transparency = true;
+opts.antiAliasing = true;"""
+        export_type = "ExportType.PNG24"
+    elif fmt == "jpg":
+        opts = f"""var opts = new ExportOptionsJPEG();
+opts.qualitySetting = {quality};
+opts.artBoardClipping = true;
+opts.antiAliasing = true;"""
+        export_type = "ExportType.JPEG"
+    else:  # pdf
+        return f"""
+var doc = app.open(new File("{src}"));
+var opts = new PDFSaveOptions();
+opts.pDFPreset = "[High Quality Print]";
+var name = doc.name.replace(/\\.[^.]+$/, ".pdf");
+doc.saveAs(new File("{out_dir}/" + name), opts);
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+    ab_line = ""
+    if artboard is not None:
+        ab_line = f"doc.artboards.setActiveArtboardIndex({artboard});\n"
+
+    return f"""
+var doc = app.open(new File("{src}"));
+{ab_line}{opts}
+var name = doc.name.replace(/\\.[^.]+$/, ".{ext}");
+doc.exportFile(new File("{out_dir}/" + name), {export_type}, opts);
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_resize(src: str, width: int, height: int, out_file: str) -> str:
+    src, out_file = _esc(src), _esc(out_file)
+    return f"""
+var doc = app.open(new File("{src}"));
+var ab = doc.artboards[doc.artboards.getActiveArtboardIndex()];
+ab.artboardRect = [0, {height}, {width}, 0];
+doc.saveAs(new File("{out_file}"), new IllustratorSaveOptions());
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_text(src: str, frame_name: str, new_text: str, out_file: str) -> str:
+    src, out_file = _esc(src), _esc(out_file)
+    escaped = new_text.replace('"', '\\"')
+    return f"""
+var doc = app.open(new File("{src}"));
+try {{
+    var tf = doc.textFrames.getByName("{frame_name}");
+    tf.contents = "{escaped}";
+}} catch(e) {{
+    throw new Error("Text frame '{frame_name}' not found");
+}}
+doc.saveAs(new File("{out_file}"), new IllustratorSaveOptions());
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_action(src: str, action_name: str, action_set: str) -> str:
+    src = _esc(src)
+    return f"""
+var doc = app.open(new File("{src}"));
+app.doScript("{action_name}", "{action_set}");
+doc.close(SaveOptions.SAVECHANGES);
+"""
+
+
+def jsx_batch(folder: str, fmt: str, quality: int, out_dir: str) -> str:
+    folder, out_dir = _esc(folder), _esc(out_dir)
+    ext_map = {"svg": "svg", "pdf": "pdf", "png": "png", "jpg": "jpg"}
+    ext = ext_map[fmt]
+
+    if fmt == "svg":
+        opts = """var opts = new ExportOptionsSVG();
+    opts.embedRasterImages = true;"""
+        export_type = "ExportType.SVG"
+    elif fmt == "png":
+        opts = """var opts = new ExportOptionsPNG24();
+    opts.artBoardClipping = true;
+    opts.transparency = true;"""
+        export_type = "ExportType.PNG24"
+    elif fmt == "jpg":
+        opts = f"""var opts = new ExportOptionsJPEG();
+    opts.qualitySetting = {quality};
+    opts.artBoardClipping = true;"""
+        export_type = "ExportType.JPEG"
+    else:  # pdf
+        return f"""
+var folder = new Folder("{folder}");
+var files = folder.getFiles("*.ai");
+for (var i = 0; i < files.length; i++) {{
+    var doc = app.open(files[i]);
+    var opts = new PDFSaveOptions();
+    opts.pDFPreset = "[High Quality Print]";
+    var name = doc.name.replace(/\\.[^.]+$/, ".pdf");
+    doc.saveAs(new File("{out_dir}/" + name), opts);
+    doc.close(SaveOptions.DONOTSAVECHANGES);
+}}
+"""
+
+    return f"""
+var folder = new Folder("{folder}");
+var files = folder.getFiles("*.ai");
+for (var i = 0; i < files.length; i++) {{
+    var doc = app.open(files[i]);
+    {opts}
+    var name = doc.name.replace(/\\.[^.]+$/, ".{ext}");
+    doc.exportFile(new File("{out_dir}/" + name), {export_type}, opts);
+    doc.close(SaveOptions.DONOTSAVECHANGES);
+}}
+"""
+
+
+def jsx_layers(src: str) -> str:
+    src = _esc(src)
+    return f"""
+var doc = app.open(new File("{src}"));
+var result = [];
+function collect(layers, depth) {{
+    for (var i = 0; i < layers.length; i++) {{
+        var l = layers[i];
+        var prefix = Array(depth + 1).join("  ");
+        var vis = l.visible ? "" : " [hidden]";
+        var lock = l.locked ? " [locked]" : "";
+        result.push(prefix + l.name + vis + lock + " (" + l.pageItems.length + " items)");
+        if (l.layers.length > 0) collect(l.layers, depth + 1);
+    }}
+}}
+collect(doc.layers, 0);
+$.writeln(result.join("\\n"));
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+def jsx_artboards(src: str) -> str:
+    src = _esc(src)
+    return f"""
+var doc = app.open(new File("{src}"));
+var result = [];
+for (var i = 0; i < doc.artboards.length; i++) {{
+    var ab = doc.artboards[i];
+    var r = ab.artboardRect;
+    var w = Math.round(r[2] - r[0]);
+    var h = Math.round(r[1] - r[3]);
+    result.push(i + ": " + ab.name + " (" + w + "x" + h + " pt)");
+}}
+$.writeln(result.join("\\n"));
+doc.close(SaveOptions.DONOTSAVECHANGES);
+"""
+
+
+# ---------------------------------------------------------------------------
+# Commands
+# ---------------------------------------------------------------------------
+
+def cmd_export(args, ai_app):
+    src = str(Path(args.file).resolve())
+    out_dir = str(Path(args.out).resolve()) if args.out else str(Path(src).parent)
+    os.makedirs(out_dir, exist_ok=True)
+    jsx = jsx_export(src, args.format, args.quality, out_dir, args.artboard)
+    ab_str = f" (artboard {args.artboard})" if args.artboard is not None else ""
+    print(f"Exporting {Path(src).name}{ab_str} → {out_dir} ({args.format.upper()})")
+    run_jsx(jsx, ai_app)
+    print("Done.")
+
+
+def cmd_resize(args, ai_app):
+    src = str(Path(args.file).resolve())
+    out = str(Path(args.out).resolve()) if args.out else src.replace(".ai", f"_{args.width}x{args.height}.ai")
+    jsx = jsx_resize(src, args.width, args.height, out)
+    print(f"Resizing {Path(src).name} → {args.width}x{args.height} → {out}")
+    run_jsx(jsx, ai_app)
+    print("Done.")
+
+
+def cmd_text(args, ai_app):
+    src = str(Path(args.file).resolve())
+    out = str(Path(args.out).resolve()) if args.out else src
+    jsx = jsx_text(src, args.frame, args.text, out)
+    print(f"Setting text on frame '{args.frame}' in {Path(src).name}")
+    run_jsx(jsx, ai_app)
+    print("Done.")
+
+
+def cmd_action(args, ai_app):
+    src = str(Path(args.file).resolve())
+    jsx = jsx_action(src, args.action, args.set)
+    print(f"Running action '{args.action}' ({args.set}) on {Path(src).name}")
+    run_jsx(jsx, ai_app)
+    print("Done.")
+
+
+def cmd_batch(args, ai_app):
+    folder = str(Path(args.folder).resolve())
+    out_dir = str(Path(args.out).resolve()) if args.out else folder
+    os.makedirs(out_dir, exist_ok=True)
+    jsx = jsx_batch(folder, args.format, args.quality, out_dir)
+    print(f"Batch exporting *.ai from {folder} → {out_dir} ({args.format.upper()})")
+    run_jsx(jsx, ai_app)
+    print("Done.")
+
+
+def cmd_layers(args, ai_app):
+    src = str(Path(args.file).resolve())
+    jsx = jsx_layers(src)
+    with tempfile.NamedTemporaryFile(suffix=".jsx", mode="w", delete=False, encoding="utf-8") as f:
+        out_tmp = f.name + ".txt"
+        wrapped = jsx.replace(
+            '$.writeln(result.join',
+            f'var outFile = new File("{out_tmp}"); outFile.open("w"); outFile.write(result.join'
+        )
+        wrapped = wrapped.replace('"\\n"));', '"\\n")); outFile.close();')
+        f.write(wrapped)
+        jsx_tmp = f.name
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ai_app}" to do javascript file "{jsx_tmp}"'],
+            check=True,
+        )
+        if os.path.exists(out_tmp):
+            print(open(out_tmp).read())
+            os.unlink(out_tmp)
+        else:
+            print("(no output — check the file path)")
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Failed (exit {e.returncode})")
+    finally:
+        os.unlink(jsx_tmp)
+
+
+def cmd_artboards(args, ai_app):
+    src = str(Path(args.file).resolve())
+    jsx = jsx_artboards(src)
+    with tempfile.NamedTemporaryFile(suffix=".jsx", mode="w", delete=False, encoding="utf-8") as f:
+        out_tmp = f.name + ".txt"
+        wrapped = jsx.replace(
+            '$.writeln(result.join',
+            f'var outFile = new File("{out_tmp}"); outFile.open("w"); outFile.write(result.join'
+        )
+        wrapped = wrapped.replace('"\\n"));', '"\\n")); outFile.close();')
+        f.write(wrapped)
+        jsx_tmp = f.name
+    try:
+        subprocess.run(
+            ["osascript", "-e", f'tell application "{ai_app}" to do javascript file "{jsx_tmp}"'],
+            check=True,
+        )
+        if os.path.exists(out_tmp):
+            print(open(out_tmp).read())
+            os.unlink(out_tmp)
+        else:
+            print("(no output — check the file path)")
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"Failed (exit {e.returncode})")
+    finally:
+        os.unlink(jsx_tmp)
+
+
+def cmd_run(args, ai_app):
+    print(f"Running {args.script} in {ai_app}")
+    run_jsx_file(args.script, ai_app)
+    print("Done.")
+
+
+# ---------------------------------------------------------------------------
+# CLI
+# ---------------------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser(prog="ai", description="Local Illustrator CLI (macOS)")
+    parser.add_argument("--app", help="Illustrator app name (auto-detected if omitted)")
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    # export
+    p = sub.add_parser("export", help="Export AI to SVG/PDF/PNG/JPG")
+    p.add_argument("file")
+    p.add_argument("--format", choices=["svg", "pdf", "png", "jpg"], default="svg")
+    p.add_argument("--quality", type=int, default=85, help="JPEG quality (0-100)")
+    p.add_argument("--artboard", type=int, default=None, help="Artboard index (0-based)")
+    p.add_argument("--out", help="Output directory (default: same as source)")
+
+    # resize
+    p = sub.add_parser("resize", help="Resize artboard and save")
+    p.add_argument("file")
+    p.add_argument("width", type=int, help="Width in points")
+    p.add_argument("height", type=int, help="Height in points")
+    p.add_argument("--out", help="Output file path")
+
+    # text
+    p = sub.add_parser("text", help="Update a named text frame")
+    p.add_argument("file")
+    p.add_argument("frame", help="Text frame name")
+    p.add_argument("text", help="New text content")
+    p.add_argument("--out", help="Output file (default: overwrites original)")
+
+    # action
+    p = sub.add_parser("action", help="Run a recorded Illustrator Action")
+    p.add_argument("file")
+    p.add_argument("action", help="Action name")
+    p.add_argument("set", help="Action set name")
+
+    # batch
+    p = sub.add_parser("batch", help="Batch export all AI files in a folder")
+    p.add_argument("folder")
+    p.add_argument("--format", choices=["svg", "pdf", "png", "jpg"], default="svg")
+    p.add_argument("--quality", type=int, default=85, help="JPEG quality (0-100)")
+    p.add_argument("--out", help="Output directory (default: same as input folder)")
+
+    # layers
+    p = sub.add_parser("layers", help="List all layers in an AI file")
+    p.add_argument("file")
+
+    # artboards
+    p = sub.add_parser("artboards", help="List all artboards in an AI file")
+    p.add_argument("file")
+
+    # run
+    p = sub.add_parser("run", help="Run an arbitrary .jsx script")
+    p.add_argument("script")
+
+    args = parser.parse_args()
+    ai_app = args.app or find_illustrator()
+
+    dispatch = {
+        "export": cmd_export,
+        "resize": cmd_resize,
+        "text": cmd_text,
+        "action": cmd_action,
+        "batch": cmd_batch,
+        "layers": cmd_layers,
+        "artboards": cmd_artboards,
+        "run": cmd_run,
+    }
+    dispatch[args.cmd](args, ai_app)
+
+
+if __name__ == "__main__":
+    main()

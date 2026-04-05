@@ -1,6 +1,6 @@
 ---
 name: codebase-mapper
-description: Generate importance-ranked repository maps using Tree-sitter parsing and PageRank. Use when exploring a new codebase, understanding architecture, identifying key files, or preparing context for code review/refactoring.
+description: "Importance-ranked repo maps via Tree-sitter parsing and PageRank"
 ---
 
 # Codebase Mapper
@@ -44,7 +44,7 @@ bash {SKILL_DIR}/scripts/repomap.sh . --root . --exclude-extensions .json .css .
 | Flag | Default | Purpose |
 |------|---------|---------|
 | `--root` | `.` | Repository root directory |
-| `--map-tokens` | `32768` | Max tokens in output |
+| `--map-tokens` | `65536` | Max tokens in output |
 | `--focus-files` | — | Files being actively worked on (20x boost) |
 | `--mentioned-files` | — | Files mentioned in conversation (5x boost) |
 | `--mentioned-idents` | — | Identifiers to trace across codebase (10x) |

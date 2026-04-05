@@ -1,6 +1,6 @@
 ---
 name: code-taxonomy
-description: Audit naming quality across a codebase — style consistency, verb usage, clarity, and anti-patterns. Produces an annotated tree view, optionally enriched with PageRank data from codebase-mapper. Batch-renames to fix issues. Use when naming drift has accumulated or enforcing a style guide.
+description: "Audit naming quality: style consistency, verb usage, anti-patterns, batch-rename"
 ---
 
 # Code Taxonomy

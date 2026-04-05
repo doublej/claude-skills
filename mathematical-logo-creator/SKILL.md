@@ -1,6 +1,6 @@
 ---
 name: mathematical-logo-creator
-description: Create mathematically constructed, production-ready logos as SVG code using grid systems, tangency, Bézier continuity, and value-driven parameters. Use when user needs a logo built from geometric first principles. Triggers on "create logo", "design logo", "math logo", "geometric logo", "brand identity".
+description: "Logos from geometric first principles: grid systems, tangency, Bezier, SVG"
 ---
 
 # Mathematical Logo Creator
@@ -245,38 +245,44 @@ Use `scripts/generate-logo.py` as a starting point or create a project-specific 
 
 ## Preview
 
-After writing an SVG, create a preview HTML and show it to verify the result visually. This is mandatory — never skip it.
+After writing an SVG, create a preview page and show it to verify the result visually. This is mandatory — never skip it.
 
-**Quick preview** (single SVG):
-```bash
-# Write a minimal HTML wrapper and open it
-cat > /tmp/logo-preview.html << 'PREVIEW'
-<!DOCTYPE html>
-<html><head><style>
-  body { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; padding: 1rem; font-family: system-ui; }
-  .card { display: grid; place-items: center; padding: 2rem; border-radius: 8px; }
-  .card svg { width: 100%; height: auto; }
-  .light { background: #fff; }
-  .dark { background: #1a1a1a; }
-  .small { padding: 1rem; }
-  .small svg { width: 32px; height: 32px; }
-  .tiny svg { width: 16px; height: 16px; }
-  h3 { grid-column: 1 / -1; margin: 0.5rem 0 0; }
-</style></head><body>
-  <h3>Large</h3>
-  <div class="card light">SVG_HERE</div>
-  <div class="card dark">SVG_HERE</div>
-  <h3>Small (32px)</h3>
-  <div class="card light small">SVG_HERE</div>
-  <div class="card dark small">SVG_HERE</div>
-  <h3>Tiny (16px)</h3>
-  <div class="card light small tiny">SVG_HERE</div>
-  <div class="card dark small tiny">SVG_HERE</div>
-</body></html>
-PREVIEW
+Use the template at `templates/preview.html`. It shows the logo on light, dark, and 50% gray backgrounds with size variants (64px, 32px, 16px), plus interactive controls:
+- **Grid overlay toggle** — shows the construction grid over the logo
+- **Center lines toggle** — shows horizontal/vertical center crosshairs
+- **Grid resolution selector** — switch between 24, 32, 40, 48 divisions
+
+**Build the preview:**
+
+```python
+from pathlib import Path
+
+def build_preview(svg_markup, brand_name, canvas=1000, grid_n=24, output="/tmp/logo-preview.html"):
+    template = Path(__file__).parent.parent / "templates" / "preview.html"
+    html = template.read_text()
+    html = html.replace("{{SVG}}", svg_markup)
+    html = html.replace("{{BRAND_NAME}}", brand_name)
+    html = html.replace("{{CANVAS_SIZE}}", str(canvas))
+    html = html.replace("{{GRID_N}}", str(grid_n))
+    html = html.replace("{{MODULE_SIZE}}", f"{canvas / grid_n:.1f}")
+    Path(output).write_text(html)
+    return output
 ```
 
-Replace `SVG_HERE` with the actual SVG markup (all 6 instances), then open in the browser and screenshot to verify.
+Or inline from a bash one-liner:
+
+```bash
+# Read SVG file and inject into template
+SVG=$(cat logo.svg)
+sed -e "s|{{SVG}}|$SVG|g" \
+    -e "s|{{BRAND_NAME}}|BrandName|g" \
+    -e "s|{{CANVAS_SIZE}}|1000|g" \
+    -e "s|{{GRID_N}}|24|g" \
+    -e "s|{{MODULE_SIZE}}|41.7|g" \
+    templates/preview.html > /tmp/logo-preview.html
+```
+
+Open in the browser and screenshot to verify.
 
 ## Validation Checklist
 

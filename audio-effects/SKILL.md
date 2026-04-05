@@ -1,6 +1,6 @@
 ---
 name: audio-effects
-description: Comprehensive guide for building audio effect processors and VST/AU plugins. Covers JUCE (C++), NIH-plug (Rust), iPlug2, DSP fundamentals, and common effect implementations (filters, delays, reverbs, compressors). Use when building audio plugins, implementing DSP algorithms, or learning audio programming.
+description: "Build VST/AU plugins with JUCE, NIH-plug, iPlug2, and DSP"
 ---
 
 # Audio Effects Plugin Development

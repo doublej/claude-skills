@@ -1,6 +1,6 @@
 ---
 name: transcript-capture
-description: Capture Claude Code session transcripts from JSONL session files. Extract AI assistant output, tool calls, and conversation text for use as creative or documentary content. Use when you need to capture "making of" footage from a Claude session.
+description: "Extract session transcripts from JSONL files for making-of content"
 ---
 
 # Transcript Capture

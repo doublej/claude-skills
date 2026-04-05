@@ -1,6 +1,6 @@
 ---
 name: process-cleanup
-description: Clean up Claude Code, orphaned MCP servers, and dev server processes to free system resources. Use when system is slow, ports are occupied, or user asks to kill stale processes.
+description: "Kill orphaned MCP servers, dev servers, Claude Code processes to free ports"
 ---
 
 # Process Cleanup

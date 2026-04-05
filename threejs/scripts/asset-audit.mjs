@@ -24,7 +24,13 @@ function formatSize(bytes) {
 }
 
 async function walk(dir, onFile) {
-  const entries = await fsp.readdir(dir, { withFileTypes: true });
+  let entries;
+  try {
+    entries = await fsp.readdir(dir, { withFileTypes: true });
+  } catch (err) {
+    if (err.code === "EACCES") return; // skip unreadable directories
+    throw err;
+  }
   for (const ent of entries) {
     const p = path.join(dir, ent.name);
     if (ent.isDirectory() && !IGNORED_DIRS.has(ent.name)) {
@@ -115,4 +121,4 @@ async function main() {
   console.log("\n");
 }
 
-main().catch(console.error);
+main().catch((err) => { console.error(err); process.exitCode = 1; });

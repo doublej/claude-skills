@@ -39,6 +39,7 @@ Threads skews conversational and personal. Think "talking to a friend at dinner"
 
 **What Threads rewards:**
 - Replies (strongest signal — meaningful conversation)
+- **Reposts are the distribution engine.** Once a few people with larger followings repost, the algorithmic snowball starts. Reposts matter more than likes for reach. Write for shareability — people share things that articulate what they've felt but couldn't express.
 - Shares to Instagram Stories
 - Time spent viewing the post (dwell time)
 - Early engagement velocity (first 30 minutes matter most)
@@ -59,6 +60,8 @@ Threads skews conversational and personal. Think "talking to a friend at dinner"
 - Ask for feedback: "What would you want this to do?" drives genuine replies.
 - The Threads audience is Instagram-native — visual quality matters more than on X.
 - Be a person first, a product second. Build trust through non-promotional posts.
+- **Visually demonstrable > technically impressive.** A UI with sliders is instantly graspable. A CLI tool with terminal output requires explanation. Lead with the visual when possible.
+- **Ride ecosystem waves.** Post about tools in an ecosystem when that ecosystem is in the news. Timing with broader attention multiplies reach.
 
 ## Engagement Strategy
 

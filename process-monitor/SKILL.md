@@ -1,6 +1,6 @@
 ---
 name: process-monitor
-description: Monitor macOS system resources with auto-reminders. Use when user asks to monitor processes, check CPU/memory usage, find resource hogs, or wants periodic reminders to check system health. Responds to "[Auto-reminder] Check system resources" messages by analyzing current resource state.
+description: "Monitor macOS CPU/memory, find resource hogs, periodic health reminders"
 ---
 
 # Process Monitor

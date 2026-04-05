@@ -1,6 +1,6 @@
 ---
 name: codex-cli
-description: Automates coding with the OpenAI Codex CLI. Covers interactive TUI, quiet mode for scripting, approval modes (suggest, auto-edit, full-auto), sandboxing, session management, and multi-provider support. Use when building Codex automation scripts, configuring approval modes, or integrating Codex into CI/CD pipelines.
+description: "Automate with OpenAI Codex CLI: approval modes, sandboxing, scripting"
 ---
 
 # Codex CLI

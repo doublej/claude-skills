@@ -225,7 +225,162 @@ export const user = writable<User>(initialUser);
 </script>
 ```
 
-## 7. Component composition (restructure tree)
+## 7. Python — contextvars
+
+**When:** Python, localised drilling (depth ≤3), request-scoped data (e.g., current user, db session).
+
+**Before — drilling:**
+```python
+def handle_request(db: Database, user: User):
+    result = process_order(db, user)
+    return result
+
+def process_order(db: Database, user: User):
+    # Does NOT use user — just passes it down
+    return save_order(db, user)
+
+def save_order(db: Database, user: User):
+    db.save(Order(owner=user.id))
+```
+
+**After — contextvars:**
+```python
+from contextvars import ContextVar
+
+current_user: ContextVar[User] = ContextVar('current_user')
+
+def handle_request(db: Database, user: User):
+    current_user.set(user)
+    return process_order(db)
+
+def process_order(db: Database):
+    return save_order(db)
+
+def save_order(db: Database):
+    user = current_user.get()
+    db.save(Order(owner=user.id))
+```
+
+## 8. Python — FastAPI Depends (dependency injection)
+
+**When:** FastAPI project, systemic drilling of db sessions, auth, config through route → service → repo.
+
+**Before — drilling:**
+```python
+@router.post("/orders")
+def create_order(db: Session = Depends(get_db)):
+    service = OrderService(db)
+    return service.create()
+
+class OrderService:
+    def __init__(self, db: Session):
+        self.db = db  # only stored to pass to repo
+
+    def create(self):
+        repo = OrderRepo(self.db)
+        return repo.insert(Order())
+
+class OrderRepo:
+    def __init__(self, db: Session):
+        self.db = db
+```
+
+**After — DI at each layer:**
+```python
+class OrderRepo:
+    def __init__(self, db: Session = Depends(get_db)):
+        self.db = db
+
+    def insert(self, order: Order):
+        self.db.add(order)
+
+class OrderService:
+    def __init__(self, repo: OrderRepo = Depends()):
+        self.repo = repo
+
+    def create(self):
+        return self.repo.insert(Order())
+
+@router.post("/orders")
+def create_order(service: OrderService = Depends()):
+    return service.create()
+```
+
+## 9. Python — Module-level / singleton config
+
+**When:** Config or settings object drilled through many layers, app-wide shared state.
+
+**Before — drilling config:**
+```python
+def main():
+    config = load_config()
+    app = App(config)
+
+class App:
+    def __init__(self, config: Config):
+        self.config = config  # only to pass down
+        self.processor = Processor(config)
+
+class Processor:
+    def __init__(self, config: Config):
+        self.timeout = config.timeout
+```
+
+**After — module-level access:**
+```python
+# config.py
+from functools import lru_cache
+
+@lru_cache
+def get_config() -> Config:
+    return load_config()
+
+# processor.py
+from .config import get_config
+
+class Processor:
+    def __init__(self):
+        self.timeout = get_config().timeout
+
+# app.py
+class App:
+    def __init__(self):
+        self.processor = Processor()
+```
+
+## 10. Python — Restructure call chain
+
+**When:** Functions receive params only to forward them. Simplify by letting the caller compose directly.
+
+**Before — drilling:**
+```python
+def handle(data: dict, formatter: Formatter, output: Output):
+    result = transform(data, formatter, output)
+    return result
+
+def transform(data: dict, formatter: Formatter, output: Output):
+    # Only uses data, passes formatter and output down
+    formatted = format_result(data, formatter, output)
+    return formatted
+
+def format_result(data: dict, formatter: Formatter, output: Output):
+    text = formatter.format(data)
+    output.write(text)
+```
+
+**After — restructured:**
+```python
+def handle(data: dict, formatter: Formatter, output: Output):
+    transformed = transform(data)
+    text = formatter.format(transformed)
+    output.write(text)
+
+def transform(data: dict):
+    # Pure data transformation, no forwarding
+    return processed_data
+```
+
+## 11. Component composition (restructure tree)
 
 **When:** Drilling exists because intermediate components render children they don't control. Works in all frameworks.
 
@@ -261,7 +416,7 @@ function Layout({ children }: { children: ReactNode }) {
 
 Layout no longer needs `user` — the parent composes children directly.
 
-## 8. Compound components
+## 12. Compound components
 
 **When:** A set of related components share implicit state (tabs, accordions, menus). React pattern.
 

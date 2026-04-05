@@ -1,6 +1,6 @@
 ---
 name: sheet-cms
-description: Set up bidirectional Google Sheets ↔ JSON sync for content management. Use when adding sheet-cms to a project, configuring content files, or setting up Google Cloud credentials.
+description: "Bidirectional Google Sheets to JSON sync for content management"
 ---
 
 # sheet-cms

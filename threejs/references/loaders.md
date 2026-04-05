@@ -35,11 +35,17 @@ loader.load("model.glb", (gltf) => {
 
 ### With DRACO Compression
 
+Decoder paths must be **served URLs** — copy WASM/JS files to `public/` or use a version-matched CDN.
+```bash
+# Copy from node_modules (recommended — version-locked, offline)
+cp node_modules/three/examples/jsm/libs/draco/gltf/* public/draco/
+```
+
 ```ts
 import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath("https://www.gstatic.com/draco/versioned/decoders/1.5.6/");
+dracoLoader.setDecoderPath("/draco/");
 dracoLoader.preload();
 
 const gltfLoader = new GLTFLoader();
@@ -48,11 +54,16 @@ gltfLoader.setDRACOLoader(dracoLoader);
 
 ### With KTX2 Textures
 
+```bash
+# Copy from node_modules (recommended — version-locked, offline)
+cp node_modules/three/examples/jsm/libs/basis/* public/basis/
+```
+
 ```ts
 import { KTX2Loader } from "three/addons/loaders/KTX2Loader.js";
 
 const ktx2Loader = new KTX2Loader();
-ktx2Loader.setTranscoderPath("https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/libs/basis/");
+ktx2Loader.setTranscoderPath("/basis/");
 ktx2Loader.detectSupport(renderer);
 
 const gltfLoader = new GLTFLoader();
@@ -97,10 +108,8 @@ const colorMap = loader.load("color.jpg", (tex) => {
   tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 });
 
-// Data texture (linear)
-const normalMap = loader.load("normal.jpg", (tex) => {
-  tex.colorSpace = THREE.LinearSRGBColorSpace;
-});
+// Data texture — leave at default (NoColorSpace), do NOT set colorSpace
+const normalMap = loader.load("normal.jpg");
 ```
 
 ## Async/Promise Pattern
@@ -157,6 +166,10 @@ loader.load("model.glb", (gltf) => {
 THREE.Cache.enabled = true;
 
 // Custom cache
+// IMPORTANT: use SkeletonUtils.clone() for skinned/animated models —
+// Object3D.clone() shares skeleton state and breaks animations.
+import { SkeletonUtils } from "three/addons/utils/SkeletonUtils.js";
+
 class AssetCache {
   private textures = new Map<string, THREE.Texture>();
   private models = new Map<string, THREE.Object3D>();
@@ -169,10 +182,10 @@ class AssetCache {
   }
 
   async getModel(key: string, url: string) {
-    if (this.models.has(key)) return this.models.get(key)!.clone();
+    if (this.models.has(key)) return SkeletonUtils.clone(this.models.get(key)!);
     const gltf = await loadGLTF(url);
     this.models.set(key, gltf.scene);
-    return gltf.scene.clone();
+    return SkeletonUtils.clone(gltf.scene);
   }
 
   dispose() {

@@ -1,6 +1,6 @@
 ---
 name: gpt52-prompt
-description: Optimize and refine prompts for OpenAI GPT-5.2. Use this skill when users want to improve prompt quality, fix prompt issues, optimize for reasoning modes (none/minimal/low/medium/high/xhigh), leverage compaction for long workflows, or improve tool calling with preambles. Covers enterprise agentic workflows, parallel tool calling, context management, and metaprompting techniques.
+description: "Optimize prompts for GPT-5.2: reasoning modes, compaction, tool preambles"
 ---
 
 # GPT-5.2 Prompt Optimization

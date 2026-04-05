@@ -1,6 +1,6 @@
 ---
 name: sam-audio
-description: Integrate Meta's SAM (Segment Anything Model) for audio separation. Covers model loading, prompt types, quality tuning, batch processing, format conversion, post-processing, and memory management. Use when separating audio sources, building separation pipelines, or processing audio collections.
+description: "Meta SAM for audio source separation: model loading, batch processing"
 ---
 
 # SAM Audio Integration

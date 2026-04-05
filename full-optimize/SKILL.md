@@ -1,8 +1,6 @@
 ---
 name: full-optimize
-description: >
-  Zero-input project optimizer. Chains analysis, simplification, docs audit, verification, and
-  smart commits into a single automated pipeline. Use when user says "optimize the project",
+description: "Zero-input project optimizer: analysis, simplification, docs audit, commits"
   "clean up everything", "full optimize", or invokes /full-optimize with no arguments.
 ---
 
