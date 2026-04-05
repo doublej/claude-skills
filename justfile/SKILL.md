@@ -5,9 +5,20 @@ description: "Create and manage Justfiles for project task automation and dev en
 
 # Justfile
 
-Create Justfiles that match the user's established conventions. Detect project stack and generate appropriate recipes.
+Create Justfiles that match the user's established conventions. Skill is grounded in official just documentation + tested patterns from 40+ projects.
 
-## Workflow
+## Foundation: Official Just Manual
+
+This skill references the official Just documentation:
+- **Root:** https://just.systems/man/en/
+- **Full manual (printable):** https://just.systems/man/en/print.html
+- **Key sections:** Settings, Recipe syntax, Attributes, Functions, Parameters, Dependencies, Script/shebang recipes
+
+Skill examples and conventions below are validated against official just behavior. When in doubt, consult the official docs.
+
+---
+
+## Workflow (Skill Steps)
 
 1. **Check filename:** MUST be `Justfile` (capital J), not `justfile`
 2. Check if `Justfile` already exists in the project
@@ -15,14 +26,16 @@ Create Justfiles that match the user's established conventions. Detect project s
 4. Generate recipes matching detected stack + user conventions below
 5. **Verify output:** Run `just --list` to check grouping, git branch, and formatting
 
-## Conventions (from user's projects)
+---
 
-### ⚠️ File naming (CRITICAL — mistakes here are persistent)
+## JJ Conventions (Proven across 40+ projects)
+
+### ⚠️ File Naming (CRITICAL — case-sensitive)
 - **MUST be `Justfile` (capital J)** — NOT `justfile`
-- This is case-sensitive and Unix convention
-- Check: `ls -la Justfile` must exist (not `justfile`)
+- Just discovers `justfile`, `Justfile`, `JUSTFILE`, `.justfile` (case-insensitive), but JJ convention is capital J
+- Check: `ls -la Justfile` must exist (case-sensitive, must be capital J)
 
-### Shell setting
+### Shell Setting
 **Rule:** Set shell **IF** any of these apply:
 - Project uses bun/SvelteKit → `set shell := ["zsh", "-euo", "pipefail"]`
 - Project uses .env file → `set dotenv-load` (alone, no `:=`)
@@ -31,9 +44,10 @@ Create Justfiles that match the user's established conventions. Detect project s
 
 **Common mistake:** Declaring `set dotenv-load := false` or `set dotenv-load := true` — use bare `set dotenv-load` only.
 
-### ⚠️ Default recipe (CRITICAL — must be first recipe)
+### ⚠️ Default Recipe (CRITICAL — must be first recipe)
 **Always include exactly as shown:**
 ```just
+# List available recipes
 default:
     @just --list
     @echo ''
@@ -44,6 +58,8 @@ default:
 - ❌ Placing default somewhere other than first
 - ❌ Just `@just --list` without branch output
 - ✅ Three lines: list, blank echo, branch echo
+
+**Foundation reference:** [Quick Start](https://just.systems/man/en/quick-start.html), [Mental Model](https://just.systems/man/en/)
 
 ### ⚠️ Groups (CRITICAL — every recipe must have one)
 **Rule:** Every recipe MUST have a `[group('name')]` attribute immediately before it.
@@ -58,21 +74,239 @@ default:
 **Common mistake:** Some recipes grouped, others bare → creates confusing `just --list` output
 **Check:** `just --list` should show recipes organized under group headers, NO ungrouped recipes
 
-### Variable naming
-- Private/internal variables: `_prefix := "value"` (e.g., `_session := "myapp"`)
-- Public variables: `name := "value"` (e.g., `port := "8765"`)
-- Avoid public config unless it's meant to be overridden
+**Foundation reference:** [Attributes](https://just.systems/man/en/attributes.html) (groups section)
 
-### ⚠️ Recipe style
-- **Comment above EVERY recipe:** `# Description of what this does`
-- **Suppress echo with `@` for info-only/debug lines** — NOT for commands
-  - ✅ `@echo "Starting..."` then `uv run ...`
-  - ❌ `echo "Starting..."` then `uv run ...` (pollutes output)
-- Use `{{variable}}` for interpolation (not `$var`)
-- Variadic args: `*ARGS` (zero-or-more), `+ARGS` (one-or-more)
-- Default params: `serve port="8765":` (with colon)
-- Dependencies: `build-run *ARGS: build-frontend` (colon syntax)
-- Shebang for multi-line scripts: `#!/usr/bin/env bash` or `#!/usr/bin/env zsh`
+---
+
+## Recipe Syntax (Official Just)
+
+### Basic form
+```just
+recipe-name:
+  command
+```
+
+See also [Recipe Syntax](https://just.systems/man/en/features.html) in official docs.
+
+### Comments and aliases
+```just
+# This is a comment
+alias b := build
+```
+
+### Sigils (prefix command lines with any combo of `-`, `@`, `?`)
+- `@` toggles echoing (default: echo on)
+- `-` continues after non-zero exit status
+- `?` (1.47.0) stops current recipe if exit code is `1`
+
+Example:
+```just
+@foo:
+  echo FOO
+
+-bar:
+  some-command-that-may-fail
+
+?baz:
+  [[ -f file ]] # exits 0 or 1
+```
+
+### Private recipes and no-cd
+```just
+[private]
+secret-task:
+  echo "hidden from --list"
+
+[no-cd]
+show-pwd:
+  pwd  # runs in invocation dir, not justfile dir
+```
+
+**Foundation reference:** [Recipe Syntax](https://just.systems/man/en/features.html)
+
+---
+
+## Variables and Expressions
+
+### Assignment and interpolation
+```just
+name := "value"
+foo := "hello"
+bar := "world"
+
+greet:
+  echo {{ foo + " " + bar }}
+```
+
+### Backticks and conditionals
+```just
+localhost := `hostname -I | awk '{print $1}'`
+
+debug := if os() == "linux" { "true" } else { "false" }
+
+serve:
+  ./serve {{localhost}} 8080
+```
+
+### Built-in functions
+Common functions:
+- `arch()`, `os()`, `os_family()`, `num_cpus()` — system info
+- `env("VAR")`, `env("VAR", "default")` — env vars
+- `justfile_directory()`, `invocation_directory()` — paths
+- `absolute_path(path)` — expand to absolute path
+
+**Foundation reference:** [Functions](https://just.systems/man/en/functions.html)
+
+---
+
+## Parameters and Flags
+
+### Positional parameters
+```just
+build target:
+  cd {{target}} && make
+
+backup +FILES:
+  scp {{FILES}} me@server.com:
+```
+
+### Optional parameters with defaults
+```just
+serve host="localhost" port="8000":
+  python -m http.server --bind {{host}} {{port}}
+```
+
+### Named options (1.46.0+)
+```just
+[arg("target", long="target")]
+build target:
+  cargo build --target {{target}}
+```
+
+Usage:
+```sh
+just build --target x86_64-unknown-linux-gnu
+```
+
+**Foundation reference:** [Recipe Parameters](https://just.systems/man/en/recipe-parameters.html)
+
+---
+
+## Dependencies
+
+### Prior dependencies (run before)
+```just
+build:
+  cargo build
+
+test: build
+  cargo test
+```
+
+### Subsequent dependencies (run immediately after)
+```just
+a:
+  echo A
+
+b: a && c
+  echo B
+```
+
+### Parallel dependencies
+```just
+[parallel]
+run-all: task1 task2 task3
+  wait
+```
+
+**Foundation reference:** [Dependencies](https://just.systems/man/en/dependencies.html)
+
+---
+
+## Settings
+
+### Common settings
+```just
+# Shell for recipe lines and backticks
+set shell := ["zsh", "-euo", "pipefail"]
+
+# Windows-specific shell
+set windows-shell := ["powershell.exe", "-c"]
+
+# Load .env file before running recipes
+set dotenv-load
+
+# Export all variables to recipe environment
+set export
+
+# Continue on error (can override per recipe with @)
+set quiet
+
+# Pass recipe args as $1, $2, ... / $@
+set positional-arguments
+```
+
+### Dotenv options
+```just
+set dotenv-load
+set dotenv-path = ".env.local"
+set dotenv-filename = ".env.custom"
+set dotenv-required
+set dotenv-override
+```
+
+**Foundation reference:** [Settings](https://just.systems/man/en/settings.html)
+
+---
+
+## Script and Shebang Recipes
+
+### Shebang recipe (linewise by default, but body executed as a script)
+```just
+build:
+  #!/usr/bin/env bash
+  set -euxo pipefail
+  cargo build
+  echo "Build complete!"
+```
+
+### Script recipe with explicit interpreter
+```just
+[script("python3")]
+process-data:
+  import json
+  with open('data.json') as f:
+    data = json.load(f)
+  print(data)
+```
+
+**Foundation reference:** [Shebang Recipes](https://just.systems/man/en/shebang-recipes.html), [Script Recipes](https://just.systems/man/en/script-recipes.html)
+
+---
+
+## Imports and Modules
+
+### Import other justfiles
+```just
+import 'shared/common.just'
+
+@test:
+  just shared:lint
+  just run-tests
+```
+
+### Modules (isolated namespaces)
+```just
+mod shared
+
+@build:
+  just shared::lint
+  cargo build
+```
+
+**Foundation reference:** [Imports](https://just.systems/man/en/imports.html), [Modules](https://just.systems/man/en/modules.html)
+
+---
 
 ## Stack-Specific Recipes
 
@@ -201,9 +435,11 @@ lint:
     npm run lint
 ```
 
+---
+
 ## tmux Dev Session Recipes
 
-For projects needing multiple processes (worker + client, frontend + backend), use tmux recipes. See `references/tmux-recipes.md` for the full pattern.
+For projects needing multiple processes (worker + client, frontend + backend), use tmux recipes.
 
 Key structure:
 - `_session := "name"` — short session name (3-5 chars)
@@ -213,6 +449,57 @@ Key structure:
 - `tmux-restart` — kill + dev
 - `tmux-logs-<pane>` — capture last 50 lines from pane
 - `tmux-status` — show session and pane info
+
+Example:
+```just
+_session := "myapp"
+
+[group('develop')]
+tmux-dev:
+    @if tmux has-session -t {{_session}} 2>/dev/null; then \
+        echo "Session '{{_session}}' already running. Opening iTerm..."; \
+        osascript -e 'tell application "iTerm" to create window with default profile command "/opt/homebrew/bin/tmux attach -t {{_session}}"'; \
+    else \
+        tmux new-session -d -s {{_session}} -c {{justfile_directory()}}; \
+        tmux send-keys -t {{_session}} 'npm run dev' Enter; \
+        tmux split-window -h -t {{_session}} -c {{justfile_directory()}}; \
+        tmux send-keys -t {{_session}} 'npm run build:watch' Enter; \
+        tmux select-pane -t {{_session}}:0.0; \
+        echo "Started tmux session '{{_session}}'"; \
+        sleep 0.5; \
+        osascript -e 'tell application "iTerm" to create window with default profile command "/opt/homebrew/bin/tmux attach -t {{_session}}"'; \
+    fi
+
+[group('develop')]
+tmux-attach:
+    @if tmux has-session -t {{_session}} 2>/dev/null; then \
+        tmux attach -t {{_session}}; \
+    else \
+        echo "No session '{{_session}}' found. Use 'just tmux-dev' to start."; \
+    fi
+
+[group('develop')]
+tmux-kill:
+    @if tmux has-session -t {{_session}} 2>/dev/null; then \
+        tmux kill-session -t {{_session}}; \
+        echo "Killed session '{{_session}}'"; \
+    else \
+        echo "No session '{{_session}}' to kill."; \
+    fi
+
+[group('develop')]
+tmux-restart: tmux-kill tmux-dev
+
+[group('develop')]
+tmux-logs-dev:
+    @if tmux has-session -t {{_session}} 2>/dev/null; then \
+        tmux capture-pane -t {{_session}}:0.0 -p -S -50; \
+    else \
+        echo "No session '{{_session}}' found."; \
+    fi
+```
+
+---
 
 ## loc-check Recipe
 
@@ -230,7 +517,10 @@ loc-check:
     done
     exit $err
 ```
+
 Adjust glob patterns and thresholds per project.
+
+---
 
 ## Verification Checklist (after generating Justfile)
 
@@ -263,6 +553,8 @@ just <recipe>  # should only output what's needed, not debug lines
 - ❌ Shell setting declares `set dotenv-load := false` (should be bare `set dotenv-load`)
 - ❌ Info-only lines (echo, logs) don't have `@` prefix
 
+---
+
 ## Common Mistakes & Prevention
 
 | Mistake | Symptom | Prevention |
@@ -274,6 +566,24 @@ just <recipe>  # should only output what's needed, not debug lines
 | **Shell setting wrong syntax** | Recipes fail in strict mode or env vars don't load | Use bare `set dotenv-load` (no `:=`), use `set shell := [...]` for custom shells |
 | **Info lines lack `@` prefix** | Output pollutes `just -q` and recipe chains | Add `@` to all `echo`, `echo ''`, logging lines |
 
+---
+
+## Recipe Style Guide
+
+- **Comment above EVERY recipe:** `# Description of what this does`
+- **Suppress echo with `@` for info-only/debug lines** — NOT for commands
+  - ✅ `@echo "Starting..."` then `uv run ...`
+  - ❌ `echo "Starting..."` then `uv run ...` (pollutes output)
+- Use `{{variable}}` for interpolation (not `$var`)
+- Variadic args: `*ARGS` (zero-or-more), `+ARGS` (one-or-more)
+- Default params: `serve port="8765":` (with colon)
+- Dependencies: `build-run *ARGS: build-frontend` (colon syntax)
+- Shebang for multi-line scripts: `#!/usr/bin/env bash` or `#!/usr/bin/env zsh`
+- Private/internal variables: `_prefix := "value"` (e.g., `_session := "myapp"`)
+- Public variables: `name := "value"` (e.g., `port := "8765"`)
+
+---
+
 ## Syntax Quick Reference
 
 | Feature | Syntax |
@@ -284,18 +594,74 @@ just <recipe>  # should only output what's needed, not debug lines
 | Param with default | `recipe param="default":` |
 | Variadic (0+) | `recipe *ARGS:` |
 | Variadic (1+) | `recipe +ARGS:` |
-| Env export param | `recipe $param:` |
 | Dependency | `recipe: dep1 dep2` |
-| Dep with args | `recipe: (dep1 "arg")` |
+| Subsequent dep | `recipe: a && b` |
 | **Attribute (group)** | **`[group('name')]`** |
-| Multiple attrs | `[no-cd, private]` |
 | Silent line | `@echo "quiet"` |
+| Continue on error | `-command` |
 | Shebang recipe | `#!/usr/bin/env bash` |
-| Shell setting | `set shell := ["zsh", "-euo", "pipefail"]` |
-| Dotenv | `set dotenv-load` |
-| Quiet global | `set quiet` |
-| Built-in dir | `{{justfile_directory()}}` |
-| OS conditional | `[macos]` / `[linux]` / `[unix]` / `[windows]` |
-| Confirm before run | `[confirm]` or `[confirm("Are you sure?")]` |
-| Script recipe | `[script]` |
-| Doc override | `[doc("Custom help text")]` |
+| Script recipe | `[script("python3")]` |
+| **Shell setting** | **`set shell := ["zsh", "-euo", "pipefail"]`** |
+| **Dotenv** | **`set dotenv-load`** |
+| Private recipe | `[private]` |
+| No cd | `[no-cd]` |
+| Confirm | `[confirm]` or `[confirm("message")]` |
+| OS conditional | `[linux]`, `[macos]`, `[windows]`, etc. |
+| Built-in | `{{justfile_directory()}}`, `{{os()}}`, etc. |
+
+---
+
+## Command-Line Reference (Common)
+
+```sh
+# List recipes with group organization
+just --list
+
+# Show one recipe details
+just --show build
+
+# Run a recipe
+just build
+
+# Run multiple recipes
+just build test
+
+# Interactive chooser
+just --choose
+
+# Evaluate expression or variable
+just --evaluate
+just --evaluate FOO
+
+# Dump parsed justfile as JSON
+just --dump --dump-format json
+
+# Global justfile (~/.justfile)
+just -g
+
+# Generate shell completions
+just --completions zsh > ~/.zsh/completions/_just
+```
+
+**Full reference:** [Command-line Options](https://just.systems/man/en/command-line-options.html)
+
+---
+
+## Further Reading
+
+**Official Just Documentation:**
+- Root: https://just.systems/man/en/
+- Full manual: https://just.systems/man/en/print.html
+
+**Key chapters:**
+- [Quick Start](https://just.systems/man/en/quick-start.html)
+- [Recipe Syntax](https://just.systems/man/en/features.html)
+- [Settings](https://just.systems/man/en/settings.html)
+- [Attributes](https://just.systems/man/en/attributes.html)
+- [Parameters & Flags](https://just.systems/man/en/recipe-parameters.html)
+- [Dependencies](https://just.systems/man/en/dependencies.html)
+- [Functions](https://just.systems/man/en/functions.html)
+- [Shebang Recipes](https://just.systems/man/en/shebang-recipes.html)
+- [Script Recipes](https://just.systems/man/en/script-recipes.html)
+- [Imports & Modules](https://just.systems/man/en/imports.html)
+- [Command-line Options](https://just.systems/man/en/command-line-options.html)
