@@ -10,16 +10,10 @@ from pathlib import Path
 
 
 def find_db_path() -> Path:
-    """Find the skill-usage.db in project .claude directory."""
-    project_root = Path.cwd()
-    while not (project_root / ".claude").exists() and project_root != project_root.parent:
-        project_root = project_root.parent
-
-    db_path = project_root / ".claude" / "skill-usage.db"
+    db_path = Path.home() / ".claude" / "skill-usage.db"
     if not db_path.exists():
         print(f"Database not found at {db_path}", file=sys.stderr)
         sys.exit(1)
-
     return db_path
 
 

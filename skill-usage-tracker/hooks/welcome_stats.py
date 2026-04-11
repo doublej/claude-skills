@@ -65,12 +65,7 @@ def display_welcome_stats() -> None:
         sys.exit(0)
 
     try:
-        # Find project root
-        project_root = Path.cwd()
-        while not (project_root / ".claude").exists() and project_root != project_root.parent:
-            project_root = project_root.parent
-
-        db_path = project_root / ".claude" / "skill-usage.db"
+        db_path = Path.home() / ".claude" / "skill-usage.db"
 
         if not db_path.exists():
             # No data yet
@@ -119,7 +114,7 @@ def display_welcome_stats() -> None:
             output.append("")
 
         # Footer
-        output.append("Type 'python3 skill-usage-tracker/scripts/query_usage.py' for detailed analysis")
+        output.append("Run query_usage.py in skill-usage-tracker for details")
 
         print("\n".join(output))
 

@@ -34,18 +34,12 @@ def track_usage() -> None:
         skill_name = tool_input.get("skill", "unknown")
         args = tool_input.get("args", "")
         session_id = hook_data.get("session_id", "unknown")
-        cwd = hook_data.get("cwd", "")
         exit_code = hook_data.get("tool_exit_code", 0)
         success = 1 if exit_code == 0 else 0
         error_message = hook_data.get("error_message")
 
-        # Find project root
-        project_root = Path(cwd) if cwd else Path.cwd()
-        while not (project_root / ".claude").exists() and project_root != project_root.parent:
-            project_root = project_root.parent
-
-        db_path = project_root / ".claude" / "skill-usage.db"
-        log_path = project_root / ".claude" / "skill-usage.log"
+        db_path = Path.home() / ".claude" / "skill-usage.db"
+        log_path = Path.home() / ".claude" / "skill-usage.log"
 
         # Ensure database exists
         if not db_path.exists():
@@ -84,12 +78,8 @@ def track_usage() -> None:
         conn.close()
 
     except Exception as e:
-        # Log error but never fail
         try:
-            project_root = Path.cwd()
-            while not (project_root / ".claude").exists() and project_root != project_root.parent:
-                project_root = project_root.parent
-            log_path = project_root / ".claude" / "skill-usage.log"
+            log_path = Path.home() / ".claude" / "skill-usage.log"
             log_error(f"track_usage error: {e}", log_path)
         except Exception:
             pass

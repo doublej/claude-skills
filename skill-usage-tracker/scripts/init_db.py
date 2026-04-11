@@ -40,14 +40,7 @@ def init_database(db_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    # Default to .claude/skill-usage.db in project root
-    project_root = Path.cwd()
-    while not (project_root / ".claude").exists() and project_root != project_root.parent:
-        project_root = project_root.parent
-
-    db_path = project_root / ".claude" / "skill-usage.db"
-
+    db_path = Path.home() / ".claude" / "skill-usage.db"
     if len(sys.argv) > 1:
         db_path = Path(sys.argv[1])
-
     init_database(db_path)
