@@ -1,0 +1,78 @@
+name: creative-think-tank
+description: 4 brainstormers (dreamer, pragmatist, devil, synthesizer) run 3-round debate. Deliverable is a ranked ideas doc.
+default_team_name_prefix: creative-think-tank
+write_access: false
+forbid_main_branch: false
+
+lead_behavior: |
+  Given an open-ended prompt from the user:
+  1. Round 1: broadcast prompt to dreamer + pragmatist. Each posts 3–5 ideas.
+  2. Round 2: broadcast all ideas to devil, which attacks each. Pragmatist filters for feasibility.
+  3. Round 3: synthesizer ranks + clusters remaining ideas into a final doc (markdown).
+  4. Lead writes the final doc to a path the user specifies (default: ~/Documents/<team_name>.md).
+  5. Notify user via consult-user-mcp with the path.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 2
+
+members:
+  - name: dreamer
+    subagent_type: read-only-reviewer
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: dreamer for {team_name}.
+      Goal: generate outlandish, unconventional, high-ceiling ideas. Do not self-filter for feasibility.
+      Stop: after posting 3–5 ideas per round with one-paragraph rationales.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: pragmatist
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: pragmatist for {team_name}.
+      Goal: generate realistic, buildable ideas. In later rounds, score dreamer's ideas for feasibility (1–5) with reasoning.
+      Stop: after each round's assignment.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: devil
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: devil for {team_name}.
+      Goal: attack every idea surfaced in prior rounds. Find failure modes, hidden costs, adoption risks.
+      Stop: after attacking all ideas in the current round.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: synthesizer
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: synthesizer for {team_name}.
+      Goal: cluster remaining ideas by theme, rank by (impact × feasibility − risk), write final markdown doc.
+      Stop: after delivering the final doc to the lead via SendMessage.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+coordination:
+  broadcast_rounds: 3
+  task_dependency_chain: []
+
+hooks:
+  teammate_idle: none
+  task_completed: none

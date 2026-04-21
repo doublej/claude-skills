@@ -1,0 +1,42 @@
+# teams preset schema — documentation, not an active preset.
+# Authoritative field list. spawn.py enforces these rules.
+
+name: example-preset                  # must match filename (without .yaml)
+description: >
+  One-line description shown in /teams:list. Keep it short.
+default_team_name_prefix: example     # joined with ISO date + random suffix to form the team name
+write_access: false                   # true → spawn.py forces isolation=worktree and a writable tool on every member
+forbid_main_branch: true              # adds an extra guard on top of preflight's default
+
+lead_behavior: |
+  Multi-line free-text describing what the lead does post-spawn:
+  - how to broadcast work
+  - how to collect results
+  - how to merge worktrees (if write_access)
+  - when to synthesize / call it done
+
+escalation:
+  on_conflict: consult-user-mcp        # always this value — reserved for future extension
+  on_idle_stall_turns: 3               # after N idle turns without progress, escalate to user
+
+members:                               # 1 or more teammate specs
+  - name: example-reviewer             # SendMessage address; also worktree branch suffix
+    subagent_type: read-only-reviewer  # one of the bundled types (subagents/*.md) or any installed subagent
+    model: claude-sonnet-4-6           # claude-opus-4-7 | claude-sonnet-4-6 | claude-haiku-4-5
+    mode: plan                         # plan | default | acceptEdits | dontAsk
+    tools: []                          # additive to the subagent_type's base tools
+    isolation: none                    # "worktree" (required for writers) or "none"
+    spawn_prompt: |
+      Role: example-reviewer for {team_name}.
+      Goal: <one-line deliverable>.
+      Stop: <when you're done>.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done             # idle | task_done | explicit
+
+coordination:
+  broadcast_rounds: 0                  # 0 = no forced broadcast; >0 = preset expects that many rounds
+  task_dependency_chain: []            # optional ordered list of task template IDs the lead should create
+
+hooks:
+  teammate_idle: none                  # enforce_verdict | enforce_severity | none
+  task_completed: none                 # require_clean_worktree | none

@@ -1,0 +1,65 @@
+name: research-pod
+description: 3 read-only (researcher + fact-checker + synthesizer) with WebFetch/WebSearch. Output is a markdown report.
+default_team_name_prefix: research-pod
+write_access: false
+forbid_main_branch: false
+
+lead_behavior: |
+  Given a research question + optional constraints (sources to use, time horizon, output format):
+  1. Broadcast question to researcher. It gathers raw notes from web + repo, citing sources.
+  2. Pass researcher's notes to fact-checker. It verifies each claim and flags disputed/unsupported ones.
+  3. Pass both to synthesizer. It writes the final markdown report at a path the user specifies
+     (default: ~/Documents/<team_name>.md).
+  4. Lead notifies user via consult-user-mcp with the report path + a 3-bullet TL;DR.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 2
+
+members:
+  - name: researcher
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: ["WebFetch", "WebSearch"]
+    isolation: none
+    spawn_prompt: |
+      Role: researcher for {team_name}.
+      Goal: gather raw notes on the question. Cite every claim with a URL. No synthesis yet.
+      Stop: after posting raw notes + citations.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: fact-checker
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: ["WebFetch"]
+    isolation: none
+    spawn_prompt: |
+      Role: fact-checker for {team_name}.
+      Goal: verify each claim from researcher's notes. Flag unsupported / contradicted / outdated ones.
+      Stop: after posting verification table (claim / status / evidence).
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: synthesizer
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: ["Write"]
+    isolation: none
+    spawn_prompt: |
+      Role: synthesizer for {team_name}.
+      Goal: write the final markdown report using verified claims only. Structure: TL;DR / findings / sources.
+      Stop: after writing the report file and confirming the path to the lead.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+coordination:
+  broadcast_rounds: 0
+  task_dependency_chain: ["task-research", "task-verify", "task-synth"]
+
+hooks:
+  teammate_idle: none
+  task_completed: none

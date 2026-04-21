@@ -1,0 +1,68 @@
+name: pr-review-squad
+description: 3 read-only reviewers (security, performance, coverage) aggregate into one PR review.
+default_team_name_prefix: pr-review-squad
+write_access: false
+forbid_main_branch: false
+
+lead_behavior: |
+  Given a PR number or diff:
+  1. Lead fetches the PR metadata (gh pr view <num> --json; git diff base...HEAD).
+  2. Broadcast diff + PR description to all 3 reviewers.
+  3. Each reviewer posts findings as structured messages (severity, location, description, suggestion).
+  4. Lead aggregates into a single PR review comment: group by severity (critical/high/med/low/info),
+     dedupe overlapping findings, cite each finding by reviewer.
+  5. Propose the summary back to the user for sign-off via consult-user-mcp before posting.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 2
+
+members:
+  - name: security
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: security for {team_name}.
+      Focus: authn/authz, injection (SQLi/XSS/SSRF), secrets in code, unsafe deserialization, crypto misuse.
+      Goal: list findings with severity (critical/high/medium/low/info), location, description, suggestion.
+      Stop: after posting findings + issues-found count.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: performance
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: performance for {team_name}.
+      Focus: N+1 queries, hot-path allocations, unnecessary sync in async contexts, re-renders, bundle size impact.
+      Goal: list findings with severity, location, description, suggestion.
+      Stop: after posting findings + issues-found count.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: coverage
+    subagent_type: minimal-worker
+    model: claude-haiku-4-5
+    mode: default
+    tools: ["Bash(pytest:*)", "Bash(npm:*)", "Bash(jest:*)", "Bash(coverage:*)"]
+    isolation: none
+    spawn_prompt: |
+      Role: coverage for {team_name}.
+      Goal: run the repo's coverage tool against the changed files only. Report coverage % per file and uncovered lines.
+      Stop: after posting the coverage report + issues-found count.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+coordination:
+  broadcast_rounds: 1
+  task_dependency_chain: []
+
+hooks:
+  teammate_idle: enforce_severity
+  task_completed: none

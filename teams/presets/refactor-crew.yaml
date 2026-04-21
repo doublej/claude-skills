@@ -1,0 +1,82 @@
+name: refactor-crew
+description: 4 writers (architect → implementer → test-writer → docs) with plan-approval gate on architect's design.
+default_team_name_prefix: refactor-crew
+write_access: true
+forbid_main_branch: true
+
+lead_behavior: |
+  Given a refactor goal + target scope:
+  1. Spawn architect in plan mode. It proposes the refactor plan via plan_approval.
+  2. Lead forwards the plan to the user via consult-user-mcp (pick: approve / revise / reject).
+     If revise/reject, SendMessage plan_approval_response back to architect.
+  3. After approval, create tasks: task-arch (done), task-impl (owner=implementer),
+     task-tests (owner=test-writer, blockedBy=task-impl), task-docs (owner=docs, blockedBy=task-tests).
+  4. As each writer signals done, merge worktree in order (impl → tests → docs).
+     On conflict, escalate via consult-user-mcp.
+  5. Final step: notify user with diff summary + link to each commit.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 3
+
+members:
+  - name: architect
+    subagent_type: write-implementer
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: worktree
+    spawn_prompt: |
+      Role: architect for {team_name}.
+      Goal: propose the refactor plan via plan_approval — scope, staged steps, test impact, risk.
+      After approval, implement only the architectural skeleton (interfaces, module structure). No full impl.
+      Stop: on task_completed with skeleton committed.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: implementer
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: []
+    isolation: worktree
+    spawn_prompt: |
+      Role: implementer for {team_name}.
+      Goal: fill in the architect's skeleton. Preserve public API unless plan says otherwise.
+      Stop: on task_completed with worktree clean, typecheck passing.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: test-writer
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: []
+    isolation: worktree
+    spawn_prompt: |
+      Role: test-writer for {team_name}.
+      Goal: update or add tests to cover the refactored code paths. Focus on behavior, not implementation details.
+      Stop: on task_completed with all tests passing.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: docs
+    subagent_type: minimal-worker
+    model: claude-haiku-4-5
+    mode: default
+    tools: ["Edit", "Write"]
+    isolation: worktree
+    spawn_prompt: |
+      Role: docs for {team_name}.
+      Goal: update README / module docstrings / inline comments to reflect the new architecture. No prose bloat.
+      Stop: on task_completed with worktree clean.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+coordination:
+  broadcast_rounds: 0
+  task_dependency_chain: ["task-arch", "task-impl", "task-tests", "task-docs"]
+
+hooks:
+  teammate_idle: none
+  task_completed: require_clean_worktree

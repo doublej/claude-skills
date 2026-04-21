@@ -1,0 +1,68 @@
+name: plan-committee
+description: 3 critics (risk, completeness, simplicity) review a plan doc. Read-only. Synthesized verdict.
+default_team_name_prefix: plan-committee
+write_access: false
+forbid_main_branch: false
+
+lead_behavior: |
+  Expect the lead was given a path to a plan markdown file (or the plan text inline).
+  1. Broadcast the plan to all 3 critics with "review and post findings using the fields
+     verdict / risks / assumptions_unstated / suggestions".
+  2. Wait for each critic's reply.
+  3. Synthesize into a single report: top 5 risks across critics, consolidated verdict
+     (approve if all 3 approve; revise if any reject or 2+ revise; reject if 2+ reject).
+  4. Notify user via consult-user-mcp with the verdict summary.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 3
+
+members:
+  - name: risk-auditor
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: risk-auditor for {team_name}.
+      Goal: attack the plan — find failure modes, unstated assumptions, security holes, ways it could miss its goal.
+      Stop: after posting verdict/risks/assumptions_unstated/suggestions.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: completeness-auditor
+    subagent_type: read-only-reviewer
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: completeness-auditor for {team_name}.
+      Goal: find gaps — missing test coverage, missing migration steps, missing error handling,
+      missing dependency considerations, missing rollback plan.
+      Stop: after posting verdict/risks/assumptions_unstated/suggestions.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: simplicity-auditor
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: simplicity-auditor for {team_name}.
+      Goal: flag over-engineering — premature abstractions, YAGNI violations, unnecessary layers,
+      places where 3 lines would beat a helper. Propose deletions, not additions.
+      Stop: after posting verdict/risks/assumptions_unstated/suggestions.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+coordination:
+  broadcast_rounds: 1
+  task_dependency_chain: []
+
+hooks:
+  teammate_idle: enforce_verdict
+  task_completed: none

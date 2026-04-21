@@ -1,0 +1,82 @@
+name: security-audit
+description: 4 auditors (appsec, infrasec, depsec, compliance) produce severity-scored findings.
+default_team_name_prefix: security-audit
+forbid_main_branch: false
+write_access: false
+
+lead_behavior: |
+  Given a scope (paths / services / configs to audit):
+  1. Broadcast scope to all 4 auditors.
+  2. Each auditor produces findings with severity (critical/high/medium/low/info),
+     location, description, suggestion, and (where applicable) CWE / CVSS reference.
+  3. Lead aggregates into a single severity-ordered findings doc.
+  4. Lead notifies user via consult-user-mcp with the doc path + critical-count.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 3
+
+members:
+  - name: appsec
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: appsec for {team_name}.
+      Focus: authn/authz, crypto misuse, XSS, SQLi, SSRF, unsafe deserialization, IDOR, CSRF, JWT/session handling.
+      Goal: findings with severity / location / description / suggestion / CWE.
+      Stop: after posting findings.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: infrasec
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: infrasec for {team_name}.
+      Focus: cloud configs, IaC (Terraform/CloudFormation), CI/CD permissions, secrets handling in pipelines,
+      container images, network policies.
+      Goal: findings with severity / location / description / suggestion.
+      Stop: after posting findings.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: depsec
+    subagent_type: minimal-worker
+    model: claude-haiku-4-5
+    mode: default
+    tools: ["Bash(npm:*)", "Bash(pip-audit:*)", "Bash(cargo:*)", "Bash(pnpm:*)"]
+    isolation: none
+    spawn_prompt: |
+      Role: depsec for {team_name}.
+      Goal: run dependency audit (npm audit / pip-audit / cargo audit) in the project. Report CVEs with severity.
+      Stop: after posting findings.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: compliance
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: compliance for {team_name}.
+      Focus: GDPR data handling, PCI-relevant code paths, PII logging, data retention, consent flows.
+      Goal: findings with severity / location / description / regulation reference.
+      Stop: after posting findings.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+coordination:
+  broadcast_rounds: 0
+  task_dependency_chain: []
+
+hooks:
+  teammate_idle: enforce_severity
+  task_completed: none

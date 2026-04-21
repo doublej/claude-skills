@@ -1,0 +1,67 @@
+name: beads-pm
+description: PM lead pulls `bd list --json`, distributes tickets to N implementers who `bd claim`, work in worktrees named teams/beads/<id>.
+default_team_name_prefix: beads-pm
+write_access: true
+forbid_main_branch: true
+
+lead_behavior: |
+  The lead acts as PM.
+  1. Run `bd list --status open --json` to fetch open tickets.
+  2. Sort by priority; take the top N (N = number of impl members, default 3).
+  3. For each ticket: create a shared task with metadata.ticket_id = <bd id>, owner = impl-<i>.
+  4. Broadcast summary to implementers. Each implementer:
+     - `bd claim <ticket-id>`
+     - works inside its worktree (branch: worktree-impl-<i>; the ticket-id lives on the bd side)
+     - commits + signals task_done with metadata.worktree set
+  5. Lead reviews each worktree's diff, merges if clean, escalates if conflict.
+  6. After merge, lead runs `bd close <ticket-id>` with the commit sha.
+  7. If blocker posted by an implementer, escalate via consult-user-mcp.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 4
+
+members:
+  - name: impl-1
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: ["Bash(bd:*)"]
+    isolation: worktree
+    spawn_prompt: |
+      Role: impl-1 for {team_name}.
+      Goal: claim assigned bd ticket, implement, commit, signal task_done.
+      Escalate via SendMessage to lead if blocked.
+      Stop: on task_completed with worktree clean.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: impl-2
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: ["Bash(bd:*)"]
+    isolation: worktree
+    spawn_prompt: |
+      Role: impl-2 for {team_name}. Same contract as impl-1.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: impl-3
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: ["Bash(bd:*)"]
+    isolation: worktree
+    spawn_prompt: |
+      Role: impl-3 for {team_name}. Same contract as impl-1.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+coordination:
+  broadcast_rounds: 0
+  task_dependency_chain: []
+
+hooks:
+  teammate_idle: none
+  task_completed: require_clean_worktree

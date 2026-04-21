@@ -1,0 +1,83 @@
+name: fullstack-feature
+description: 4 writers (db, be, fe, qa) across worktrees with strict dependency chain. Lead merges in reverse order.
+default_team_name_prefix: fullstack-feature
+write_access: true
+forbid_main_branch: true
+
+lead_behavior: |
+  Given a feature spec from the user:
+  1. Create shared tasks: task-db (owner=db), task-be (owner=be, blockedBy=task-db),
+     task-fe (owner=fe, blockedBy=task-be), task-qa-db/be/fe (owner=qa, blockedBy each upstream).
+  2. Broadcast the spec to all members; each member claims their tasks.
+  3. db spawns in plan mode first — plan_approval_response gates its writes.
+  4. As each writer signals done, lead runs `git -C .claude/worktrees/<name> log main..HEAD`
+     and either merges (--ff-only preferred) or escalates via consult on conflict.
+  5. Merge order: db → be → fe (forward). If any merge conflicts, stop and escalate.
+  6. qa runs its test task after each merge.
+  7. On full completion, lead summarizes the diff, notifies user.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 3
+
+members:
+  - name: db
+    subagent_type: write-implementer
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: worktree
+    spawn_prompt: |
+      Role: db for {team_name}.
+      Goal: propose migration/schema plan first (plan mode). After lead approves, implement in worktree and commit.
+      Stop: on task_completed with worktree clean.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: be
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: []
+    isolation: worktree
+    spawn_prompt: |
+      Role: be for {team_name}.
+      Goal: implement backend against the approved db schema. Tests included.
+      Stop: on task_completed with worktree clean and tests passing.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: fe
+    subagent_type: write-implementer
+    model: claude-sonnet-4-6
+    mode: acceptEdits
+    tools: ["Bash(vite:*)"]
+    isolation: worktree
+    spawn_prompt: |
+      Role: fe for {team_name}.
+      Goal: implement frontend against the merged backend. Match existing component style.
+      Stop: on task_completed with worktree clean, type-check passing.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: task_done
+
+  - name: qa
+    subagent_type: minimal-worker
+    model: claude-haiku-4-5
+    mode: default
+    tools: ["Bash(pytest:*)", "Bash(npm:*)", "Bash(playwright:*)"]
+    isolation: worktree
+    spawn_prompt: |
+      Role: qa for {team_name}.
+      Goal: after each writer signals done, run that layer's tests (pytest for be, npm test for fe, migration tests for db).
+      Report pass/fail per task. Do not modify code.
+      Stop: on task_completed with verdict posted.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+coordination:
+  broadcast_rounds: 0
+  task_dependency_chain: ["task-db", "task-be", "task-fe", "task-qa"]
+
+hooks:
+  teammate_idle: none
+  task_completed: require_clean_worktree

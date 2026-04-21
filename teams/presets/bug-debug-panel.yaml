@@ -1,0 +1,85 @@
+name: bug-debug-panel
+description: 5 adversarial hypothesis-testers debate theories of the bug, attack peers', converge on survivor + repro.
+default_team_name_prefix: bug-debug-panel
+write_access: false
+forbid_main_branch: false
+
+lead_behavior: |
+  Given a bug report (symptom, stack trace, failing test, etc.):
+  1. Lead assigns one theory of the root cause to each of h1–h5 via SendMessage.
+  2. Round 1: each hypothesizer gathers evidence for their theory from the codebase (read-only).
+  3. Round 2: broadcast all theories; each must attack the 4 other theories in turn.
+  4. Round 3: each posts a "survives / refuted" self-assessment with evidence.
+  5. Lead picks the survived theory (or asks consult-user-mcp if multiple survive), writes a consensus doc with:
+     root cause, evidence, repro steps, suggested fix (no code written — just prose).
+  6. If debate stalls >3 turns without progress, escalate via consult-user-mcp.
+
+escalation:
+  on_conflict: consult-user-mcp
+  on_idle_stall_turns: 3
+
+members:
+  - name: h1
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: h1 for {team_name}.
+      Goal: own one hypothesis of the bug's root cause; defend it with evidence; attack peers'.
+      Stop: after round-3 self-assessment posted.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: h2
+    subagent_type: adversarial-critic
+    model: claude-opus-4-7
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: h2 for {team_name}. Same contract as h1 but independent theory assignment.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: h3
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: h3 for {team_name}. Same contract as h1 but independent theory assignment.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: h4
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: h4 for {team_name}. Same contract as h1 but independent theory assignment.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+  - name: h5
+    subagent_type: read-only-reviewer
+    model: claude-sonnet-4-6
+    mode: plan
+    tools: []
+    isolation: none
+    spawn_prompt: |
+      Role: h5 for {team_name}. Same contract as h1 but independent theory assignment.
+      Do NOT invoke skills or memory unless the lead asks.
+    shutdown_on: explicit
+
+coordination:
+  broadcast_rounds: 3
+  task_dependency_chain: []
+
+hooks:
+  teammate_idle: enforce_verdict
+  task_completed: none
