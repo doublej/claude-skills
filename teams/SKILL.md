@@ -1,7 +1,7 @@
 ---
 name: teams
 description: >
-  Orchestrate Claude Code agent teams (teammate mode) via named presets with strict safety gates. Use when the user wants parallel multi-agent work, competing perspectives, distributed writers across worktrees, plan review by multiple critics, PR review squad, debugging panel, refactor crew, research pod, beads ticket distribution, or a security audit team. Triggers on: "agent team", "teammate mode", "spawn a team", "plan committee", "think tank", "pr review team", "debug panel", "refactor crew", "research pod", "beads team", "security audit team", "fullstack feature team", preset names.
+  Orchestrate Claude Code agent teams (teammate mode) via named presets with strict safety gates. Use for parallel multi-agent work, competing critics, distributed writers across worktrees, plan review, PR review, debug panels, refactor crews, research pods, beads tickets, or security audits. Triggers on "agent team", "teammate mode", "spawn a team", "plan committee", "pr review team", "debug panel", "refactor crew", "beads team", "security audit team", preset names.
 ---
 
 # Teams — Claude Code Agent Team Orchestrator
