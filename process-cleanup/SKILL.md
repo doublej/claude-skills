@@ -43,7 +43,7 @@ Add `--force` for immediate SIGKILL.
 
 1. Run `scan.sh` to see what's running
 2. Present findings to user with PID, CPU%, MEM%, and command
-3. Ask which processes/categories to kill (never kill without confirmation)
+3. Use `consult-user-mcp` `ask` (type `pick`, `multi: true`) to let user select which processes/categories to kill — never kill without confirmation
 4. Run `kill.sh` or `kill-category.sh` as directed
 5. Run `scan.sh` again to confirm cleanup
 
