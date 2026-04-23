@@ -22,8 +22,9 @@ _require_cmux() {
 }
 
 # _validate_role <role>
-# Allow anything matching 'agent:<N>' plus the fixed role enum. This keeps
-# multi-agent tabs predictable without over-constraining the user.
+# Allow anything matching 'agent:<N>' or 'svc:<N>' plus the fixed role
+# enum. 'agent:' is for AI subagents; 'svc:' is for dev services (backend,
+# frontend, worker, etc.) inside multi-component workspaces.
 _validate_role() {
   local role="$1"
   if [[ "$role" == agent:* ]]; then
@@ -31,11 +32,24 @@ _validate_role() {
       || _die "agent role must match 'agent:<id>' (got: $role)"
     return 0
   fi
+  if [[ "$role" == svc:* ]]; then
+    [[ "$role" =~ ^svc:[0-9A-Za-z_-]+$ ]] \
+      || _die "svc role must match 'svc:<slug>' (got: $role)"
+    return 0
+  fi
   local r
   for r in "${CMUX_ROLES[@]}"; do
     [[ "$r" == "$role" ]] && return 0
   done
-  _die "unknown role '$role' (allowed: ${CMUX_ROLES[*]} or agent:<id>)"
+  _die "unknown role '$role' (allowed: ${CMUX_ROLES[*]}, agent:<id>, or svc:<slug>)"
+}
+
+# _encode_cwd_for_claude <abs-path>
+# Map an absolute path to the directory name under ~/.claude/projects/
+# ('/' → '-'). Used to locate per-cwd session history.
+_encode_cwd_for_claude() {
+  local p="$1"
+  printf '%s' "${p//\//-}"
 }
 
 # _workspace_by_name <name>
