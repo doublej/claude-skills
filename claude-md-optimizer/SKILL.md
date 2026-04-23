@@ -2,9 +2,10 @@
 name: claude-md-optimizer
 description: Review and optimize the global CLAUDE.md file with latest best practices. Use when user wants to update their CLAUDE.md, check if it follows current recommendations, or ensure configuration is aligned with latest Claude Code capabilities.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
   created: 2026-02-04
-  models: Claude Opus 4.5, Sonnet 4.5
+  updated: 2026-04-21
+  models: Claude Sonnet 4.6, Opus 4.7
 ---
 
 # CLAUDE.md Optimizer
@@ -13,21 +14,23 @@ Analyze and improve the user's global CLAUDE.md file using current best practice
 
 ## Age Awareness
 
-**CRITICAL**: Always run the age check script first and display the results to the user:
+**CRITICAL**: Run the age check script first and show results to the user:
 
 ```bash
 python3 scripts/check_age.py
 ```
 
-If the information is >6 weeks old, warn the user that recommendations may be outdated and suggest they request an updated version of this skill.
+If >6 weeks old, warn that recommendations may be outdated and suggest requesting an updated skill.
 
 ## Workflow
 
-1. **Check skill age**: Run `scripts/check_age.py` and show results
-2. **Read current CLAUDE.md**: Load from `~/.claude/CLAUDE.md`
-3. **Load best practices**: Read `references/best_practices_2026_02.md`
-4. **Analyze alignment**: Compare current file against best practices
-5. **Provide recommendations**: Suggest specific, actionable improvements
+1. Run `scripts/check_age.py` and show results
+2. Read `~/.claude/CLAUDE.md` using the Read tool
+3. Read `references/best_practices_2026_02.md`
+4. Compare current file against best practices
+5. Present prioritized recommendations (max 5 High, 3 Medium, 2 Low)
+6. On user approval: apply changes using Edit tool
+7. Stop after changes are confirmed
 
 ## Analysis Focus Areas
 
@@ -63,47 +66,27 @@ If the information is >6 weeks old, warn the user that recommendations may be ou
 
 ## Recommendation Format
 
-For each improvement, provide:
+For each improvement:
 
 1. **Category**: Which focus area
-2. **Current state**: What file currently has (or lacks)
+2. **Current state**: What the file has (or lacks)
 3. **Recommended change**: Specific addition/modification
-4. **Rationale**: Why this improves the file (1 sentence)
-5. **Priority**: High/Medium/Low
+4. **Rationale**: Why this helps (1 sentence)
+5. **Priority**: High / Medium / Low
 
-Group recommendations by priority.
+Cap: 5 High, 3 Medium, 2 Low. Group by priority.
 
 ## Making Changes
 
-If user approves recommendations:
-1. Use Edit tool for surgical changes to existing content
-2. Preserve user's existing style and formatting
-3. Keep changes minimal and targeted
-4. Don't rewrite sections unnecessarily
+On user approval:
+- Use Edit tool for targeted changes; preserve style and formatting
+- Preserve existing customizations
+- Suggest only what adds clear value; explain tradeoffs where recommendations conflict
 
 ## Version Tracking
 
-After making changes, optionally suggest adding version metadata to the CLAUDE.md:
+After changes, optionally add version metadata to CLAUDE.md:
 
 ```xml
-<!-- Updated: YYYY-MM-DD | Based on Claude Opus 4.5 / Sonnet 4.5 -->
+<!-- Updated: YYYY-MM-DD | Based on Claude Sonnet 4.6 / Opus 4.7 -->
 ```
-
-## Important Notes
-
-- **Respect user preferences**: Don't remove customizations
-- **Match existing style**: Follow tone and formatting patterns
-- **Minimal changes**: Only suggest what adds clear value
-- **Explain tradeoffs**: If recommendations conflict with existing approaches
-- **Age awareness**: Always show skill age before recommendations
-
-## Example Usage
-
-User: "Review my CLAUDE.md file"
-
-Response:
-1. Run age check script, show results
-2. Read ~/.claude/CLAUDE.md
-3. Analyze against best practices
-4. Present prioritized recommendations
-5. Offer to implement approved changes
