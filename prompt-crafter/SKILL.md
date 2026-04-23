@@ -1,13 +1,34 @@
 ---
 name: prompt-crafter
 description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design"
+arguments: "model: Literal['opus-4-7', 'opus-4-6', 'sonnet', 'generic'] = 'generic'"
 ---
 
 # Prompt Crafter
 
 Craft high-quality prompts for Claude Code across all surfaces: interactive sessions, CLAUDE.md files, system prompts, slash commands, and CLI automation.
 
-## Workflow
+## Lint + Rewrite (model-specific)
+
+When the user asks to **improve, review, or lint a prompt**, select the template by target model.
+
+Model resolution order:
+1. `$ARGUMENTS` if provided (e.g. `/prompt-crafter opus-4-7`)
+2. Stated in conversation
+3. Default: `generic`
+
+| `$ARGUMENTS` / stated model | Template to load |
+|-----------------------------|-----------------|
+| `opus-4-7` | `references/lint-opus-4-7.md` |
+| `opus-4-6` | `references/lint-opus.md` |
+| `sonnet` | `references/lint-sonnet.md` |
+| `generic` / unspecified | `references/lint-generic.md` |
+
+Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask if critical ones are missing), then apply the lint + rewrite workflow inline. The templates are self-contained instructions — follow them exactly.
+
+---
+
+## Workflow (new prompt creation)
 
 1. **Clarify intent** — What surface? (interactive, CLAUDE.md, CLI, slash command, API)
 2. **Select pattern** — Match the task to a prompt pattern
