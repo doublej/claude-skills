@@ -219,6 +219,39 @@ Snapshot records the tab set and best-effort cwd per tab. Split geometry
 comes from cmux's raw `list-pane-surfaces` output and is informational —
 restore rebuilds canonical tabs, not pixel-perfect geometry.
 
+## Feedback loop (run before declaring done)
+
+This skill evolves from real usage friction — the only source of signal
+the user has is **you** logging what broke or confused you.
+
+**Before ending any turn that used a cmux verb**, ask yourself:
+
+1. Did a documented flag/verb behave differently than SKILL.md said?
+2. Did you have to retry, guess args, or read source to find the shape?
+3. Was an error message vague, misleading, or missing a fix hint?
+4. Did you wish for a helper that doesn't exist, or write an awkward
+   inline workaround?
+5. Did you almost clobber running state (re-sent to a live tab, lost a
+   session id, etc.)?
+
+**If any answer is yes → append one entry to `cmux/FEEDBACK.md`** via
+the Edit tool. Use this exact template; one entry is enough:
+
+```markdown
+### YYYY-MM-DD — <1-line subject line, imperative>
+**Tried:**   <command or intent — 1 line>
+**Broke:**   <concrete friction — error text, surprise, missing helper>
+**Fix idea:** <doc line / new helper / clearer error / schema change>
+```
+
+**If all answers are no → skip silently.** Don't log "everything was
+fine" — absence of entries is the positive signal.
+
+The log lives in the skill source, not per-project, so every session
+harvests into the same pile. Do not gate this on task size — a 2-verb
+task that surprised you deserves a log entry just as much as a 20-verb
+one. Rule of thumb: if you muttered "huh" once, write it down.
+
 ## References
 
 - `references/workspace-spec.md` — `.cmux/workspace.json` schema,
