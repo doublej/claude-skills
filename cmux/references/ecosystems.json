@@ -1,0 +1,36 @@
+{
+  "_comment": "Known multi-component ecosystems. `base` is relative to $DEV_ROOT (defaults to ~/Documents/development). Tab `cwd` is relative to the ecosystem base. cmux-workspace.sh reads this when .cmux/workspace.json is absent.",
+
+  "project-atlas": {
+    "base": "multi-stack/project-atlas",
+    "layout": "grid",
+    "tabs": [
+      { "role": "code",        "cwd": ".",               "claudeResume": true },
+      { "role": "svc:api",     "cwd": "atlas-api",       "cmd": "bun dev" },
+      { "role": "svc:watchdog","cwd": "atlas-watchdog",  "cmd": "bun dev" },
+      { "role": "svc:picker",  "cwd": "atlas-picker",    "cmd": "just check", "autoLaunch": false }
+    ]
+  },
+
+  "pimpelmees": {
+    "base": "multi-stack/pimpelmees",
+    "layout": "grid",
+    "tabs": [
+      { "role": "code",         "cwd": ".",                "claudeResume": true },
+      { "role": "svc:wallgen",  "cwd": "wallgen",          "cmd": "just serve" },
+      { "role": "svc:webui",    "cwd": "wallgen-webui",    "cmd": "bun dev" },
+      { "role": "logs",         "cwd": ".",                "cmd": "tail -F wallgen/logs/*.log", "autoLaunch": false }
+    ]
+  },
+
+  "remotevr": {
+    "base": "multi-stack/remotevr",
+    "layout": "grid",
+    "tabs": [
+      { "role": "code",              "cwd": ".",                            "claudeResume": true },
+      { "role": "svc:service",       "cwd": "crates/rvr-service",           "cmd": "cargo run" },
+      { "role": "svc:runtime",       "cwd": "crates/rvr-runtime-openxr",    "cmd": "cargo build", "autoLaunch": false },
+      { "role": "svc:desktop",       "cwd": "apps/desktop-ui",              "cmd": "bun tauri dev" }
+    ]
+  }
+}
