@@ -8,6 +8,7 @@
 #        ./install-skill.sh --codex --all          Install all to Codex
 #        ./install-skill.sh --both --all           Install all to both
 #        ./install-skill.sh --validate --all       Check descriptions
+#        ./install-skill.sh --budget               Check aggregate token budget
 #        ./install-skill.sh --list                 List available skills
 
 set -e
@@ -124,6 +125,12 @@ get_target_message() {
         echo "Claude Code"
     fi
 }
+
+# Dispatch --budget before the generic flag parser (passes remaining args through)
+if [ "$1" == "--budget" ]; then
+    shift
+    exec python3 "$SCRIPT_DIR/validate-context-budget.py" "$@"
+fi
 
 # Parse flags
 while [[ "$1" == --* ]]; do
