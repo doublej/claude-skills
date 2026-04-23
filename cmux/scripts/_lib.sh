@@ -45,11 +45,14 @@ _validate_role() {
 }
 
 # _encode_cwd_for_claude <abs-path>
-# Map an absolute path to the directory name under ~/.claude/projects/
-# ('/' → '-'). Used to locate per-cwd session history.
+# Map an absolute path to the directory name under ~/.claude/projects/.
+# Claude replaces both '/' and '_' with '-' — matches session-search's
+# encode_project_path in scripts/session_search.py.
 _encode_cwd_for_claude() {
   local p="$1"
-  printf '%s' "${p//\//-}"
+  p="${p//\//-}"
+  p="${p//_/-}"
+  printf '%s' "$p"
 }
 
 # _workspace_by_name <name>
