@@ -56,11 +56,15 @@ Control iTerm2 via the `it2` CLI.
 
 > **Critical**: after `split`/`vsplit`, the new pane gets a session ID but `send`/`read` without `-s` still target the **active** session. You MUST use `-s <id>` to target the new pane.
 
+> **Critical**: `split`/`vsplit` without `-s` targets the **currently focused** window, which may differ from the window running this script. Always pass the calling session's ID.
+
 ```bash
 # vsplit returns the new session ID — capture it
-SID=$(it2 vsplit 2>&1 | grep -oE '[A-F0-9-]{36}')
+SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
 it2 run -s "$SID" "echo hello"
 ```
+
+`$ITERM_SESSION_ID` is set automatically by iTerm2 shell integration in each shell session. It identifies the **calling** session, so the split always opens next to it regardless of which window is focused.
 
 ### Submitting commands
 
@@ -157,12 +161,12 @@ it2 session read -s "$SID" -n 200
 When asked to "open a pane" or "run something next to this session", combine iTerm2 (visibility) with tmux (reliability):
 
 ```bash
-# Split, capture new session ID, start tmux
-SID=$(it2 vsplit 2>&1 | grep -oE '[A-F0-9-]{36}')
-it2 run -s "$SID" "tmux new -s dev-server"
+# Split next to the calling session (not the focused window), inherit working dir
+SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
+it2 run -s "$SID" "cd $(pwd) && tmux new -s dev-server"
 
 # All further commands go through tmux (reliable, no focus issues)
-tmux send-keys -t dev-server:0.0 -l -- 'cd ~/project && npm run dev'
+tmux send-keys -t dev-server:0.0 -l -- 'npm run dev'
 tmux send-keys -t dev-server:0.0 Enter
 ```
 
@@ -173,13 +177,12 @@ Or use the tmux skill's `tmux-init.sh` which does this workflow automatically.
 For simple, non-interactive commands where tmux is overkill:
 
 ```bash
-# Split and run a command
-SID=$(it2 vsplit 2>&1 | grep -oE '[A-F0-9-]{36}')
-it2 run -s "$SID" "tail -f /var/log/app.log"
-
-# Or run in an existing session:
-it2 run -s "$SID" "echo hello"
+# Split next to the calling session, start in the same working directory
+SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
+it2 run -s "$SID" "cd $(pwd) && tail -f /var/log/app.log"
 ```
+
+> `$(pwd)` captures the calling process's working directory. If the script runs from a different dir than intended, pass an explicit path instead.
 
 ## Workflow: Workspace with saved layout
 
