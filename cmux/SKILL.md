@@ -46,7 +46,9 @@ creation only happens when the lookup misses. That's the entire skill.
 - **Role enum**: `code` (editor), `dev` (watcher/server), `logs`
   (tails/journals), `tests` (watcher), `browser` (cmux browser surface),
   `shell` (scratch), `build` (compiler output), `db` (repl), `notes`
-  (scratch docs), `agent:<id>` (a Claude Code or similar subagent).
+  (scratch docs), `agent:<id>` (a Claude Code or similar subagent),
+  `svc:<slug>` (a named dev service inside a multi-component workspace —
+  `svc:backend`, `svc:webui`, etc.).
 
 If a role you want isn't in the enum, pick `shell` — don't invent new
 role names unless you add them to `scripts/_lib.sh` CMUX_ROLES.
@@ -142,6 +144,21 @@ cmux refresh-surfaces --surface "$SID"
 
 ## Workflow 1 — open or attach to a project
 
+**Preferred entry point:** one command spins the whole workspace from
+either a `.cmux/workspace.json` in the repo, a bundled ecosystem spec,
+or atlas-derived defaults — and can resume the last Claude Code session:
+
+```bash
+./scripts/cmux-workspace.sh "$(basename "$PWD")" --resume-claude
+```
+
+Resolution order: `<project>/.cmux/workspace.json` → `references/ecosystems.json`
+→ atlas API (`localhost:47891/api/projects`) → minimal fallback. Use
+`--dry-run` to preview the plan without touching cmux. Full schema +
+flags in `references/workspace-spec.md`.
+
+If you need finer control, compose the primitives directly:
+
 ```bash
 # Idempotent: reuses an existing workspace, only creates if missing.
 ./scripts/cmux-project.sh "$(basename "$PWD")" code-dev-logs
@@ -204,6 +221,9 @@ restore rebuilds canonical tabs, not pixel-perfect geometry.
 
 ## References
 
+- `references/workspace-spec.md` — `.cmux/workspace.json` schema,
+  resolution order, Claude session resume rules (read this before
+  hand-authoring a spec or tweaking `ecosystems.json`).
 - `references/browser.md` — cmux browser verbs (navigate, find, click,
   fill, read, wait, eval) with ref-invalidation rules.
 - `references/layouts.md` — the four canonical `cmux.json` templates
