@@ -40,7 +40,7 @@ If a seed comes back depressing despite a non-elegiac register, the failure is a
 | Generic NOT-list ("no clichés, no AI look"). | Closes nothing. Lazy paths remain open. | Domain-specific NOT-list: *no Utrecht skyline, no Dom tower, no heraldic shield, no anthropomorphised containers.* |
 | Single mega-prompt for all N images. | Image models compress the joke; the illustrator picks one. | Per-image specs — concept, caption, thumbnail test. |
 | Five images that each try to say everything. | The set becomes one redundant image, repeated. | One thesis per image. The set is the argument; each image is one beat. |
-| Captions only in source language *or* only in English. | Source-language only locks out wider audience. English only loses case-specific weight. | Bilingual when domain-relevant; declare register explicitly. |
+| Captions or fragments composed in the source's original language. | This skill is English-only. Composing in another language fragments the deliverable's audience and complicates downstream image-gen prompting. | All composition in English. A non-English term may appear inline as a single quoted proper-noun or technical term, glossed in English on first use. |
 | Tone tags as parallel list ("warm, witty, critical"). | No priority. Image models average the list. | Hierarchy: *warm first, witty second, critical third.* |
 | No caption per image. | Composition floats. Reader has no anchor. | Each image carries a caption in serif italic with a literary point. |
 | No thumbnail test. | Image that needs full size to read fails on web. | Each spec includes silhouette test + reward-detail test. |

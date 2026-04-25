@@ -92,7 +92,7 @@ Format as a dated almanac page. Weather, sunrise/sunset, the day's small observa
 A bullet list of what is on site, presences and absences both, written with no editorial. The deadpan IS the joke. End with one flat line that lands the absurdity, *e.g. All elements have been ratified except the elements.*
 
 ### 2 — Glossary (sardonic)
-A small dictionary. For each term: 1. formal definition. 2. sardonic-but-not-bitter definition that lands the lived experience. *afspraak — n. 1. an agreement. 2. a state of mind held by one of the parties.* The second definitions are short and sharp.
+A small dictionary. For each term: 1. formal definition. 2. sardonic-but-not-bitter definition that lands the lived experience. *appointment — n. 1. an agreement between two parties. 2. a state of mind held exclusively by one of them.* The second definitions are short and sharp.
 
 ### 3 — Memo (parody)
 A pitch-perfect parody memo, header and all. *To: <department>. From: <sender>. Re: <subject>. Date: [unspecified].* Drained of content; the form is the joke. 4–6 numbered paragraphs each ending in `[deferred]`, `[noted]`, `[under consideration]`.
@@ -110,7 +110,7 @@ Object speaks first person about its job. Tone: a worker explaining the role to 
 Numbered list — 10 to 14 steps — for performing the role the source forces on the user. Imperative second person. Steps build from naïve to seasoned. End with two or three lines that name the role plainly.
 
 ### 8 — Brochure
-Marketing copy for the situation as if it were a product. *Ondergrondse Containers — Now With Forty-Plus Daily Impacts!* Headline, three feature bullets, a fine-print disclaimer. Don't break the deadpan.
+Marketing copy for the situation as if it were a product. *Underground Containers — Now With Forty-Plus Daily Impacts!* Headline, three feature bullets, a fine-print disclaimer. Don't break the deadpan.
 
 ### 9 — Postscript
 A one-paragraph postscript appended to a longer (unseen) document. Begins *P.S. —* and contains the one observation the document forgot. The forgotten observation is the load-bearing line of the entire piece.
@@ -185,7 +185,7 @@ Bureaucratic form drained of content; closes with three flat institutional final
 Object speaks first person; lonely, tired, addressed to the one person who has left.
 
 ### 4 — Liturgy
-Call-and-response prayer form. Six pairs. Closes *Amen, namens de direct belanghebbenden* (or domain analogue).
+Call-and-response prayer form. Six pairs. Closes with one italic English line: *Amen, on behalf of the directly affected.* Always written in English regardless of source language.
 
 ### 5 — Glossary (wounded)
 Stacked definitions, second definition cuts.

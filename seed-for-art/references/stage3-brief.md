@@ -89,7 +89,7 @@ One block per image. Heading: `### NN · <KIND> · *<title in the source domain'
 Each block contains:
 
 1. **Concept paragraph** (3–6 sentences) — describe the composition: subject, framing, palette deployment, geometric cue placement, *what makes the image land*. Concrete nouns, never adjectives. State the joke or the thesis the image carries — *one thesis per image*.
-2. **Caption** in serif italic, set in the article underneath the image. The caption is in the *source's native language* (or bilingual if that is the seed's register). It anchors the image to a literary point.
+2. **Caption** in serif italic, set in the article underneath the image. **Always written in English** regardless of source language. It anchors the image to a literary point.
 3. **Thumbnail-readability note** — one sentence: "The image should work at thumbnail (<silhouette description>) and at full size (<the joke or detail that rewards close reading>)."
 
 Each image carries **one thesis**. If a spec says "this image shows X *and also* Y", split into two images or cut Y.

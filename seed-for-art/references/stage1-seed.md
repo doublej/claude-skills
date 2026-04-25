@@ -100,7 +100,7 @@ purpose: Compressed philosophical fragments drawn from the <topic> material, int
 - Each fragment **must survive being read alone**. No fragment should require its neighbours.
 - **No names. No dates. No quantities** — except where a quantity becomes rhythmic (e.g. "five years", "157 e-mails"). When in doubt, cut the number.
 - **Pure metaphor or pure observation.** No argument, no chronology, no list of grievances, no call to action.
-- **Bilingual when the native language carries case-specific weight.** Format the non-English line as italics: `*De rode lijnen betekenen niets…*`.
+- **English only.** Compose every fragment in English regardless of the source's original language. A non-English proper noun or technical term may appear inline as a quotation, but never as a new composed sentence. If a phrase from the source is load-bearing, translate it and note the original term in parentheses on first use only.
 - One fragment per logical thesis. If a fragment contains "and also", split.
 
 ### Example fragments — same source, three registers

@@ -28,6 +28,8 @@ Read the three files in order. Notice:
 
 - **Stage 1's discipline.** No names, no dates. The municipality is "a rumour"; the citizen is "the nervous system". Eleven fragments, ten motifs, eight forms.
 - **Stage 2's range.** Inventory is dry; liturgy is liturgical; the container monologue speaks first-person from a hole in the ground. None of the nine sounds like another.
-- **Stage 3's rigour.** Hex-coded palette (`#E30613` Utrecht red, `#E3B43B` daylight ochre, `#F4EFE4` cream stock, `#1A1A1A` ink, `#A67B5B` brick). Eight named artists with weighting (*Gauld before Gorey*). Seven domain-specific NOTs ("no Dom tower, no heraldic shield, no anthropomorphised containers"). Per-image captions in Dutch. Thumbnail test on every image. A closing note granting permission to refuse.
+- **Stage 3's rigour.** Hex-coded palette (`#E30613` Utrecht red, `#E3B43B` daylight ochre, `#F4EFE4` cream stock, `#1A1A1A` ink, `#A67B5B` brick). Eight named artists with weighting (*Gauld before Gorey*). Seven domain-specific NOTs ("no Dom tower, no heraldic shield, no anthropomorphised containers"). Thumbnail test on every image. A closing note granting permission to refuse.
+
+> **Note on the captions.** The canonical run shipped Dutch captions because the article was a Dutch-language web essay. **The skill in its current form produces English captions only.** If you re-run on the same source today, the brief will deliver English captions and the per-image specs will match.
 
 The PNGs are visible evidence the brief worked. When in doubt about the shape of your own output, open both the brief and the illustrations side-by-side and check: *did I match the discipline?*

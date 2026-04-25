@@ -37,9 +37,9 @@ Template:
 >
 > **Medium ambition.** What is the eventual artwork? *— A print series wants different motifs than a sound piece or a single magazine illustration. Shapes what stage 1 reaches for.*
 >
-> **Native language.** Does any non-English language carry case-specific weight? *— Bilingual fragments land harder when the institutional vocabulary is in Dutch, German, etc. English-only is fine if the source is English-only.*
->
 > **Stages.** Run all three, or just one? *— Default is all three with confirmation between each. Pick one stage if the earlier output already exists.*
+
+**Output language: English only.** All fragments, variations, captions, and brief sections are written in English regardless of the source's original language. Quote a non-English term inline only when it is a *proper noun or unique technical term* with no English equivalent (and even then, gloss it in English). Never compose new sentences in another language.
 
 Skip a question if you can already infer the answer. If the user has provided no source at all, the source question is the only one that matters until they answer it.
 
