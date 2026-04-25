@@ -65,8 +65,8 @@ Always read `references/anti-patterns.md` once per session. The failure modes th
 
 ## Stage outputs — file conventions
 
+- **Save location: always `<projectroot>/tmp/`**. Create the directory if it does not exist. Never write inside any `.claude/` directory or other config/state path. If `<projectroot>` is ambiguous (no git root, no obvious project), use the current working directory's `tmp/`.
 - File naming: `<topic-slug>-seed-for-art.md`, `-variations.md`, `-editorial.md`. Slug uses kebab-case.
-- Default save location: same dir as source material if the source is a file; otherwise ask.
 - Frontmatter on each: `title`, `author`, `date` (today, `YYYY-MM-DD`), `status: seed`, `tags`, `purpose`.
 
 ## What this skill is NOT
