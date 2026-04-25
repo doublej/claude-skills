@@ -5,7 +5,7 @@ description: "VR streaming foveation: AADT, NVENC/AMF params, eye tracking, arti
 
 # Foveated Encoding for VR Streaming
 
-## Key Concepts
+<key_concepts>
 
 **Foveated encoding != foveated rendering.** They are complementary:
 
@@ -116,6 +116,7 @@ Human vision has three relevant zones:
 - `center_size` controls fovea + parafovea coverage
 - `edge_ratio` controls peripheral compression aggressiveness
 - At typical HMD FoV (~90 deg per eye), `center_size_x = 0.45` covers ~40 deg -- well beyond fovea
+</key_concepts>
 
 ## Eye Tracking Integration
 

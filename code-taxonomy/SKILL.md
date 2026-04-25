@@ -44,8 +44,9 @@ MAPPER="{SKILL_DIR}/../codebase-mapper/scripts/repomap.sh"
 ```
 
 If available, use PageRank to prioritise high-ranked files in the analysis.
+</phase_1_scope>
 
-## Phase 2: Analysis
+<phase_2_analysis>
 
 Claude reads the tree + quality data and applies semantic judgment. The scanner flags mechanical issues; Claude evaluates whether they're real problems in context.
 
@@ -86,8 +87,9 @@ For each violation, use Grep to count references across the codebase:
 ```
 Grep: pattern="\bsymbol_name\b" in project root
 ```
+</phase_2_analysis>
 
-## Phase 3: Review
+<phase_3_review>
 
 Present findings as an annotated tree grouped by issue type.
 
@@ -129,8 +131,9 @@ Present findings as an annotated tree grouped by issue type.
 ```bash
 python3 {SKILL_DIR}/scripts/scan_naming.py <project-root> --json --tree --allowlist "API,URL,ID"
 ```
+</phase_3_review>
 
-## Phase 4: Plan
+<phase_4_plan>
 
 Present rename proposals to the user based on selected categories.
 
@@ -172,8 +175,9 @@ Present rename proposals to the user based on selected categories.
 "Batch 1: src/utils/ — 8 style renames, 23 refs (low risk)"
 "Batch 2: src/api/ — 5 verb renames: fetch→get, 12 refs (medium risk)"
 ```
+</phase_4_plan>
 
-## Phase 5: Execute
+<phase_5_execute>
 
 Apply renames in safe order with quality gates.
 
@@ -231,8 +235,9 @@ File renames are the most impactful — always executed last in their own batch:
    c. `git mv old_path new_path`
 2. Quality gate as above
 3. Commit: `taxonomy: rename files to {style}`
+</phase_5_execute>
 
-## Phase 6: Verify
+<phase_6_verify>
 
 After all batches:
 
@@ -249,8 +254,9 @@ Code Taxonomy complete:
 ```
 
 3. If any batches were reverted, list them with failure reasons so the user can address manually.
+</phase_6_verify>
 
-## Reference Files
-
+<reference_files>
 - [Naming Conventions](references/naming-conventions.md) — per-language canonical conventions
 - [Rename Strategies](references/rename-strategies.md) — safe rename patterns, verb consolidation, pitfalls, rollback
+</reference_files>
