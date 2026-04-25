@@ -1,7 +1,6 @@
 ---
 name: seed-for-art
-description: "Distill any source — dossier, project, life event, codebase, essay — into a 3-stage art seed: philosophical fragments, formal variations, editorial illustration brief. Triggers on 'philosophical seed', 'image prompt from dossier', 'editorial illustration brief', 'art seed', 'turn this project into images', 'seed for art'."
-arguments: "stage: Literal['1', '2', '3', 'all'] = 'all'"
+description: "Distill any source into a 3-stage art seed: philosophical fragments, formal variations, editorial illustration brief. Triggers on philosophical seed, art seed, editorial illustration brief, image prompt from dossier, turn this project into images."
 ---
 
 # Seed for Art
