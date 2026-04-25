@@ -8,7 +8,7 @@ allowed-tools: [Bash, Read, Write, Glob, Grep, Edit]
 
 Automates creation of beautiful, animated GitHub Pages documentation sites using proven patterns from successful open-source projects.
 
-## When to Use This Skill
+<when_to_use>
 
 Use this skill when you need to:
 - Create documentation sites for GitHub repositories
@@ -20,16 +20,18 @@ Use this skill when you need to:
 - Complex documentation with multiple pages (this creates single-page sites)
 - Projects requiring dark mode toggle (uses light theme only)
 - Sites needing custom domains or complex routing
+</when_to_use>
 
-## Workflow Overview
+<workflow_overview>
 
 This is a **low degree of freedom** skill - follow the exact proven structure and design patterns. The workflow is fully automated with minimal user intervention.
 
 ```
 ANALYZE → SCAFFOLD → DESIGN → CONTENT → ANIMATE → DEPLOY → VERIFY
 ```
+</workflow_overview>
 
-## Step 1: ANALYZE - Extract Project Information
+<step_1_analyze>
 
 Automatically extract all information from the project. Make intelligent defaults - don't ask questions.
 
@@ -74,8 +76,9 @@ If information is missing:
 - No installation command? Generate git-based installer (e.g. `bun install github:owner/repo`). Only use registry installs (npm/PyPI/crates) if the package is confirmed published there.
 - No repository URL? Use GitHub API to find it from package name
 - No description? Use package.json description
+</step_1_analyze>
 
-## Step 2: SCAFFOLD - Create Documentation Structure
+<step_2_scaffold>
 
 ### 2.1 Create Directory Structure
 
@@ -183,8 +186,9 @@ Create `docs/tsconfig.json`:
 cd docs
 bun install
 ```
+</step_2_scaffold>
 
-## Step 3: DESIGN - Apply Aesthetic Patterns
+<step_3_design>
 
 ### 3.1 Design System Specification
 
@@ -324,8 +328,9 @@ code, pre {
   }
 }
 ```
+</step_3_design>
 
-## Step 4: CONTENT - Generate Documentation Sections
+<step_4_content>
 
 Create `docs/src/routes/+page.svelte` with these sections:
 
@@ -464,8 +469,9 @@ Create `docs/src/routes/+page.svelte` with these sections:
   </div>
 </footer>
 ```
+</step_4_content>
 
-## Step 5: ANIMATE - Add Entrance Animations
+<step_5_animate>
 
 ### 5.1 Animation Timing Guidelines
 
@@ -501,8 +507,9 @@ Respect prefers-reduced-motion (already in global.css):
   }
 }
 ```
+</step_5_animate>
 
-## Step 6: DEPLOY - Configure GitHub Actions
+<step_6_deploy>
 
 ### 6.1 Create Deployment Workflow
 
@@ -586,8 +593,9 @@ Copy workflow to project root:
 mkdir -p ../.github/workflows
 cp docs/.github/workflows/deploy-docs.yml ../.github/workflows/
 ```
+</step_6_deploy>
 
-## Step 7: VERIFY - Build, Test, and Validate
+<step_7_verify>
 
 ### 7.1 Build the Site
 
@@ -614,6 +622,7 @@ Use this checklist from usability-fundamentals:
 - [ ] Sufficient color contrast (WCAG AA minimum)
 - [ ] Keyboard navigation works (tab through all interactive elements)
 - [ ] Reduced-motion support (prefers-reduced-motion media query)
+</step_7_verify>
 - [ ] Semantic HTML structure (header, main, section, footer)
 - [ ] Responsive at 375px, 768px, 1440px viewports
 

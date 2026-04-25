@@ -7,7 +7,7 @@ description: "Distinctive, polished web UIs that avoid generic AI aesthetics"
 
 Creates distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implements real working code with exceptional attention to aesthetic details and creative choices.
 
-## Design Thinking
+<design_thinking>
 
 Before coding, understand context and commit to a BOLD aesthetic direction:
 
@@ -17,8 +17,9 @@ Before coding, understand context and commit to a BOLD aesthetic direction:
 - **Differentiation**: What makes this UNFORGETTABLE?
 
 **CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+</design_thinking>
 
-## Frontend Aesthetics Guidelines
+<aesthetics_guidelines>
 
 ### Typography
 Choose fonts that are beautiful, unique, and interesting. Opt for distinctive choices - unexpected, characterful font selections. Pair a distinctive display font with a refined body font.
@@ -58,11 +59,13 @@ NEVER use generic AI-generated aesthetics:
 - Cookie-cutter design lacking context-specific character
 
 Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics.
+</aesthetics_guidelines>
 
-## Implementation Complexity
+<implementation>
 
 Match implementation complexity to the aesthetic vision:
 - **Maximalist designs**: Elaborate code with extensive animations and effects
 - **Minimalist designs**: Restraint, precision, careful attention to spacing, typography, and subtle details
 
 Elegance comes from executing the vision well.
+</implementation>
