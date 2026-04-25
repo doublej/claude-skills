@@ -2,6 +2,25 @@
 
 The AI-slop failure modes this skill exists to close off. Read once per session, before stage 1.
 
+## The largest failure mode — melancholy by default
+
+Condensation is structurally elegiac. When you strip names, dates, and argument from any source, the surviving grammar is "object + condition", which reads as *what remains* and *what does not arrive*. Without active counter-pressure, every seed drifts into lament — even on neutral, light, or technical source material.
+
+**The canonical ORAC run is not a model of "always be elegiac".** It is a model of *elegiac source rendered into a warm brief*. The lift from dirge to wit happened because stage 3 actively pushed back. This skill is structured so that the pushback starts at stage 1.
+
+Counter-pressure rules:
+
+| Rule | Why |
+|------|-----|
+| Pick the register in step 1 of the workflow, before any drafting. | Drift sets in within the first three fragments. |
+| Default to `warm`. Choose `elegiac` only when the work IS a lament. | The default of any condensation engine is mournful; you have to opt out actively. |
+| Presence/absence split: ≥40 % of fragments inventory what is *here*. | Single-mode lists of losses are how seeds collapse into elegy. |
+| Use the verb whitelist for the chosen register. | Verbs do most of the affect work. *Decays / drifts / removes* lock in mourning regardless of subject. |
+| Banned vocabulary by default: ghost, lament, mourn, void, decay, ruin, hollow, withered, fading, all that remains. | These words feel literary; they do the dour-default's lifting. Replace with concrete observation in the chosen register. |
+| Form encodes affect. A liturgy IS funereal-pattern; missing-persons IS elegy-form. Pick the cassette before drafting. | You cannot save a liturgy with cheerful words; the form will dominate. |
+
+If a seed comes back depressing despite a non-elegiac register, the failure is almost always one of: (1) absence-fragments dominate, (2) banned vocabulary leaked through, or (3) a stage-2 form was inherited from the elegiac cassette by accident.
+
 ## Slop in fragments and motifs
 
 | Avoid | Why | Instead |

@@ -18,6 +18,12 @@ The skill's reference implementation. Use this when a user asks "what does a fin
 
 This was the canonical run. Source: a 5-year municipal complaint dossier on the Volkerakstraat 7 case in Utrecht — 157 e-mails, multiple stakeholders, a removed hedge, an unbuilt fence, two underground waste containers, one resident relocated to 10,000 km. Stage 1 was produced from the prompt *"now highly philosophical, as a seed for art"* run on the assembled dossier. Stages 2 and 3 followed directly. Stage 3 was handed to an image-gen tool and produced 5 finished editorial PNGs the user describes as "amazing".
 
+## The lesson is not "always be elegiac"
+
+The canonical run is **elegiac source rendered into a warm brief**. Stages 1 and 2 lean dour because the dossier itself was a complaint; stage 3 actively pushes back ("warm first, witty second, critical third — Gauld before Gorey — the medicine against dourness"). The published illustrations are warm and wry, not mournful, *despite* the source.
+
+The skill now does that lift earlier. Picking `warm` (default) at the clarify step makes stages 1 and 2 affirmatively warm rather than salvaged-from-elegiac at stage 3. If you want the canonical run's output shape on heavy material, pick `wry` for stage 1 and let the brief's warmth land on already-non-mournful seed material.
+
 Read the three files in order. Notice:
 
 - **Stage 1's discipline.** No names, no dates. The municipality is "a rumour"; the citizen is "the nervous system". Eleven fragments, ten motifs, eight forms.

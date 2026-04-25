@@ -1,12 +1,52 @@
 # Stage 1 — Seed (philosophical fragments)
 
-Output: a single markdown file titled `<topic-slug>-seed-for-art.md`.
+Output: a single markdown file titled `<topic-slug>-seed-for-art.md`, saved to `<projectroot>/tmp/`.
 
 ## Purpose
 
-Strip the source of argument, chronology, and proper nouns. Leave only the metaphors that *survive being read alone*. This file is the seed every later stage feeds from.
+Strip the source of argument, chronology, and proper nouns. Leave only the metaphors that *survive being read alone*.
 
-It is **not** the letter, the report, the plan, or the timeline. It does not argue. It condenses.
+It is **not** the letter, the report, the plan, or the timeline.
+
+## Tone register — required input
+
+Stage 1 is dominated by tone register. The user picks one in the clarify step; everything below switches on it.
+
+| Register | When to use | Default mood | Banned by default |
+|----------|-------------|--------------|-------------------|
+| `warm` | Default. Most material — including heavy material — lands better here. | Curious, present, attentive, slightly amused. | Lament, ghost vocabulary, funeral imagery. |
+| `wry` | Bureaucratic, institutional, absurd source. | Dry, deadpan, light-touch sardonic. | Sentimentality, declarations of feeling. |
+| `neutral` | Technical, scientific, infrastructural source. Codebases, schemas, processes. | Observational, precise, no editorial. | Metaphor that imports affect. |
+| `playful` | Light source. Hobby, family, celebration, craft. | Buoyant, generous, mischievous. | Critique, complaint, irony at expense of subject. |
+| `clinical` | Medical, legal, evidentiary source where neutrality is the point. | Detached, granular, no figuration. | Anything that reads as opinion. |
+| `elegiac` | When the work *is* a lament — eulogy, loss, witness. | Mournful, withdrawn, reverential. | Cheer, undermining, deflection. |
+
+**Default to `warm` if the user does not pick.** The condensation grammar is structurally elegiac; choosing `warm` is the active choice that prevents drift.
+
+## The melancholy-default trap
+
+When you strip names/dates/argument from any source, the grammar that survives reads as "object + condition" — *the X that remains, the X that does not arrive*. This noticing-of-absence pattern is the default failure mode of this skill. Counter it actively:
+
+1. **Presence/absence split.** At least **40 % of fragments must inventory what is here**, not what is gone. Even on heavy source. The dandelion in the brick gap is the work; the missing fence is decoration.
+2. **Verb register.** Use verbs from the register's whitelist. Avoid the dour-default verbs unless the register is `elegiac`.
+3. **No funeral grammar.** Avoid the rhetorical tics of mourning unless register=elegiac: sentences shaped as "the X for the Y that was…", "the absence of…", "what is left of…", repetition triplets, italicised single-line laments.
+
+### Verb whitelist by register
+
+| Register | Use freely | Avoid |
+|----------|-----------|-------|
+| `warm` | keeps, holds, watches, returns, notices, refuses, names, walks, opens, gathers, learns, repairs, lights, plants, greets | decays, drifts, mourns, ghosts, dissolves, erodes |
+| `wry` | files, drafts, signs, stamps, forwards, schedules, minutes, ratifies, footnotes, asterisks, addends | weeps, laments, hollows, vanishes |
+| `neutral` | runs, returns, accepts, emits, parses, queues, retries, persists, resolves | (no banned list — but no metaphor that imports mood) |
+| `playful` | dances, hums, paints, throws, catches, tries, fails, tries again, wakes, eats | judges, criticises, sighs |
+| `clinical` | observed, recorded, measured, present, absent, indicated, noted | (no banned list — every verb is an observation) |
+| `elegiac` | (full vocabulary unlocked — including the dour-defaults) | — |
+
+### Forbidden vocabulary by default
+
+Unless register=`elegiac`, **do not use** these without the user explicitly invoking them: *ghost, lament, mourn, void, decay, ruin, rumour-as-pejorative, hollow, withered, fading, slow death, what is left of, all that remains*.
+
+These words feel literary; they do most of the dour-default's lifting. Replace with concrete observation in the chosen register.
 
 ## Required structure
 
@@ -16,6 +56,7 @@ title: <Topic> — Seed for art
 author: <user>
 date: <YYYY-MM-DD>
 status: seed
+register: <warm | wry | neutral | playful | clinical | elegiac>
 tags: [<topic>, art, philosophy, seed]
 purpose: Compressed philosophical fragments drawn from the <topic> material, intended as raw material for art — not a letter, not a complaint, not a plan
 ---
@@ -55,69 +96,85 @@ purpose: Compressed philosophical fragments drawn from the <topic> material, int
 ## Fragments — rules
 
 - **8–12 fragments**, separated by `---` rule lines.
-- Each fragment **must survive being read alone**. No fragment should require its neighbours to make sense.
-- **No names. No dates. No quantities** — except where a quantity becomes rhythmic (e.g. "40–100 impacts/day", "five years", "157 e-mails"). When in doubt, cut the number.
-- **Pure metaphor.** No argument, no chronology, no list of grievances, no call to action.
-- **Bilingual when the native language carries case-specific weight.** A Dutch sentence inside an English fragment can be the entire reason a fragment lands. Format Dutch as italics in a separate line: `*De rode lijnen betekenen niets…*`.
-- One fragment per logical thesis — *do not* compound. If a fragment contains "and also", split it.
+- **Presence/absence split:** at least 40 % must be presence-fragments (what is here, what continues, what was found), regardless of register.
+- Each fragment **must survive being read alone**. No fragment should require its neighbours.
+- **No names. No dates. No quantities** — except where a quantity becomes rhythmic (e.g. "five years", "157 e-mails"). When in doubt, cut the number.
+- **Pure metaphor or pure observation.** No argument, no chronology, no list of grievances, no call to action.
+- **Bilingual when the native language carries case-specific weight.** Format the non-English line as italics: `*De rode lijnen betekenen niets…*`.
+- One fragment per logical thesis. If a fragment contains "and also", split.
 
-### What a strong fragment looks like
+### Example fragments — same source, three registers
 
-> The municipality is not a place. It is a rumour that travels between departments, changing on the way.
+Source: a long-running municipal complaint about a street modification.
 
-Concrete subject (municipality). Reframe (rumour). Mechanism (travels, changes). Two sentences. Stops.
+**`warm`:**
+> The drawing is still in the drawer. The drawer is still in the desk. The desk is still mine. I open it on Sundays and read with the calm of a man who has chosen what he keeps.
 
-### What a weak fragment looks like
+**`wry`:**
+> The committee is the room you cannot enter. It is also the room *they* cannot leave. We have this in common — neither of us has been to the meeting.
+
+**`elegiac`:**
+> Trust is a fence that was removed to make room for a fence that will not be built.
+
+Notice how the same situation — kept drawing, distant committee, removed fence — moves from quiet stewardship (warm) to deadpan-companionable (wry) to mourning (elegiac). Choose the register; the words follow.
+
+### Strong fragment shape
+
+- Concrete subject + reframe in 1–2 short sentences. Stops.
+- Names a thing that exists or persists.
+- Avoids stating a feeling outright; lets the image carry the feeling.
+
+### Weak fragment shape
 
 > The system has many problems and citizens often feel unheard, which leads to frustration over time.
 
-Generic. No image. No verb worth keeping. Cut.
+Generic. No image. Cut.
 
 ## Motifs — rules
 
 - **8–10 visual hooks.**
-- Each motif is **a concrete object + an abstract framing**, in noun-and-verb form. Never adjectives.
-- ✓ "the citizen as archivist of a file the archive refuses to open"
-- ✓ "the red line that survives the thing it describes"
+- Each is **a concrete object + an abstract framing**, in noun-and-verb form, *in the chosen register's affect*.
+- ✓ warm: "the resident as Sunday archivist of a file the desk holds for him"
+- ✓ wry: "the committee as a room that meets without minutes, like a band that rehearses without a setlist"
+- ✓ elegiac: "the citizen as archivist of a file the archive refuses to open"
 - ✗ "the bureaucratic feeling" (adjective, no object)
-- ✗ "a sad container" (adjective, no abstract framing)
 
-The motifs are what stage 3 reaches for when assigning images. A weak motif here = a lazy brief later.
+The motifs are what stage 3 reaches for when assigning images. Register-mismatched motifs produce register-mismatched images.
 
 ## Possible forms — rules
 
 - **6–10 media-form pitches.**
-- Each is a one-paragraph specification: *medium, what it contains, how it is encountered*. Not a description of the topic — a description of an artwork.
-- Range across registers: print series, sound, sculpture, film, performance, zine, installation, artist book, score, broadcast, live reading, photograph, sculpture cast, projection.
-- One pitch per form. Do not list two ideas under "Print series" — pick one.
+- Each is a one-paragraph specification: *medium · contents · framing*. Three beats. Stops.
+- Range across registers' affordances (see stage 2 cassettes for register-appropriate forms).
+- Drop forms that fight the chosen register. A `warm` seed should not propose a *funeral procession installation*; an `elegiac` seed should not propose a *birthday card series*.
 
-### Pitch shape
-
-> **Sound installation.** 24 hours of <recurring sound from the source> recorded at <site>, stripped of everything else. A minimalist score written by an invisible ensemble of strangers and a <institutional decision>.
-
-Medium · contents · framing. Three beats. Stops.
-
-## A note on register
+## A note on register — closing line
 
 One sentence at the foot of the file. State what this seed is **not**.
 
 > This is not the letter. The letter is elsewhere — it argues, it asks, it escalates. This piece does not argue. It condenses.
 
-The function of this note: protect the seed from being read as a complaint, a plan, or a brief. It is none of those.
+The function: protect the seed from being read as complaint, plan, or brief.
 
 ## Process — what to do with the source
 
-1. Read or skim the source. Identify 5–8 *recurring concrete objects* (a drawing, a fence, a container, a folder, an empty chair…).
-2. For each object, ask: *what is the institutional or psychological mechanism around it?* That pairing — concrete + mechanism — becomes a motif.
-3. From the motifs, write fragments. Aim for one fragment per motif, then drop the weakest until 8–12 remain.
-4. Forms come last. Browse the motifs and ask: *which medium would carry this?*
+1. Read or skim. Identify 5–8 *recurring concrete objects*.
+2. For each object, ask: **what is here, around it, that continues?** — and only secondarily: what is missing? Counter the absence-bias from the start.
+3. From the objects, draft fragments. Aim for ≥40 % presence-fragments. Drop weakest until 8–12 remain.
+4. Cross-check verb register against the register table. Replace banned verbs.
+5. Motifs come from the surviving fragments.
+6. Forms come last. Browse the motifs and ask: *which medium would carry this in the chosen register?*
 
-## Verification before handing off to stage 2
+## Verification before stage 2
 
+- [ ] Register declared in frontmatter.
 - [ ] ≥8 fragments, each ≤3 sentences, each survives standalone.
-- [ ] No proper nouns (people, departments, addresses) in fragments.
+- [ ] ≥40 % of fragments are presence-mode (what is here / continues / was found).
+- [ ] Verb register matches the chosen register's whitelist.
+- [ ] No banned vocabulary present (unless register=`elegiac`).
+- [ ] No proper nouns in fragments.
 - [ ] All numbers either rhythmic or cut.
-- [ ] ≥8 motifs, each concrete object + abstract framing.
+- [ ] ≥8 motifs, each concrete object + abstract framing, in chosen register.
 - [ ] ≥6 form pitches, each in `medium · contents · framing` shape.
 - [ ] Closing note declares what the seed is *not*.
 

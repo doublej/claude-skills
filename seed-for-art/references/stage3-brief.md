@@ -1,12 +1,24 @@
 # Stage 3 — Editorial illustration brief
 
-Output: a single markdown file titled `<topic-slug>-seed-for-art-editorial.md`.
+Output: a single markdown file titled `<topic-slug>-seed-for-art-editorial.md`, saved to `<projectroot>/tmp/`.
 
 ## Purpose
 
 Convert the seed (stage 1) and the variations (stage 2) into a brief that an external illustrator or image-gen tool can execute without re-reading the source. The brief is **hex-code-rigorous, artist-named, NOT-listed, caption-anchored, thumbnail-tested**.
 
 This is the deliverable handed off. The skill ends with this file saved.
+
+## Register inheritance
+
+The register chosen in stage 1 (warm / wry / neutral / playful / clinical / elegiac) governs three concrete decisions in this brief:
+
+| Decision | warm | wry | neutral | playful | clinical | elegiac |
+|----------|------|-----|---------|---------|----------|---------|
+| Tone hierarchy | warm first, witty second, observant third | witty first, warm second, dry third | observant first, precise second, generous third | warm first, playful second, generous third | precise first, neutral second, complete third | tender first, restrained second, witty third |
+| Medicine accent | a cheerful ochre / butter-yellow / honey, used generously | mustard or salmon, used as one wink per image | none required — clarity is the medicine | rose / mint / sherbet, used freely | none — clinical clarity stands alone | a thin warm note (candle-yellow, terracotta) used once per image to prevent dirge |
+| House-reference weighting | Gauld before Gorey, Favre before Le Tan | Gauld, Steinberg, Niemann; Sempé in reserve | Tibaud Hérem, Adolf Born, Edward Tufte school | Niemann, Jullien, Zagnoli; cheerful palette | scientific illustrators (Crosby, Howard) | Quint Buchholz, Jon McNaught, Kitty Crowther |
+
+If register is `warm` (default), the brief should be **affirmatively warm** — not a frustrated brief that adds an ochre wash on top. The warmth lives in subject, posture, light, and humour, not just in the color.
 
 ## Required sections
 
@@ -55,7 +67,7 @@ Mandatory:
 - **One geometric cue** — a single recognisable visual element drawn from the source's institutional identity (a diagonal, a stamp, a plate-mark, a serial-number rule, a frame ratio). Used once per image.
 - **One typographic hint** — name a serif and a mono. Match register: editorial, not poster.
 
-End with a hierarchy line — the image reads **A first, B second, C third**, where A/B/C are tone properties (e.g. `warm first, witty second, critical third`).
+End with a hierarchy line — the image reads **A first, B second, C third**, drawn from the register inheritance table above.
 
 Hex codes are non-negotiable. Replace every colour name with a hex. `ochre` drifts; `#E3B43B` reproduces.
 

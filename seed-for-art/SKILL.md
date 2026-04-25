@@ -33,15 +33,22 @@ Template:
 >
 > **Source.** What material am I working from? *— I need something to read; a file path, folder, pasted text, or a conversation we've had.*
 >
-> **Medium ambition.** What is the eventual artwork? *— A print series wants different motifs than a sound piece or a single magazine illustration. This shapes what stage 1 reaches for.*
+> **Tone register.** Pick one — *warm* (default), *wry*, *neutral*, *playful*, *clinical*, *elegiac*. *— Condensation defaults to melancholy if I let it. Picking a register early stops the seed from drifting dour. Even heavy source material usually lands better as wry-warm than as lament; choose elegiac only if you want the work to be a dirge.*
 >
-> **Native language.** Does any non-English language carry case-specific weight here? *— Bilingual fragments land harder when the institutional vocabulary is in Dutch, German, etc. English-only is fine if the source is English-only.*
+> **Medium ambition.** What is the eventual artwork? *— A print series wants different motifs than a sound piece or a single magazine illustration. Shapes what stage 1 reaches for.*
+>
+> **Native language.** Does any non-English language carry case-specific weight? *— Bilingual fragments land harder when the institutional vocabulary is in Dutch, German, etc. English-only is fine if the source is English-only.*
 >
 > **Stages.** Run all three, or just one? *— Default is all three with confirmation between each. Pick one stage if the earlier output already exists.*
 
-Skip a question if you can already infer the answer (e.g. user dropped a file path → don't ask about source). Ask only what's genuinely missing.
+Skip a question if you can already infer the answer. If the user has provided no source at all, the source question is the only one that matters until they answer it.
 
-If the user has provided no source at all, the source question is the only one that matters until they answer it. Don't ask the others until you have material to read.
+**Tone register is load-bearing.** Once chosen, it propagates to every stage:
+- Stage 1 fragment rules + verb whitelist switch by register.
+- Stage 2 form cassette switches by register (different nine slots).
+- Stage 3 tone hierarchy + medicine-accent + artist weighting inherits the register.
+
+Default: `warm`. The canonical ORAC run was elegiac source rendered into a *warm* brief — that's the lesson, not "always be elegiac".
 
 ### 2. Stage 1
 Load `references/stage1-seed.md`. Produce fragments file. Show the user; ask if they want to proceed to stage 2.
