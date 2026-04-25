@@ -23,13 +23,39 @@ Stage N depends on stage N-1's output as raw material — but each stage's deliv
 
 ## Workflow
 
-1. **Clarify source.** Ask: what is the topic? Is it a file/folder/conversation? What is the medium ambition (print, sound, sculpture, film, web essay, single image)? What native language(s) carry case-specific weight?
-2. **Stage 1.** Load `references/stage1-seed.md`. Produce fragments file. Confirm with user before stage 2.
-3. **Stage 2.** Load `references/stage2-variations.md`. Produce nine-registers file. Confirm before stage 3.
-4. **Stage 3.** Load `references/stage3-brief.md`. Produce editorial brief. Hand off — do not generate images.
-5. **Hand-off.** State explicitly: "Brief saved at `<path>`. Paste into Midjourney / Imagen / Nano-Banana, or hand to an illustrator. Skill ends here."
+### 1. Clarify the source — and explain why each question matters
 
-Argument resolution:
+Do **not** dump a bare question list. Open with one short paragraph that frames what's about to happen, then ask only what you can't infer. Each question gets a one-line *why*.
+
+Template:
+
+> This skill turns a source — a dossier, project, life event, codebase, essay — into prompts for an external image tool. Three stages: philosophical fragments → nine register-shifted variations → an editorial illustration brief. Before I start, I need a few things:
+>
+> **Source.** What material am I working from? *— I need something to read; a file path, folder, pasted text, or a conversation we've had.*
+>
+> **Medium ambition.** What is the eventual artwork? *— A print series wants different motifs than a sound piece or a single magazine illustration. This shapes what stage 1 reaches for.*
+>
+> **Native language.** Does any non-English language carry case-specific weight here? *— Bilingual fragments land harder when the institutional vocabulary is in Dutch, German, etc. English-only is fine if the source is English-only.*
+>
+> **Stages.** Run all three, or just one? *— Default is all three with confirmation between each. Pick one stage if the earlier output already exists.*
+
+Skip a question if you can already infer the answer (e.g. user dropped a file path → don't ask about source). Ask only what's genuinely missing.
+
+If the user has provided no source at all, the source question is the only one that matters until they answer it. Don't ask the others until you have material to read.
+
+### 2. Stage 1
+Load `references/stage1-seed.md`. Produce fragments file. Show the user; ask if they want to proceed to stage 2.
+
+### 3. Stage 2
+Load `references/stage2-variations.md`. Produce nine-registers file. Show the user; confirm before stage 3.
+
+### 4. Stage 3
+Load `references/stage3-brief.md`. Produce editorial brief. Hand off — do not generate images.
+
+### 5. Hand-off
+State explicitly: "Brief saved at `<path>`. Paste into Midjourney / Imagen / Nano-Banana, or hand to an illustrator. Skill ends here."
+
+### Argument resolution
 - `$ARGUMENTS = 1|2|3` → run only that stage. Source for stage 2/3 must already exist or be supplied.
 - `$ARGUMENTS = all` (default) → run all three with confirmation between each.
 
