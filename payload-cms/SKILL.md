@@ -11,8 +11,6 @@ Scaffold, generate, and manage Payload CMS 3.0 projects. Payload is a fullstack 
 
 <architecture>
 
-## Architecture
-
 Payload 3.0 = Next.js app + Payload config. Key concepts:
 
 - **Collections** — groups of documents with shared schema (posts, users, media)
@@ -26,8 +24,6 @@ Payload 3.0 = Next.js app + Payload config. Key concepts:
 </architecture>
 
 <scaffolding>
-
-## Scaffolding
 
 Run `bash scripts/scaffold.sh` from the skill directory to scaffold a project:
 
@@ -186,8 +182,6 @@ Read `references/fields.md` for full field type reference with all options.
 
 <hooks>
 
-## Hooks
-
 Read `references/hooks-and-access.md` for complete hook/access patterns.
 
 Collection hooks execute in order:
@@ -202,8 +196,6 @@ Key patterns:
 </hooks>
 
 <access_control>
-
-## Access Control
 
 Three levels: Collection → Global → Field. Each returns `boolean` or `Where` query.
 
@@ -226,8 +218,6 @@ read: ({ req: { user } }) => {
 </access_control>
 
 <rest_api>
-
-## REST API
 
 Read `references/rest-api.md` for complete API reference.
 
@@ -287,8 +277,6 @@ DB adapters:
 </config_ref>
 
 <best_practices>
-
-## Best Practices
 
 - One collection per file in `src/collections/`
 - One global per file in `src/globals/`

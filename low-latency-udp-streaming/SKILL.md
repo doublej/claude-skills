@@ -7,8 +7,6 @@ description: "Video-over-UDP for VR: packet sharding, FEC, adaptive bitrate, ALV
 
 <core_constraints>
 
-## Core Constraints
-
 VR streaming has unique requirements that differ from standard video streaming:
 
 | Constraint | Target | Why |
@@ -24,8 +22,6 @@ VR streaming has unique requirements that differ from standard video streaming:
 </core_constraints>
 
 <packet_sharding>
-
-## Packet Sharding
 
 ### Why Shard
 
@@ -130,8 +126,6 @@ Track frame indices. If `current_frame_index > last_complete + 1`, a frame was l
 
 <socket_configuration>
 
-## Socket Configuration
-
 ### Send/Receive Buffers
 
 ```rust
@@ -179,8 +173,6 @@ At 90fps with 200 shards per frame, that's ~55us between shards -- achievable wi
 </socket_configuration>
 
 <network_statistics>
-
-## Network Statistics
 
 ### RTT Measurement
 
@@ -262,8 +254,6 @@ elif loss_rate < 0.5% AND rtt < 15ms AND bandwidth_headroom > 20%:
 </adaptive_bitrate>
 
 <fec_strategies>
-
-## FEC Strategies
 
 See `references/fec-strategies.md` for detailed comparison and implementation patterns.
 
@@ -361,8 +351,6 @@ ConnectionDesc {
 </alvr_integration>
 
 <troubleshooting>
-
-## Troubleshooting
 
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|

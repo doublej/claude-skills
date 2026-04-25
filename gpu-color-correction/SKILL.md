@@ -29,8 +29,6 @@ Encoder
 </processing_chain>
 
 <transfer_functions>
-## Transfer Functions
-
 ### sRGB (SDR)
 
 ```glsl
@@ -161,8 +159,6 @@ vec3 white_balance(vec3 c, float temperature) {
 </color_adjustments>
 
 <sharpening>
-## Sharpening
-
 Apply in perceptual (gamma) space, not linear. Linearize -> adjust -> re-gamma -> sharpen -> continue.
 
 ### Contrast Adaptive Sharpening (CAS)
@@ -212,8 +208,6 @@ vec3 unsharp_mask(sampler2D tex, vec2 uv, vec2 texel_size, float amount) {
 </sharpening>
 
 <color_space_conversion>
-## Color Space Conversion
-
 ### RGB to YUV (NV12 / P010)
 
 Encoder input is typically NV12 (8-bit 4:2:0) or P010 (10-bit 4:2:0).
@@ -551,3 +545,5 @@ Load on demand from `references/`:
 |-----------|----------|
 | `color-shaders.md` | Complete shader implementations for all color ops |
 | `yuv-conversion.md` | NV12/P010 layout, chroma subsampling, encoder integration |
+
+</pitfalls>

@@ -9,8 +9,6 @@ Binary: `/Applications/VLC.app/Contents/MacOS/VLC` (macOS), `vlc` (Linux/Windows
 
 <control_interfaces>
 
-## Control Interfaces
-
 ### 1. AppleScript (macOS — preferred for runtime control)
 
 ```applescript
@@ -145,8 +143,6 @@ RC commands: `play`, `stop`, `pause`, `next`, `prev`, `seek <seconds>`, `volume 
 
 <audio>
 
-## Audio
-
 ```bash
 # Audio output
 $VLC -A auhal file.mp3                 # CoreAudio (macOS default)
@@ -185,8 +181,6 @@ $VLC --audio-replay-gain-mode track file.mp3
 
 <subtitles>
 
-## Subtitles
-
 ```bash
 # External subtitle file
 $VLC --sub-file subs.srt video.mp4
@@ -211,8 +205,6 @@ $VLC --freetype-font "Helvetica Neue" --freetype-rel-fontsize 16 \
 
 <video>
 
-## Video
-
 ```bash
 # Crop and aspect ratio
 $VLC --crop 16:9 video.mp4
@@ -236,8 +228,6 @@ $VLC --snapshot-path ~/Pictures --snapshot-format png --snapshot-prefix "vlc_" v
 </video>
 
 <streaming_transcoding>
-
-## Streaming & Transcoding
 
 ```bash
 # Stream to HTTP
@@ -294,8 +284,6 @@ $VLC --macosx-mediakeys                     # media key support
 </macos_options>
 
 <config_file>
-
-## Config File
 
 Location: `~/Library/Preferences/org.videolan.vlc/vlcrc` (macOS)
 

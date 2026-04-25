@@ -226,3 +226,5 @@ session_search.py extract [scope] [-n limit]
 - Uses `sessions-index.json` for fast multi-project discovery
 - Filters by `projectPath` and `fileMtime` before reading session files
 - Extracts full conversation context (user + assistant + speak MCP dialogs)
+
+</phase_intent>

@@ -26,8 +26,6 @@ description: "VR headset decode: MediaCodec H.264/H.265/AV1, decode-to-texture, 
 
 <core_rules>
 
-## Core Rules
-
 ### API Choice: NDK vs Java
 
 | Factor | NDK (`AMediaCodec`) | Java (`MediaCodec`) |
@@ -219,8 +217,6 @@ Key requirements:
 
 <error_recovery>
 
-## Error Recovery
-
 ### Decoder Stall (No Output)
 
 Common causes:
@@ -272,8 +268,6 @@ AMediaCodec_start(codec);
 
 <troubleshooting>
 
-## Troubleshooting
-
 | Symptom | Likely Cause |
 |---------|--------------|
 | Black frames | Wrong texture type (`sampler2D` instead of `samplerExternalOES`) |
@@ -290,8 +284,6 @@ AMediaCodec_start(codec);
 </troubleshooting>
 
 <deep_reference>
-
-## Deep Reference
 
 Load on demand from `references/`:
 

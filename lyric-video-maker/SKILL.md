@@ -11,8 +11,6 @@ Generates a self-contained HTML5 lyric video. Audio plays in browser; lyrics ani
 
 <input_format>
 
-## Input Format
-
 ```json
 {
   "audio": "path/to/track.mp3",

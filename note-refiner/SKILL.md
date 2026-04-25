@@ -11,8 +11,6 @@ Organize messy note folders into clean, structured markdown — both the file sy
 
 <workflow>
 
-## Workflow
-
 ```
 1. SCAN      → Inventory files, detect types, gather context
 2. ANALYZE   → Map themes, find duplicates, detect gaps
@@ -157,8 +155,6 @@ Use `notify_user` to signal completion.
 </deliver>
 
 <rules>
-
-## Rules
 
 - Never delete files — only rename, move, merge, or restructure
 - Always preserve original content when merging or restructuring

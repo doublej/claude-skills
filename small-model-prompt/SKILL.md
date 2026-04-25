@@ -78,8 +78,6 @@ For 8B models:
 
 For instruction following, low temperature is essential. A perfect prompt at temp=0.8 will underperform a decent prompt at temp=0.1.
 
-</sampling_params>
-
 ### Instruction Following / Chat
 
 ```json

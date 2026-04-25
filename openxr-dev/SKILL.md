@@ -46,8 +46,6 @@ Entry -> Instance -> System -> Session -> {Swapchain, Space, ActionSet}
 
 <session_lifecycle>
 
-## Session Lifecycle
-
 ```
             xrCreateSession
                   |
@@ -87,8 +85,6 @@ case XR_SESSION_STATE_STOPPING:
 
 <frame_loop>
 
-## Frame Loop
-
 ```
 xrWaitFrame -> xrBeginFrame -> [render] -> xrEndFrame
 ```
@@ -126,8 +122,6 @@ if (!frameState.shouldRender) {
 </frame_loop>
 
 <swapchain>
-
-## Swapchain
 
 **Format negotiation** -- the runtime lists supported formats, app picks one:
 
@@ -183,8 +177,6 @@ xrReleaseSwapchainImage(swapchain, NULL);
 
 <reference_spaces>
 
-## Reference Spaces
-
 | Type | Origin | Use |
 |------|--------|-----|
 | `VIEW` | Head-locked | HUDs, reticles |
@@ -200,8 +192,6 @@ Handle `XrEventDataReferenceSpaceChangePending` -- recenter your tracking origin
 </reference_spaces>
 
 <action_system>
-
-## Action System
 
 ```
 ActionSet -> Action -> SuggestedBinding -> InteractionProfile
@@ -250,8 +240,6 @@ xrSuggestInteractionProfileBindings(instance, &suggestion);
 </interaction_profiles>
 
 <composition_layers>
-
-## Composition Layers
 
 Submitted via `xrEndFrame`. Order matters -- first layer is rendered bottommost.
 
@@ -441,8 +429,6 @@ exts.other = available.other.into_iter()
 
 <loader_architecture>
 
-## Loader Architecture
-
 ```
 Application -> OpenXR Loader -> [API Layers] -> Runtime
 ```
@@ -456,8 +442,6 @@ Application -> OpenXR Loader -> [API Layers] -> Runtime
 </loader_architecture>
 
 <deep_reference>
-
-## Deep Reference
 
 Load on demand from `references/`:
 

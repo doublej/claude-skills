@@ -26,8 +26,6 @@ description: "Stream XR tracking over network: hand/face/body/eye poses, compres
 
 <hand_tracking>
 
-## Hand Tracking
-
 ### Extension Setup
 
 Request `XR_EXT_hand_tracking` and create trackers for each hand:
@@ -81,8 +79,6 @@ For each hand per frame, forward:
 
 <face_tracking>
 
-## Face Tracking
-
 ### Extension Setup (Meta)
 
 ```c
@@ -127,8 +123,6 @@ The 70 FB blend shapes are a superset of Apple's 52 ARKit blend shapes. For cros
 
 <body_tracking>
 
-## Body Tracking
-
 ### Full Body (XR_META_body_tracking)
 
 70 joints covering root through fingertips and toes. Requires headset + controllers; no external sensors.
@@ -168,8 +162,6 @@ Full joint index table: see `references/body-joints.md`.
 </body_tracking>
 
 <eye_tracking>
-
-## Eye Tracking
 
 ### Gaze Interaction (XR_EXT_eye_gaze_interaction)
 

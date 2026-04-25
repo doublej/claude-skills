@@ -301,8 +301,6 @@ doc.layers[0].name = "Updated";
 </orchestration>
 
 <notes>
-## Notes
-
 - Always use **absolute paths** in scripts — relative paths resolve against the PS app bundle, not your cwd
 - `app.activeDocument` is the frontmost open document; open documents explicitly with `app.open(new File(...))`
 - ExtendScript is synchronous — no `await` needed, but Photoshop blocks while running

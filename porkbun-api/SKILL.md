@@ -8,8 +8,6 @@ description: "Domain and DNS management: records, nameservers, SSL, URL forwardi
 Manage domains and DNS through the Porkbun API.
 
 <setup>
-## Setup
-
 Set environment variables:
 ```bash
 export PORKBUN_API_KEY="pk1_..."
@@ -66,8 +64,6 @@ uv run python scripts/porkbun.py pricing
 </cli>
 
 <common_tasks>
-## Common Tasks
-
 ### Add A Record
 ```python
 import urllib.request, json, os
@@ -149,8 +145,6 @@ data = {
 </dns_types>
 
 <error_handling>
-## Error Handling
-
 - `status: "SUCCESS"` = OK
 - `status: "ERROR"` + `message` = failure reason
 - HTTP 403 = enable API access in Porkbun account settings

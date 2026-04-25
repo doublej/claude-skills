@@ -11,8 +11,6 @@ Hands off to a new Claude session in the skills project, then resumes yours.
 
 <path_resolution>
 
-## Path Resolution
-
 Resolve the skills project root from this skill's install symlink:
 
 ```bash
@@ -24,8 +22,6 @@ Use `$SKILLS_ROOT` for all operations below. Never hardcode paths.
 </path_resolution>
 
 <workflow>
-
-## Workflow
 
 ### 1. Parse arguments
 
@@ -75,8 +71,6 @@ After launching the handoff script, tell the user:
 </workflow>
 
 <rules>
-
-## Rules
 
 - Always resolve `$SKILLS_ROOT` dynamically — never hardcode
 - Never continue after launching the handoff — exit immediately

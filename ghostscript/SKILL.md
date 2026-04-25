@@ -8,8 +8,6 @@ description: Comprehensive Ghostscript command-line reference for PDF/PostScript
 Command-line reference for Ghostscript PDF and PostScript processing.
 
 <when_to_use>
-## When to Use
-
 - Merging or splitting PDF files
 - Compressing/optimizing PDFs for web or print
 - Converting PDF to images (PNG, JPEG, TIFF, PSD)
@@ -22,8 +20,6 @@ Command-line reference for Ghostscript PDF and PostScript processing.
 </when_to_use>
 
 <installation>
-## Installation
-
 ```bash
 # macOS
 brew install ghostscript
@@ -37,8 +33,6 @@ gs --version
 </installation>
 
 <basic_syntax>
-## Basic Syntax
-
 ```bash
 gs [options] [files]
 ```
@@ -60,8 +54,6 @@ gs -dQUIET -sDEVICE=<device> -o <output> <input>
 </basic_syntax>
 
 <common_tasks>
-## Common Tasks
-
 ### Merge PDFs
 
 ```bash
@@ -213,8 +205,6 @@ gs -dBATCH -dNOPAUSE -dQUIET -sDEVICE=inkcov input.pdf
 </quick_reference>
 
 <reference_files>
-## Reference Files
-
 For advanced usage, consult the reference files:
 
 - [command-reference.md](references/command-reference.md) - Password protection, page rotation, N-up printing, custom compression, batch processing, resize/scale, troubleshooting
@@ -237,8 +227,6 @@ For advanced usage, consult the reference files:
 </reference_files>
 
 <documentation>
-## Documentation
-
 - [Ghostscript Docs](https://ghostscript.readthedocs.io/en/latest/Use.html)
 - [pdfwrite Device](https://ghostscript.readthedocs.io/en/latest/VectorDevices.html)
 - [Output Devices](https://ghostscript.readthedocs.io/en/latest/Devices.html)

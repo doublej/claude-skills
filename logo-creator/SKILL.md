@@ -25,8 +25,6 @@ Typography: [none | see Typography Intent block below]
 </preflight>
 
 <logo_types>
-## Logo Types
-
 | Type | When to Use | Example |
 |------|-------------|---------|
 | Wordmark | Brand name IS the identity, distinctive typography | Google, Coca-Cola |
@@ -38,8 +36,6 @@ Typography: [none | see Typography Intent block below]
 </logo_types>
 
 <design_principles>
-## Design Principles
-
 ### Simplicity
 - Reduce to essential forms
 - Must work at 16x16 favicon size
@@ -62,8 +58,6 @@ Typography: [none | see Typography Intent block below]
 </design_principles>
 
 <banned_elements>
-## Banned Elements
-
 These signal lazy design:
 - Swooshes and swoops
 - Generic globes
@@ -111,8 +105,6 @@ Reserve gradients for hero usage only. Logo must work flat.
 </svg_output>
 
 <typography_in_logos>
-## Typography in Logos
-
 Typography is optional. Default to pure geometry unless the brand name IS the identity (wordmark, lettermark, combination).
 
 ### Font Intent
@@ -225,3 +217,5 @@ Deliver:
 4. Usage notes (2-3 lines max)
 
 If user requests Python script, provide generator instead of raw SVG.
+
+</typography_in_logos>

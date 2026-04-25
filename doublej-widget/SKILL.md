@@ -194,5 +194,3 @@ Run `bun run dev` and open http://localhost:5173 to:
 - Copy embed code
 
 </workflows>
-
-<management_ui>

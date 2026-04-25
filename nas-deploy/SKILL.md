@@ -16,8 +16,6 @@ Deploy applications to a QNAP NAS running Caddy.
 
 <when_to_use>
 
-## When to Use
-
 - Deploying static frontend sites to NAS
 - Deploying Node.js/SvelteKit apps to NAS
 - Configuring Caddy for new sites
@@ -25,8 +23,6 @@ Deploy applications to a QNAP NAS running Caddy.
 </when_to_use>
 
 <deployment_types>
-
-## Deployment Types
 
 | Type | Location | Caddy Role | Guide |
 |------|----------|------------|-------|
@@ -78,8 +74,6 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 
 <directory_structure>
 
-## Directory Structure
-
 ```
 /Volumes/Container/caddy/
 ├── etc/
@@ -111,16 +105,12 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 
 <guides>
 
-## Guides
-
 - **[Frontend Guide](guides/frontend.md)** - Static sites (HTML, Vite, etc.)
 - **[Node Guide](guides/node.md)** - Node.js apps with PM2
 
 </guides>
 
 <templates>
-
-## Templates
 
 - `templates/frontend-caddy.caddy` - Caddy config for static sites
 - `templates/node-caddy.caddy` - Caddy reverse proxy config for Node apps

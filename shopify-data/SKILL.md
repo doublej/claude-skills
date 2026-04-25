@@ -9,8 +9,6 @@ Architect product data models using Shopify's native mechanisms correctly.
 
 <four_layers>
 
-## Four Layers
-
 | Layer | Mechanisms | Answers |
 |-------|-----------|---------|
 | **Structure** | Products, options, variants | What is sold? What combinations are purchasable? |
@@ -21,8 +19,6 @@ Architect product data models using Shopify's native mechanisms correctly.
 </four_layers>
 
 <decision_framework>
-
-## Decision Framework
 
 ### "Where should this attribute live?"
 
@@ -92,8 +88,6 @@ Filters unavailable on collections >5000 products or searches >100K results.
 
 <key_constraints>
 
-## Key Constraints
-
 | Mechanism | Limit |
 |-----------|-------|
 | Options per product | 3 |
@@ -110,8 +104,6 @@ Filters unavailable on collections >5000 products or searches >100K results.
 
 <workflow>
 
-## Workflow
-
 1. **Classify** — Assign product category from Shopify taxonomy first
 2. **Structure** — Model purchasable dimensions as options/variants
 3. **Extend** — Category metafields for standardized attrs, custom metafields for the rest
@@ -123,8 +115,6 @@ Filters unavailable on collections >5000 products or searches >100K results.
 </workflow>
 
 <references>
-
-## References
 
 For detailed mechanism descriptions, see `references/mechanisms.md`.
 For common catalog patterns and comparison matrix, see `references/patterns.md`.

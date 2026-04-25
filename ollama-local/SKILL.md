@@ -11,8 +11,6 @@ Interact with local network Ollama instance running Gemma models.
 
 <endpoint>
 
-## Endpoint
-
 ```
 POST http://192.168.178.197:11434/v1/chat/completions
 ```
@@ -22,8 +20,6 @@ Verify: `curl http://192.168.178.197:11434/v1/models`
 </endpoint>
 
 <minimal_request>
-
-## Minimal Request
 
 ```bash
 curl -X POST http://192.168.178.197:11434/v1/chat/completions \
@@ -43,8 +39,6 @@ Response: `data.choices[0].message.content`
 
 <parameters>
 
-## Parameters
-
 | Param | Default | Notes |
 |-------|---------|-------|
 | model | `gemma4-64k:latest` | 64k context |
@@ -56,8 +50,6 @@ Response: `data.choices[0].message.content`
 </parameters>
 
 <typescript_client>
-
-## TypeScript Client
 
 For repeated calls, use or create reusable client:
 
@@ -82,8 +74,6 @@ return choices[0].message.content
 
 <error_handling>
 
-## Error Handling
-
 - Connection refused → Ollama not running
 - 404 → Wrong endpoint (must use `/v1/chat/completions`)
 - Timeout → Model loading or prompt too large
@@ -91,8 +81,6 @@ return choices[0].message.content
 </error_handling>
 
 <when_to_use>
-
-## When to Use
 
 - Summarization of large text
 - Data extraction/structuring

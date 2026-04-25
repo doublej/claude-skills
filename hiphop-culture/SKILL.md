@@ -8,16 +8,12 @@ description: "Analyze tracks: culture context, BPM, lyrics, visual aesthetic syn
 Hip-hop analysis for AI-assisted creative projects. Covers culture context, lyric analysis, BPM math, and visual language.
 
 <culture_context>
-## Culture Context
-
 **Golden Age Hip-Hop (1987-1997)**: DJ Premier, Pete Rock, RZA — boom bap, heavy samples, jazz/soul breakbeats. Lyricism over hooks.
 **East Coast aesthetic**: dark, urban, raw. Graffiti, subway, concrete. Black/grey/gold palette.
 **Gang Starr**: Guru (lyricist) + DJ Premier (producer). "Skills" (2003, The Ownerz) feat. KRS-One. 99 BPM, 3:20.
 </culture_context>
 
 <bpm_timing_math>
-## BPM Timing Math
-
 ```
 beat_interval = 60 / bpm          # seconds per beat
 bar_length = beat_interval * 4    # 4 beats per bar
@@ -36,8 +32,6 @@ Typical verse/hook structure:
 </bpm_timing_math>
 
 <lyric_analysis>
-## Lyric Analysis
-
 Key thematic elements in "Skills" by Gang Starr:
 - "Skills" = craft, mastery, technical excellence
 - "Top rank", "vital" = hierarchy, legitimacy
@@ -61,8 +55,6 @@ Beat markers: flash white on downbeat
 </visual_aesthetic>
 
 <workflow>
-## Workflow
-
 1. Get BPM + duration → calculate beat grid
 2. Map lyrics to timestamps (manual or via whisper transcription)
 3. Identify key words for visual triggers

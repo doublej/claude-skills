@@ -8,8 +8,6 @@ description: "Optimize prompts for GPT-5.1: reasoning modes, tool calling, metap
 Refine and optimize prompts for OpenAI's GPT-5.1 model. This skill helps diagnose prompt issues and apply GPT-5.1-specific best practices.
 
 <when_to_use>
-## When to Use
-
 - Improving existing GPT-5.1 prompts
 - Diagnosing prompt failures or inconsistent outputs
 - Optimizing for specific reasoning modes
@@ -248,8 +246,6 @@ When encountering [SITUATION], respond by [ACTION].
 </template>
 
 <sources>
-## Sources
-
 - [GPT-5.1 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-1_prompting_guide) - OpenAI Cookbook
 - [GPT-5 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5_prompting_guide) - OpenAI Cookbook
 - [Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering) - OpenAI API Docs

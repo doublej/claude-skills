@@ -86,8 +86,6 @@ body {
 
 <dark_mode>
 
-## Dark Mode
-
 ```css
 :root {
   color-scheme: light dark;
@@ -108,8 +106,6 @@ Both the `<meta name="color-scheme">` tag AND the CSS `color-scheme` property ar
 </dark_mode>
 
 <touch_interaction>
-
-## Touch & Interaction
 
 | Rule | Value |
 |------|-------|
@@ -145,8 +141,6 @@ html { scroll-behavior: smooth; }
 
 <forms>
 
-## Forms
-
 Always set `type`, `inputmode`, `autocomplete`, and `enterkeyhint` together:
 
 | Field | type | inputmode | autocomplete | enterkeyhint |
@@ -166,8 +160,6 @@ Disable autocapitalize for usernames/codes: `autocapitalize="off"`.
 </forms>
 
 <fonts>
-
-## Fonts
 
 ```html
 <!-- Self-hosted (preferred) -->
@@ -194,8 +186,6 @@ Key rules:
 
 <responsive_images>
 
-## Responsive Images
-
 ```html
 <picture>
   <source srcset="hero.avif" type="image/avif">
@@ -221,8 +211,6 @@ Key rules:
 </responsive_images>
 
 <pwa_manifest>
-
-## PWA Manifest
 
 Only include if building a PWA or home-screen-installable site.
 

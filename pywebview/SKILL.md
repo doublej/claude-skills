@@ -6,8 +6,6 @@ description: Build native desktop apps with Python backend + HTML/CSS/JS fronten
 # pywebview
 
 <overview>
-## Overview
-
 pywebview wraps a native webview (WinForms+WebView2 / Cocoa+WebKit / GTK+WebKit2 / QT+QtWebEngine) and gives Python full control over the window. No bundled Chromium — small executables. Two-way bridge: call Python from JS, JS from Python, share state.
 
 Use this skill when building or debugging Python desktop apps with web UIs (`webview.create_window`, `webview.start`, `pywebview.api.*`, `js_api`, `expose`, `evaluate_js`, Flask/FastAPI + pywebview).
@@ -42,8 +40,6 @@ Use this skill when building or debugging Python desktop apps with web UIs (`web
 </contract>
 
 <quick_start>
-## Quick start
-
 ```python
 import webview
 webview.create_window('Hello', html='<h1>Hello</h1>')
@@ -181,3 +177,5 @@ webview.start()
 - [ ] Production: `debug=False`?
 - [ ] Server mode: are routes verifying `webview.token`?
 - [ ] Did I name camelCase / snake_case correctly across the bridge?
+
+</quick_start>

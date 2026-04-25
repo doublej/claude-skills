@@ -8,8 +8,6 @@ description: "Python scripting (bpy), MCP integration, 4.x+ asset libraries"
 Assistance for Blender 4.x workflows, Python scripting, asset integration, and MCP operations.
 
 <when_to_use>
-## When to Use
-
 - Inspecting or modifying Blender scenes via MCP
 - Writing Python scripts for Blender automation (bpy)
 - Importing assets from PolyHaven, Sketchfab, Hyper3D, or Hunyuan3D
@@ -17,8 +15,6 @@ Assistance for Blender 4.x workflows, Python scripting, asset integration, and M
 </when_to_use>
 
 <version_info>
-## Version Info
-
 - **Latest Stable**: Blender 5.0 (Nov 2025)
 - **Latest LTS**: Blender 4.5 LTS (Jul 2025)
 - **Recommended**: Blender 4.3+
@@ -111,8 +107,6 @@ bpy.data.objects.remove(obj, do_unlink=True)
 </reference>
 
 <output_formats>
-## Output Formats
-
 | Use Case | Format |
 |----------|--------|
 | Web/Preview | PNG 8-bit |
@@ -122,8 +116,6 @@ bpy.data.objects.remove(obj, do_unlink=True)
 </output_formats>
 
 <reference_files>
-## Reference Files
-
 - [bpy Scripting](references/bpy-scripting.md) - Detailed Python patterns
 - [Async Patterns](references/async-patterns.md) - Avoiding UI freeze
 - [MCP Integration](references/mcp-integration.md) - Asset libraries, AI generation
@@ -144,8 +136,6 @@ bpy.data.objects.remove(obj, do_unlink=True)
 </changes>
 
 <documentation>
-## Documentation
-
 - [Official Blender Python API](https://docs.blender.org/api/current/)
 - [Blender Manual](https://docs.blender.org/manual/en/latest/)
 - [Release Notes](https://developer.blender.org/docs/release_notes/)

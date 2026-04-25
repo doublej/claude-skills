@@ -9,8 +9,6 @@ Write text that says something real, says it clearly, and respects the reader's 
 
 <mode_routing>
 
-## Mode Routing
-
 Detect the mode from the user's request:
 
 | Mode | Trigger | What it does |
@@ -29,8 +27,6 @@ Each mode has a quick and guided path. Default to quick — rewrite immediately 
 </mode_routing>
 
 <blog_mode>
-
-## Blog Mode
 
 ### Workflow
 
@@ -139,8 +135,6 @@ If not, suggest: `bun run _management/promotion-vault/scripts/promote.ts {projec
 
 <message_mode>
 
-## Message Mode
-
 ### Quick Mode
 
 1. Detect target platform
@@ -225,8 +219,6 @@ Before outputting, verify:
 
 <rewrite_mode>
 
-## Rewrite Mode
-
 For text that isn't a blog post, platform message, or Dutch translation. The user just wants cleaner English.
 
 1. Read the input and identify what's wrong (slop, filler, weak structure, passive voice, hedging)
@@ -253,8 +245,6 @@ When the content involves bad news, rejections, complaints, or sensitive topics:
 </rewrite_mode>
 
 <dutch_mode>
-
-## Dutch Mode
 
 ### Quick Mode
 
@@ -334,8 +324,6 @@ If input was long (>3 paragraphs), show the register used:
 </dutch_mode>
 
 <shared_rules>
-
-## Shared Rules
 
 ### Writing Rules (All Modes)
 

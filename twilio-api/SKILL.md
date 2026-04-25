@@ -19,8 +19,6 @@ metadata:
 
 <overview>
 
-## Overview
-
 This skill provides comprehensive guidance for integrating Twilio's communication APIs into applications. Twilio enables developers to programmatically send/receive SMS, make voice calls, send WhatsApp messages, send emails via SendGrid, implement video calls, and more.
 
 </overview>
@@ -42,8 +40,6 @@ Use this skill when:
 </when_to_use>
 
 <quick_start>
-
-## Quick Start
 
 ### Installation
 
@@ -258,8 +254,6 @@ const jwt = token.toJwt();
 </core_services>
 
 <implementation_patterns>
-
-## Implementation Patterns
 
 ### Pattern 1: Error Handling
 
@@ -549,8 +543,6 @@ ngrok http 3000
 
 <reference_resources>
 
-## Reference Resources
-
 For deep-dive documentation, see:
 - [Official Twilio Documentation](https://www.twilio.com/docs)
 - [Twilio Helper Libraries](https://www.twilio.com/docs/libraries)
@@ -593,8 +585,6 @@ Need authentication?
 </decision_tree>
 
 <best_practices>
-
-## Best Practices
 
 - [ ] Install Twilio SDK for your language
 - [ ] Set up environment variables for credentials

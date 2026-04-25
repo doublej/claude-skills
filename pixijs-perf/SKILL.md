@@ -8,8 +8,6 @@ description: Analyze PixiJS code for performance issues and suggest optimization
 Analyze existing PixiJS code to identify performance issues and suggest targeted optimizations.
 
 <when_to_use>
-## When to Use
-
 - Reviewing PixiJS code for performance bottlenecks
 - Diagnosing slow rendering or high memory usage
 - Auditing texture, sprite, and graphics usage
@@ -112,8 +110,6 @@ sprite.destroy({ children: true, texture: false });
 </code_patterns>
 
 <quick_wins>
-## Quick Wins
-
 1. **Enable culling** for off-screen objects: `displayObject.cullable = true`
 2. **Use ParticleContainer** for > 100 similar sprites
 3. **Set `interactiveChildren = false`** on non-interactive containers

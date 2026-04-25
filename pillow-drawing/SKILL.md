@@ -328,9 +328,12 @@ result = canvas.resize((W, H), Image.Resampling.LANCZOS)
 result.save("card.png")
 ```
 
-## Quality Checklist
+</how_to_use>
 
 <quality_gates>
+
+## Quality Checklist
+
 Before saving final output:
 
 1. **Anti-aliased?** — Drew at SCALE, downscaled with LANCZOS

@@ -9,8 +9,6 @@ Comprehensive versioning for all project types with four progressive patterns: s
 
 <quick_start>
 
-## Quick Start
-
 **Initialize versioning in a project:**
 ```bash
 python3 scripts/init_versioning.py
@@ -78,8 +76,6 @@ See `references/patterns.md` for decision matrix.
 </patterns>
 
 <core_scripts>
-
-## Core Scripts
 
 ### init_versioning.py
 Detect project type and initialize versioning:
@@ -203,8 +199,6 @@ Configure targets in `.version-sync.json`:
 
 <git_hooks>
 
-## Git Hooks
-
 Installed to `.git/hooks/` (not tracked in repo).
 
 ### pre-commit
@@ -279,8 +273,6 @@ Based on consult-user-mcp's approach.
 </multi_component>
 
 <cookiecutter_templates>
-
-## Cookiecutter Templates
 
 Pre-configured project templates with versioning baked in.
 
@@ -421,8 +413,6 @@ git push && git push --tags
 
 <version_format>
 
-## Version Format
-
 All patterns use semantic versioning: MAJOR.MINOR.PATCH
 
 - **MAJOR**: Breaking changes
@@ -436,8 +426,6 @@ See `references/semver.md` for full specification.
 </version_format>
 
 <troubleshooting>
-
-## Troubleshooting
 
 **Version files out of sync:**
 ```bash
@@ -469,8 +457,6 @@ git push origin :refs/tags/v1.0.0   # Delete remote tag
 </troubleshooting>
 
 <references>
-
-## References
 
 - `references/patterns.md` - Pattern selection decision matrix
 - `references/conventional-commits.md` - Commit message specification

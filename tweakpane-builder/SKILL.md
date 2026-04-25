@@ -9,8 +9,6 @@ Build Tweakpane debug UIs with intelligent control suggestions.
 
 <when_to_use>
 
-## When to Use
-
 - Building debug/settings panels with Tweakpane
 - Need UI control recommendations for parameter types
 - Creating Tweakpane configurations
@@ -99,8 +97,6 @@ Pick the right control by asking: **what is the user choosing?**
 
 <common_mistakes>
 
-## Common Mistakes
-
 - **Slider for enum values** — use dropdown (`options: {}`) when there are named choices
 - **Slider for unbounded numbers** — omit min/max for a text input when range is unknown
 - **Slider for discrete options** — if there are only 3-5 fixed values, prefer dropdown
@@ -167,8 +163,6 @@ pane.addButton({ title: 'Reset' }).on('click', () => {
 </examples>
 
 <reference_files>
-
-## Reference Files
 
 See `references/` for API documentation.
 

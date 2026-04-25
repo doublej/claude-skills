@@ -31,8 +31,6 @@ description: "App Router: server/client components, caching, streaming, Next.js 
 
 <file_conventions>
 
-## File Conventions
-
 | File | Purpose | Notes |
 |------|---------|-------|
 | `layout.tsx` | Shared UI, preserves state across navigations | Root layout MUST have `<html>` + `<body>` |
@@ -103,8 +101,6 @@ export default function Page() {
 </composition_pattern>
 
 <core_patterns>
-
-## Core Patterns
 
 ### Data Fetching (Server Components)
 
@@ -231,8 +227,6 @@ query-docs: "use cache directive" or "server actions" or "metadata API"
 
 <quality_gates>
 
-## Quality Gates
-
 - [ ] `npm run build` succeeds (no type errors)
 - [ ] `npm run dev` renders without console errors
 - [ ] No `'use client'` on components that only fetch data
@@ -259,8 +253,6 @@ Load on demand from `references/`:
 </deep_reference>
 
 <scripts>
-
-## Scripts
 
 Run without loading source:
 - `scripts/nextjs-doctor.mjs` — Repo pattern audit

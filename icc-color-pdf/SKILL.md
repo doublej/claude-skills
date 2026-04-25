@@ -8,8 +8,6 @@ description: Manage ICC profiles and color spaces in PDF files. Covers RGB-to-CM
 Manage ICC color profiles and color spaces in PDF files for print and archival workflows.
 
 <when_to_use>
-## When to Use
-
 - Converting PDF color spaces (RGB to CMYK, CMYK to gray, etc.)
 - Embedding or extracting ICC profiles in PDFs
 - Creating PDF/X prepress or PDF/A archival files with output intents
@@ -19,8 +17,6 @@ Manage ICC color profiles and color spaces in PDF files for print and archival w
 </when_to_use>
 
 <tools_installation>
-## Tools & Installation
-
 ```bash
 # Core: Ghostscript (color conversion engine)
 brew install ghostscript        # macOS
@@ -152,8 +148,6 @@ gs -dPDFA=2 -dBATCH -dNOPAUSE -dQUIET \
 </ghostscript_color>
 
 <analysis_preflight>
-## Analysis & Preflight
-
 ### Ink Coverage
 
 ```bash
@@ -182,8 +176,6 @@ verapdf --extract input.pdf
 </analysis_preflight>
 
 <python_pikepdf>
-## Python: pikepdf
-
 ### Read Output Intent Profile
 
 ```python
@@ -347,3 +339,5 @@ ICC profile locations:
 - [Little-CMS](https://www.littlecms.com/)
 - [ICC Specification](https://www.color.org/specification/ICC.1-2022-05.pdf)
 - [veraPDF](https://verapdf.org/)
+
+</little_cms>

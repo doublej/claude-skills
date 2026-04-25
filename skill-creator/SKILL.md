@@ -10,8 +10,6 @@ This skill provides guidance for creating effective skills.
 
 <about_skills>
 
-## About Skills
-
 Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific domains or tasks.
 
 ### What Skills Provide
@@ -24,8 +22,6 @@ Skills are modular, self-contained packages that extend Claude's capabilities by
 </about_skills>
 
 <core_principles>
-
-## Core Principles
 
 ### Concise is Key
 
@@ -88,8 +84,6 @@ Keep SKILL.md under 500 lines. Split content into separate files when approachin
 </progressive_disclosure>
 
 <skill_creation_process>
-
-## Skill Creation Process
 
 1. Understand the skill with concrete examples
 2. Plan reusable skill contents (scripts, references, assets)

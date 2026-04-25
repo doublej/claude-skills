@@ -9,16 +9,12 @@ Add Umami analytics to any website. Automatically registers the site in the Umam
 
 <defaults>
 
-## Defaults
-
 - **Umami URL**: `https://umami-inky-two.vercel.app`
 - **Dashboard**: `https://umami-inky-two.vercel.app/websites`
 
 </defaults>
 
 <workflow>
-
-## Workflow
 
 1. Detect the project type (framework or static HTML)
 2. Determine the site name and domain from the project (package.json name, deploy config, or folder name)

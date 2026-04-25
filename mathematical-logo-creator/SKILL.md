@@ -82,8 +82,6 @@ Common value mappings (see `references/values-mapping.md` for worked example):
 
 <grid_module_system>
 
-## Grid & Module System
-
 Canvas size `S` (default 1000). Grid resolution `N` (24, 32, 40, or 48).
 
 ```
@@ -100,8 +98,6 @@ Quantize everything:
 </grid_module_system>
 
 <construction_rules>
-
-## Construction Rules
 
 ### Tangent fillet (rounded corner)
 
@@ -146,8 +142,6 @@ See `references/construction-formulas.md` for full derivations and edge cases.
 
 <optical_corrections>
 
-## Optical Corrections
-
 Apply as calculable parameters, not guesswork:
 
 1. **Overshoot**: round shapes extend ~1-2% past flat baselines (`o = 0.015 × S` start)
@@ -157,8 +151,6 @@ Apply as calculable parameters, not guesswork:
 </optical_corrections>
 
 <mathematical_families>
-
-## Mathematical Families
 
 Choose based on target metrics:
 
@@ -181,8 +173,6 @@ y(θ) = r(θ) × sin(θ)
 </mathematical_families>
 
 <ratio_systems>
-
-## Ratio Systems
 
 Use a ratio `r` to scale key dimensions: `size_k = base × r^k`.
 
@@ -229,8 +219,6 @@ If you can't articulate why, the logo probably doesn't need type.
 
 <banned_elements>
 
-## Banned Elements
-
 - Swooshes, swoops, generic globes, puzzle pieces, light bulbs
 - Handshake icons, generic people, laurel wreaths (unless classical)
 - Arrows pointing up/right, infinity symbols, generic gears
@@ -261,8 +249,6 @@ If you can't articulate why, the logo probably doesn't need type.
 
 <color_strategy>
 
-## Color Strategy
-
 | Approach | When | Example |
 |----------|------|---------|
 | Monochrome | Maximum versatility, serious brands | Law firm, luxury |
@@ -274,8 +260,6 @@ Logo must work flat. Reserve gradients for hero usage only.
 </color_strategy>
 
 <workflow>
-
-## Workflow
 
 **Core principle: show visuals early, refine with feedback.** Never spend more than one reasoning step computing coordinates without producing a viewable SVG.
 
@@ -306,8 +290,6 @@ Use `scripts/generate-logo.py` as a starting point or create a project-specific 
 </script_first>
 
 <preview>
-
-## Preview
 
 After writing an SVG, create a preview page and show it to verify the result visually. This is mandatory — never skip it.
 
@@ -370,8 +352,6 @@ Open in the browser and screenshot to verify.
 </validation>
 
 <output>
-
-## Output
 
 Deliver:
 1. Logo brief (values, parameters, construction decisions)

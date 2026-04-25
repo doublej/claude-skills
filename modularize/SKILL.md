@@ -11,8 +11,6 @@ Split oversized files into focused modules by analyzing responsibility boundarie
 
 <scripts>
 
-## Scripts
-
 All scripts are in `~/.claude/skills/modularize/scripts/`.
 
 ### Scan
@@ -28,8 +26,6 @@ Detects: files over threshold, function/class boundaries, symbol lengths, import
 </scripts>
 
 <workflow>
-
-## Workflow
 
 ### Phase 1 — Scan
 
@@ -156,8 +152,6 @@ If checks fail, fix import issues (most common cause) and re-run. Up to 3 fix cy
 </execute>
 
 <decision_framework>
-
-## Decision Framework
 
 **When to use this skill:**
 - File exceeds 150 lines with multiple responsibilities

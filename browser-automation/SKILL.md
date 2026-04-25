@@ -8,8 +8,6 @@ description: "Puppeteer/Playwright for AI web agents and E2E testing"
 Build AI-powered web agents and end-to-end tests using Puppeteer or Playwright.
 
 <when_to_use>
-## When to Use
-
 - Building AI agents that navigate websites visually
 - Screenshot annotation with element labeling (Set-of-Marks)
 - Visual web scraping with GPT-4V/Claude
@@ -19,8 +17,6 @@ Build AI-powered web agents and end-to-end tests using Puppeteer or Playwright.
 </when_to_use>
 
 <installation>
-## Installation
-
 ### Puppeteer
 ```bash
 npm install puppeteer
@@ -171,8 +167,6 @@ Current goal: {user_goal}
 </llm_navigation>
 
 <reference_files>
-## Reference Files
-
 See `references/` for:
 - `visual-navigation.md` - Full navigation agent patterns
 - `element-labeling.md` - Set-of-Marks implementation code

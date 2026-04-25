@@ -399,3 +399,5 @@ echo "Encoded and copied!"
 
 - [Script Commands Repository](https://github.com/raycast/script-commands)
 - [Raycast Manual](https://manual.raycast.com/script-commands)
+
+</metadata>

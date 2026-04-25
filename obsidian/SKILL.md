@@ -113,8 +113,6 @@ Then use standard file tools (Read, Write, Edit, Grep, Glob) to interact with `.
 
 <tips>
 
-## Tips
-
 - Obsidian vaults are just folders of `.md` files with a `.obsidian/` config dir
 - The REST API runs on `http://127.0.0.1:27123` by default (HTTPS on 27124)
 - Vault cache refreshes every 10 minutes; force refresh by restarting the MCP server

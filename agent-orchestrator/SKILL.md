@@ -17,8 +17,6 @@ Orchestrate multi-agent work using the tools below. Pick the simplest pattern th
 </decision>
 
 <core_tools>
-## Core Tools
-
 ### Agent — Spawn a subagent
 
 ```
@@ -195,8 +193,6 @@ for i in range(num_agents):
 </patterns>
 
 <agent_definitions>
-## Agent Definitions
-
 Define reusable agent types in `.claude/agents/<name>.md`:
 
 ```markdown
@@ -235,8 +231,6 @@ You are a senior code reviewer. Analyze code changes and report issues by severi
 </agent_definitions>
 
 <lifecycle_hooks>
-## Lifecycle Hooks
-
 Configure in `settings.json` under `hooks`:
 
 ### TeammateIdle — Quality gate before agent stops
@@ -259,8 +253,6 @@ Override git worktree behavior for SVN/Perforce/Mercurial.
 </lifecycle_hooks>
 
 <best_practices>
-## Best Practices
-
 1. **Include full context in prompts** — subagents don't see your conversation
 2. **One message, multiple agents** — always launch independent agents in parallel
 3. **Use `sonnet` for workers** — save tokens, reserve `opus` for synthesis/decisions
@@ -274,8 +266,6 @@ Override git worktree behavior for SVN/Perforce/Mercurial.
 </best_practices>
 
 <limitations>
-## Limitations
-
 - No session resume with in-process teammates
 - No nested teams (teammates can't spawn teams)
 - Lead is fixed — can't transfer leadership

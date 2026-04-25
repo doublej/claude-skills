@@ -243,8 +243,6 @@ Now analyse this feedback: {{FEEDBACK}}
 
 <system_prompt_patterns>
 
-## System Prompt Patterns
-
 ### Role + Behaviour
 ```xml
 <role>You are a senior security auditor specialising in web applications.</role>
@@ -295,8 +293,6 @@ Draft actionable recommendations in <recommendations> tags.
 </chaining>
 
 <anti_patterns>
-
-## Anti-Patterns
 
 | Avoid | Why | Instead |
 |-------|-----|---------|

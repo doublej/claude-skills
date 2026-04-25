@@ -11,8 +11,6 @@ CLI tool for managing MCP integrations in Claude Code. Reduces startup time and 
 
 <quick_reference>
 
-## Quick Reference
-
 ```bash
 # Interactive menu (all features)
 bunx mcpick-plus
@@ -38,8 +36,6 @@ bunx mcpick-plus integrations describe docs-context7
 
 <layers>
 
-## Layers
-
 | Layer | Flag | Config file | Scope |
 |-------|------|-------------|-------|
 | **project** | `--layer project` | `.mcp.json` | Shared via git |
@@ -60,8 +56,6 @@ bunx mcpick-plus layers effective
 
 <agents>
 
-## Agents
-
 Create dedicated agents with pre-configured MCP integrations:
 
 ```bash
@@ -80,8 +74,6 @@ Agents are markdown files with YAML frontmatter saved to `.claude/agents/` (proj
 
 <profiles>
 
-## Profiles
-
 Save and restore entire MCP configurations:
 
 ```bash
@@ -93,8 +85,6 @@ bunx mcpick-plus profiles list
 </profiles>
 
 <other_commands>
-
-## Other Commands
 
 ```bash
 # System overview / cost dashboard
@@ -113,8 +103,6 @@ bunx mcpick-plus mcp call docs-context7 resolve-library-id --arg libraryName=rea
 </other_commands>
 
 <global_flags>
-
-## Global Flags
 
 All commands accept: `--layer <layer>`, `--format json|table`, `--cwd <path>`, `--quiet`, `--verbose`.
 
@@ -137,8 +125,6 @@ Custom integrations can be added via the interactive menu or registered in `~/.c
 </catalog>
 
 <gotchas>
-
-## Gotchas
 
 - Only stdio servers supported for `mcp call` — HTTP/SSE configs can be stored but not invoked at runtime
 - Catalog entries take precedence over user registry entries on name collision

@@ -11,8 +11,6 @@ Build terminal user interfaces with OpenTUI's component-based architecture.
 
 <when_to_use>
 
-## When to Use
-
 - Creating interactive CLI applications
 - Building terminal dashboards or forms
 - Rendering styled text with colors and attributes
@@ -22,8 +20,6 @@ Build terminal user interfaces with OpenTUI's component-based architecture.
 </when_to_use>
 
 <installation>
-
-## Installation
 
 ```bash
 bun install @opentui/core
@@ -64,8 +60,6 @@ bun install @opentui/core
 </components>
 
 <quick_start>
-
-## Quick Start
 
 ```typescript
 import { createCliRenderer, TextRenderable, Box, t, bold, fg, underline } from "@opentui/core"

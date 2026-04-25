@@ -9,8 +9,6 @@ Build Shopify Online Store 2.0 themes following official patterns from Shopify's
 
 <architecture>
 
-## Architecture
-
 ```
 theme/
 ├── assets/          # CSS, JS, images (flat, no subdirs)
@@ -27,8 +25,6 @@ theme/
 
 <critical_rules>
 
-## Critical Rules
-
 1. **Never invent Liquid filters, tags, or objects** — only use what exists in Shopify's Liquid
 2. **Use `{% liquid %}` blocks** for multiline logic
 3. **Every user-facing text** must use `{{ 'key' | t }}` translation filter
@@ -43,8 +39,6 @@ theme/
 </critical_rules>
 
 <reference_files>
-
-## Reference Files
 
 Load as needed based on the task:
 
@@ -61,8 +55,6 @@ Load as needed based on the task:
 </reference_files>
 
 <quick_patterns>
-
-## Quick Patterns
 
 ### New Section
 
@@ -159,8 +151,6 @@ Load as needed based on the task:
 
 <validation>
 
-## Validation
-
 Run theme-check for linting:
 
 ```bash
@@ -174,8 +164,6 @@ Requires: `npm install -g @shopify/cli @shopify/theme` or `gem install theme-che
 
 <shopify_cli_commands>
 
-## Shopify CLI Commands
-
 ```bash
 shopify theme dev              # Start dev server with hot reload
 shopify theme push             # Push to store
@@ -188,8 +176,6 @@ shopify theme info             # Show theme info
 </shopify_cli_commands>
 
 <related_skills>
-
-## Related Skills
 
 - **shopify-api** — Admin REST/GraphQL API operations
 - **shopify-data** — Product data modeling (options, variants, metafields, collections)

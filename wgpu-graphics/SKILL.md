@@ -7,8 +7,6 @@ description: "Rust GPU graphics/compute: pipelines, shaders, textures, VR compos
 
 <before_writing_code>
 
-## Before Writing Code
-
 1. **Check wgpu version** -- API changed significantly across 0.19/0.20/22/24/25/26:
    ```bash
    grep -E '^wgpu\s*=' Cargo.toml
@@ -27,8 +25,6 @@ description: "Rust GPU graphics/compute: pipelines, shaders, textures, VR compos
 </before_writing_code>
 
 <core_architecture>
-
-## Core Architecture
 
 ```
 Instance -> Adapter -> (Device, Queue)
@@ -89,8 +85,6 @@ let (device, queue) = adapter.request_device(&wgpu::DeviceDescriptor {
 </backend_selection>
 
 <pipeline_setup>
-
-## Pipeline Setup
 
 ### Render Pipeline
 
@@ -164,8 +158,6 @@ override GAMMA_VALUE: f32 = 1.0;
 </wgsl_shaders>
 
 <resource_management>
-
-## Resource Management
 
 ### Textures
 
@@ -242,8 +234,6 @@ wgpu resources are reference-counted and cleaned up on drop. No explicit `dispos
 
 <what_not_to_do>
 
-## What NOT to Do
-
 - Mix `queue.write_buffer()` and `encoder.copy_buffer_to_buffer()` for the same destination in the same submission
 - Call `device.poll()` in a tight loop without submitting work
 - Use `mapped_at_creation: true` for large buffers you'll immediately unmap -- prefer `queue.write_buffer()`
@@ -297,8 +287,6 @@ See `references/vr-compositor.md` for ALVR-specific patterns including:
 
 <performance>
 
-## Performance
-
 ### Pipeline Caching
 
 ```rust
@@ -344,8 +332,6 @@ encoder.resolve_query_set(&query_set, 0..2, &timestamp_buf, 0);
 
 <buffer_alignment>
 
-## Buffer Alignment
-
 | Rule | Value | Notes |
 |------|-------|-------|
 | `COPY_BUFFER_ALIGNMENT` | 4 bytes | `copy_buffer_to_buffer` offset/size |
@@ -366,8 +352,6 @@ let padded_row = (unpadded_row + 255) & !255; // align to 256
 
 <troubleshooting>
 
-## Troubleshooting
-
 | Symptom | Likely Cause |
 |---------|--------------|
 | `RequestDeviceError` | Required features/limits not supported by adapter |
@@ -383,8 +367,6 @@ let padded_row = (unpadded_row + 255) & !255; // align to 256
 </troubleshooting>
 
 <deep_reference>
-
-## Deep Reference
 
 Load on demand from `references/`:
 

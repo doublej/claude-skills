@@ -317,8 +317,6 @@ Compare variants with real users.
 
 <key_takeaways>
 
-## Key Takeaways
-
 1. **Beautiful design earns forgiveness** for minor usability issues—but not major ones
 2. **Conventions exist for a reason** — innovate in content, not core interactions
 3. **Every element should earn its place** — decoration that aids comprehension stays
@@ -339,8 +337,6 @@ Compare variants with real users.
 </key_takeaways>
 
 <sources>
-
-## Sources
 
 - [Nielsen Norman Group - 10 Usability Heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/)
 - [Laws of UX](https://lawsofux.com/)

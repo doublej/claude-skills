@@ -32,8 +32,6 @@ Shared memory model: CPU and GPU share the same RAM pool. No dedicated VRAM.
 </prerequisites>
 
 <core_rules>
-## Core Rules
-
 ### Frame Loop Contract (OpenXR)
 
 Every VR frame MUST follow this sequence -- never skip steps:
@@ -378,3 +376,5 @@ Load on demand from `references/`:
 | `XR_EXT_performance_settings` | CPU/GPU level control |
 | `XR_KHR_composition_layer_depth` | Depth-based reprojection |
 | `XR_FB_display_refresh_rate` | Query/set refresh rate |
+
+</core_rules>

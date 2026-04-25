@@ -8,8 +8,6 @@ description: "SVG export, batch conversion, path ops, optimization via CLI"
 Control Inkscape via CLI for SVG manipulation, export, and vector graphics automation.
 
 <setup>
-## Setup
-
 Inkscape binary on macOS: `/Applications/Inkscape.app/Contents/MacOS/inkscape`
 
 If not installed: `brew install --cask inkscape`
@@ -23,8 +21,6 @@ Use full path in scripts/MCP configs. Verify: `inkscape --version`
 </setup>
 
 <export>
-## Export
-
 ```bash
 # SVG -> PNG (96 DPI default)
 inkscape in.svg -o out.png
@@ -66,8 +62,6 @@ inkscape in.svg -o out.png -b "#ffffff" -y 1.0
 </export>
 
 <query>
-## Query
-
 ```bash
 inkscape in.svg -W -H              # drawing dimensions
 inkscape in.svg -I myObj -X -Y -W -H  # object bounding box
@@ -76,8 +70,6 @@ inkscape in.svg -S                  # all objects: id,x,y,w,h
 </query>
 
 <actions>
-## Actions
-
 Chain operations with `--actions="action1;action2"`. End exports with `export-do`.
 
 ```bash
@@ -106,8 +98,6 @@ Full list: `inkscape --action-list`
 </actions>
 
 <batch_processing>
-## Batch Processing
-
 ### Shell mode (keeps Inkscape resident, faster for multiple files)
 ```bash
 cat <<'EOF' | inkscape --shell
@@ -124,8 +114,6 @@ inkscape --export-type=png file1.svg file2.svg file3.svg
 </batch_processing>
 
 <svg_optimization>
-## SVG Optimization
-
 ```bash
 # Inkscape built-in cleanup
 inkscape in.svg --vacuum-defs --export-plain-svg -o clean.svg
@@ -141,8 +129,6 @@ inkscape in.svg --vacuum-defs --export-plain-svg --export-filename=- | \
 </svg_optimization>
 
 <python_inkex>
-## Python (inkex)
-
 For programmatic SVG manipulation without GUI. Install: `pip install inkex`
 
 ```python
@@ -190,3 +176,5 @@ Tools: `action_list`, `action_run`, `dom_validate`, `dom_set`, `dom_clean`
 
 ### Alternative: inkmcp (Linux only)
 [inkmcp](https://github.com/Shriinivas/inkmcp) — live Inkscape control via D-Bus. Not compatible with macOS.
+
+</python_inkex>

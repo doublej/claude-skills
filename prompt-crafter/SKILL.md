@@ -303,8 +303,6 @@ claude -r "$sid" -p "now add input validation to all POST endpoints" \
 </cli_patterns>
 
 <anti_patterns>
-## Anti-Patterns
-
 | Avoid | Why | Instead |
 |-------|-----|---------|
 | Vague scope | "Improve the code" | "Refactor `parseConfig` to reduce nesting to 1 level" |

@@ -379,8 +379,6 @@ Not user-configurable via the encode API directly; the driver decides based on r
 
 <session_limits>
 
-## Session Limits
-
 | GPU Class | Max Concurrent Sessions |
 |-----------|------------------------|
 | GeForce (pre-2024) | 3 |
@@ -409,8 +407,6 @@ ALVR's encoder lives in C++ (`alvr/server_openvr/cpp/platform/`) with Rust FFI:
 </alvr_integration>
 
 <troubleshooting>
-
-## Troubleshooting
 
 | Symptom | Likely Cause | Fix |
 |---------|-------------|-----|

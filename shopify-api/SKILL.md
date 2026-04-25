@@ -9,8 +9,6 @@ Build Shopify store integrations using the Admin API (REST and GraphQL).
 
 <authentication>
 
-## Authentication
-
 ### Custom App Setup (Recommended)
 
 1. Shopify Admin → Settings → Apps and sales channels → Develop apps
@@ -59,8 +57,6 @@ shopify.ShopifyResource.set_headers({'X-Shopify-Access-Token': access_token})
 </authentication>
 
 <products>
-
-## Products
 
 ### List Products (REST)
 
@@ -146,8 +142,6 @@ const response = await gqlClient.query({ data: query });
 
 <orders>
 
-## Orders
-
 ### List Orders
 
 ```javascript
@@ -196,8 +190,6 @@ await client.post({
 </orders>
 
 <customers>
-
-## Customers
 
 ### List Customers
 
@@ -250,8 +242,6 @@ await client.put({
 
 <inventory>
 
-## Inventory
-
 ### Get Inventory Levels
 
 ```javascript
@@ -290,8 +280,6 @@ await client.post({
 </inventory>
 
 <webhooks>
-
-## Webhooks
 
 ### Register Webhook
 
@@ -340,8 +328,6 @@ const isValid = verifyWebhook(req.rawBody, hmac, process.env.SHOPIFY_API_SECRET)
 
 <rate_limiting>
 
-## Rate Limiting
-
 ### REST API Limits
 
 - **Standard**: 40 requests/app/store (bucket refills 2/sec)
@@ -380,8 +366,6 @@ const cost = response.extensions?.cost;
 </rate_limiting>
 
 <pagination>
-
-## Pagination
 
 ### REST Cursor Pagination
 
@@ -473,8 +457,6 @@ For Claude Desktop integration, use [shopify-mcp](https://github.com/GeLi2001/sh
 
 <error_handling>
 
-## Error Handling
-
 ```javascript
 try {
   const response = await client.get({ path: 'products' });
@@ -493,8 +475,6 @@ try {
 </error_handling>
 
 <api_versioning>
-
-## API Versioning
 
 Shopify releases quarterly versions (e.g., `2024-01`, `2024-04`). Use stable versions:
 

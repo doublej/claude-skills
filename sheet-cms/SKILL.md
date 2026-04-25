@@ -9,8 +9,6 @@ Sync content bidirectionally between Google Sheets and local JSON files. Use Goo
 
 <setup_workflow>
 
-## Setup workflow
-
 ### 1. Add dependency
 
 ```bash
@@ -75,8 +73,6 @@ Share the Google Sheet (Editor access) with whoever should edit content.
 
 <cli_commands>
 
-## CLI commands
-
 | Command | Purpose |
 |---------|---------|
 | `bunx sheet-cms setup` | Interactive setup wizard |
@@ -94,8 +90,6 @@ All commands accept `-c/--config <path>` for custom config location.
 </cli_commands>
 
 <file_types>
-
-## File types
 
 ### keyvalue
 
@@ -123,8 +117,6 @@ Produces (at arrayPath): `[{ "name": "Widget", "price": "9.99", "active": "true"
 
 <config_reference>
 
-## Config reference
-
 | Field | Type | Description |
 |-------|------|-------------|
 | `spreadsheetId` | string | From Google Sheets URL (between /d/ and /edit) |
@@ -150,8 +142,6 @@ Produces (at arrayPath): `[{ "name": "Widget", "price": "9.99", "active": "true"
 </config_reference>
 
 <environment_variables>
-
-## Environment variables
 
 | Variable | Purpose |
 |----------|---------|
@@ -204,8 +194,6 @@ Swagger docs at `/swagger` when running.
 
 <library_api>
 
-## Library API
-
 ```ts
 import { loadConfig, createSheetsClient, pull, push, diff } from 'sheet-cms'
 
@@ -220,8 +208,6 @@ const changes = await diff(config, sheets)
 </library_api>
 
 <troubleshooting>
-
-## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|

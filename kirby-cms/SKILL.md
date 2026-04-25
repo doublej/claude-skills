@@ -8,8 +8,6 @@ description: "Flat-file CMS with Panel, blueprints, templates, headless API"
 File-based CMS with a powerful Panel admin interface. No database required.
 
 <when_to_use>
-## When to Use
-
 - Creating Kirby CMS websites or themes
 - Configuring Panel blueprints for content structure
 - Writing templates, snippets, or controllers
@@ -18,8 +16,6 @@ File-based CMS with a powerful Panel admin interface. No database required.
 </when_to_use>
 
 <core_architecture>
-## Core Architecture
-
 ```
 project/
 ├── content/           # Flat-file content (folders = pages)
@@ -41,8 +37,6 @@ project/
 </core_architecture>
 
 <quick_start>
-## Quick Start
-
 ### Installation
 
 ```bash
@@ -83,8 +77,6 @@ fields:
 </quick_start>
 
 <key_concepts>
-## Key Concepts
-
 | Concept | Description |
 |---------|-------------|
 | **Page** | Folder in `/content/` with a `.txt` file |
@@ -168,3 +160,5 @@ return [
 - [Kirby Reference](https://getkirby.com/docs/reference) - Complete API reference
 - [Kirby Cookbook](https://getkirby.com/docs/cookbook) - Solutions & recipes
 - [Kirby Plugins](https://getkirby.com/plugins) - Community extensions
+
+</key_concepts>

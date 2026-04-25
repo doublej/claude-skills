@@ -16,8 +16,6 @@ Guide for building Raycast extensions using React, TypeScript, and the @raycast/
 </when_to_use>
 
 <quick_start>
-## Quick Start
-
 ### Create Extension
 
 ```bash
@@ -198,3 +196,5 @@ export default function Command() {
 - [Raycast API Reference](https://developers.raycast.com/api-reference)
 - [Raycast Utils](https://developers.raycast.com/utils-reference)
 - [Extension Store](https://raycast.com/store)
+
+</quick_start>

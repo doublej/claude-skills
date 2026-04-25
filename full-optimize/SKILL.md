@@ -59,8 +59,6 @@ Produces atomic commits per logical change group.
 </workflow>
 
 <auto_detection>
-## Auto-Detection
-
 Detect project type from root files:
 
 | File found | Project type |
@@ -76,8 +74,6 @@ Use this to calibrate what `dev-refactor` and `verify` should focus on.
 </auto_detection>
 
 <output_format>
-## Output Format
-
 After the pipeline completes, summarise:
 
 ```

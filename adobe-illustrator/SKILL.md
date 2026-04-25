@@ -341,14 +341,10 @@ doc.layers[0].name = "Updated";
 </orchestration>
 
 <api_reference>
-## API Reference
-
 For comprehensive Illustrator DOM details (all object types, properties, methods, enumerations), see `references/api_reference.md`.
 </api_reference>
 
 <notes>
-## Notes
-
 - Always use **absolute paths** in scripts — relative paths resolve against the AI app bundle, not your cwd
 - `app.activeDocument` is the frontmost open document; open documents explicitly with `app.open(new File(...))`
 - ExtendScript is synchronous — no `await` needed, but Illustrator blocks while running

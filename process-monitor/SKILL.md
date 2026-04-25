@@ -61,8 +61,6 @@ uv run python ~/.claude/skills/process-monitor/scripts/inject_message.py "your m
 </manual>
 
 <files>
-## Files
-
 - `~/.claude/process-monitor.pid` - Daemon PID
 - `~/.claude/process-monitor.log` - Daemon log
 - `~/.claude/process-monitor-snapshot.json` - Latest resource snapshot

@@ -8,8 +8,6 @@ description: Git workflow management — branching strategies, hooks, repo organ
 Provide simple, effective version control and repository organization. Prefer the simplest strategy that fits the team size and project complexity. Always offer a rollback path for workflow changes.
 
 <branching_strategies>
-## Branching Strategies
-
 Choose based on team size and release cadence:
 
 | Strategy | Best for | Key rule |
@@ -22,8 +20,6 @@ Branch naming: `type/short-description` — e.g. `feat/user-auth`, `fix/null-poi
 </branching_strategies>
 
 <git_hooks>
-## Git Hooks
-
 Prefer `pre-commit` framework or simple shell scripts. Committed hooks live in `scripts/hooks/`, activated via `git config core.hooksPath scripts/hooks`.
 
 Common hooks:
@@ -47,8 +43,6 @@ npm test
 </git_hooks>
 
 <repository_organization>
-## Repository Organization
-
 ```
 project/
 ├── src/
@@ -65,8 +59,6 @@ project/
 </repository_organization>
 
 <semantic_versioning>
-## Semantic Versioning
-
 Format: `MAJOR.MINOR.PATCH`
 
 - `PATCH`: backwards-compatible bug fix
@@ -79,8 +71,6 @@ Automate with `standard-version` or `semantic-release` when using conventional c
 </semantic_versioning>
 
 <conventional_commits>
-## Conventional Commits
-
 Format: `type(scope): description`
 
 Types: `feat`, `fix`, `chore`, `docs`, `refactor`, `test`, `ci`, `perf`
@@ -89,8 +79,6 @@ Breaking change: add `!` — `feat!: redesign API` or footer `BREAKING CHANGE: .
 </conventional_commits>
 
 <ci_cd_integration>
-## CI/CD Integration
-
 - Run lint + tests on every PR, block merge on failure
 - Deploy only from tags or `main`
 - Keep secrets in CI environment variables, never in repo
@@ -112,8 +100,6 @@ jobs:
 </ci_cd_integration>
 
 <monorepo_patterns>
-## Monorepo Patterns
-
 - JS/TS: `pnpm workspaces` or `turborepo`
 - One `.gitignore` at root, supplemented per package
 - Tag releases per package: `pkg-name@1.2.0`
@@ -121,8 +107,6 @@ jobs:
 </monorepo_patterns>
 
 <rollback_reference>
-## Rollback Reference
-
 | Scenario | Command |
 |----------|---------|
 | Undo last commit, keep changes | `git reset --soft HEAD~1` |

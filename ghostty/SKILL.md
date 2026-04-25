@@ -8,8 +8,6 @@ description: Configure and customize Ghostty terminal emulator (Mitchell Hashimo
 Ghostty is a fast, native, GPU-accelerated terminal emulator. Installed version on this machine is detected via `ghostty --version`.
 
 <config_file>
-## Config file
-
 Edit, don't create fresh — config may already exist.
 
 macOS (preferred location on this machine):
@@ -29,8 +27,6 @@ Lists only user-set values. Useful to see what's actually applied.
 </config_file>
 
 <syntax>
-## Syntax
-
 ```
 key = value
 # comments start with hash
@@ -46,8 +42,6 @@ theme = GruvboxDark
 </syntax>
 
 <reload>
-## Reload
-
 - In-app: `cmd+shift+,` (macOS) / `ctrl+shift+,` (Linux)
 - Some options only apply to NEW surfaces/windows (font, theme often do; padding sometimes doesn't until new window)
 - Some options are startup-only — restart required
@@ -56,8 +50,6 @@ Tell user which type after editing when unsure. When in doubt: restart.
 </reload>
 
 <keybinds>
-## Keybinds
-
 Syntax: `keybind = trigger=action[:parameter]`
 
 ```
@@ -91,8 +83,6 @@ Current bindings: `ghostty +list-keybinds`
 </keybinds>
 
 <themes>
-## Themes
-
 ```
 theme = GruvboxDark              # one of bundled
 theme = dark:GruvboxDark,light:Catppuccin Latte   # auto light/dark
@@ -105,8 +95,6 @@ A theme is just a config file containing palette/background/foreground. User con
 </themes>
 
 <fonts>
-## Fonts
-
 ```
 font-family = JetBrains Mono
 font-family-bold = JetBrains Mono Bold
@@ -137,8 +125,6 @@ quick-terminal-autohide = true
 </quick_terminal>
 
 <shell_integration>
-## Shell integration
-
 Auto-injected for bash, elvish, fish, nushell, zsh. Features:
 - New windows inherit working directory of focused surface
 - `jump_to_prompt` keybind navigation
@@ -157,8 +143,6 @@ Manual setup (only needed for `/bin/bash` on macOS): see `references/shell-integ
 </shell_integration>
 
 <window_appearance>
-## Window / appearance
-
 ```
 window-padding-x = 12
 window-padding-y = 12
@@ -173,8 +157,6 @@ cursor-style-blink = true
 </window_appearance>
 
 <common_tasks>
-## Common tasks
-
 **Add/edit config:** find file (check macOS path first), edit, reload with `cmd+shift+,`. For font/theme changes, usually need new window.
 
 **Setting not applying:** check for typo (`ghostty +validate-config path`), check `ghostty +show-config --default=false --changes-only` to see what's parsed, restart Ghostty if startup-only.
@@ -188,8 +170,6 @@ ghostty +validate-config ~/Library/Application\ Support/com.mitchellh.ghostty/co
 </common_tasks>
 
 <references>
-## References
-
 - `references/api_reference.md` — extended option tables and macOS-specific notes
 - Upstream docs: https://ghostty.org/docs
 - Actions list: `ghostty +list-actions`

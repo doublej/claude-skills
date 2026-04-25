@@ -11,15 +11,11 @@ description: "Manage via it2 CLI: tabs, panes, send text, profiles, arrangements
 Control iTerm2 via the `it2` CLI.
 
 <prerequisites>
-## Prerequisites
-
 - iTerm2 with Python API enabled (Settings > General > Magic > Enable Python API)
 - `it2` installed (`pip install it2` or `uv tool install it2`)
 </prerequisites>
 
 <commands>
-## Commands
-
 ### Discovery
 
 | Command | Description |
@@ -233,3 +229,5 @@ cat local-file.txt | ssh user@host "powershell -c \"[IO.File]::WriteAllText('C:\
 - Use **backslashes** inside `cmd /c` commands: `C:\\Projects\\foo`
 - Use **forward slashes** inside PowerShell: `C:/Projects/foo`
 - Always double-escape backslashes in bash strings
+
+</remote_windows>

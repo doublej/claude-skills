@@ -202,8 +202,6 @@ graph LR
 
 <workflow>
 
-## Workflow
-
 1. Write diagram in `.mmd` file or inline
 2. Preview quickly: `python3 scripts/preview.py file.mmd`
 3. If needed, render to file: `python3 scripts/render.py file.mmd -o output.png`

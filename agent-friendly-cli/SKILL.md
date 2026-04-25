@@ -9,8 +9,6 @@ description: "Design CLIs optimized for LLM/agent consumption and parsing"
 Build CLIs that minimize agent memory burden, token usage, and repair loops.
 
 <core_properties>
-## Core Properties
-
 An agent-friendly CLI is:
 
 1. **Self-describing** — one command returns a complete machine-readable guide
@@ -24,8 +22,6 @@ An agent-friendly CLI is:
 </core_properties>
 
 <workflow>
-## Workflow
-
 Determine the task type:
 
 **Building a new CLI:**
@@ -46,8 +42,6 @@ Determine the task type:
 </workflow>
 
 <design_template>
-## Design Template
-
 When designing a CLI, address each layer:
 
 ### 1. Entry Surface
@@ -130,8 +124,6 @@ Every CLI should have a `guide` (or `prime`) command that returns:
 </self_description>
 
 <input_normalization>
-## Input Normalization
-
 Accept flexibly, emit strictly:
 - Dates: `2025-01-13`, `jan 13 2025`, `13/01/2025` → always output ISO 8601
 - IDs: case-insensitive input → canonical case output

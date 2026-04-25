@@ -8,8 +8,6 @@ description: "Kill orphaned MCP servers, dev servers, Claude Code processes to f
 Scan and kill stale Claude Code processes, orphaned MCP servers, and development servers on macOS.
 
 <scripts>
-## Scripts
-
 All scripts are in `~/.claude/skills/process-cleanup/scripts/`.
 
 ### Scan
@@ -42,8 +40,6 @@ Add `--force` for immediate SIGKILL.
 </scripts>
 
 <workflow>
-## Workflow
-
 1. Run `scan.sh` to see what's running
 2. Present findings to user with PID, CPU%, MEM%, and command
 3. Use `consult-user-mcp` `ask` (type `pick`, `multi: true`) to let user select which processes/categories to kill — never kill without confirmation
@@ -52,8 +48,6 @@ Add `--force` for immediate SIGKILL.
 </workflow>
 
 <safety>
-## Safety
-
 - **Always confirm** before killing. Show the user what will die.
 - Prefer category kills (`claude`, `mcp`, `dev`) over blanket cleanup.
 - `Claude.app` (desktop) is excluded from Claude process matching.

@@ -61,7 +61,7 @@ obj.onValuesChange((values) => {
 sheet.sequence.play({ iterationCount: Infinity })
 ```
 
-</quick_start>
+</setup>
 
 <core_concepts>
 
@@ -132,6 +132,10 @@ obj.onValuesChange(({ x, y, rotation, scale, opacity }) => {
   })
 </script>
 ```
+
+</html_svg_animation>
+
+<sequence_playback>
 
 ### Sequence Playback Control
 
@@ -424,7 +428,9 @@ button.onclick = async () => {
 5. Add playback trigger (user interaction or `project.ready`)
 6. Verify bundler tree-shakes studio package
 
-## Quick Reference
+</production_checklist>
+
+<quick_reference>
 
 | Task | Solution |
 |------|----------|

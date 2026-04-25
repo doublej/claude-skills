@@ -188,8 +188,6 @@ Full RGB tables, ANSI fallbacks, and the COLORFGBG algorithm are in
 
 <workflow>
 
-## Workflow
-
 1. **Probe capabilities.** Read `TERM`, `COLORTERM`, `NO_COLOR`,
    `FORCE_COLOR`, `COLUMNS`, `LINES`. Or commit to a floor in the brief
    and refuse below it.
@@ -309,8 +307,6 @@ Run before declaring done. Any failure means not done.
 </interrogation>
 
 <references>
-
-## References
 
 - `references/library-decision.md` — pick the right toolkit, when not
   to ship a TUI at all.

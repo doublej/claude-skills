@@ -667,6 +667,8 @@ ro.disconnect();
 - [ ] Event listeners removed
 - [ ] GPU resources disposed
 
+</quick_reference>
+
 <troubleshooting>
 
 | Symptom | Likely Cause |

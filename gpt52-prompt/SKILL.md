@@ -310,3 +310,5 @@ When encountering [SITUATION], respond by [ACTION].
 - [GPT-5.2 Model Docs](https://platform.openai.com/docs/models/gpt-5.2) - OpenAI Platform
 - [GPT-5.1 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-1_prompting_guide) - OpenAI Cookbook
 - [Simon Willison's GPT-5.2 Overview](https://simonwillison.net/2025/Dec/11/gpt-52/) - Technical Summary
+
+</template>

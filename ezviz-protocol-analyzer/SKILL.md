@@ -247,7 +247,9 @@ register_postdissector(hikvision_proto)
 - Client sends heartbeat with timestamp
 - Camera responds with echo + server time
 
-## Error Codes
+</common_patterns>
+
+<error_codes>
 
 ```
 0x0000  Success
@@ -280,10 +282,12 @@ register_postdissector(hikvision_proto)
 
 </troubleshooting>
 
-<best_practices_section>
+<methodology>
 
 - Verify all field mappings with multiple captures
 - Document all observed message types
 - Use clear naming and annotations
 - Provide exact reproduction steps
 - Keep functions under 20 lines (per project rules)
+
+</methodology>

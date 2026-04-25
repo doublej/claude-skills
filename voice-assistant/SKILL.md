@@ -7,8 +7,6 @@ description: "Real-time voice AI agents with Pipecat, LiveKit, OpenAI Realtime, 
 
 <framework_selection>
 
-## Framework Selection
-
 | Framework | Language | Best For | Latency |
 |-----------|----------|----------|---------|
 | **Pipecat** | Python | Open-source, multimodal, full control | Ultra-low |
@@ -156,8 +154,6 @@ WebSocket ↔ Server VAD → Model → Audio Stream
 
 <service_integrations>
 
-## Service Integrations
-
 ### Speech-to-Text (STT)
 | Provider | Model | Best For |
 |----------|-------|----------|
@@ -284,8 +280,6 @@ agent.batch_call(phone_numbers=[...], message="...")
 
 <best_practices>
 
-## Best Practices
-
 ### Latency Optimization
 - Use streaming responses (don't wait for full LLM output)
 - Pre-warm TTS with common phrases
@@ -335,8 +329,6 @@ async def handle_network_error(error):
 </cost>
 
 <resources>
-
-## Resources
 
 - **Pipecat**: https://github.com/pipecat-ai/pipecat | https://docs.pipecat.ai
 - **LiveKit Agents**: https://github.com/livekit/agents

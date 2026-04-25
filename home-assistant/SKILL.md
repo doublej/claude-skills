@@ -10,8 +10,6 @@ description: "Control smart home devices, automations, dashboards, entities via 
 Uses the **ha-mcp** MCP server (homeassistant-ai/ha-mcp). If MCP tools are not available, guide the user to install the server first.
 
 <mcp_server_setup>
-## MCP Server Setup
-
 The fastest path for Claude Code:
 
 ```bash
@@ -31,16 +29,12 @@ For the HA add-on (no token needed): Settings → Add-ons → Install "Home Assi
 </mcp_server_setup>
 
 <core_principles>
-## Core Principles
-
 1. Use the MCP tools — never generate YAML snippets for the user to paste manually.
 2. Prefer native HA constructs over Jinja2 templates. See `references/automation-patterns.md` and `references/helper-selection.md`.
 3. Use `entity_id` over `device_id`. `device_id` breaks when devices are re-added.
 </core_principles>
 
 <key_tool_groups>
-## Key Tool Groups
-
 | Goal | Primary tools |
 |------|---------------|
 | Find entities | `ha_search_entities`, `ha_get_state`, `ha_deep_search` |
@@ -53,8 +47,6 @@ For the HA add-on (no token needed): Settings → Add-ons → Install "Home Assi
 </key_tool_groups>
 
 <automation_best_practices>
-## Automation Best Practices
-
 Read `references/automation-patterns.md` when writing or editing automations.
 
 **Quick mode selector:**
@@ -77,8 +69,6 @@ Read `references/automation-patterns.md` when writing or editing automations.
 </automation_best_practices>
 
 <helper_selection>
-## Helper Selection
-
 Read `references/helper-selection.md` before creating a template sensor.
 
 **Quick substitution table:**
@@ -112,8 +102,6 @@ Before renaming entities, replacing helpers, or restructuring automations — re
 </workflow>
 
 <troubleshooting>
-## Troubleshooting
-
 - **Entity not found:** `ha_deep_search` with broader terms; check `ha_get_overview`
 - **Automation not firing:** `ha_get_automation_traces` — inspect trigger info, condition results
 - **Config errors:** `ha_check_config` after any YAML change
