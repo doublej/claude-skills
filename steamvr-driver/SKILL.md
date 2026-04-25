@@ -5,7 +5,7 @@ description: "OpenVR driver dev: device providers, HMD emulation, DriverPose_t, 
 
 # SteamVR Driver Development
 
-## Architecture Overview
+<architecture_overview>
 
 A SteamVR driver is a shared library loaded by `vrserver`. The entry point exports:
 
@@ -26,7 +26,9 @@ vrserver -> HmdDriverFactory -> IServerTrackedDeviceProvider
                           Cleanup() -> tear down
 ```
 
-## IServerTrackedDeviceProvider
+</architecture_overview>
+
+<server_tracked_device_provider>
 
 The driver's main lifecycle interface.
 
@@ -67,7 +69,9 @@ class MyDriverProvider : public vr::IServerTrackedDeviceProvider {
 
 **Critical:** `RunFrame()` runs on the server thread. Never block it. Heavy work goes on separate threads.
 
-## ITrackedDeviceServerDriver
+</server_tracked_device_provider>
+
+<tracked_device_server_driver>
 
 Every tracked device (HMD, controller, tracker) implements this.
 
@@ -102,7 +106,9 @@ class MyDevice : public vr::ITrackedDeviceServerDriver {
 
 **Pitfall:** `GetComponent` must use `static_cast` to the exact interface type when returning `this`. A plain cast produces wrong vtable pointers with multiple inheritance.
 
-## Device Classes
+</tracked_device_server_driver>
+
+<device_classes>
 
 | Class | Enum | Use |
 |-------|------|-----|
@@ -114,7 +120,11 @@ class MyDevice : public vr::ITrackedDeviceServerDriver {
 Register with `VRServerDriverHost()->TrackedDeviceAdded(serial, class, driver_ptr)`.
 **Serial numbers must be unique** across all devices and persist across sessions.
 
-## Pose Submission
+</device_classes>
+
+<pose_submission>
+
+
 
 See `references/pose-and-timing.md` for `DriverPose_t` field reference, coordinate systems, timing, and prediction.
 
@@ -133,7 +143,9 @@ pose.vecPosition[0] = x; pose.vecPosition[1] = y; pose.vecPosition[2] = z;
 vr::VRServerDriverHost()->TrackedDevicePoseUpdated(objectId, pose, sizeof(pose));
 ```
 
-## Device Properties
+</pose_submission>
+
+<device_properties>
 
 Set in `Activate()` via `vr::VRProperties()`:
 
@@ -154,7 +166,9 @@ props->SetFloatProperty(container, vr::Prop_UserIpdMeters_Float, 0.063f);
 
 See `references/device-properties.md` for full property reference and emulation profiles.
 
-## Input System
+</device_properties>
+
+<input_system>
 
 See `references/input-system.md` for:
 - Input component creation (boolean, scalar, haptic, skeleton)
@@ -163,7 +177,9 @@ See `references/input-system.md` for:
 - Button mapping patterns from ALVR
 - Legacy vs new input API
 
-## IVRDisplayComponent (HMD)
+</input_system>
+
+<display_component>
 
 Required for HMD devices. Describes display characteristics:
 
@@ -185,13 +201,17 @@ class MyHmd : public ITrackedDeviceServerDriver, public vr::IVRDisplayComponent 
 
 **Render target size** is per-eye. Total framebuffer is typically `width*2 x height`.
 
-## IVRDriverDirectModeComponent
+</display_component>
+
+<direct_mode_component>
 
 Bypasses the SteamVR compositor -- the driver controls frame presentation directly. Windows-only in practice. See `references/direct-mode.md` for the full interface and ALVR's implementation pattern.
 
 Key methods: `CreateSwapTextureSet`, `SubmitLayer`, `Present`, `PostPresent`.
 
-## Driver Manifest
+</direct_mode_component>
+
+<driver_manifest>
 
 `driver.vrdrivermanifest` in driver root:
 
@@ -214,7 +234,9 @@ Key methods: `CreateSwapTextureSet`, `SubmitLayer`, `Present`, `PostPresent`.
 
 Register driver: `vrpathreg adddriver /path/to/driver`
 
-## VRSettings API
+</driver_manifest>
+
+<vrsettings_api>
 
 Persistent key-value store in `steamvr.vrsettings`:
 
@@ -230,7 +252,9 @@ vr::VRSettings()->SetBool(vr::k_pch_SteamVR_Section, "disableAsyncReprojection",
 
 **Pitfall:** Writing SteamVR-section settings (like async reprojection) can conflict with user preferences. Only do this when necessary and document it.
 
-## Event Handling
+</vrsettings_api>
+
+<event_handling>
 
 Poll in `RunFrame()`:
 
@@ -260,11 +284,15 @@ while (vr::VRServerDriverHost()->PollNextEvent(&event, sizeof(event))) {
 vr::VRServerDriverHost()->VendorSpecificEvent(objectId, myCustomEvent, {}, 0);
 ```
 
-## Tracker Emulation (Vive Tracker)
+</event_handling>
+
+<tracker_emulation>
 
 See `references/tracker-emulation.md` for the complete property set needed to emulate Vive Trackers, including role assignment and icon paths.
 
-## Common Pitfalls
+</tracker_emulation>
+
+<pitfalls>
 
 | Pitfall | Fix |
 |---------|-----|
@@ -278,7 +306,9 @@ See `references/tracker-emulation.md` for the complete property set needed to em
 | Not cleaning up on `Cleanup()` | Release all resources, stop threads, call `VR_CLEANUP_SERVER_DRIVER_CONTEXT` last |
 | `TrackedDeviceAdded` after `Init` returns | Can add devices later, but they won't be activated until next frame |
 
-## Debugging
+</pitfalls>
+
+<debugging>
 
 | Log | Location | Content |
 |-----|----------|---------|
@@ -290,7 +320,9 @@ Use `InitDriverLog(vr::VRDriverLog())` in `Init()` and `DriverLog()` to write.
 
 SteamVR monitor: `~/.steam/steam/steamapps/common/SteamVR/bin/linux64/vrmonitor` shows connected devices and status.
 
-## ALVR Integration Context
+</debugging>
+
+<alvr_integration>
 
 ALVR's `server_openvr` crate at `rust/alvr/repo/alvr/server_openvr/` demonstrates a production Rust FFI to C++ OpenVR driver:
 
@@ -312,7 +344,9 @@ Key files:
 - `src/lib.rs` -- Rust entry, FFI setup, event dispatch
 - `src/props.rs` -- property setting, serial number generation, emulation profiles
 
-## Deep Reference
+</alvr_integration>
+
+<deep_reference>
 
 Load on demand from `references/`:
 
@@ -323,3 +357,5 @@ Load on demand from `references/`:
 | `input-system.md` | Input components, controller profiles, SteamVR Input 2.0, skeleton |
 | `direct-mode.md` | IVRDriverDirectModeComponent, D3D11 shared textures, frame presentation |
 | `tracker-emulation.md` | Vive Tracker property sets, role assignment, body tracking |
+
+</deep_reference>

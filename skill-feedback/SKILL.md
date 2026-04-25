@@ -9,6 +9,8 @@ arguments: "<skillname> <feedback>"
 Report feedback (bugs, improvements, ideas) on any skill — from whatever project you're in.
 Hands off to a new Claude session in the skills project, then resumes yours.
 
+<path_resolution>
+
 ## Path Resolution
 
 Resolve the skills project root from this skill's install symlink:
@@ -18,6 +20,10 @@ SKILLS_ROOT="$(dirname "$(readlink -f ~/.claude/skills/skill-feedback)")"
 ```
 
 Use `$SKILLS_ROOT` for all operations below. Never hardcode paths.
+
+</path_resolution>
+
+<workflow>
 
 ## Workflow
 
@@ -66,9 +72,15 @@ After launching the handoff script, tell the user:
 > Feedback session launched in a new iTerm2 tab. Your current session continues normally.
 > When the feedback is processed, a completion message will be sent to this session.
 
+</workflow>
+
+<rules>
+
 ## Rules
 
 - Always resolve `$SKILLS_ROOT` dynamically — never hardcode
 - Never continue after launching the handoff — exit immediately
 - The handoff script runs in the background; do not wait for it
 - All feedback text flows through temp files, never inline shell args
+
+</rules>

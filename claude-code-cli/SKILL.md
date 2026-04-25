@@ -7,8 +7,7 @@ description: "CLI automation: print mode, scripting, multi-agent, JSON output, C
 
 The Claude Code CLI (`claude`) provides three operating modes: interactive conversations, print mode for scripting, and session management for continuing work.
 
-## Quick Start
-
+<quickstart>
 ```bash
 # Interactive conversation
 claude
@@ -38,8 +37,9 @@ claude -c
 | Skip permissions | `claude -p --dangerously-skip-permissions "task"` |
 | Limit turns | `claude -p --max-turns 5 "task"` |
 | Custom agent | `claude --agent code-reviewer "review PR"` |
+</quickstart>
 
-## Essential Flags
+<essential_flags>
 
 | Flag | Description |
 |------|-------------|
@@ -54,8 +54,9 @@ claude -c
 | `--max-turns <n>` | Limit agentic turns |
 | `--mcp-config <path>` | Load MCP servers from JSON |
 | `--agents <json>` | Define custom subagents |
+</essential_flags>
 
-## Three Operating Modes
+<operating_modes>
 
 ### Interactive Mode (default)
 
@@ -88,8 +89,9 @@ claude -c                      # Continue most recent
 claude -c -p "add tests"       # Continue in print mode
 claude -r "abc123" "query"     # Resume specific session
 ```
+</operating_modes>
 
-## Common Scripting Patterns
+<scripting_patterns>
 
 ### Process File Content
 
@@ -140,8 +142,9 @@ done
 ```
 
 **See [scripting-patterns.md](references/scripting-patterns.md) for comprehensive automation patterns.**
+</scripting_patterns>
 
-## Configuration Overview
+<configuration>
 
 ### Model Selection
 
@@ -185,9 +188,9 @@ claude --mcp-config ./mcp-servers.json "task"
 ```
 
 **See [configuration.md](references/configuration.md) for full configuration details.**
+</configuration>
 
-## Advanced Features
-
+<advanced_features>
 ### JSON Output
 
 ```bash
@@ -236,8 +239,9 @@ claude -p --max-turns 3 "refactor this module"
 ```
 
 **See [advanced-workflows.md](references/advanced-workflows.md) for SDK patterns and CI/CD integration.**
+</advanced_features>
 
-## Decision Guide
+<decision_guide>
 
 ```
 What do you need?
@@ -266,9 +270,10 @@ What do you need?
 └─ Multi-agent workflow?
    └─ claude --agents '{...}' "task"
 ```
+</decision_guide>
 
-## Reference Files
-
+<reference_files>
 - **[scripting-patterns.md](references/scripting-patterns.md)** - Comprehensive automation, CI/CD, git integration
 - **[configuration.md](references/configuration.md)** - Models, prompts, tools, MCP, settings
 - **[advanced-workflows.md](references/advanced-workflows.md)** - JSON schemas, multi-agent, SDK integration
+</reference_files>

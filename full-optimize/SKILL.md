@@ -6,8 +6,11 @@ description: "Zero-input project optimizer: analysis, simplification, docs audit
 
 # Full Optimize
 
+<description>
 Orchestrate a full optimization pipeline on the current project. No user input needed — auto-detect and go.
+</description>
 
+<workflow>
 ## Pipeline
 
 Run ALL phases in order. Each phase describes its own skip condition — do not skip unless that specific condition is met.
@@ -53,7 +56,9 @@ If verify fails: fix issues (up to 3 cycles). Do NOT proceed to Phase 5 until gr
 → Invoke **`smart-commit`**
 
 Produces atomic commits per logical change group.
+</workflow>
 
+<auto_detection>
 ## Auto-Detection
 
 Detect project type from root files:
@@ -68,7 +73,9 @@ Detect project type from root files:
 | `*.sln` / `*.csproj` | C# |
 
 Use this to calibrate what `dev-refactor` and `verify` should focus on.
+</auto_detection>
 
+<output_format>
 ## Output Format
 
 After the pipeline completes, summarise:
@@ -87,3 +94,4 @@ After the pipeline completes, summarise:
 ### Skipped
 - [any phases skipped + reason]
 ```
+</output_format>

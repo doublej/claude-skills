@@ -8,7 +8,7 @@ description: >
 
 Spawns named teammate agents inside the current Claude Code session. Teammates run concurrently with independent context windows and communicate via SendMessage.
 
-## Activation requirement
+<activation_requirement>
 
 Agent teams require the experimental flag:
 ```bash
@@ -17,7 +17,9 @@ CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude
 
 Without this flag, Agent() calls create disposable subagents, not persistent teammates.
 
-## Spawn language (exact phrasing matters)
+</activation_requirement>
+
+<spawn_language>
 
 To trigger teammate mode (not subagent mode), use:
 ```
@@ -33,7 +35,9 @@ Spawn a teammate named [name] using the [subagent_type] agent type to [task].
 
 The word **teammate** and a **name** are the two signals that distinguish teammate from subagent.
 
-## Agent tool parameters for teammates
+</spawn_language>
+
+<agent_parameters>
 
 ```
 Agent({
@@ -67,8 +71,9 @@ SendMessage({ to: "worker-a", message: "continue with phase 2" })
 
 Or by agent ID returned in the Agent tool result.
 
-## Permission modes
+</communication>
 
+<permission_modes>
 | Mode | Auto-approves |
 |------|--------------|
 | `default` | reads only |
@@ -78,7 +83,9 @@ Or by agent ID returned in the Agent tool result.
 | `dontAsk` | pre-approved tools only |
 | `bypassPermissions` | everything (VMs/containers only) |
 
-## Worktree isolation
+</permission_modes>
+
+<worktree_isolation>
 
 ```
 Agent({
@@ -89,7 +96,9 @@ Agent({
 
 Worktree is cleaned up automatically if teammate makes no changes.
 
-## Swarm workflow template
+</worktree_isolation>
+
+<workflow_template>
 
 ```
 Goal: [describe parallel task]
@@ -106,7 +115,9 @@ Goal: [describe parallel task]
 Lead collects results and synthesizes.
 ```
 
-## Teammates vs subagents
+</workflow_template>
+
+<comparison>
 
 | Use teammates when... | Use subagents when... |
 |----------------------|----------------------|
@@ -115,9 +126,13 @@ Lead collects results and synthesizes.
 | Work benefits from isolated context | Single context is fine |
 | Long-running independent roles | Short delegated queries |
 
-## Common mistakes
+</comparison>
+
+<mistakes>
 
 - Missing `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` → falls back to subagent
 - No `name` on Agent call → teammate unreachable via SendMessage
 - Using terminal output to coordinate → teammates can't see it; use SendMessage
 - Spawning without `run_in_background: true` → blocks lead until teammate finishes
+
+</mistakes>

@@ -7,6 +7,8 @@ description: "Control playback, streaming, converting via CLI, AppleScript, HTTP
 
 Binary: `/Applications/VLC.app/Contents/MacOS/VLC` (macOS), `vlc` (Linux/Windows)
 
+<control_interfaces>
+
 ## Control Interfaces
 
 ### 1. AppleScript (macOS — preferred for runtime control)
@@ -119,6 +121,10 @@ curl -s -u "$AUTH" "$BASE/status.json?command=snapshot"
 
 See `references/http-api.md` for full command list and response format.
 
+</control_interfaces>
+
+<sections>
+
 ### 4. RC Interface (socket/stdin control)
 
 ```bash
@@ -134,6 +140,10 @@ echo "play" | nc 127.0.0.1 9090
 RC commands: `play`, `stop`, `pause`, `next`, `prev`, `seek <seconds>`, `volume <0-1024>`,
 `atrack <id>`, `strack <id>`, `vratio <ratio>`, `snapshot`, `stats`, `info`,
 `enqueue <uri>`, `add <uri>`, `playlist`, `clear`, `status`, `quit`
+
+</sections>
+
+<audio>
 
 ## Audio
 
@@ -171,6 +181,10 @@ $VLC --audio-filter "equalizer:compressor" --equalizer-preset rock file.mp3
 $VLC --audio-replay-gain-mode track file.mp3
 ```
 
+</audio>
+
+<subtitles>
+
 ## Subtitles
 
 ```bash
@@ -193,6 +207,10 @@ $VLC --freetype-font "Helvetica Neue" --freetype-rel-fontsize 16 \
 # fontsize: 20=smaller 18=small 16=normal 12=large 6=larger
 ```
 
+</subtitles>
+
+<video>
+
 ## Video
 
 ```bash
@@ -214,6 +232,10 @@ $VLC --no-video-deco video.mp4          # borderless window
 # Snapshots
 $VLC --snapshot-path ~/Pictures --snapshot-format png --snapshot-prefix "vlc_" video.mp4
 ```
+
+</video>
+
+<streaming_transcoding>
 
 ## Streaming & Transcoding
 
@@ -240,6 +262,10 @@ $VLC input.mp4 --sout '#duplicate{dst=display,dst=standard{access=http,mux=ts,ds
 $VLC input.mp4 --sout '#rtp{mux=ts,dst=239.255.0.1,port=5004,sdp=sap}'
 ```
 
+</streaming_transcoding>
+
+<caching>
+
 ## Caching & Performance
 
 ```bash
@@ -249,6 +275,10 @@ $VLC --disc-caching 2000 dvd://             # ms buffer for discs
 $VLC --live-caching 500 udp://@:1234        # ms buffer for live
 $VLC --avcodec-hw videotoolbox video.mp4    # hardware decode (macOS)
 ```
+
+</caching>
+
+<macos_options>
 
 ## macOS-Specific Options
 
@@ -261,12 +291,20 @@ $VLC --macosx-control-itunes 1              # pause iTunes/Spotify (0=none 1=pau
 $VLC --macosx-mediakeys                     # media key support
 ```
 
+</macos_options>
+
+<config_file>
+
 ## Config File
 
 Location: `~/Library/Preferences/org.videolan.vlc/vlcrc` (macOS)
 
 Edit with CLI: `$VLC --reset-config` to regenerate defaults.
 Preferences set in GUI are written to this file.
+
+</config_file>
+
+<patterns>
 
 ## Common Patterns
 
@@ -288,3 +326,5 @@ while true; do
   sleep 10
 done
 ```
+
+</patterns>

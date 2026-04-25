@@ -17,7 +17,7 @@ const term = termkit.terminal;
 
 Always use `term.processExit()` instead of `process.exit()` to restore terminal state.
 
-## Quick Patterns
+<quick_patterns>
 
 ### Styled Output
 ```js
@@ -104,7 +104,9 @@ term.fullscreen(false);
 term.processExit();
 ```
 
-## Key Concepts
+</quick_patterns>
+
+<key_concepts>
 
 **Chainable styles**: `term.red.bold.bgBlue('text')` — order doesn't matter.
 
@@ -118,7 +120,9 @@ term.processExit();
 
 **Modifiers**: `.str()` returns string instead of outputting. `.error()` writes to stderr. `.wrap()` enables word-wrapping. `.noFormat()` disables printf/markup.
 
-## Common Pitfalls
+</key_concepts>
+
+<pitfalls>
 
 1. **Process won't exit**: interactive methods open stdin. Call `term.grabInput(false)` or `term.processExit()`.
 2. **Cursor visible in fullscreen**: use `term.hideCursor()` / `term.hideCursor(false)`.
@@ -126,7 +130,9 @@ term.processExit();
 4. **inputField not showing**: ensure cursor is positioned first with `term()` output.
 5. **Mouse coordinates**: (1,1) is upper-left corner, not (0,0).
 
-## Document Model (Rich Apps)
+</pitfalls>
+
+<document_model>
 
 For full terminal applications with multiple simultaneous widgets, use the document model.
 All widgets require a Document parent. Use `term.createDocument()` for setup.
@@ -153,7 +159,9 @@ Key doc-model patterns (all in `references/design-patterns.md`):
 - **Search/filter** — `inputField` + custom async autoComplete for fuzzy search
 - **Status bar** — cursor-positioned bottom bar with `saveCursor`/`restoreCursor`
 
-## Reference Files
+</document_model>
+
+<reference_files>
 
 For detailed API signatures and all options, load these references as needed:
 
@@ -165,3 +173,5 @@ For detailed API signatures and all options, load these references as needed:
   - Search: `.inputField`, `.singleLineMenu`, `.singleColumnMenu`, `.gridMenu`, `.progressBar`, `.table`, `.spinner`, `.drawImage`, `.yesOrNo`, `.fileInput`, `.slowTyping`
 - `references/screen-buffer.md` — ScreenBuffer for composited UIs, sprites, off-screen rendering
   - Search: `ScreenBuffer`, `.put()`, `.draw()`, `.fill()`, `Attribute Object`
+
+</reference_files>

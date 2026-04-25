@@ -5,7 +5,7 @@ description: "WebGL/WebGPU rendering, glTF, shaders, R3F, postprocessing, 3D tra
 
 # Three.js Development
 
-## Before Writing Code
+<before_writing_code>
 
 1. **Detect repo setup** (do not guess):
    - Framework: vanilla / React (R3F) / Vue / Svelte / Next.js
@@ -18,12 +18,16 @@ description: "WebGL/WebGPU rendering, glTF, shaders, R3F, postprocessing, 3D tra
    node scripts/three-doctor.mjs
    ```
 
-3. **Identify lifecycle ownership**:
+</before_writing_code>
+
+<lifecycle>
    - Where is the render loop?
    - What triggers mount/unmount?
    - Are there route transitions or XR loops?
 
-## Core Rules
+</lifecycle>
+
+<core_rules>
 
 ### Lifecycle Contract
 
@@ -35,32 +39,42 @@ Every Three.js integration MUST have:
 
 Target API: `createThreeApp(canvas) -> { resize(), update(dt), render(), dispose() }`
 
-### Color and Postprocessing
+</core_rules>
+
+<color_postprocessing>
 
 - Direct rendering -> renderer output settings apply
 - EffectComposer (WebGL) -> OutputPass handles tone mapping; passes needing sRGB (e.g., FXAA) go AFTER OutputPass
 - WebGL and WebGPU postprocessing stacks differ -- do not mix
 - Color textures -> `SRGBColorSpace`; data textures (normal, roughness, AO) -> `NoColorSpace` (leave untouched, do NOT set `LinearSRGBColorSpace`)
 
-### Assets
+</color_postprocessing>
+
+<assets>
 
 - Prefer glTF/GLB
 - Enable DRACO/KTX2/meshopt only if already used or required
 - Always dispose loaded resources on unmount
 
-### Safety
+</assets>
+
+<safety>
 
 - No network commands without explicit request
 - No dependency changes without verification plan
 - Match existing repo patterns
 
-## What NOT to Do
+</safety>
+
+<what_not_to_do>
 
 - Rewrite architecture or switch frameworks unless requested
 - Add dependencies when Three.js built-ins suffice
 - Global style/formatting changes -- keep diffs minimal
 
-## 3D Space & Positioning
+</what_not_to_do>
+
+<space_positioning>
 
 ### Coordinate System
 
@@ -158,7 +172,9 @@ No fixed unit system. Common conventions:
 
 Keep scale consistent across all models in a scene.
 
-## Quick Reference
+</space_positioning>
+
+<quick_reference>
 
 ### Lifecycle (Vanilla)
 
@@ -205,6 +221,8 @@ export function createThreeApp(canvas: HTMLCanvasElement) {
 
   return { resize, update, render, dispose, scene, camera };
 }
+
+</quick_reference>
 ```
 
 ### Disposal Helper
@@ -649,7 +667,7 @@ ro.disconnect();
 - [ ] Event listeners removed
 - [ ] GPU resources disposed
 
-## Troubleshooting
+<troubleshooting>
 
 | Symptom | Likely Cause |
 |---------|--------------|
@@ -661,7 +679,9 @@ ro.disconnect();
 | Memory growth | Resources not disposed on unmount |
 | Stretched on resize | Camera aspect not updated, composer not resized |
 
-## Deep Reference
+</troubleshooting>
+
+<deep_reference>
 
 Load on demand from `references/`:
 
@@ -677,8 +697,10 @@ Load on demand from `references/`:
 | `theatre-js.md` | Core API, prop types, Studio, React/R3F integration, production, audio sync |
 | `animation-easing.md` | Easing families, timing guidelines, platform standards, real-world examples |
 
-## Scripts
+</deep_reference>
 
-Run without loading source:
+<scripts>
 - `scripts/three-doctor.mjs` -- Repo pattern audit
 - `scripts/asset-audit.mjs` -- Asset size report
+
+</scripts>

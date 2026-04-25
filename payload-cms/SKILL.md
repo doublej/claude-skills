@@ -5,7 +5,11 @@ description: Payload CMS 3.0 development — scaffold projects, generate collect
 
 # Payload CMS 3.0
 
+<description>
 Scaffold, generate, and manage Payload CMS 3.0 projects. Payload is a fullstack Next.js framework with a TypeScript-first config-based CMS.
+</description>
+
+<architecture>
 
 ## Architecture
 
@@ -18,6 +22,10 @@ Payload 3.0 = Next.js app + Payload config. Key concepts:
 - **Access Control** — per-operation permission functions
 - **Admin Panel** — auto-generated React UI at `/admin`
 - **APIs** — auto-generated REST (`/api/{slug}`) + GraphQL + Local API
+
+</architecture>
+
+<scaffolding>
 
 ## Scaffolding
 
@@ -48,6 +56,10 @@ my-project/
 ```
 
 After scaffolding: `cp .env.example .env` → fill in `DATABASE_URL` + `PAYLOAD_SECRET` → `pnpm install` → `pnpm dev`
+
+</scaffolding>
+
+<generating>
 
 ## Generating Components
 
@@ -82,6 +94,10 @@ export const Posts: CollectionConfig = {
 
 Then register in `payload.config.ts`: add to `collections` array + add import.
 
+</generating>
+
+<components>
+
 ### Global
 
 ```ts
@@ -109,6 +125,10 @@ export const Nav: GlobalConfig = {
 
 Register in `payload.config.ts`: add to `globals` array.
 
+</components>
+
+<auth>
+
 ### Auth Collection
 
 ```ts
@@ -125,6 +145,10 @@ export const Users: CollectionConfig = {
   ],
 }
 ```
+
+</auth>
+
+<upload>
 
 ### Upload Collection
 
@@ -145,6 +169,10 @@ export const Media: CollectionConfig = {
 }
 ```
 
+</upload>
+
+<field_types>
+
 ## Field Types Quick Reference
 
 Read `references/fields.md` for full field type reference with all options.
@@ -153,6 +181,10 @@ Read `references/fields.md` for full field type reference with all options.
 **Relational**: relationship, upload, join
 **Rich content**: richText (Lexical editor)
 **Layout**: group, array, blocks, tabs, row, collapsible, ui
+
+</field_types>
+
+<hooks>
 
 ## Hooks
 
@@ -166,6 +198,10 @@ Key patterns:
 - Set author: `beforeChange` + `req.user.id` on create
 - Publish date: `beforeChange` + set date when status changes to published
 - Sync external: `afterChange` + fire-and-forget (no return)
+
+</hooks>
+
+<access_control>
 
 ## Access Control
 
@@ -187,12 +223,20 @@ read: ({ req: { user } }) => {
 }
 ```
 
+</access_control>
+
+<rest_api>
+
 ## REST API
 
 Read `references/rest-api.md` for complete API reference.
 
 Base: `/api/{collection-slug}` — auto-generated CRUD + auth endpoints.
 Query: `?where[status][equals]=published&sort=-createdAt&limit=10&depth=2`
+
+</rest_api>
+
+<mcp>
 
 ## MCP Server Integration
 
@@ -202,6 +246,10 @@ Three options:
 1. **ohnicholas93/payload-mcp-server** (Python) — live instance CRUD via REST, 11 stars
 2. **Govcraft/payload-mcp** (TS) — type-aware code generation from Payload types
 3. **Custom MCP server** — build your own REST wrapper (recommended for production)
+
+</mcp>
+
+<config_ref>
 
 ## Config Reference
 
@@ -236,6 +284,10 @@ DB adapters:
 - MongoDB: `@payloadcms/db-mongodb` → `mongooseAdapter({ url })`
 - Postgres: `@payloadcms/db-postgres` → `postgresAdapter({ pool: { connectionString } })`
 
+</config_ref>
+
+<best_practices>
+
 ## Best Practices
 
 - One collection per file in `src/collections/`
@@ -246,3 +298,5 @@ DB adapters:
 - Use `versions: { drafts: true }` for content that needs review workflows
 - Generate types with `pnpm generate:types` after schema changes
 - Use Local API (`req.payload.find()`) in server components, REST API for client
+
+</best_practices>

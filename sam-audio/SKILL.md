@@ -3,11 +3,13 @@ name: sam-audio
 description: "Meta SAM for audio source separation: model loading, batch processing"
 ---
 
-# SAM Audio Integration
+<intro>
 
 Separate audio sources using Meta's Segment Anything Audio model. Focus on integration patterns — pipelines, batch processing, format handling, and production memory management.
 
-## When to Use This Skill
+</intro>
+
+<when_to_use>
 
 - Separating vocals, instruments, or sound effects from audio files
 - Building audio separation pipelines with pre/post-processing
@@ -15,7 +17,9 @@ Separate audio sources using Meta's Segment Anything Audio model. Focus on integ
 - Converting between audio formats around separation workflows
 - Managing GPU memory for large-scale audio separation
 
-## Setup
+</when_to_use>
+
+<setup>
 
 ### Environment
 
@@ -50,7 +54,9 @@ model = model.to("cuda").half()  # float16 saves ~50% VRAM
 predictor = SamAudioPredictor(model)
 ```
 
-## Core API
+</setup>
+
+<core_api>
 
 ### Single-File Separation
 
@@ -87,7 +93,9 @@ masks = predictor.predict(spectrogram_point=(2.5, 440.0))
 masks = predictor.predict(time_span=(10.0, 15.0))
 ```
 
-## Quality Tuning
+</core_api>
+
+<quality_tuning>
 
 ### Prediction Spans
 
@@ -122,7 +130,9 @@ masks = predictor.predict(
 | Balanced | 4 | True | 30.0 | Default production |
 | Best | 16 | True | 15.0 | Final masters |
 
-## Integration Patterns
+</quality_tuning>
+
+<integration>
 
 ### Pipeline Function
 
@@ -258,7 +268,9 @@ input,prompt,output_format
 
 See **[BATCH PROCESSING](references/batch-processing.md)** for parallel I/O, multi-GPU, and the `batch_separate.py` CLI script.
 
-## Format Conversion
+</integration>
+
+<format_conversion>
 
 Use ffmpeg for format conversion before/after separation:
 
@@ -275,7 +287,9 @@ ffmpeg -i separated.wav -c:a libmp3lame -b:a 320k output.mp3
 
 See **[FORMAT CONVERSION](references/format-conversion.md)** for the full format matrix, Python ffmpeg wrappers, and sample rate handling.
 
-## Post-Processing
+</format_conversion>
+
+<post_processing>
 
 Apply normalization and cleanup after separation:
 
@@ -292,3 +306,5 @@ def normalize_peak(audio: np.ndarray, target_db: float = -1.0) -> np.ndarray:
 ```
 
 See **[POST-PROCESSING](references/post-processing.md)** for LUFS normalization, silence trimming, noise gate, and export chains.
+
+</post_processing>

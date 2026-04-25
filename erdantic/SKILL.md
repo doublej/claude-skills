@@ -7,14 +7,16 @@ description: "Generate ERD diagrams from Python data models (Pydantic, dataclass
 
 Generate entity relationship diagrams from Python data model classes using Graphviz.
 
-## Supported Frameworks
+<supported_frameworks>
 
 - Pydantic V2 / V1
 - Python dataclasses
 - attrs
 - msgspec
 
-## Quick Start
+</supported_frameworks>
+
+<quick_start>
 
 ### CLI
 
@@ -39,7 +41,9 @@ diagram.draw("diagram.png")
 
 Extension determines format: `.png`, `.svg`, `.pdf`, `.dot`
 
-## Customization
+</output_formats>
+
+<customization>
 
 Pass Graphviz attributes to customize appearance:
 
@@ -52,7 +56,9 @@ diagram.draw(
 )
 ```
 
-## API Reference
+</customization>
+
+<api_reference>
 
 ### Main Functions
 
@@ -71,11 +77,17 @@ diagram.draw(path)   # Render to file
 
 ### Edge Relationships
 
+</api_reference>
+
+<edge_relationships>
+
 Uses crow's foot notation:
 - **Cardinality**: ONE or MANY (max associations)
 - **Modality**: ZERO or ONE (min associations / optional)
 
-## Installation
+</edge_relationships>
+
+<installation>
 
 Requires Graphviz system library.
 
@@ -87,6 +99,10 @@ conda install erdantic -c conda-forge
 pip install erdantic
 ```
 
-## Script
+</installation>
+
+<script>
 
 Use `scripts/generate_erd.py` for common diagram generation tasks.
+
+</script>

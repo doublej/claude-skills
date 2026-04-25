@@ -8,6 +8,8 @@ license: MIT
 
 Four branches. Pick the right one, or combine.
 
+<branches>
+
 ## Which Branch?
 
 | Task | Branch |
@@ -36,9 +38,9 @@ Four branches. Pick the right one, or combine.
 - Network/disk I/O in views
 - Secrets in UserDefaults
 
----
+</shared_non_negotiables>
 
-## Codegen
+<codegen>
 
 Generate complete `@Observable` MVVM features. Default to iOS 17+/macOS 14+. Fall back to `ObservableObject` only when explicitly needed.
 
@@ -167,9 +169,9 @@ enum AppError: LocalizedError {
 
 See `references/architecture-patterns.md` for complete networking, persistence, TCA, testing, and project structure.
 
----
+</architecture>
 
-## UI
+<ui>
 
 Comprehensive SwiftUI interface engineering. iOS 18+ baseline. Covers layouts, animations, gestures, navigation, drawing, and performance.
 
@@ -270,9 +272,9 @@ See `references/ui-layouts.md` for Layout protocol, custom containers, scroll pa
 See `references/ui-animations.md` for animators, transitions, gestures, Canvas, MeshGradient.
 See `references/ui-platform.md` for widgets, Live Activities, deep linking, StoreKit, performance.
 
----
+</ui>
 
-## Design
+<design>
 
 For brand identity and visual distinction. Skip for enterprise/utilities — use UI branch.
 
@@ -360,7 +362,9 @@ GlassEffectContainer {
 
 Provide `.regularMaterial` fallback for < iOS 26.
 
-### Motion Budget
+</design>
+
+<motion_budget>
 
 | Moment | Timing |
 |--------|--------|
@@ -370,7 +374,9 @@ Provide `.regularMaterial` fallback for < iOS 26.
 
 Max 2 bouncy springs per screen. No animation may block input. Always check `reduceMotion`.
 
-### Haptic Vocabulary
+</motion_budget>
+
+<haptics>
 
 | Action | Haptic |
 |--------|--------|
@@ -380,16 +386,18 @@ Max 2 bouncy springs per screen. No animation may block input. Always check `red
 | Error | `.notification(.error)` |
 | Boundary hit | `.impact(.rigid)` |
 
-### Typography
+</haptics>
+
+<typography>
 
 SF Pro required. Distinctive through weight contrast:
 - Pair Ultralight/Light with Medium/Semibold (never all-Medium)
 - SF Mono for numbers, codes, data displays
 - Custom fonts for logo/wordmark only, must use `@ScaledMetric`
 
----
+</typography>
 
-## Reference Files
+<reference_files>
 
 - `references/codegen-patterns.md` — actor cache, task groups, Combine bridge, TCA, CI/CD, privacy manifest, SPM
 - `references/architecture-patterns.md` — networking, APIClient, persistence, DI, TCA, testing, project structure
@@ -398,9 +406,13 @@ SF Pro required. Distinctive through weight contrast:
 - `references/ui-animations.md` — PhaseAnimator, KeyframeAnimator, transitions, gestures, Canvas, MeshGradient, Liquid Glass
 - `references/ui-platform.md` — widgets, Live Activities, App Intents, StoreKit, TipKit, deep linking, performance
 
-## Resources
+</reference_files>
+
+<resources>
 
 - Apple docs (AI-readable): replace `developer.apple.com` with `sosumi.ai`
   - SwiftUI: `https://sosumi.ai/documentation/swiftui`
   - HIG: `https://sosumi.ai/design/human-interface-guidelines`
   - Concurrency: `https://sosumi.ai/documentation/swift/concurrency`
+
+</resources>

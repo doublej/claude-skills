@@ -7,6 +7,7 @@ description: "Puppeteer/Playwright for AI web agents and E2E testing"
 
 Build AI-powered web agents and end-to-end tests using Puppeteer or Playwright.
 
+<when_to_use>
 ## When to Use
 
 - Building AI agents that navigate websites visually
@@ -15,7 +16,9 @@ Build AI-powered web agents and end-to-end tests using Puppeteer or Playwright.
 - Accessibility tree extraction for semantic understanding
 - Automated UI testing with visual verification
 - End-to-end (E2E) testing of web applications
+</when_to_use>
 
+<installation>
 ## Installation
 
 ### Puppeteer
@@ -28,9 +31,9 @@ npm install puppeteer
 npm install -D @playwright/test
 npx playwright install
 ```
+</installation>
 
----
-
+<e2e_tests>
 ## End-to-end Tests with Playwright
 
 E2E (short for 'end to end') tests allow you to test your full application through the eyes of the user. [Playwright](https://playwright.dev/) is the recommended choice, but you can also use [Cypress](https://www.cypress.io/) or [NightwatchJS](https://nightwatchjs.org/).
@@ -68,9 +71,9 @@ test('home page has expected h1', async ({ page }) => {
     await expect(page.locator('h1')).toBeVisible();
 });
 ```
+</e2e_tests>
 
----
-
+<llm_navigation>
 ## LLM Visual Navigation (Puppeteer)
 
 Build AI-powered web agents using Puppeteer with techniques optimized for multimodal LLMs.
@@ -165,9 +168,12 @@ Current goal: {user_goal}
 3. **Include element metadata** - "Button: Submit" not just "3"
 4. **Provide accessibility context** - Role, name, state from a11y tree
 5. **Limit visible elements** - 20-30 labels max per screenshot
+</llm_navigation>
 
+<reference_files>
 ## Reference Files
 
 See `references/` for:
 - `visual-navigation.md` - Full navigation agent patterns
 - `element-labeling.md` - Set-of-Marks implementation code
+</reference_files>

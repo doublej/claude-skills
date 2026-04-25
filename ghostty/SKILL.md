@@ -7,6 +7,7 @@ description: Configure and customize Ghostty terminal emulator (Mitchell Hashimo
 
 Ghostty is a fast, native, GPU-accelerated terminal emulator. Installed version on this machine is detected via `ghostty --version`.
 
+<config_file>
 ## Config file
 
 Edit, don't create fresh — config may already exist.
@@ -25,7 +26,9 @@ Check both. Ghostty loads all and later overrides earlier.
 ghostty +show-config --default=false --changes-only
 ```
 Lists only user-set values. Useful to see what's actually applied.
+</config_file>
 
+<syntax>
 ## Syntax
 
 ```
@@ -40,7 +43,9 @@ theme = GruvboxDark
 - Whitespace around `=` ignored
 - Every key also a CLI flag: `ghostty --background=282c34`
 - Include other files: `config-file = path/to/other` (prefix `?` to make optional)
+</syntax>
 
+<reload>
 ## Reload
 
 - In-app: `cmd+shift+,` (macOS) / `ctrl+shift+,` (Linux)
@@ -48,7 +53,9 @@ theme = GruvboxDark
 - Some options are startup-only — restart required
 
 Tell user which type after editing when unsure. When in doubt: restart.
+</reload>
 
+<keybinds>
 ## Keybinds
 
 Syntax: `keybind = trigger=action[:parameter]`
@@ -81,7 +88,9 @@ Config: `reload_config`, `open_config`
 
 Full list: `ghostty +list-actions`
 Current bindings: `ghostty +list-keybinds`
+</keybinds>
 
+<themes>
 ## Themes
 
 ```
@@ -93,7 +102,9 @@ theme = ./relative/to/config.theme                # custom file
 List bundled: `ghostty +list-themes` (hundreds, including Dracula, Tokyo Night, Catppuccin variants, Solarized, Nord, etc.)
 
 A theme is just a config file containing palette/background/foreground. User config values override theme values.
+</themes>
 
+<fonts>
 ## Fonts
 
 ```
@@ -107,7 +118,9 @@ adjust-cell-height = 10%
 
 List available: `ghostty +list-fonts`
 Ghostty ships JetBrains Mono + Nerd Font symbols embedded — no install needed.
+</fonts>
 
+<quick_terminal>
 ## Quick terminal (macOS + GTK)
 
 Drop-down terminal triggered by a keybind.
@@ -121,7 +134,9 @@ quick-terminal-autohide = true
 ```
 
 `global:` prefix needed to toggle when Ghostty isn't focused. macOS will prompt for Accessibility permission on first use.
+</quick_terminal>
 
+<shell_integration>
 ## Shell integration
 
 Auto-injected for bash, elvish, fish, nushell, zsh. Features:
@@ -139,7 +154,9 @@ shell-integration-features = ssh-env,ssh-terminfo,sudo
 - `sudo` — preserves terminfo through `sudo`
 
 Manual setup (only needed for `/bin/bash` on macOS): see `references/shell-integration.md`.
+</shell_integration>
 
+<window_appearance>
 ## Window / appearance
 
 ```
@@ -153,7 +170,9 @@ macos-option-as-alt = true         # so alt-key combos work
 cursor-style = block               # block|bar|underline|block_hollow
 cursor-style-blink = true
 ```
+</window_appearance>
 
+<common_tasks>
 ## Common tasks
 
 **Add/edit config:** find file (check macOS path first), edit, reload with `cmd+shift+,`. For font/theme changes, usually need new window.
@@ -166,10 +185,13 @@ ghostty +validate-config ~/Library/Application\ Support/com.mitchellh.ghostty/co
 ```
 
 **Show all options with docs:** `ghostty +show-config --default --docs | less`
+</common_tasks>
 
+<references>
 ## References
 
 - `references/api_reference.md` — extended option tables and macOS-specific notes
 - Upstream docs: https://ghostty.org/docs
 - Actions list: `ghostty +list-actions`
 - Themes list: `ghostty +list-themes`
+</references>

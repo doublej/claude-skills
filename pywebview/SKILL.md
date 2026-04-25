@@ -5,12 +5,15 @@ description: Build native desktop apps with Python backend + HTML/CSS/JS fronten
 
 # pywebview
 
+<overview>
 ## Overview
 
 pywebview wraps a native webview (WinForms+WebView2 / Cocoa+WebKit / GTK+WebKit2 / QT+QtWebEngine) and gives Python full control over the window. No bundled Chromium — small executables. Two-way bridge: call Python from JS, JS from Python, share state.
 
 Use this skill when building or debugging Python desktop apps with web UIs (`webview.create_window`, `webview.start`, `pywebview.api.*`, `js_api`, `expose`, `evaluate_js`, Flask/FastAPI + pywebview).
+</overview>
 
+<contract>
 ## Agent behavior contract
 
 1. **One blocking entry point.** `webview.start()` blocks until the last window closes. Run background work via `webview.start(func, *args)` — never put work after `start()`.
@@ -36,7 +39,9 @@ Use this skill when building or debugging Python desktop apps with web UIs (`web
 18. **Frozen apps need data.** PyInstaller: `--add-data "gui:gui"`. py2app on macOS (recommended over PyInstaller). Vite/webpack: build first, point `--add-data` at the dist folder.
 19. **Single-file is a trap on macOS.** `--onefile` works but unpacks to /tmp on every launch — slow startup, breaks native menu bundle metadata. Use `--onedir` + a .app wrapper, or py2app.
 20. **Closing != destroying.** `confirm_close=True` shows a native confirm dialog before close. `events.closing` can return `False` to cancel; `events.closed` runs after destruction.
+</contract>
 
+<quick_start>
 ## Quick start
 
 ```python

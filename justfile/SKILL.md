@@ -7,6 +7,7 @@ description: "Create and manage Justfiles for project task automation and dev en
 
 Create Justfiles that match the user's established conventions. Skill is grounded in official just documentation + tested patterns from 40+ projects.
 
+<foundation>
 ## Foundation: Official Just Manual
 
 This skill references the official Just documentation:
@@ -15,9 +16,9 @@ This skill references the official Just documentation:
 - **Key sections:** Settings, Recipe syntax, Attributes, Functions, Parameters, Dependencies, Script/shebang recipes
 
 Skill examples and conventions below are validated against official just behavior. When in doubt, consult the official docs.
+</foundation>
 
----
-
+<workflow>
 ## Workflow (Skill Steps)
 
 1. **Check filename:** MUST be `Justfile` (capital J), not `justfile`
@@ -25,9 +26,9 @@ Skill examples and conventions below are validated against official just behavio
 3. Detect stack from package.json, pyproject.toml, Cargo.toml, etc.
 4. Generate recipes matching detected stack + user conventions below
 5. **Verify output:** Run `just --list` to check grouping, git branch, and formatting
+</workflow>
 
----
-
+<jj_conventions>
 ## JJ Conventions (Proven across 40+ projects)
 
 ### ⚠️ File Naming (CRITICAL — case-sensitive)
@@ -123,9 +124,9 @@ show-pwd:
 ```
 
 **Foundation reference:** [Recipe Syntax](https://just.systems/man/en/features.html)
+</jj_conventions>
 
----
-
+<variables_expressions>
 ## Variables and Expressions
 
 ### Assignment and interpolation
@@ -156,9 +157,9 @@ Common functions:
 - `absolute_path(path)` — expand to absolute path
 
 **Foundation reference:** [Functions](https://just.systems/man/en/functions.html)
+</variables_expressions>
 
----
-
+<parameters>
 ## Parameters and Flags
 
 ### Positional parameters

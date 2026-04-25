@@ -5,6 +5,8 @@ description: "Real-time voice AI agents with Pipecat, LiveKit, OpenAI Realtime, 
 
 # Conversational Voice Assistant Development
 
+<framework_selection>
+
 ## Framework Selection
 
 | Framework | Language | Best For | Latency |
@@ -15,6 +17,10 @@ description: "Real-time voice AI agents with Pipecat, LiveKit, OpenAI Realtime, 
 | **ElevenLabs ConvAI** | Multi-SDK | Best voice quality, batch calling | Low |
 
 See `references/` for framework-specific patterns.
+
+</framework_selection>
+
+<quick_start>
 
 ## Quick Start: Pipecat
 
@@ -76,6 +82,10 @@ async def entrypoint(ctx: JobContext):
 # Run: python myagent.py dev
 ```
 
+</quick_start>
+
+<architecture>
+
 ## Quick Start: OpenAI Realtime API
 
 ```javascript
@@ -119,6 +129,10 @@ async with agent.connect() as session:
             play_audio(event.audio)
 ```
 
+</quick_start>
+
+<patterns>
+
 ## Architecture Patterns
 
 ### Pipeline Architecture (Pipecat)
@@ -137,6 +151,10 @@ EntryPoint → Connect → Agent (instructions) → Session (STT+LLM+TTS) → Ro
 ```
 WebSocket ↔ Server VAD → Model → Audio Stream
 ```
+
+</patterns>
+
+<service_integrations>
 
 ## Service Integrations
 
@@ -163,6 +181,10 @@ WebSocket ↔ Server VAD → Model → Audio Stream
 | Anthropic | Claude 3.5 | Reasoning |
 | Groq | Llama 3 | Speed |
 | Gemini | 2.0 Flash | Multimodal |
+
+</service_integrations>
+
+<key_features>
 
 ## Key Features to Implement
 
@@ -219,6 +241,10 @@ async def get_weather(location: str):
     return await weather_api.fetch(location)
 ```
 
+</key_features>
+
+<deployment>
+
 ## Deployment Options
 
 ### Local Testing
@@ -254,6 +280,10 @@ sip.connect(
 agent.batch_call(phone_numbers=[...], message="...")
 ```
 
+</deployment>
+
+<best_practices>
+
 ## Best Practices
 
 ### Latency Optimization
@@ -278,11 +308,19 @@ async def handle_network_error(error):
     pass
 ```
 
+</best_practices>
+
+<security>
+
 ### Privacy & Security
 - Process audio in-memory, don't persist unless needed
 - Use secure WebSocket (wss://) connections
 - Validate user identity before sensitive operations
 - Comply with call recording laws (two-party consent)
+
+</security>
+
+<cost>
 
 ## Cost Considerations
 
@@ -294,9 +332,15 @@ async def handle_network_error(error):
 | OpenAI TTS | ~$0.015/1K chars |
 | OpenAI Realtime | ~$0.06/min audio in, ~$0.24/min audio out |
 
+</cost>
+
+<resources>
+
 ## Resources
 
 - **Pipecat**: https://github.com/pipecat-ai/pipecat | https://docs.pipecat.ai
 - **LiveKit Agents**: https://github.com/livekit/agents
 - **OpenAI Realtime**: https://platform.openai.com/docs/guides/realtime
 - **ElevenLabs**: https://elevenlabs.io/docs/conversational-ai/overview
+
+</resources>

@@ -5,6 +5,7 @@ description: "Native Quest VR with OpenXR: swapchains, timewarp, foveated, NDK, 
 
 # Quest / Android VR Client
 
+<prerequisites>
 ## Before Writing Code
 
 1. **Identify the graphics API**: OpenGL ES 3.x or Vulkan
@@ -28,7 +29,9 @@ description: "Native Quest VR with OpenXR: swapchains, timewarp, foveated, NDK, 
 | Pancake lenses | No | Yes | Yes |
 
 Shared memory model: CPU and GPU share the same RAM pool. No dedicated VRAM.
+</prerequisites>
 
+<core_rules>
 ## Core Rules
 
 ### Frame Loop Contract (OpenXR)

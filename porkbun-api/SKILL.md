@@ -7,6 +7,7 @@ description: "Domain and DNS management: records, nameservers, SSL, URL forwardi
 
 Manage domains and DNS through the Porkbun API.
 
+<setup>
 ## Setup
 
 Set environment variables:
@@ -16,13 +17,17 @@ export PORKBUN_SECRET_KEY="sk1_..."
 ```
 
 Get API keys from: https://porkbun.com/account/api
+</setup>
 
+<reference>
 ## Quick Reference
 
 Base URL: `https://api.porkbun.com/api/json/v3`
 
 All requests: HTTP POST with JSON body containing `apikey` and `secretapikey`.
+</reference>
 
+<cli>
 ## CLI Script
 
 Use `scripts/porkbun.py` for common operations:
@@ -58,7 +63,9 @@ uv run python scripts/porkbun.py ssl example.com
 # Pricing (no auth needed)
 uv run python scripts/porkbun.py pricing
 ```
+</cli>
 
+<common_tasks>
 ## Common Tasks
 
 ### Add A Record
@@ -124,7 +131,9 @@ data = {
 }
 # POST to /domain/updateNs/{domain}
 ```
+</common_tasks>
 
+<dns_types>
 ## DNS Record Types
 
 | Type | Purpose | Content Example |
@@ -137,12 +146,15 @@ data = {
 | NS | Nameserver | `ns1.example.com` |
 | SRV | Service | `0 5 5060 sipserver.example.com` |
 | CAA | Certificate auth | `0 issue "letsencrypt.org"` |
+</dns_types>
 
+<error_handling>
 ## Error Handling
 
 - `status: "SUCCESS"` = OK
 - `status: "ERROR"` + `message` = failure reason
 - HTTP 403 = enable API access in Porkbun account settings
+</error_handling>
 
 ## Full API Reference
 

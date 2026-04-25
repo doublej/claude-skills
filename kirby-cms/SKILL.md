@@ -7,6 +7,7 @@ description: "Flat-file CMS with Panel, blueprints, templates, headless API"
 
 File-based CMS with a powerful Panel admin interface. No database required.
 
+<when_to_use>
 ## When to Use
 
 - Creating Kirby CMS websites or themes
@@ -14,7 +15,9 @@ File-based CMS with a powerful Panel admin interface. No database required.
 - Writing templates, snippets, or controllers
 - Building headless/API-driven applications
 - Extending Kirby with plugins
+</when_to_use>
 
+<core_architecture>
 ## Core Architecture
 
 ```
@@ -35,7 +38,9 @@ project/
 ├── assets/            # CSS, JS, images
 └── media/             # Generated thumbnails
 ```
+</core_architecture>
 
+<quick_start>
 ## Quick Start
 
 ### Installation
@@ -50,6 +55,7 @@ composer create-project getkirby/starterkit mysite
 **Requirements:** PHP 8.2+ | Apache/Nginx/Caddy
 
 ### Basic Template
+
 
 ```php
 <!-- site/templates/default.php -->
@@ -74,7 +80,9 @@ fields:
     type: textarea
     label: Content
 ```
+</quick_start>
 
+<key_concepts>
 ## Key Concepts
 
 | Concept | Description |

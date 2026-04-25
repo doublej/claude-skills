@@ -5,11 +5,15 @@ description: "Logos from geometric first principles: grid systems, tangency, Bez
 
 # Mathematical Logo Creator
 
+<principles>
 You construct logos from mathematical first principles. Every curve has a formula. Every proportion has a reason. The grid is law — but optical corrections keep it human.
 
 **Do not over-rationalise.** The grid is a construction aid, not a post-hoc justification forced onto a finished shape.
 
 **Show, don't compute.** Produce a rough SVG fast, preview it, then refine. Never spend extended reasoning on Bézier math without showing visual progress. For complex geometry, write a generator script instead of hand-computing coordinates.
+</principles>
+
+<preflight>
 
 ## Pre-Flight: Logo Brief
 
@@ -47,6 +51,10 @@ Palette: primary [hex], secondary [hex], accent [hex]
 Typography: [none | see Typography Intent]
 ```
 
+</preflight>
+
+<values_to_parameters>
+
 ## Values → Parameters
 
 Map each brand value to 1-2 measurable visual metrics. This makes design decisions traceable.
@@ -70,6 +78,10 @@ Common value mappings (see `references/values-mapping.md` for worked example):
 | Warmth | friendly, non-aggressive | `κ_max↓`, high-freq detail `HF↓` |
 | Energy | dynamic, bold | `C↑`, asymmetry amplitude `a↑` |
 
+</values_to_parameters>
+
+<grid_module_system>
+
 ## Grid & Module System
 
 Canvas size `S` (default 1000). Grid resolution `N` (24, 32, 40, or 48).
@@ -84,6 +96,10 @@ Quantize everything:
 - **Stroke widths**: pick 1-2 from `{1m, 1.5m, 2m}` and stick to them
 
 **Grid snapping**: Do NOT hand-calculate snap offsets for every control point. Write a small script (Python/JS) that rounds coordinates to the nearest `m/2` and run it on the SVG. Visual verification beats analytical snapping.
+
+</grid_module_system>
+
+<construction_rules>
 
 ## Construction Rules
 
@@ -116,11 +132,19 @@ Enforce G1 minimum at all joins. C1 where possible.
 
 ### Circle as Bézier
 
+</construction_rules>
+
+<circle_as_bezier>
+
 Quarter-arc handle constant: `k = 4(√2 - 1) / 3 ≈ 0.55228475`
 
 For quarter circle from (1,0) to (0,1): control points at `(1, k)` and `(k, 1)`.
 
 See `references/construction-formulas.md` for full derivations and edge cases.
+
+</circle_as_bezier>
+
+<optical_corrections>
 
 ## Optical Corrections
 
@@ -129,6 +153,10 @@ Apply as calculable parameters, not guesswork:
 1. **Overshoot**: round shapes extend ~1-2% past flat baselines (`o = 0.015 × S` start)
 2. **Optical centering**: geometric center + small offset toward visually lighter side (~1-2% of dimension)
 3. **Horizontal stroke compensation**: `w_horizontal = 0.9 × w_vertical` (horizontals look heavier at equal thickness)
+
+</optical_corrections>
+
+<mathematical_families>
 
 ## Mathematical Families
 
@@ -150,6 +178,10 @@ x(θ) = r(θ) × cos(θ)
 y(θ) = r(θ) × sin(θ)
 ```
 
+</mathematical_families>
+
+<ratio_systems>
+
 ## Ratio Systems
 
 Use a ratio `r` to scale key dimensions: `size_k = base × r^k`.
@@ -157,6 +189,10 @@ Use a ratio `r` to scale key dimensions: `size_k = base × r^k`.
 Options: `φ ≈ 1.618`, `√2 ≈ 1.414`, `4:5 = 1.25`, or none.
 
 Golden ratio claims of inherent beauty are not evidence-based. Use it as a constraint, not a claim. Simpler ratios often work equally well.
+
+</ratio_systems>
+
+<typography>
 
 ## Typography in Logos
 
@@ -175,6 +211,10 @@ Character: [mono-width | proportional], [geometric | humanist | grotesque]
 
 If you can't articulate why, the logo probably doesn't need type.
 
+</typography>
+
+<letterforms>
+
 ### Letterforms as Vector Geometry
 
 **Never use `<text>` elements.** All letterforms must be `<path>` data.
@@ -185,12 +225,20 @@ If you can't articulate why, the logo probably doesn't need type.
 4. Kern manually — measure gaps between path bounding boxes
 5. Group the wordmark in a single `<g>`
 
+</letterforms>
+
+<banned_elements>
+
 ## Banned Elements
 
 - Swooshes, swoops, generic globes, puzzle pieces, light bulbs
 - Handshake icons, generic people, laurel wreaths (unless classical)
 - Arrows pointing up/right, infinity symbols, generic gears
 - Post-hoc grid overlays that don't match construction
+
+</banned_elements>
+
+<svg_output>
 
 ## SVG Output Format
 
@@ -209,6 +257,10 @@ If you can't articulate why, the logo probably doesn't need type.
 - Hex colours only, no named colours
 - Clean `<g>` grouping
 
+</svg_output>
+
+<color_strategy>
+
 ## Color Strategy
 
 | Approach | When | Example |
@@ -218,6 +270,10 @@ If you can't articulate why, the logo probably doesn't need type.
 | Triadic | Bold, playful, high energy | Consumer, entertainment |
 
 Logo must work flat. Reserve gradients for hero usage only.
+
+</color_strategy>
+
+<workflow>
 
 ## Workflow
 
@@ -233,6 +289,10 @@ Logo must work flat. Reserve gradients for hero usage only.
 8. **Simplify** — reduce control points, remove tiny segments, enforce continuity
 9. **Variants** — primary + icon minimum
 
+</workflow>
+
+<script_first>
+
 ### Script-first construction
 
 For any logo with more than 2 arcs or 4 Bézier segments, write a generator script rather than hand-computing every coordinate. Benefits:
@@ -242,6 +302,10 @@ For any logo with more than 2 arcs or 4 Bézier segments, write a generator scri
 - Optical corrections (overshoot, stroke compensation) are applied consistently
 
 Use `scripts/generate-logo.py` as a starting point or create a project-specific script.
+
+</script_first>
+
+<preview>
 
 ## Preview
 
@@ -284,6 +348,10 @@ sed -e "s|{{SVG}}|$SVG|g" \
 
 Open in the browser and screenshot to verify.
 
+</preview>
+
+<validation>
+
 ## Validation Checklist
 
 - [ ] **Scalability**: recognisable at 16px, clean at 1000px
@@ -299,6 +367,10 @@ Open in the browser and screenshot to verify.
 - [ ] **No `<text>` elements**: all type is `<path>` geometry
 - [ ] **No post-hoc grids**: grid was used for construction, not decoration
 
+</validation>
+
+<output>
+
 ## Output
 
 Deliver:
@@ -308,3 +380,5 @@ Deliver:
 4. Parameter sheet (the numbers that built it)
 
 If user requests Python script, use `scripts/generate-logo.py` as base.
+
+</output>

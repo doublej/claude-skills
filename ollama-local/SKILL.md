@@ -5,7 +5,11 @@ description: Use local network Ollama (Gemma) for LLM tasks like summarization, 
 
 # Ollama Local
 
+<description>
 Interact with local network Ollama instance running Gemma models.
+</description>
+
+<endpoint>
 
 ## Endpoint
 
@@ -14,6 +18,10 @@ POST http://192.168.178.197:11434/v1/chat/completions
 ```
 
 Verify: `curl http://192.168.178.197:11434/v1/models`
+
+</endpoint>
+
+<minimal_request>
 
 ## Minimal Request
 
@@ -31,6 +39,10 @@ curl -X POST http://192.168.178.197:11434/v1/chat/completions \
 
 Response: `data.choices[0].message.content`
 
+</minimal_request>
+
+<parameters>
+
 ## Parameters
 
 | Param | Default | Notes |
@@ -40,6 +52,10 @@ Response: `data.choices[0].message.content`
 | top_p | 0.95 | Nucleus sampling |
 | top_k | 64 | Vocab filtering |
 | think | false | Reasoning mode |
+
+</parameters>
+
+<typescript_client>
 
 ## TypeScript Client
 
@@ -62,11 +78,19 @@ const { choices } = await response.json()
 return choices[0].message.content
 ```
 
+</typescript_client>
+
+<error_handling>
+
 ## Error Handling
 
 - Connection refused → Ollama not running
 - 404 → Wrong endpoint (must use `/v1/chat/completions`)
 - Timeout → Model loading or prompt too large
+
+</error_handling>
+
+<when_to_use>
 
 ## When to Use
 
@@ -76,3 +100,5 @@ return choices[0].message.content
 - Batch processing to save API costs
 
 Full reference: `references/ollama-agent-guide.md`
+
+</when_to_use>

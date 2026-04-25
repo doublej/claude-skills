@@ -7,14 +7,15 @@ description: Create Raycast script commands for macOS automation. Covers metadat
 
 Guide for creating Raycast script commands - executable scripts that integrate with the Raycast launcher on macOS.
 
-## When to Use
-
+<when_to_use>
 - Building custom Raycast commands
 - Creating macOS automation scripts
 - Adding quick-access utilities to Raycast
 - Building inline dashboard widgets
 - Creating scripts with user input arguments
+</when_to_use>
 
+<languages>
 ## Supported Languages
 
 | Language | Extension | Shebang |
@@ -25,7 +26,9 @@ Guide for creating Raycast script commands - executable scripts that integrate w
 | AppleScript | `.applescript` | `#!/usr/bin/osascript` |
 | JavaScript | `.js` | `#!/usr/bin/env node` |
 | Ruby | `.rb` | `#!/usr/bin/env ruby` |
+</languages>
 
+<metadata>
 ## Required Metadata
 
 All scripts need comment-based metadata. Use `#` for shell/python/ruby or `//` for swift/javascript.

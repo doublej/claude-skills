@@ -8,6 +8,7 @@ arguments: "model: Literal['opus-4-7', 'opus-4-6', 'sonnet', 'generic'] = 'gener
 
 Craft high-quality prompts for Claude Code across all surfaces: interactive sessions, CLAUDE.md files, system prompts, slash commands, and CLI automation.
 
+<lint_rewrite>
 ## Lint + Rewrite (model-specific)
 
 When the user asks to **improve, review, or lint a prompt**, select the template by target model.
@@ -25,7 +26,9 @@ Model resolution order:
 | `generic` / unspecified | `references/lint-generic.md` |
 
 Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask if critical ones are missing), then apply the lint + rewrite workflow inline. The templates are self-contained instructions — follow them exactly.
+</lint_rewrite>
 
+<workflow>
 ---
 
 ## Workflow (new prompt creation)
@@ -36,7 +39,9 @@ Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask 
 4. **Draft prompt** — Write using the appropriate template
 5. **Optimise** — Compress tokens, remove redundancy, add examples if needed
 6. **Verify** — Self-check with the reflexion checklist
+</workflow>
 
+<surfaces>
 ## Prompt Surfaces
 
 | Surface | Format | Key constraint |
@@ -47,7 +52,9 @@ Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask 
 | CLI (`-p` flag) | Single string or piped input | No follow-up, must be self-contained |
 | System prompt / API | XML-structured | Parsed programmatically, needs tags |
 | Skill SKILL.md | Frontmatter + markdown | Progressive disclosure, must trigger correctly |
+</surfaces>
 
+<patterns>
 ## Prompt Patterns
 
 ### 1. Direct Instruction (zero-shot)
@@ -148,7 +155,9 @@ After implementing, evaluate from three angles:
 - Simplicity: Can any part be removed without losing functionality?
 - Consistency: Does it follow the patterns in the existing codebase?
 ```
+</patterns>
 
+<constraint_patterns>
 ### 6. Constraint-Bounded
 
 Best for: tasks where Claude tends to over-produce or drift.
@@ -162,7 +171,9 @@ Best for: tasks where Claude tends to over-produce or drift.
 - Keep functions under 15 lines
 </constraints>
 ```
+</constraint_patterns>
 
+<role_patterns>
 ### 7. Role + Behaviour
 
 Best for: system prompts, CLAUDE.md, sustained behaviour across a session.
@@ -175,7 +186,9 @@ Best for: system prompts, CLAUDE.md, sustained behaviour across a session.
 - Prefer battle-tested patterns over novel approaches
 </behaviour>
 ```
+</role_patterns>
 
+<context_hierarchy>
 ## Context Hierarchy for CLAUDE.md
 
 Structure your CLAUDE.md from broadest to most specific:
@@ -189,7 +202,9 @@ Structure your CLAUDE.md from broadest to most specific:
 6. Git discipline           — HOW to commit and branch
 7. Output format            — SHAPE of responses
 ```
+</context_hierarchy>
 
+<authoring>
 ### CLAUDE.md Authoring Rules
 
 - **Be specific**: "Use 2-space indentation in .ts files" beats "format code properly"
@@ -198,7 +213,9 @@ Structure your CLAUDE.md from broadest to most specific:
 - **Include commands**: Build, test, lint commands save repeated lookups
 - **Budget tokens**: The file loads every session — every line costs across all conversations
 - **Use @imports** for large references: `@docs/api-conventions.md`
+</authoring>
 
+<path_rules>
 ### Path-Specific Rules
 
 Use `.claude/rules/*.md` with YAML frontmatter for scoped instructions:
@@ -211,7 +228,9 @@ paths:
 All API endpoints must validate input with zod schemas.
 Use the standard error response format from src/api/errors.ts.
 ```
+</path_rules>
 
+<token_optimization>
 ## Token Optimisation
 
 | Technique | Before | After |
@@ -224,7 +243,9 @@ Use the standard error response format from src/api/errors.ts.
 | Examples over explanation | 50 words describing format | 1 concrete example |
 
 **Challenge each line**: "Does Claude really need this, or does it already know?"
+</token_optimization>
 
+<xml_reference>
 ## XML Tag Quick Reference
 
 | Tag | Use for |
@@ -240,7 +261,9 @@ Use the standard error response format from src/api/errors.ts.
 | `<rules>` | Hard requirements |
 
 Always reference tags in instructions: "Using the data in `<data>` tags, ..."
+</xml_reference>
 
+<slash_command>
 ## Slash Command Template
 
 For reusable prompts, create `.claude/commands/<name>.md`:
@@ -256,7 +279,9 @@ Output as a checklist of missing tests with file paths.
 ```
 
 `$ARGUMENTS` gets replaced with whatever the user types after the command name.
+</slash_command>
 
+<cli_patterns>
 ## CLI Prompt Patterns
 
 Self-contained prompts for `claude -p`:
@@ -275,7 +300,9 @@ sid=$(claude -p "analyse the API structure" --output-format json | jq -r '.sessi
 claude -r "$sid" -p "now add input validation to all POST endpoints" \
   --permission-mode acceptEdits
 ```
+</cli_patterns>
 
+<anti_patterns>
 ## Anti-Patterns
 
 | Avoid | Why | Instead |
@@ -286,7 +313,9 @@ claude -r "$sid" -p "now add input validation to all POST endpoints" \
 | Over-nesting XML (>3 levels) | Reduces clarity | Flatten or use @imports |
 | No verification step | No confidence in output | "Run tests after" / "Verify with ..." |
 | Giant monolithic prompt | Hard to maintain, debug | Split into slash commands or CLAUDE.md sections |
+</anti_patterns>
 
+<verification>
 ## Verification Checklist
 
 Before finalising any prompt, check:
@@ -297,6 +326,7 @@ Before finalising any prompt, check:
 - [ ] **Examples present** — If output format matters, is there at least one example?
 - [ ] **Verification included** — Does it specify how to confirm success?
 - [ ] **No defaults restated** — Are you only adding what Claude doesn't already know?
+</verification>
 
 ## References
 

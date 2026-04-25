@@ -7,6 +7,8 @@ description: "Liquid theme development: sections, blocks, schemas, snippets, loc
 
 Build Shopify Online Store 2.0 themes following official patterns from Shopify's Horizon theme.
 
+<architecture>
+
 ## Architecture
 
 ```
@@ -21,6 +23,10 @@ theme/
 └── templates/       # JSON templates (product.json, etc.)
 ```
 
+</architecture>
+
+<critical_rules>
+
 ## Critical Rules
 
 1. **Never invent Liquid filters, tags, or objects** — only use what exists in Shopify's Liquid
@@ -33,6 +39,10 @@ theme/
 8. **Zero JS dependencies** — native browser APIs + Web Components only
 9. **Inline CSS variables** via `style` attribute for section/block scoping
 10. **Escape user content:** `{{ variable | escape }}`
+
+</critical_rules>
+
+<reference_files>
 
 ## Reference Files
 
@@ -47,6 +57,10 @@ Load as needed based on the task:
 | `references/css-conventions.md` | Writing CSS: BEM, variables, specificity, nesting, scoping |
 | `references/js-conventions.md` | Writing JS: Web Components, events, AbortController |
 | `references/html-accessibility.md` | HTML patterns, a11y, localization |
+
+</reference_files>
+
+<quick_patterns>
 
 ## Quick Patterns
 
@@ -141,6 +155,10 @@ Load as needed based on the task:
 </div>
 ```
 
+</quick_patterns>
+
+<validation>
+
 ## Validation
 
 Run theme-check for linting:
@@ -151,6 +169,10 @@ bash scripts/theme-check.sh /path/to/theme --auto-correct
 ```
 
 Requires: `npm install -g @shopify/cli @shopify/theme` or `gem install theme-check`
+
+</validation>
+
+<shopify_cli_commands>
 
 ## Shopify CLI Commands
 
@@ -163,7 +185,13 @@ shopify theme share            # Create preview link
 shopify theme info             # Show theme info
 ```
 
+</shopify_cli_commands>
+
+<related_skills>
+
 ## Related Skills
 
 - **shopify-api** — Admin REST/GraphQL API operations
 - **shopify-data** — Product data modeling (options, variants, metafields, collections)
+
+</related_skills>

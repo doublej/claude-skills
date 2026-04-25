@@ -8,7 +8,7 @@ description: "Control playback, search music, manage playlists via the Web API"
 
 Control Spotify through the Web API using bundled scripts. Zero dependencies (stdlib only).
 
-## Setup (one-time)
+<setup>
 
 1. Create app at https://developer.spotify.com/dashboard
 2. Set redirect URI to `http://localhost:8888/callback`
@@ -20,7 +20,9 @@ SPOTIFY_CLIENT_ID=your_client_id python3 ~/.claude/skills/spotify-api/scripts/sp
 
 Tokens saved to `~/.spotify-tokens.json` (auto-refreshed on 401).
 
-## API Script
+</setup>
+
+<api_script>
 
 All commands via `python3 ~/.claude/skills/spotify-api/scripts/spotify-api.py`:
 
@@ -57,7 +59,9 @@ Returns JSON array with `name`, `uri`, `id` (+ `artists`, `album` for tracks).
 | `create-playlist NAME [--description DESC] [--public]` | Create new playlist |
 | `add-tracks PLAYLIST_ID URI [URI...]` | Add tracks to a playlist |
 
-## Workflow: Create Playlist from Description
+</api_script>
+
+<workflows>
 
 1. Search tracks: `search track "song name"` — note URIs
 2. Create playlist: `create-playlist "My Playlist" --description "..."`
@@ -70,10 +74,14 @@ Returns JSON array with `name`, `uri`, `id` (+ `artists`, `album` for tracks).
 3. Play it: `play spotify:track:xxx`
 4. Adjust volume: `volume 75`
 
-## Notes
+</workflows>
+
+<notes>
 
 - All output is JSON for easy parsing
 - URIs follow format `spotify:track:ID`, `spotify:album:ID`, `spotify:playlist:ID`
 - Playback commands require an active Spotify client (desktop/mobile/web)
 - Token auto-refreshes on 401; run `refresh` to force refresh
 - Scopes: playback control, playlist read/write, library read
+
+</notes>

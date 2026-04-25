@@ -7,6 +7,7 @@ description: Analyze and optimize prompts or briefings. Use when asked to review
 
 Analyze prompts for structure and effectiveness, then synthesize an optimized version. Prefer specificity over generality. Identify only essential elements — ruthlessly cut redundancy.
 
+<framework>
 ## Analysis Framework
 
 Work through these four lenses:
@@ -31,7 +32,9 @@ Work through these four lenses:
 - Same instruction stated multiple times → keep once, strongest form
 - Role described in both system and instructions → consolidate
 - Meta-commentary about the prompt itself → cut
+</framework>
 
+<synthesis>
 ## Synthesis Process
 
 1. List elements found across all source prompts (if combining multiple)
@@ -39,7 +42,9 @@ Work through these four lenses:
 3. Resolve conflicts — pick the more specific or safety-oriented rule
 4. Draft optimized prompt: role → context → instructions → constraints → output format
 5. Verify: read output aloud — does every sentence add new information?
+</synthesis>
 
+<output>
 ## Output Format
 
 Deliver:
@@ -53,7 +58,9 @@ Deliver:
 ```
 
 If combining multiple prompts, add a brief note on conflicts resolved.
+</output>
 
+<principles>
 ## Prompt Engineering Principles
 
 - **Role**: one sentence, active voice — "You are a X that does Y"
@@ -62,3 +69,4 @@ If combining multiple prompts, add a brief note on conflicts resolved.
 - **Constraints**: state what NOT to do only when the failure mode is real
 - **Output format**: specify format explicitly when it matters (JSON, markdown table, bullet list)
 - **Length guidance**: a shorter prompt that works beats a longer one that might
+</principles>

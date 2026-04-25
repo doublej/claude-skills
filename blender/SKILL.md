@@ -7,19 +7,24 @@ description: "Python scripting (bpy), MCP integration, 4.x+ asset libraries"
 
 Assistance for Blender 4.x workflows, Python scripting, asset integration, and MCP operations.
 
+<when_to_use>
 ## When to Use
 
 - Inspecting or modifying Blender scenes via MCP
 - Writing Python scripts for Blender automation (bpy)
 - Importing assets from PolyHaven, Sketchfab, Hyper3D, or Hunyuan3D
 - Modeling, materials, rendering, and scene composition
+</when_to_use>
 
+<version_info>
 ## Version Info
 
 - **Latest Stable**: Blender 5.0 (Nov 2025)
 - **Latest LTS**: Blender 4.5 LTS (Jul 2025)
 - **Recommended**: Blender 4.3+
+</version_info>
 
+<mcp_quickstart>
 ## MCP Quick Start
 
 ```python
@@ -34,7 +39,9 @@ import bpy
 bpy.ops.mesh.primitive_cube_add(location=(0, 0, 1))
 """)
 ```
+</mcp_quickstart>
 
+<python_scripting>
 ## Python Scripting (bpy)
 
 ### Core Modules
@@ -68,7 +75,9 @@ obj.data.materials.append(mat)
 # Delete object
 bpy.data.objects.remove(obj, do_unlink=True)
 ```
+</python_scripting>
 
+<workflow>
 ## Workflow Guidelines
 
 ### Scene Organization
@@ -85,7 +94,9 @@ bpy.data.objects.remove(obj, do_unlink=True)
 - Render to image sequence, not video directly
 - Use OpenEXR for professional VFX work
 - Preview in final viewport shading first
+</workflow>
 
+<reference>
 ## Quick Reference
 
 | Task | Method |
@@ -97,7 +108,9 @@ bpy.data.objects.remove(obj, do_unlink=True)
 | Export FBX | `bpy.ops.export_scene.fbx(filepath="/path/file.fbx")` |
 | Render frame | `bpy.ops.render.render(write_still=True)` |
 | Render animation | `bpy.ops.render.render(animation=True)` |
+</reference>
 
+<output_formats>
 ## Output Formats
 
 | Use Case | Format |
@@ -106,13 +119,17 @@ bpy.data.objects.remove(obj, do_unlink=True)
 | High Quality | OpenEXR 16/32-bit |
 | 3D Printing | STL |
 | Game Engines | glTF/FBX |
+</output_formats>
 
+<reference_files>
 ## Reference Files
 
 - [bpy Scripting](references/bpy-scripting.md) - Detailed Python patterns
 - [Async Patterns](references/async-patterns.md) - Avoiding UI freeze
 - [MCP Integration](references/mcp-integration.md) - Asset libraries, AI generation
+</reference_files>
 
+<changes>
 ## Blender 4.3+ Changes
 
 ### New Python API Features
@@ -124,9 +141,12 @@ bpy.data.objects.remove(obj, do_unlink=True)
 - Grease Pencil API completely rewritten
 - `AttributeGroup` split into specialized types
 - Legacy EEVEE shadow properties removed
+</changes>
 
+<documentation>
 ## Documentation
 
 - [Official Blender Python API](https://docs.blender.org/api/current/)
 - [Blender Manual](https://docs.blender.org/manual/en/latest/)
 - [Release Notes](https://developer.blender.org/docs/release_notes/)
+</documentation>

@@ -3,9 +3,7 @@ name: session-search
 description: "Search and analyze past Claude Code session history across projects"
 ---
 
-# Session Search & Analyzer
-
-## Initialization
+<initialization>
 
 Display boot sequence:
 
@@ -28,9 +26,9 @@ Display boot sequence:
 ╚══════════════════════════════════════════════════════════════╝
 ```
 
----
+</initialization>
 
-## Phase 1: INTENT DETECTION
+<phase_intent>
 
 Determine what the user wants based on their request:
 

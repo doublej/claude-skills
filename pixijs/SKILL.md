@@ -6,7 +6,9 @@ description: "Sprites, animations, performance analysis, in-browser debug (unifi
 
 # PixiJS Development Skill
 
+<overview>
 Three branches. Pick the right one, or combine.
+</overview>
 
 ## Which Branch?
 
@@ -16,6 +18,7 @@ Three branches. Pick the right one, or combine.
 | Review code for performance bottlenecks, optimize rendering | [Performance](#performance) |
 | Debug a running PixiJS app in Chrome, inspect scene graph | [Debugging](#debugging) |
 
+<shared_fundamentals>
 ---
 
 ## Shared Fundamentals
@@ -61,6 +64,7 @@ window.__PIXI_APP__ = app;
 - Filters without `filterArea` — bounds measured every frame
 - `container.filters = []` — use `null` to fully remove
 - `on()` without matching `off()` — listener leak
+</shared_fundamentals>
 
 ---
 
@@ -68,12 +72,12 @@ window.__PIXI_APP__ = app;
 
 Build 2D graphics, games, and interactive applications with PixiJS.
 
-### When to Use
-
+<when_to_use>
 - Building PixiJS applications
 - Working with sprites, textures, containers
 - Implementing animations and interactions
 - Setting up asset loading and manifests
+</when_to_use>
 
 ### Documentation Links
 
@@ -105,13 +109,14 @@ The `references/llms.md` file contains the full PixiJS documentation table of co
 
 Analyze existing PixiJS code to identify performance issues and suggest targeted optimizations.
 
-### When to Use
-
+<when_to_use>
 - Reviewing PixiJS code for performance bottlenecks
 - Diagnosing slow rendering or high memory usage
 - Auditing texture, sprite, and graphics usage
 - Optimizing particle systems or complex scenes
+</when_to_use>
 
+<performance_targets>
 ### Performance Targets
 
 | Metric | Target (60fps) | Target (30fps) |
@@ -121,7 +126,9 @@ Analyze existing PixiJS code to identify performance issues and suggest targeted
 | Draw calls | < 100 | < 200 |
 | Texture switches | < 20 | < 40 |
 | Sprite count | < 10,000 | < 20,000 |
+</performance_targets>
 
+<performance_checklist>
 ### Performance Review Checklist
 
 #### 1. Texture Management
@@ -179,6 +186,9 @@ Analyze existing PixiJS code to identify performance issues and suggest targeted
 | Stale references | Objects removed but referenced | Clear references |
 | Event listener leaks | `on()` without `off()` | Remove listeners on destroy |
 
+</performance_checklist>
+
+<diagnostics>
 ### GPU vs CPU Bound
 
 **CPU Bound Signs:**
@@ -191,7 +201,9 @@ Analyze existing PixiJS code to identify performance issues and suggest targeted
 - High texture memory
 - Many draw calls or large textures
 - Reducing resolution helps
+</diagnostics>
 
+<code_patterns>
 ### Code Smell Patterns
 
 ```javascript
@@ -231,7 +243,9 @@ container.removeChild(sprite);
 container.removeChild(sprite);
 sprite.destroy({ children: true, texture: false });
 ```
+</code_patterns>
 
+<quick_wins>
 ### Quick Wins
 
 1. **Enable culling** for off-screen objects: `displayObject.cullable = true`
@@ -242,6 +256,7 @@ sprite.destroy({ children: true, texture: false });
 6. **Use render groups** for static backgrounds: `container.isRenderGroup = true`
 7. **Object pool** particles and bullets instead of create/destroy cycles
 8. **Use BitmapText** for text that changes every frame
+</quick_wins>
 
 ### Reference Files
 
@@ -257,12 +272,12 @@ Debug PixiJS applications running in Chrome using **Claude-in-Chrome** MCP tools
 
 > **Important:** This skill requires Claude-in-Chrome (not Playwright MCP).
 
-### When to Use
-
+<when_to_use>
 - User asks to debug, inspect, or profile a PixiJS app
 - Diagnosing rendering or performance issues in a running app
 - Exploring scene graph structure
 - Checking texture memory usage
+</when_to_use>
 
 ### Prerequisites
 
@@ -275,6 +290,7 @@ Check in order:
 
 See [troubleshooting.md](references/troubleshooting.md) for details.
 
+<commands>
 ### Commands
 
 | Command | Description |
@@ -289,7 +305,9 @@ See [troubleshooting.md](references/troubleshooting.md) for details.
 | `benchmark [ms]` | FPS benchmark (default 3000ms) |
 | `query <pattern>` | Find nodes by name pattern |
 | (no args) | Show all basic info |
+</commands>
 
+<best_practices>
 ### Best Practices
 
 #### Use Subagents
@@ -326,7 +344,9 @@ return { x: player.x, y: player.y, visible: player.visible };
 ```
 
 Agents excel at reading data structures and tracing code paths. Use these strengths.
+</best_practices>
 
+<implementation>
 ### Quick Example
 
 ```javascript
@@ -338,6 +358,9 @@ mcp__claude-in-chrome__javascript_tool({
 })
 ```
 
+</implementation>
+
+<output>
 ### Output Format
 
 Present results clearly:
@@ -346,7 +369,9 @@ Present results clearly:
 - **benchmark**: FPS and frame time percentiles (avg/min/max/p95)
 - **scene --flat**: Path list for easy scanning
 - **query**: Matching nodes with paths
+</output>
 
+<diagnostics>
 ### Common Bottlenecks (Diagnosis via Debug Tools)
 
 | Bottleneck | Diagnose | Fix |
@@ -369,6 +394,7 @@ Present results clearly:
 - [ ] Culling enabled for large worlds?
 - [ ] Filters have filterArea set?
 - [ ] Text using BitmapText where needed?
+</diagnostics>
 
 ### Reference Files
 

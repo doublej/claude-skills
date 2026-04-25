@@ -7,6 +7,8 @@ description: "Bidirectional Google Sheets to JSON sync for content management"
 
 Sync content bidirectionally between Google Sheets and local JSON files. Use Google Sheets as a CMS for client-editable content.
 
+<setup_workflow>
+
 ## Setup workflow
 
 ### 1. Add dependency
@@ -69,6 +71,10 @@ bunx sheet-cms push
 
 Share the Google Sheet (Editor access) with whoever should edit content.
 
+</setup_workflow>
+
+<cli_commands>
+
 ## CLI commands
 
 | Command | Purpose |
@@ -84,6 +90,10 @@ Share the Google Sheet (Editor access) with whoever should edit content.
 | `bunx sheet-cms serve` | Start HTTP API (port 3000) |
 
 All commands accept `-c/--config <path>` for custom config location.
+
+</cli_commands>
+
+<file_types>
 
 ## File types
 
@@ -109,6 +119,10 @@ Gadget | 19.99 | false
 
 Produces (at arrayPath): `[{ "name": "Widget", "price": "9.99", "active": "true" }, ...]`
 
+</file_types>
+
+<config_reference>
+
 ## Config reference
 
 | Field | Type | Description |
@@ -133,6 +147,10 @@ Produces (at arrayPath): `[{ "name": "Widget", "price": "9.99", "active": "true"
 - `oneOf: string[]`
 - `custom: (value: string) => boolean`
 
+</config_reference>
+
+<environment_variables>
+
 ## Environment variables
 
 | Variable | Purpose |
@@ -141,6 +159,10 @@ Produces (at arrayPath): `[{ "name": "Widget", "price": "9.99", "active": "true"
 | `SHEET_CMS_SPREADSHEET_ID` | Google Spreadsheet ID |
 | `PORT` | HTTP server port (default: 3000) |
 | `HOST` | HTTP server host (default: 0.0.0.0) |
+
+</environment_variables>
+
+<analyzing_projects>
 
 ## Analyzing project for config
 
@@ -156,6 +178,10 @@ When setting up sheet-cms for an existing project:
    - Internal IDs (`**.id`, `**.slug`)
    - Form field configs
 4. Identify paths that should stay strings even if numeric (`stringPaths`)
+
+</analyzing_projects>
+
+<http_api>
 
 ## HTTP API (serve mode)
 
@@ -174,6 +200,10 @@ Endpoints:
 
 Swagger docs at `/swagger` when running.
 
+</http_api>
+
+<library_api>
+
 ## Library API
 
 ```ts
@@ -187,6 +217,10 @@ await push(config, sheets, { file: 'content' })
 const changes = await diff(config, sheets)
 ```
 
+</library_api>
+
+<troubleshooting>
+
 ## Troubleshooting
 
 | Issue | Solution |
@@ -196,3 +230,5 @@ const changes = await diff(config, sheets)
 | "Credentials not found" | Check `GOOGLE_CREDENTIALS_PATH` env var |
 | Values parsed as numbers | Add path to `stringPaths` config |
 | Field overwritten on pull | Add to `blacklist` |
+
+</troubleshooting>

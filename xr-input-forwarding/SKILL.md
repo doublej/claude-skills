@@ -5,6 +5,8 @@ description: "Stream XR tracking over network: hand/face/body/eye poses, compres
 
 # XR Input Forwarding
 
+<before_writing>
+
 ## Before Writing Code
 
 1. **Identify tracking sources** — which extensions are available on the runtime:
@@ -19,6 +21,10 @@ description: "Stream XR tracking over network: hand/face/body/eye poses, compres
    - Headset -> Application server (motion capture, analytics)
 
 3. **Check privacy requirements** — eye tracking and face tracking require explicit user consent on Meta and other platforms. The runtime gates these behind permission dialogs.
+
+</before_writing>
+
+<hand_tracking>
 
 ## Hand Tracking
 
@@ -71,6 +77,10 @@ For each hand per frame, forward:
 
 **Total raw:** ~846 bytes per hand, ~1692 for both hands at full precision.
 
+</hand_tracking>
+
+<face_tracking>
+
 ## Face Tracking
 
 ### Extension Setup (Meta)
@@ -113,6 +123,10 @@ The 70 FB blend shapes are a superset of Apple's 52 ARKit blend shapes. For cros
 
 **Total raw:** ~289 bytes per frame. Weights are [0.0, 1.0] range — quantize to uint8 for 70 bytes (0.4% precision loss, imperceptible for animation).
 
+</face_tracking>
+
+<body_tracking>
+
 ## Body Tracking
 
 ### Full Body (XR_META_body_tracking)
@@ -151,6 +165,10 @@ Full joint index table: see `references/body-joints.md`.
 
 **Optimization:** Upper body only (first ~36 joints) cuts payload in half when legs aren't needed.
 
+</body_tracking>
+
+<eye_tracking>
+
 ## Eye Tracking
 
 ### Gaze Interaction (XR_EXT_eye_gaze_interaction)
@@ -186,6 +204,10 @@ xrStringToPath(instance, "/user/eyes_ext/input/gaze_ext/pose", &gazePosePath);
 - Consider downsampling gaze data (e.g., 10 Hz instead of frame rate)
 - Strip raw gaze before logging; prefer derived metrics (fixation zones, not raw coordinates)
 - Some platforms (Meta) enforce system-level permission dialogs
+
+</eye_tracking>
+
+<serialization>
 
 ## Data Serialization
 
@@ -266,6 +288,10 @@ For each joint:
 - Extrapolate cautiously — max 1 frame beyond last received, then hold
 - For face blend shapes, linear interpolation of weights is fine
 
+</serialization>
+
+<sync>
+
 ## Timestamp Synchronization
 
 ### The Problem
@@ -296,6 +322,10 @@ xrLocateSpace(gazeSpace, refSpace, t, &gazeLocation);
 
 **Pitfall:** `XrTime` epoch varies by runtime — it's relative, not absolute. Never compare `XrTime` values across different devices without synchronization.
 
+</sync>
+
+<transforms>
+
 ## Coordinate System Transforms
 
 ### Common Mismatches
@@ -323,6 +353,10 @@ When forwarding between devices, the sender's `LOCAL` or `STAGE` space origin wo
 - **Head-relative:** Send poses relative to head/VIEW space. Useful for face and eye data.
 - **Calibrated absolute:** Run a calibration step to align coordinate systems (complex, needed for shared physical spaces).
 
+</transforms>
+
+<pitfalls>
+
 ## Common Pitfalls
 
 | Pitfall | Fix |
@@ -340,6 +374,10 @@ When forwarding between devices, the sender's `LOCAL` or `STAGE` space origin wo
 | Blocking on tracking data send | Use async/non-blocking sends; drop frames rather than queue |
 | Missing keyframes after packet loss | Periodic full-state refresh (every 0.5-1s) |
 
+</pitfalls>
+
+<reference>
+
 ## Deep Reference
 
 Load on demand from `references/`:
@@ -350,3 +388,5 @@ Load on demand from `references/`:
 | `face-blendshapes.md` | All 70 FB blend shapes, categories, ARKit mapping |
 | `body-joints.md` | Full/upper body joint indices, hierarchy, confidence |
 | `serialization.md` | Wire format specs, compression algorithms, bandwidth calculations |
+
+</reference>

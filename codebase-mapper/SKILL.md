@@ -7,11 +7,11 @@ description: "Importance-ranked repo maps via Tree-sitter parsing and PageRank"
 
 Generate a structural map of any codebase ranked by importance. Uses Tree-sitter for code parsing and PageRank for ranking file/symbol significance.
 
-## Setup
-
+<setup>
 Auto-installs on first run. All code is bundled in `scripts/repomap/`.
+</setup>
 
-## Usage
+<usage>
 
 Run from any directory. The wrapper handles venv setup and activation.
 
@@ -39,7 +39,9 @@ bash {SKILL_DIR}/scripts/repomap.sh . --root . --focus-files main.py utils.py
 bash {SKILL_DIR}/scripts/repomap.sh . --root . --exclude-extensions .json .css .svg --exclude-unranked
 ```
 
-## Key Options
+</usage>
+
+<key_options>
 
 | Flag | Default | Purpose |
 |------|---------|---------|
@@ -56,7 +58,9 @@ bash {SKILL_DIR}/scripts/repomap.sh . --root . --exclude-extensions .json .css .
 | `--force-refresh` | off | Clear cache and recompute |
 | `--verbose` | off | Show debug info |
 
-## Output Format
+</key_options>
+
+<output_format>
 
 ```
 Analysed 147 files · ranked 89 · ~4052 tokens
@@ -75,36 +79,44 @@ src/utils.py:
 
 Files sorted by PageRank score (0–100 scale, highest first). Each entry shows key definitions with line numbers. Respects `.gitignore` by default.
 
-## Workflow: Explore a New Codebase
+</output_format>
+
+<workflows>
+
+## Explore a New Codebase
 
 1. Run a broad map: `bash {SKILL_DIR}/scripts/repomap.sh . --root . --map-tokens 8192 --exclude-unranked`
 2. Read the top-ranked files to understand architecture
 3. For deeper dive, re-run with `--focus-files` pointing to the files you're investigating
 4. Use `--mentioned-idents` to boost specific classes/functions you're tracing
 
-## Workflow: Prepare Context for Refactoring
+## Prepare Context for Refactoring
 
 1. Map the target area: `bash {SKILL_DIR}/scripts/repomap.sh src/module/ --root . --map-tokens 4096`
 2. Identify high-rank files (most referenced/depended upon)
 3. Read those files to understand coupling before making changes
 
-## Workflow: Full Codebase Audit (with related skills)
+## Full Codebase Audit (with related skills)
 
 1. **Map** — Generate structural overview with this skill
 2. **Detect** — Run repomap-analyzer for automated quality findings (deprecated patterns, dead code, duplicates)
 3. **Analyse** — Run dev-refactor for deeper multi-dimensional analysis and task generation
 
-## Supported Languages
+</workflows>
 
+<supported_languages>
 47+ languages including Python, JavaScript, TypeScript, Rust, Go, Java, C/C++, Swift, Ruby, Kotlin, Dart, Elixir, and more.
+</supported_languages>
 
-## Cache
-
+<cache>
 Results are cached in `.repomap.tags.cache.v1/` in the working directory. Use `--force-refresh` to clear.
+</cache>
 
-## Related Skills
+<related_skills>
 
 | Skill | Relationship |
 |-------|-------------|
 | **repomap-analyzer** | Uses this skill's repomap output to detect code quality issues |
 | **dev-refactor** | Uses this skill for structural mapping in Step 2 of its workflow |
+
+</related_skills>

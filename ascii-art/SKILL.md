@@ -7,7 +7,7 @@ description: Generate ASCII art text banners, architectural diagrams, flowcharts
 
 Generate text banners with `figlet`, hand-craft box art, and compose decorative terminal visuals.
 
-## Figlet Text Banners
+<figlet>
 
 ```bash
 figlet -f <font> "text"
@@ -45,8 +45,9 @@ figlet -f <font> "text"
 List all fonts: `ls /opt/homebrew/Cellar/figlet/2.2.5/share/figlet/fonts/*.flf | xargs -I{} basename {} .flf | sort`
 
 Preview a font: `figlet -f <font> "Preview"`
+</figlet>
 
-## Box Drawing
+<box_drawing>
 
 Use Unicode box-drawing characters for framed text:
 
@@ -72,8 +73,9 @@ Use Unicode box-drawing characters for framed text:
 | Heavy | `┏` | `┓` | `┗` | `┛` | `━` | `┃` |
 | Double | `╔` | `╗` | `╚` | `╝` | `═` | `║` |
 | Rounded | `╭` | `╮` | `╰` | `╯` | `─` | `│` |
+</box_drawing>
 
-## Architectural Diagrams
+<diagrams>
 
 Hand-craft diagrams using box-drawing characters and ASCII connectors. Align all boxes on a grid; use consistent box widths per row.
 
@@ -217,8 +219,9 @@ project/
 5. **Branching** — use `┬` / `├` tee connectors, never freehand splits
 6. **Keep it readable** — max ~100 chars wide; break into sub-diagrams if wider
 7. **Annotate arrows** — place short labels above/beside arrows when the relationship isn't obvious
+</diagrams>
 
-## Pure ASCII Decorative Elements
+<decorative>
 
 ### Dividers
 ```
@@ -241,16 +244,18 @@ project/
 ```
 【 IMPORTANT 】   〔 NOTE 〕   ⟦ WARNING ⟧
 ```
+</decorative>
 
-## Workflow
+<workflow>
 
 1. Determine what the user needs: text banner, diagram, or decorative element
 2. **Text banners** → pick figlet font matching the mood, render with `figlet -f <font> "text"`
 3. **Diagrams** → identify diagram type (flowchart, layered, sequence, tree, state machine, etc.), sketch the grid layout, then render with box-drawing characters
 4. **Decorative** → wrap content with appropriate border characters or dividers
 5. Show the result — offer alternatives if requested
+</workflow>
 
-## Tips
+<tips>
 
 - Figlet fonts look best in monospace; keep text short to avoid wrapping
 - Combine figlet output with box drawing for framed banners
@@ -258,3 +263,4 @@ project/
 - Max diagram width ~100 chars; split into sub-diagrams if wider
 - Use dashed arrows (`- - -▶` or `╌╌╌▶`) for optional/async flows
 - Annotate arrows when the relationship isn't self-evident
+</tips>

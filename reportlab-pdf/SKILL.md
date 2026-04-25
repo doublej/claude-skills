@@ -3,11 +3,13 @@ name: reportlab-pdf
 description: Comprehensive guide to ReportLab PDF generation in Python. Covers Canvas API, Platypus layouts, tables, graphics, fonts, and images. Use when creating PDFs programmatically, building reports, generating documents with tables/charts, or working with complex page layouts.
 ---
 
-# ReportLab PDF Skill
+<intro>
 
 Generate PDFs with ReportLab 4.x in Python.
 
-## When to Use
+</intro>
+
+<when_to_use>
 
 - Creating PDFs programmatically from Python
 - Building reports with tables, charts, and formatted text
@@ -15,7 +17,9 @@ Generate PDFs with ReportLab 4.x in Python.
 - Drawing vector graphics and shapes
 - Complex multi-page layouts with headers/footers
 
-## Version & Installation
+</when_to_use>
+
+<setup>
 
 ```bash
 uv add reportlab
@@ -26,7 +30,9 @@ pip install reportlab
 - Latest: ReportLab 4.4.5
 - Python: 3.9 - 3.13
 
-## Architecture Overview
+</setup>
+
+<architecture>
 
 | API | Level | Use Case |
 |-----|-------|----------|
@@ -35,7 +41,9 @@ pip install reportlab
 
 **Rule of thumb:** Use Platypus for documents, Canvas for custom graphics.
 
-## Canvas Quick Start
+</architecture>
+
+<canvas_quickstart>
 
 ```python
 from reportlab.lib.pagesizes import A4
@@ -51,7 +59,9 @@ c.showPage()
 c.save()
 ```
 
-## Platypus Quick Start
+</canvas_quickstart>
+
+<platypus_quickstart>
 
 ```python
 from reportlab.lib.pagesizes import A4
@@ -69,7 +79,9 @@ story.append(Paragraph("This is body text. " * 50, styles['Normal']))
 doc.build(story)
 ```
 
-## Basic Table
+</platypus_quickstart>
+
+<basic_table>
 
 ```python
 from reportlab.platypus import Table, TableStyle
@@ -90,7 +102,9 @@ table.setStyle(TableStyle([
 story.append(table)
 ```
 
-## Quick Reference
+</basic_table>
+
+<quick_reference>
 
 | Task | Method |
 |------|--------|
@@ -107,14 +121,20 @@ story.append(table)
 | Add table | `story.append(Table(data))` |
 | Build doc | `doc.build(story)` |
 
-## Reference Files
+</quick_reference>
+
+<references>
 
 - [Canvas API](references/canvas-api.md) - Text, shapes, colors, images, state management
 - [Platypus Guide](references/platypus-guide.md) - Flowables, styles, tables, page templates
 - [Charts & Patterns](references/charts-patterns.md) - Graphics, charts, invoice template
 
-## Documentation
+</references>
+
+<external_resources>
 
 - [ReportLab User Guide](https://www.reportlab.com/docs/reportlab-userguide.pdf)
 - [Official Documentation](https://docs.reportlab.com/)
 - [PyPI Package](https://pypi.org/project/reportlab/)
+
+</external_resources>

@@ -12,8 +12,7 @@ metadata:
 
 Analyze and improve the user's global CLAUDE.md file using current best practices.
 
-## Age Awareness
-
+<age_awareness>
 **CRITICAL**: Run the age check script first and show results to the user:
 
 ```bash
@@ -21,9 +20,9 @@ python3 scripts/check_age.py
 ```
 
 If >6 weeks old, warn that recommendations may be outdated and suggest requesting an updated skill.
+</age_awareness>
 
-## Workflow
-
+<workflow>
 1. Run `scripts/check_age.py` and show results
 2. Read `~/.claude/CLAUDE.md` using the Read tool
 3. Read `references/best_practices_2026_02.md`
@@ -31,8 +30,9 @@ If >6 weeks old, warn that recommendations may be outdated and suggest requestin
 5. Present prioritized recommendations (max 5 High, 3 Medium, 2 Low)
 6. On user approval: apply changes using Edit tool
 7. Stop after changes are confirmed
+</workflow>
 
-## Analysis Focus Areas
+<analysis_focus_areas>
 
 ### Structure
 - Clear precedence rules defined
@@ -63,8 +63,9 @@ If >6 weeks old, warn that recommendations may be outdated and suggest requestin
 - No redundant or outdated guidance
 - Model-specific capabilities mentioned
 - Version/date tracking if applicable
+</analysis_focus_areas>
 
-## Recommendation Format
+<recommendation_format>
 
 For each improvement:
 
@@ -75,18 +76,19 @@ For each improvement:
 5. **Priority**: High / Medium / Low
 
 Cap: 5 High, 3 Medium, 2 Low. Group by priority.
+</recommendation_format>
 
-## Making Changes
-
+<making_changes>
 On user approval:
 - Use Edit tool for targeted changes; preserve style and formatting
 - Preserve existing customizations
 - Suggest only what adds clear value; explain tradeoffs where recommendations conflict
+</making_changes>
 
-## Version Tracking
-
+<version_tracking>
 After changes, optionally add version metadata to CLAUDE.md:
 
 ```xml
 <!-- Updated: YYYY-MM-DD | Based on Claude Sonnet 4.6 / Opus 4.7 -->
 ```
+</version_tracking>

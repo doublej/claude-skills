@@ -10,7 +10,11 @@ allowed-tools:
 
 # Obsidian Vault Management
 
+<description>
 Interact with Obsidian vaults through the Obsidian MCP server (cyanheads/obsidian-mcp-server).
+</description>
+
+<preflight>
 
 ## Pre-flight: Check MCP Availability
 
@@ -46,6 +50,10 @@ If status is `NOT_REACHABLE`, guide the user through setup:
 
 If status is `REACHABLE` but `MCP_CONFIGURED: false`, warn the user that the REST API is running but the MCP bridge is not configured.
 
+</preflight>
+
+<tools>
+
 ## MCP Tools Reference
 
 Once the MCP server is available, these tools are exposed:
@@ -60,6 +68,10 @@ Once the MCP server is available, these tools are exposed:
 | `obsidian_manage_frontmatter` | Get/set/delete YAML keys | `path`, `action`, `key`, `value` |
 | `obsidian_manage_tags` | Add/remove/list tags | `path`, `action`, `tag` |
 | `obsidian_delete_note` | Delete a note | `path` |
+
+</tools>
+
+<workflows>
 
 ## Common Workflows
 
@@ -83,6 +95,10 @@ obsidian_manage_tags(path="Projects/launch.md", action="add", tag="priority/high
 obsidian_manage_frontmatter(path="Projects/launch.md", action="set", key="status", value="in-progress")
 ```
 
+</workflows>
+
+<filesystem>
+
 ## Alternative: Direct Filesystem Access
 
 If MCP setup is not desired, Obsidian vaults are plain Markdown on disk. Locate the vault:
@@ -93,9 +109,15 @@ find ~/Documents -name ".obsidian" -type d -maxdepth 3 2>/dev/null | sed 's/\/.o
 
 Then use standard file tools (Read, Write, Edit, Grep, Glob) to interact with `.md` files directly. This bypasses frontmatter-aware tooling and search indexing but works without any plugins.
 
+</filesystem>
+
+<tips>
+
 ## Tips
 
 - Obsidian vaults are just folders of `.md` files with a `.obsidian/` config dir
 - The REST API runs on `http://127.0.0.1:27123` by default (HTTPS on 27124)
 - Vault cache refreshes every 10 minutes; force refresh by restarting the MCP server
 - Use `format: "json"` with `obsidian_read_note` to get structured frontmatter separately
+
+</tips>

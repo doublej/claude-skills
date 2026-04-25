@@ -10,7 +10,11 @@ allowed-tools:
 
 # NAS Deploy Skill
 
+<description>
 Deploy applications to a QNAP NAS running Caddy.
+</description>
+
+<when_to_use>
 
 ## When to Use
 
@@ -18,12 +22,20 @@ Deploy applications to a QNAP NAS running Caddy.
 - Deploying Node.js/SvelteKit apps to NAS
 - Configuring Caddy for new sites
 
+</when_to_use>
+
+<deployment_types>
+
 ## Deployment Types
 
 | Type | Location | Caddy Role | Guide |
 |------|----------|------------|-------|
 | **Frontend (Static)** | `/Volumes/Container/caddy/www` | File server | [Frontend Guide](guides/frontend.md) |
 | **Node.js Apps** | `/Volumes/Container/caddy/apps` | Reverse proxy | [Node Guide](guides/node.md) |
+
+</deployment_types>
+
+<preflight>
 
 ## Pre-flight: Check SMB Connection
 
@@ -37,6 +49,10 @@ if [ ! -d "/Volumes/Container/caddy" ]; then
     exit 1
 fi
 ```
+
+</preflight>
+
+<quick_ref>
 
 ## Quick Reference
 
@@ -58,6 +74,10 @@ rsync -av --delete build/ /Volumes/Container/caddy/apps/myapp.jurrejan.com/build
 ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan.com"
 ```
 
+</quick_ref>
+
+<directory_structure>
+
 ## Directory Structure
 
 ```
@@ -76,6 +96,10 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
         └── app.caddy          # Caddy reverse proxy config
 ```
 
+</directory_structure>
+
+<naming>
+
 ## Domain & Naming
 
 | Item | Format | Example |
@@ -83,10 +107,18 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 | Site/app directory | `${SUBDOMAIN}.jurrejan.com` | `myapp.jurrejan.com` |
 | Domain | `${SUBDOMAIN}.jurrejan.com` | `https://myapp.jurrejan.com` |
 
+</naming>
+
+<guides>
+
 ## Guides
 
 - **[Frontend Guide](guides/frontend.md)** - Static sites (HTML, Vite, etc.)
 - **[Node Guide](guides/node.md)** - Node.js apps with PM2
+
+</guides>
+
+<templates>
 
 ## Templates
 
@@ -94,3 +126,5 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 - `templates/node-caddy.caddy` - Caddy reverse proxy config for Node apps
 - `templates/ecosystem.config.js` - PM2 config template
 - `templates/deploy-frontend.sh` - Frontend deployment script
+
+</templates>

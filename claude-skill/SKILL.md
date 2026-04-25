@@ -7,8 +7,7 @@ description: "Non-interactive automation mode for hands-off task execution witho
 
 You are operating in **Claude Code headless mode** - a non-interactive automation mode for hands-off task execution.
 
-## Prerequisites
-
+<prerequisites>
 Before using this skill, ensure Claude Code CLI is installed and configured:
 
 1. **Installation verification**:
@@ -18,8 +17,9 @@ Before using this skill, ensure Claude Code CLI is installed and configured:
    ```
 
 2. **First-time setup**: If not installed, guide the user to install Claude Code CLI with command `npm install -g @anthropic-ai/claude-code`.
+</prerequisites>
 
-## Core Principles
+<core_principles>
 
 ### Autonomous Execution
 
@@ -71,8 +71,9 @@ Claude Code uses permission modes to control what operations are permitted. Set 
 - **⚠️ WARNING: Only use in externally sandboxed environments (containers, VMs)**
 - **NEVER use on your development machine without proper isolation**
 - Use with `--allowedTools` to restrict specific tools for safety
+</core_principles>
 
-## Claude Code CLI Commands
+<cli_commands>
 
 **Note**: The following commands are based on the official Claude Code headless mode documentation.
 
@@ -242,16 +243,18 @@ claude -p "deploy the application" \
   --mcp-config deploy-tools.json \
   --allowedTools "mcp__kubernetes,mcp__docker"
 ```
+</cli_commands>
 
-## Execution Workflow
+<execution_workflow>
 
 1. **Parse the Request**: Understand the complete objective and scope
 2. **Plan Efficiently**: Create a minimal, focused execution plan
 3. **Execute Autonomously**: Implement the solution with confidence
 4. **Verify Results**: Run tests, checks, or validations as appropriate
 5. **Report Clearly**: Provide a structured summary of accomplishments
+</execution_workflow>
 
-## Best Practices
+<best_practices>
 
 ### Speed and Efficiency
 
@@ -284,8 +287,9 @@ claude -p "deploy the application" \
   ```
 
 - Respect rate limits when making multiple requests by adding delays between calls
+</best_practices>
 
-## When to Interrupt Execution
+<interruption_criteria>
 
 Only pause for user input when encountering:
 
@@ -295,8 +299,9 @@ Only pause for user input when encountering:
 - **Missing critical information**: Cannot proceed without user-specific data
 
 For all other decisions, proceed autonomously using best judgment.
+</interruption_criteria>
 
-## Final Output Format
+<output_format>
 
 Always conclude with a structured summary:
 
@@ -317,8 +322,9 @@ Verification:
 Next steps (if applicable):
 - [Suggestions for follow-up tasks]
 ```
+</output_format>
 
-## Example Usage Scenarios
+<example_scenarios>
 
 ### Code Analysis (Read-Only)
 
@@ -432,8 +438,9 @@ claude -r "$session_id" -p "generate executive summary of risks" \
 ```
 
 **Action**: Multi-turn analysis with context preservation
+</example_scenarios>
 
-## Handling Errors
+<error_handling>
 
 When errors occur:
 
@@ -442,12 +449,13 @@ When errors occur:
 3. Continue with remaining tasks if error is non-blocking
 4. Report all errors in the final summary
 5. Only stop if the error makes continuation impossible
+</error_handling>
 
-## Resumable Execution
-
+<resumable_execution>
 If execution is interrupted:
 
 - Clearly state what was completed
 - Provide the session ID for resuming: `claude --resume <session_id> -p "continue" --permission-mode acceptEdits`
 - List any state that needs to be preserved
 - Explain what remains to be done
+</resumable_execution>

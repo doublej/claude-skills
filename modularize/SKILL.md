@@ -5,7 +5,11 @@ description: Intelligently split oversized files into focused, single-responsibi
 
 # Modularize
 
+<description>
 Split oversized files into focused modules by analyzing responsibility boundaries, dependency graphs, and consumer imports.
+</description>
+
+<scripts>
 
 ## Scripts
 
@@ -20,6 +24,10 @@ python3 ~/.claude/skills/modularize/scripts/scan_files.py /path/to/dir --thresho
 ```
 
 Detects: files over threshold, function/class boundaries, symbol lengths, imports, and consumer relationships.
+
+</scripts>
+
+<workflow>
 
 ## Workflow
 
@@ -56,6 +64,10 @@ For each candidate file, read the full file content and determine:
 - Resulting modules would have <2 exported symbols each
 - File is a test file (split tests with their source, not separately)
 
+</workflow>
+
+<plan>
+
 ### Phase 3 — Plan
 
 Present the split proposal to the user using `consult-user-mcp`. Format:
@@ -81,10 +93,18 @@ IMPORT UPDATES: 3 files need updated imports
 
 Wait for user confirmation. Adjust if requested.
 
+</plan>
+
+<naming_rules>
+
 **Naming rules for new modules:**
 - Name by responsibility, never by structure (`validation.ts`, not `utils2.ts`)
 - Never use: `helpers`, `misc`, `common`, `shared`, `extra`
 - Match existing project naming conventions (kebab-case, snake_case, etc.)
+
+</naming_rules>
+
+<execute>
 
 ### Phase 4 — Execute
 
@@ -133,6 +153,10 @@ Run the project's existing checks to confirm nothing broke:
 
 If checks fail, fix import issues (most common cause) and re-run. Up to 3 fix cycles, then reassess the split strategy.
 
+</execute>
+
+<decision_framework>
+
 ## Decision Framework
 
 **When to use this skill:**
@@ -146,3 +170,5 @@ If checks fail, fix import issues (most common cause) and re-run. Up to 3 fix cy
 - File is auto-generated
 - User wants to restructure the entire project architecture (that's a broader refactor)
 - File is under 100 lines even if it has mixed concerns (not worth the churn)
+
+</decision_framework>

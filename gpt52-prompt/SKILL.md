@@ -7,6 +7,7 @@ description: "Optimize prompts for GPT-5.2: reasoning modes, compaction, tool pr
 
 Refine and optimize prompts for OpenAI's GPT-5.2 model—the flagship for professional knowledge work and long-running agents.
 
+<key_differences>
 ## Key Differences from GPT-5.1
 
 | Feature | GPT-5.1 | GPT-5.2 |
@@ -31,7 +32,9 @@ Refine and optimize prompts for OpenAI's GPT-5.2 model—the flagship for profes
 | `xhigh` | Highest | **NEW** - Maximum reasoning depth, research tasks |
 
 GPT-5.2 auto-calibrates to prompt difficulty. Default is `none`—explicitly set higher for complex tasks.
+</key_differences>
 
+<compaction>
 ## Compaction for Long Workflows
 
 GPT-5.2 introduces server-side compaction for extended agent sessions:
@@ -53,7 +56,9 @@ response = client.responses.compact(
 ```
 For long-running tasks, the system will automatically compact context when approaching limits. Continue working seamlessly after compaction.
 ```
+</compaction>
 
+<prompt_optimization>
 ## Prompt Optimization Checklist
 
 ### 1. Clarity & Specificity
@@ -104,7 +109,9 @@ IMPORTANT: Do not stop working until the task is fully complete. If you encounte
 3. Only ask for clarification if genuinely blocked
 4. Never assume the task is "too complex" - break it down and continue
 ```
+</prompt_optimization>
 
+<tool_calling>
 ## Tool Calling Optimization
 
 ### Preambles (NEW in GPT-5.2)
@@ -157,7 +164,9 @@ GPT-5.2 has native `apply_patch` support with improved accuracy:
 ```
 For code modifications, use the apply_patch tool with unified diff format. This reduces edit failures compared to freeform suggestions.
 ```
+</tool_calling>
 
+<planning_complex_tasks>
 ## Planning for Complex Tasks
 
 Explicit planning is more important at lower reasoning levels:
@@ -170,7 +179,9 @@ Task execution protocol:
 4. Before any non-trivial change, verify current plan item matches upcoming work
 5. After compaction events, re-establish current position in plan
 ```
+</planning_complex_tasks>
 
+<user_communication>
 ## User Communication Patterns
 
 ### Preamble Updates
@@ -191,7 +202,9 @@ When calling tools, always prefix with a brief explanation of:
 2. Why it's necessary
 3. What you expect to find
 ```
+</user_communication>
 
+<metaprompting>
 ## Metaprompting: Diagnosing Failures
 
 ### Phase 1: Diagnosis
@@ -220,7 +233,9 @@ Based on the diagnosis, propose surgical revisions that:
 
 Show the revised prompt with inline comments explaining each change.
 ```
+</metaprompting>
 
+<migration>
 ## Migration from GPT-5.1
 
 1. **Keep prompt identical** - Test model change first
@@ -228,7 +243,9 @@ Show the revised prompt with inline comments explaining each change.
 3. **Run evals** - If results good, ship
 4. **If regressions** - Use Prompt Optimizer + targeted constraints
 5. **Consider compaction** - For workflows that hit context limits
+</migration>
 
+<anti_patterns>
 ## Common Anti-Patterns
 
 ### Avoid
@@ -246,7 +263,9 @@ Show the revised prompt with inline comments explaining each change.
 - Clear tool usage rules (MUST vs CAN)
 - Persistence reminders for low reasoning modes
 - Preamble guidance for agentic flows
+</anti_patterns>
 
+<template>
 ## Example: Full System Prompt Template
 
 ```markdown

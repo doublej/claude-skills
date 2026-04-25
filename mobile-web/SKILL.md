@@ -5,7 +5,11 @@ description: "Mobile HTML optimization: viewport, safe areas, touch targets, dar
 
 # Mobile Web Optimization
 
+<intro>
 Apply these practices when generating HTML/CSS for mobile websites. Degree of freedom: **medium** — follow the patterns below but adapt to project context.
+</intro>
+
+<head_essentials>
 
 ## HTML Head Essentials
 
@@ -19,9 +23,17 @@ Apply these practices when generating HTML/CSS for mobile websites. Degree of fr
 <meta name="format-detection" content="telephone=no">
 ```
 
+</head_essentials>
+
+<zoom_control>
+
 ### When to disable zoom
 
 Only add `maximum-scale=1, user-scalable=no` for **app-like experiences** (kiosk, PWA). Never on content sites — it harms accessibility (WCAG 1.4.4).
+
+</zoom_control>
+
+<apple_specific>
 
 ### Apple-specific (when targeting iOS home screen)
 
@@ -30,6 +42,10 @@ Only add `maximum-scale=1, user-scalable=no` for **app-like experiences** (kiosk
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="AppName">
 ```
+
+</apple_specific>
+
+<favicons>
 
 ## Favicons (minimal set, 2025)
 
@@ -40,6 +56,10 @@ Only add `maximum-scale=1, user-scalable=no` for **app-like experiences** (kiosk
 ```
 
 SVG favicons can respond to dark mode via embedded `<style>` with `prefers-color-scheme`.
+
+</favicons>
+
+<safe_areas>
 
 ## Safe Area Insets
 
@@ -62,6 +82,10 @@ body {
 }
 ```
 
+</safe_areas>
+
+<dark_mode>
+
 ## Dark Mode
 
 ```css
@@ -80,6 +104,10 @@ body {
 ```
 
 Both the `<meta name="color-scheme">` tag AND the CSS `color-scheme` property are needed — the meta tag prevents flash on load, the CSS property styles form controls.
+
+</dark_mode>
+
+<touch_interaction>
 
 ## Touch & Interaction
 
@@ -113,6 +141,10 @@ html { scroll-behavior: smooth; }
 }
 ```
 
+</touch_interaction>
+
+<forms>
+
 ## Forms
 
 Always set `type`, `inputmode`, `autocomplete`, and `enterkeyhint` together:
@@ -130,6 +162,10 @@ Always set `type`, `inputmode`, `autocomplete`, and `enterkeyhint` together:
 | Password (signup) | `password` | — | `new-password` | `done` |
 
 Disable autocapitalize for usernames/codes: `autocapitalize="off"`.
+
+</forms>
+
+<fonts>
 
 ## Fonts
 
@@ -153,6 +189,10 @@ Key rules:
 - `font-display: swap` on mobile, `optional` on desktop
 - Preload only above-the-fold fonts, only on desktop (`min-width: 768px`)
 - Reduce layout shift: use `size-adjust`, `ascent-override`, `descent-override` on fallback
+
+</fonts>
+
+<responsive_images>
 
 ## Responsive Images
 
@@ -178,6 +218,10 @@ Key rules:
 - Mobile images < 200KB, hero images < 300KB
 - 3-5 srcset widths: 400, 800, 1200, 1600, 2560
 
+</responsive_images>
+
+<pwa_manifest>
+
 ## PWA Manifest
 
 Only include if building a PWA or home-screen-installable site.
@@ -188,6 +232,10 @@ Only include if building a PWA or home-screen-installable site.
 
 See `references/pwa-manifest.md` for full manifest template.
 
+</pwa_manifest>
+
+<css_units>
+
 ## CSS Units & Layout
 
 - Use `rem` for font sizes, `em` for component spacing
@@ -195,6 +243,10 @@ See `references/pwa-manifest.md` for full manifest template.
 - Use `svh` for minimum guaranteed viewport, `lvh` for maximum
 - Avoid fixed heights; prefer `min-height: 100dvh`
 - Mobile layout width: design for 360-430px range
+
+</css_units>
+
+<performance>
 
 ## Performance Checklist
 
@@ -206,3 +258,5 @@ Quick wins:
 - `defer` all non-critical JS
 - Set `Cache-Control` headers
 - Compress with Brotli > gzip
+
+</performance>

@@ -7,6 +7,8 @@ description: Toggle transparent SSH forwarding for Bash commands in a chosen dir
 
 Session-scoped remote Bash execution. Toggled on/off by creating or deleting a `.workremotely` marker file in the directory whose subtree should run remotely. A PreToolUse hook walks upward from each Bash call's cwd to find the marker; if found, the command is rewritten as `ssh <host> bash -lc '<cmd>'` before Claude Code sends it.
 
+<setup>
+
 ## First-time setup
 
 Check whether hooks are already installed:
@@ -22,6 +24,10 @@ If missing:
 ```
 
 Registers the PreToolUse + PostToolUse Bash hooks in `~/.claude/settings.json`. Idempotent.
+
+</setup>
+
+<control>
 
 ## Enable / disable / status
 
@@ -55,6 +61,10 @@ Disable (removes the nearest ancestor marker):
 ~/.claude/skills/workremotely/scripts/disable.sh
 ```
 
+</control>
+
+<behavior>
+
 ## Behavior while active
 
 - Bash tool calls under the scope are rewritten to `ssh <host> bash -lc '…'`.
@@ -62,9 +72,17 @@ Disable (removes the nearest ancestor marker):
 - Read, Edit, Write, Grep, Glob still act on the **local** filesystem. Use sshfs if remote file editing is needed.
 - Every 5 minutes of active use, a `[workremotely ACTIVE — host=… scope=…]` reminder is appended to tool output.
 
+</behavior>
+
+<migration>
+
 ## Replacing the old /workremotely slash command
 
 The previous `~/.claude/commands/workremotely.md` was a prompt-only command that asked Claude to manually prefix commands with `ssh nas`. This skill supersedes it. Delete or shorten that command file once the skill is installed.
+
+</migration>
+
+<troubleshooting>
 
 ## When something looks wrong
 
@@ -74,4 +92,10 @@ The previous `~/.claude/commands/workremotely.md` was a prompt-only command that
 - **Interactive tools hang:** add `-t` to the `ssh` call in `ssh-wrap.sh`.
 - **rtk errors on remote:** install rtk on the host, or reorder the hook chain so `ssh-wrap.sh` runs BEFORE `rtk-rewrite.sh`.
 
+</troubleshooting>
+
+<references>
+
 See `references/setup.md` for hook chain ordering, marker format, and wrapping internals.
+
+</references>

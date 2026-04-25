@@ -5,7 +5,11 @@ description: "Organize messy notes: rename, merge, split files, restructure into
 
 # Note Refiner
 
+<description>
 Organize messy note folders into clean, structured markdown — both the file system and the content within each file.
+</description>
+
+<workflow>
 
 ## Workflow
 
@@ -17,6 +21,10 @@ Organize messy note folders into clean, structured markdown — both the file sy
 5. REFINE    → Clean up content within each file
 6. DELIVER   → Summary of changes, notify completion
 ```
+
+</workflow>
+
+<steps>
 
 ## Step 1: SCAN
 
@@ -35,6 +43,10 @@ Ask via `ask_text_input`:
 
 ## Step 2: ANALYZE
 
+</steps>
+
+<analysis>
+
 ### File system level
 - Detect naming inconsistencies (mixed case, no dates, cryptic names)
 - Identify orphan files that don't fit any theme
@@ -52,6 +64,10 @@ For each file, identify:
 - Content gaps or incomplete sections
 
 Propose a target folder structure with semantic grouping.
+
+</analysis>
+
+<checkin>
 
 ## Step 3: CHECK-IN
 
@@ -74,6 +90,10 @@ Use `ask_multiple_choice` for refinement level:
 
 Wait for approval before proceeding. Do not modify any files until the user confirms.
 
+</checkin>
+
+<organize>
+
 ## Step 4: ORGANIZE
 
 Execute only what the user approved in step 3.
@@ -85,6 +105,10 @@ Create the target folder structure first, then:
 - Split oversized files: create separate files with clear names for each topic
 
 Naming convention: `YYYY-MM-DD-descriptive-name.md` when dates are relevant, otherwise `descriptive-name.md`.
+
+</organize>
+
+<refine>
 
 ## Step 5: REFINE
 
@@ -110,6 +134,10 @@ Apply the approved refinement level to each file.
 
 Preserve all original information. Never delete content the user wrote — restructure and clarify it.
 
+</refine>
+
+<deliver>
+
 ## Step 6: DELIVER
 
 Output a summary of all changes:
@@ -126,6 +154,10 @@ If confirmed, commit with message: `refactor: reorganize and clean up notes`
 
 Use `notify_user` to signal completion.
 
+</deliver>
+
+<rules>
+
 ## Rules
 
 - Never delete files — only rename, move, merge, or restructure
@@ -136,3 +168,5 @@ Use `notify_user` to signal completion.
 - Keep folder nesting shallow: max 2 levels deep
 - When merging, add a comment at the top noting which files were combined
 - When splitting, add cross-references between the resulting files
+
+</rules>

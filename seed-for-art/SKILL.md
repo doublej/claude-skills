@@ -3,15 +3,19 @@ name: seed-for-art
 description: "Distill any source into a 3-stage art seed: philosophical fragments, formal variations, editorial illustration brief. Triggers on philosophical seed, art seed, editorial illustration brief, image prompt from dossier, turn this project into images."
 ---
 
-# Seed for Art
+<intro>
 
 Convert dense source material into prompts an external image-gen tool (Midjourney, Imagen, Nano-Banana) or human illustrator can act on. **No image generation inside this skill** — only markdown deliverables.
 
-## Why this exists
+</intro>
+
+<rationale>
 
 Going `data → image` produces AI slop. Going `data → philosophy → motif → brief` strips literalism at every step. The canonical run (see `references/example-orac.md`) turned a 5-year, 157-email municipal complaint into 5 published editorial illustrations the user describes as "amazing".
 
-## The 3 stages
+</rationale>
+
+<stages>
 
 | # | Stage | Output | Purpose |
 |---|-------|--------|---------|
@@ -21,7 +25,9 @@ Going `data → image` produces AI slop. Going `data → philosophy → motif �
 
 Stage N depends on stage N-1's output as raw material — but each stage's deliverable also stands alone.
 
-## Workflow
+</stages>
+
+<workflow>
 
 ### 1. Clarify the source — and explain why each question matters
 
@@ -66,23 +72,31 @@ State explicitly: "Brief saved at `<path>`. Paste into Midjourney / Imagen / Nan
 - `$ARGUMENTS = 1|2|3` → run only that stage. Source for stage 2/3 must already exist or be supplied.
 - `$ARGUMENTS = all` (default) → run all three with confirmation between each.
 
-## Before each stage
+</workflow>
+
+<anti_patterns_check>
 
 Always read `references/anti-patterns.md` once per session. The failure modes there ("moody and atmospheric", "a figure stands in shadow", generic NOT-lists) are what a skilled brief actively closes off.
 
-## Stage outputs — file conventions
+</anti_patterns_check>
+
+<output_conventions>
 
 - **Save location: always `<projectroot>/tmp/`**. Create the directory if it does not exist. Never write inside any `.claude/` directory or other config/state path. If `<projectroot>` is ambiguous (no git root, no obvious project), use the current working directory's `tmp/`.
 - File naming: `<topic-slug>-seed-for-art.md`, `-variations.md`, `-editorial.md`. Slug uses kebab-case.
 - Frontmatter on each: `title`, `author`, `date` (today, `YYYY-MM-DD`), `status: seed`, `tags`, `purpose`.
 
-## What this skill is NOT
+</output_conventions>
+
+<what_not>
 
 - Not a image generator. Stop at the brief.
 - Not a project-management or planning tool. Output is artistic raw material.
 - Not domain-specific. Works on any source where you can identify a thesis.
 
-## Reference files
+</what_not>
+
+<references>
 
 | File | Load when |
 |------|-----------|
@@ -91,3 +105,5 @@ Always read `references/anti-patterns.md` once per session. The failure modes th
 | `references/stage3-brief.md` | Producing editorial illustration brief |
 | `references/anti-patterns.md` | Always — once per session |
 | `references/example-orac.md` | Reading the canonical run for shape and tone |
+
+</references>

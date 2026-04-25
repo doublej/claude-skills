@@ -7,10 +7,16 @@ description: "Add Umami analytics tracking to any website project"
 
 Add Umami analytics to any website. Automatically registers the site in the Umami dashboard and injects the tracking snippet with the real website ID.
 
+<defaults>
+
 ## Defaults
 
 - **Umami URL**: `https://umami-inky-two.vercel.app`
 - **Dashboard**: `https://umami-inky-two.vercel.app/websites`
+
+</defaults>
+
+<workflow>
 
 ## Workflow
 
@@ -21,6 +27,10 @@ Add Umami analytics to any website. Automatically registers the site in the Umam
 5. Report which files were modified and link to the dashboard
 
 Do NOT ask for credentials, URL, or website ID. Everything is preconfigured.
+
+</workflow>
+
+<steps>
 
 ## Step 1: Register the Website
 
@@ -61,3 +71,5 @@ python3 <skill_dir>/scripts/inject_tracking.py <project_dir> <website_id> [--aut
 Notify the user: "Tracking added for **<site-name>**. View stats at https://umami-inky-two.vercel.app/websites"
 
 The inject script is idempotent — files already containing the snippet are skipped.
+
+</steps>

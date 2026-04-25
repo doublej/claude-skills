@@ -8,6 +8,8 @@ license: Complete terms in LICENSE.txt
 
 This skill provides guidance for creating effective skills.
 
+<about_skills>
+
 ## About Skills
 
 Skills are modular, self-contained packages that extend Claude's capabilities by providing specialized knowledge, workflows, and tools. Think of them as "onboarding guides" for specific domains or tasks.
@@ -18,6 +20,10 @@ Skills are modular, self-contained packages that extend Claude's capabilities by
 2. Tool integrations - Instructions for working with specific file formats or APIs
 3. Domain expertise - Company-specific knowledge, schemas, business logic
 4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
+
+</about_skills>
+
+<core_principles>
 
 ## Core Principles
 
@@ -32,6 +38,10 @@ Prefer concise examples over verbose explanations.
 - **High freedom**: Multiple approaches valid, context-dependent decisions
 - **Medium freedom**: Preferred pattern exists, some variation acceptable
 - **Low freedom**: Operations fragile/error-prone, consistency critical
+
+</core_principles>
+
+<anatomy_of_skill>
 
 ### Anatomy of a Skill
 
@@ -63,6 +73,10 @@ skill-name/
 - README.md, INSTALLATION_GUIDE.md, CHANGELOG.md, etc.
 - Only include what an AI agent needs to do the job
 
+</anatomy_of_skill>
+
+<progressive_disclosure>
+
 ### Progressive Disclosure
 
 1. **Metadata** - Always in context (~100 words)
@@ -70,6 +84,10 @@ skill-name/
 3. **Bundled resources** - As needed by Claude
 
 Keep SKILL.md under 500 lines. Split content into separate files when approaching this limit.
+
+</progressive_disclosure>
+
+<skill_creation_process>
 
 ## Skill Creation Process
 
@@ -79,6 +97,10 @@ Keep SKILL.md under 500 lines. Split content into separate files when approachin
 4. Edit the skill (implement resources and write SKILL.md)
 5. Package the skill (run package_skill.py)
 6. Iterate based on real usage
+
+</skill_creation_process>
+
+<step_1_understanding>
 
 ### Step 1: Understanding with Concrete Examples
 
@@ -94,6 +116,10 @@ For each example, identify what scripts, references, and assets would be helpful
 - Schema/API docs → `references/`
 - Templates/boilerplate → `assets/`
 
+</step_2_planning>
+
+<step_3_initializing>
+
 ### Step 3: Initializing the Skill
 
 ```bash
@@ -101,6 +127,10 @@ scripts/init_skill.py <skill-name> --path <output-directory>
 ```
 
 Creates skill directory with SKILL.md template and example resource directories.
+
+</step_3_initializing>
+
+<step_4_edit>
 
 ### Step 4: Edit the Skill
 
@@ -116,6 +146,10 @@ Creates skill directory with SKILL.md template and example resource directories.
 
 **Body:** Instructions for using the skill and its bundled resources. Use imperative/infinitive form.
 
+</step_4_edit>
+
+<step_5_packaging>
+
 ### Step 5: Packaging a Skill
 
 ```bash
@@ -124,9 +158,15 @@ scripts/package_skill.py <path/to/skill-folder> [output-directory]
 
 Validates and packages skill into distributable .skill file.
 
+</step_5_packaging>
+
+<step_6_iterate>
+
 ### Step 6: Iterate
 
 1. Use the skill on real tasks
 2. Notice struggles or inefficiencies
 3. Update SKILL.md or bundled resources
 4. Test again
+
+</step_6_iterate>

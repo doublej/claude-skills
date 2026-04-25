@@ -7,7 +7,7 @@ description: "Generate EPC QR codes for SEPA payments as ASCII art from IBAN and
 
 Generate EPC (European Payments Council) QR codes for SEPA banking payments. Output scannable ASCII QR codes directly in terminal.
 
-## Quick Start
+<quick_start>
 
 When user provides payment details, extract and validate fields, then generate QR code:
 
@@ -19,7 +19,9 @@ User: "Pay John Doe €50.00 to IBAN NL02ABNA0123456789 for invoice 2024-001"
 → Display ASCII QR code with confirmation message
 ```
 
-## Field Detection
+</quick_start>
+
+<field_detection>
 
 Auto-extract these fields from conversation context:
 
@@ -41,7 +43,9 @@ Auto-extract these fields from conversation context:
 
 **Reference**: Extracts text in quotes or after keywords (reference, for, regarding, invoice)
 
-## Validation Rules
+</field_detection>
+
+<validation_rules>
 
 ### Format Checks
 - IBAN: 15-34 chars, starts with 2 letters + 2 digits
@@ -55,7 +59,9 @@ Auto-extract these fields from conversation context:
 - Special characters: Sanitized to Latin-1 subset
 - Single IBAN: If multiple IBANs found, ask user to clarify
 
-## Usage Workflow
+</validation_rules>
+
+<usage_workflow>
 
 1. **Detect payment intent** from user message (keywords: pay, transfer, SEPA, IBAN, QR code)
 2. **Extract fields** using patterns or explicit values from user
@@ -76,7 +82,9 @@ IBAN: [IBAN]
 
 If amount is missing: "to pay [BENEFICIARY]" (no amount shown)
 
-## Error Handling
+</usage_workflow>
+
+<error_handling>
 
 ### Missing Required Fields
 
@@ -114,7 +122,9 @@ Found multiple IBANs: DE89370400440532013000, NL02ABNA0123456789
 Please specify which account to use.
 ```
 
-## Script Reference
+</error_handling>
+
+<script_reference>
 
 Execute `scripts/generate_epc_qr.py` with JSON input via stdin:
 
@@ -133,7 +143,9 @@ Execute `scripts/generate_epc_qr.py` with JSON input via stdin:
 
 **Dependency**: `segno` library (`pip install segno`)
 
-## Edge Cases
+</script_reference>
+
+<edge_cases>
 
 - **No amount**: Generate QR without amount (valid per EPC spec)
 - **IBAN with spaces**: Spaces stripped automatically
@@ -141,10 +153,14 @@ Execute `scripts/generate_epc_qr.py` with JSON input via stdin:
 - **Special characters**: Auto-sanitize to Latin-1 for EPC compatibility
 - **Hidden IBANs**: Extract from formatted text or tables
 
-## EPC Specification Notes
+</edge_cases>
+
+<epc_specification>
 
 - Service tag: "BCD"
 - Version: "002"
 - Character set: UTF-8 with Latin-1 fallback
 - Error correction: Level M (15%)
 - Currency: EUR only (EPC spec requirement)
+
+</epc_specification>

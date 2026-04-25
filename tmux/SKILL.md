@@ -8,7 +8,7 @@ license: Vibecoded
 
 Use tmux as a programmable terminal multiplexer for interactive work. Works on Linux and macOS with stock tmux; avoid custom config by using a private socket.
 
-## Quickstart
+<quickstart>
 
 ### One-command bootstrap (recommended)
 
@@ -24,7 +24,9 @@ eval "$(./scripts/tmux-init.sh --name claude-py | python3 -c "import json,sys; d
 tmux -S "$SOCKET" kill-session -t "$SESSION"
 ```
 
-### Manual setup (isolated socket)
+</quickstart>
+
+<manual_setup>
 
 ```bash
 SOCKET_DIR=${TMPDIR:-/tmp}/claude-tmux-sockets  # well-known dir for all agent sockets
@@ -37,7 +39,9 @@ tmux -S "$SOCKET" capture-pane -p -J -t "$SESSION":0.0 -S -200  # watch output
 tmux -S "$SOCKET" kill-session -t "$SESSION"                   # clean up
 ```
 
-## Visibility — always show sessions to the user
+</manual_setup>
+
+<visibility>
 
 When iTerm2 is available (macOS), **always open tmux sessions in a visible iTerm2 pane**. The easiest way is `tmux-init.sh` which handles this automatically:
 
@@ -59,23 +63,31 @@ Or to capture the output once:
 
 This must ALWAYS be printed right after a session was started and once again at the end of the tool loop.
 
-## Socket convention
+</visibility>
+
+<socket_convention>
 
 - Agents MUST place tmux sockets under `CLAUDE_TMUX_SOCKET_DIR` (defaults to `${TMPDIR:-/tmp}/claude-tmux-sockets`) and use `tmux -S "$SOCKET"` so we can enumerate/clean them. Create the dir first: `mkdir -p "$CLAUDE_TMUX_SOCKET_DIR"`.
 - Default socket path to use unless you must isolate further: `SOCKET="$CLAUDE_TMUX_SOCKET_DIR/claude.sock"`.
 
-## Targeting panes and naming
+</socket_convention>
+
+<targeting_panes>
 
 - Target format: `{session}:{window}.{pane}`, defaults to `:0.0` if omitted. Keep names short (e.g., `claude-py`, `claude-gdb`).
 - Use `-S "$SOCKET"` consistently to stay on the private socket path. If you need user config, drop `-f /dev/null`; otherwise `-f /dev/null` gives a clean config.
 - Inspect: `tmux -S "$SOCKET" list-sessions`, `tmux -S "$SOCKET" list-panes -a`.
 
-## Finding sessions
+</targeting_panes>
+
+<finding_sessions>
 
 - List sessions on your active socket with metadata: `./scripts/find-sessions.sh -S "$SOCKET"`; add `-q partial-name` to filter.
 - Scan all sockets under the shared directory: `./scripts/find-sessions.sh --all` (uses `CLAUDE_TMUX_SOCKET_DIR` or `${TMPDIR:-/tmp}/claude-tmux-sockets`).
 
-## Sending input safely
+</finding_sessions>
+
+<sending_input>
 
 > **Never use `\n` to submit commands.** In bash double-quotes `\n` is two literal characters, not a newline. Always use `Enter` as a separate `send-keys` argument.
 
@@ -91,21 +103,27 @@ The `-l` flag sends text literally (no key interpretation), which means `Enter` 
 - When composing inline commands, use single quotes or ANSI C quoting to avoid expansion: `tmux -S "$SOCKET" send-keys -t target -- $'python3 -m http.server 8000' Enter`.
 - To send control keys: `tmux -S "$SOCKET" send-keys -t target C-c`, `C-d`, `C-z`, `Escape`, etc.
 
-## Watching output
+</sending_input>
+
+<watching_output>
 
 - Capture recent history (joined lines to avoid wrapping artifacts): `tmux -S "$SOCKET" capture-pane -p -J -t target -S -200`.
 - For continuous monitoring, poll with the helper script (below) instead of `tmux wait-for` (which does not watch pane output).
 - You can also temporarily attach to observe: `tmux -S "$SOCKET" attach -t "$SESSION"`; detach with `Ctrl+b d`.
 - When giving instructions to a user, **explicitly print a copy/paste monitor command** alongside the action don't assume they remembered the command.
 
-## Spawning Processes
+</watching_output>
+
+<spawning_processes>
 
 Some special rules for processes:
 
 - when asked to debug, use lldb by default
 - when starting a python interactive shell, always set the `PYTHON_BASIC_REPL=1` environment variable. This is very important as the non-basic console interferes with your send-keys.
 
-## Synchronizing / waiting for prompts
+</spawning_processes>
+
+<waiting_for_prompts>
 
 **Required step**: before sending commands to a new session, always wait for the shell prompt. `tmux-init.sh` handles this automatically. For manual setup, use `wait-for-text.sh`:
 
@@ -122,19 +140,25 @@ tmux -S "$SOCKET" new -d -s "$SESSION" -n shell
 - After every command, verify output before sending the next — don't blindly chain commands.
 - For long-running commands, poll for completion text (`"Type quit to exit"`, `"Program exited"`, etc.) before proceeding.
 
-## Interactive tool recipes
+</waiting_for_prompts>
+
+<interactive_recipes>
 
 - **Python REPL**: `tmux ... send-keys -- 'python3 -q' Enter`; wait for `^>>>`; send code with `-l`; interrupt with `C-c`. Always with `PYTHON_BASIC_REPL`.
 - **gdb**: `tmux ... send-keys -- 'gdb --quiet ./a.out' Enter`; disable paging `tmux ... send-keys -- 'set pagination off' Enter`; break with `C-c`; issue `bt`, `info locals`, etc.; exit via `quit` then confirm `y`.
 - **Other TTY apps** (ipdb, psql, mysql, node, bash): same pattern—start the program, poll for its prompt, then send literal text and Enter.
 
-## Cleanup
+</interactive_recipes>
+
+<cleanup>
 
 - Kill a session when done: `tmux -S "$SOCKET" kill-session -t "$SESSION"`.
 - Kill all sessions on a socket: `tmux -S "$SOCKET" list-sessions -F '#{session_name}' | xargs -r -n1 tmux -S "$SOCKET" kill-session -t`.
 - Remove everything on the private socket: `tmux -S "$SOCKET" kill-server`.
 
-## Helper: tmux-init.sh
+</cleanup>
+
+<helpers>
 
 `./scripts/tmux-init.sh` bootstraps a complete tmux session in one call. Creates the session, waits for shell ready, and optionally splits a visible iTerm2 pane next to the agent.
 
@@ -152,7 +176,9 @@ tmux -S "$SOCKET" new -d -s "$SESSION" -n shell
 
 Cross-skill: discovers iTerm2 at `~/.claude/skills/iterm2/scripts/`. Falls back to `--no-split` mode if not found.
 
-## Helper: tmux-run.sh
+</helpers>
+
+<helper_scripts>
 
 `./scripts/tmux-run.sh` sends a command, waits for completion, and captures output — all in one call.
 
@@ -170,7 +196,9 @@ Cross-skill: discovers iTerm2 at `~/.claude/skills/iterm2/scripts/`. Falls back 
 | `-T`/`--timeout` | Pattern timeout seconds (default: 15) |
 | `-l`/`--lines` | History lines to capture (default: 200) |
 
-## Helper: wait-for-text.sh
+</helper_scripts>
+
+<wait_for_text>
 
 `./scripts/wait-for-text.sh` polls a pane for a regex (or fixed string) with a timeout. Works on Linux/macOS with bash + tmux + grep.
 
@@ -186,7 +214,9 @@ Cross-skill: discovers iTerm2 at `~/.claude/skills/iterm2/scripts/`. Falls back 
 - `-l` history lines to search from the pane (integer, default 1000)
 - Exits 0 on first match, 1 on timeout. On failure prints the last captured text to stderr to aid debugging.
 
-## Remote Windows Hosts (SSH/SCP)
+</wait_for_text>
+
+<windows_hosts>
 
 When using tmux sessions to work with Windows machines over SSH:
 
@@ -219,3 +249,5 @@ cat local-file.txt | ssh user@host "powershell -c \"[IO.File]::WriteAllText('C:\
 - Use **backslashes** inside `cmd /c` commands: `C:\\Projects\\foo`
 - Use **forward slashes** inside PowerShell: `C:/Projects/foo`
 - Always double-escape backslashes in bash strings
+
+</windows_hosts>

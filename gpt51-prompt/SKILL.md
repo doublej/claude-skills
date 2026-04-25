@@ -7,13 +7,16 @@ description: "Optimize prompts for GPT-5.1: reasoning modes, tool calling, metap
 
 Refine and optimize prompts for OpenAI's GPT-5.1 model. This skill helps diagnose prompt issues and apply GPT-5.1-specific best practices.
 
+<when_to_use>
 ## When to Use
 
 - Improving existing GPT-5.1 prompts
 - Diagnosing prompt failures or inconsistent outputs
 - Optimizing for specific reasoning modes
 - Improving tool calling efficiency
+</when_to_use>
 
+<quick_reference>
 ## Quick Reference: Reasoning Modes
 
 | Mode | Latency | Use Case |
@@ -24,7 +27,9 @@ Refine and optimize prompts for OpenAI's GPT-5.1 model. This skill helps diagnos
 | `high` | Highest | Complex reasoning, difficult problems |
 
 GPT-5.1 auto-calibrates to prompt difficulty. Use `none` mode for latency-critical paths.
+</quick_reference>
 
+<prompt_optimization>
 ## Prompt Optimization Checklist
 
 ### 1. Clarity & Specificity
@@ -77,7 +82,9 @@ Communication style:
 - Be direct and action-oriented
 - Match formality to user's tone
 ```
+</prompt_optimization>
 
+<tool_calling>
 ## Tool Calling Optimization
 
 ### Parallel Tool Calls
@@ -115,7 +122,9 @@ GPT-5.1 has native `apply_patch` support. Use it for structured code edits:
 ```
 For code modifications, use the apply_patch tool with unified diff format. This reduces edit failures by ~35% compared to freeform suggestions.
 ```
+</tool_calling>
 
+<planning_complex_tasks>
 ## Planning for Complex Tasks
 
 For medium+ complexity tasks, use explicit planning:
@@ -127,7 +136,9 @@ Task execution protocol:
 3. Update plan status after ~8 tool calls
 4. Before any non-trivial change, verify current plan item matches upcoming work
 ```
+</planning_complex_tasks>
 
+<user_communication>
 ## User Communication Patterns
 
 ### Preamble Updates
@@ -145,7 +156,9 @@ Communication cadence:
 ```
 Always explain what you're doing BEFORE starting the action. This improves perceived responsiveness.
 ```
+</user_communication>
 
+<metaprompting>
 ## Metaprompting: Diagnosing Failures
 
 When prompts produce inconsistent results, use two-phase metaprompting:
@@ -176,7 +189,9 @@ Show the revised prompt with inline comments explaining each change.
 ```
 
 Iterate: Run queries after revisions, observe regressions, repeat until failures are triaged.
+</metaprompting>
 
+<anti_patterns>
 ## Common Anti-Patterns
 
 ### Avoid
@@ -194,7 +209,9 @@ Iterate: Run queries after revisions, observe regressions, repeat until failures
 - Clear tool usage rules (MUST vs CAN)
 - Defined output format
 - Self-contained prompts
+</anti_patterns>
 
+<template>
 ## Example: Full System Prompt Template
 
 ```markdown
@@ -228,10 +245,13 @@ You are [ROLE]. Your purpose is [PURPOSE].
 # Error Handling
 When encountering [SITUATION], respond by [ACTION].
 ```
+</template>
 
+<sources>
 ## Sources
 
 - [GPT-5.1 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-1_prompting_guide) - OpenAI Cookbook
 - [GPT-5 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5_prompting_guide) - OpenAI Cookbook
 - [Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering) - OpenAI API Docs
 - [Best Practices](https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api) - OpenAI Help Center
+</sources>

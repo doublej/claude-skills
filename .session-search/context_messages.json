@@ -1,0 +1,22 @@
+[
+  {
+    "type": "user",
+    "uuid": "81629121-24a0-4abc-ae3c-5835c1d9283b",
+    "timestamp": "2026-04-25T21:20:19.586Z",
+    "content": "In the gemeente project i asked to create a philosophical and abstracted summary of what were were doing (see /session-search ) and it resulted in an amazing base prompt for image generation. Understand why it worked so well and how we can can make it a skill that is repeatable on anything.",
+    "session_id": "1944ea51-8547-477b-9642-021a1e947968",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1944ea51-8547-477b-9642-021a1e947968.jsonl",
+    "source_line": 6,
+    "project": "/Users/jurrejan/Documents/development/_management/claude-skills"
+  },
+  {
+    "type": "assistant",
+    "uuid": "e8982c81-2cf3-42d4-9b62-dfbb7e57df77",
+    "timestamp": "2026-04-25T21:20:24.538Z",
+    "content": "Plan mode. Caveman on. Need find gemeente session + extract pattern.",
+    "session_id": "1944ea51-8547-477b-9642-021a1e947968",
+    "source_file": "/Users/jurrejan/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/1944ea51-8547-477b-9642-021a1e947968.jsonl",
+    "source_line": 14,
+    "project": "/Users/jurrejan/Documents/development/_management/claude-skills"
+  }
+]

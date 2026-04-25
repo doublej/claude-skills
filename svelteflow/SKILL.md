@@ -9,7 +9,7 @@ description: Expert guidance for Svelte Flow (@xyflow/svelte v1+ with Svelte 5 r
 
 Use this skill to build, customize, debug, and optimize interactive node-based UIs with Svelte Flow (`@xyflow/svelte` v1+, Svelte 5 only). Covers fundamentals, custom nodes/edges, state with runes, layouting, SvelteKit SSR, and v0→v1 migration.
 
-## Agent behavior contract (follow these rules)
+<agent_behavior_contract>
 
 1. Always import from `@xyflow/svelte`. No legacy packages.
 2. Always import the stylesheet once per app: `import '@xyflow/svelte/dist/style.css'` (or `base.css` for custom theming).
@@ -28,7 +28,9 @@ Use this skill to build, customize, debug, and optimize interactive node-based U
 15. For SvelteKit SSR, guard `<SvelteFlow>` with `{#if browser}` (from `$app/environment`) or render only after `onMount`.
 16. v1 requires Svelte 5. Legacy Svelte 4 store patterns (`writable`) are removed.
 
-## First 60 seconds (triage template)
+</agent_behavior_contract>
+
+<triage_template>
 
 - Clarify goal: new flow setup, custom nodes/edges, state mgmt, layouting, performance, theming, SSR, E2E, migration, or debugging.
 - Collect facts:
@@ -46,7 +48,9 @@ Use this skill to build, customize, debug, and optimize interactive node-based U
   - Layout / positioning → external layout library → `references/layouting.md`
   - Type errors on NodeProps → Svelte 5 generic patterns → `references/typescript.md`
 
-## Routing map (read the right reference fast)
+</triage_template>
+
+<routing_map>
 
 - Installation, setup, minimal flow, node/edge objects, key concepts → `references/fundamentals.md`
 - Custom node components, `<Handle>`, multiple handles, `NodeProps` with `$props()` → `references/custom-nodes.md`
@@ -65,7 +69,9 @@ Use this skill to build, customize, debug, and optimize interactive node-based U
 - Drag-and-drop sidebar, context menu add-node, detail panel, export as PNG → `references/recipes.md`
 - v0 → v1 migration (stores → runes, bind props, hook return shape, API renames) → `references/migration.md`
 
-## Common pitfalls → next best move
+</routing_map>
+
+<pitfalls>
 
 - Blank canvas, no errors → parent has no height; set `style:height="100vh"` or fixed px.
 - Nodes render but no edges → custom nodes missing `<Handle>`, or handle has `display: none`.
@@ -79,7 +85,9 @@ Use this skill to build, customize, debug, and optimize interactive node-based U
 - v0 code won't compile on v1 → stores → `$state.raw`, `{nodes}`→`bind:nodes`, `$edges`→`edges.current`, `onEdgeCreate`→`onbeforeconnect`, `<EdgeLabelRenderer>`→`<EdgeLabel>`.
 - Sub-flow children render behind parent → order parent nodes BEFORE children in the nodes array.
 
-## Verification checklist
+</pitfalls>
+
+<verification_checklist>
 
 - `@xyflow/svelte/dist/style.css` imported exactly once.
 - Parent container has explicit width AND height.
@@ -89,3 +97,5 @@ Use this skill to build, customize, debug, and optimize interactive node-based U
 - Custom nodes include at least one `<Handle>` and use `$props()` with `NodeProps` type.
 - SvelteKit routes wrap the component with `{#if browser}` or mount in `onMount`.
 - Svelte version is 5.x; `@xyflow/svelte` is v1.x.
+
+</verification_checklist>

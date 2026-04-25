@@ -3,11 +3,13 @@ name: rename-project
 description: "Rename end-to-end: folder, GitHub repo, remote, manifests, imports, venv"
 ---
 
-# Rename Project
+<intro>
 
 Rename a project across all its roots — folder, GitHub repo, git remote, manifests, packages, imports, and docs — in a safe, ordered sequence.
 
-## Scripts
+</intro>
+
+<scripts>
 
 All scripts are in `~/.claude/skills/rename-project/scripts/`.
 
@@ -20,7 +22,9 @@ python3 ~/.claude/skills/rename-project/scripts/scan_project.py /path/to/project
 
 Detects: folder name, GitHub remote, pyproject.toml, package.json, Cargo.toml, go.mod, Python package dirs, Python imports, lock files, .venv, and doc references.
 
-## Workflow
+</scripts>
+
+<workflow>
 
 ### Phase 1 — Scan
 
@@ -90,7 +94,9 @@ Run actions in this exact order. Each step must succeed before the next.
    ```
    After this, `cd` into the new path for remaining work.
 
-### Phase 4 — Post-Rename
+</workflow>
+
+<post_rename>
 
 1. **Commit all changes** in the renamed project:
    ```
@@ -104,7 +110,9 @@ Run actions in this exact order. Each step must succeed before the next.
    - Docker images, container names
    - Environment variables referencing old name
 
-## Safety
+</post_rename>
+
+<safety>
 
 - **Folder rename is last** — all other operations work from the current path. If any step fails, the project stays at its old location and is fully usable.
 - **GitHub rename is first in execution** — it's the most likely to fail (permissions, name conflicts). If it fails, nothing else has changed yet.
@@ -113,7 +121,9 @@ Run actions in this exact order. Each step must succeed before the next.
 - **Clean git required** — refuse to proceed if there are uncommitted changes.
 - Never skip the scan phase — it catches edge cases the workflow alone would miss.
 
-## Action Types Reference
+</safety>
+
+<action_types>
 
 | Type | What it does |
 |------|-------------|
@@ -126,3 +136,5 @@ Run actions in this exact order. Each step must succeed before the next.
 | `regenerate_lock_files` | Re-generate dependency lock files |
 | `recreate_venv` | Delete and recreate Python virtual environment |
 | `rename_folder` | Rename the project folder on disk (always last) |
+
+</action_types>

@@ -16,17 +16,16 @@ agents. This skill drives cmux via its CLI and **enforces one workspace
 per project**. Every helper does find-or-create — no blind duplicates,
 no tab graveyards across a long session.
 
-## Prerequisites
-
+<prerequisites>
 - cmux installed (`brew install cmux` or from the app bundle).
 - `CMUX_SOCKET_PATH` exported (cmux does this automatically in every
   shell it spawns). If unset, you're running outside cmux — most verbs
   fail hard with a clear error.
 - `jq` available (`brew install jq`). Every helper uses it to parse
   cmux JSON output.
+</prerequisites>
 
-## Hierarchy: the one opinion
-
+<hierarchy>
 ```
 cmux app
 └── workspace            (1 per project, name = project basename)
@@ -36,8 +35,9 @@ cmux app
 
 **Reuse before create. Always.** Every helper first looks up by name;
 creation only happens when the lookup misses. That's the entire skill.
+</hierarchy>
 
-## Naming conventions
+<naming_conventions>
 
 - **Workspace name** = project directory basename. `myproj`, not
   `myproj-2025-04` or `jj-myproj`. One project, one workspace, forever.
@@ -52,8 +52,9 @@ creation only happens when the lookup misses. That's the entire skill.
 
 If a role you want isn't in the enum, pick `shell` — don't invent new
 role names unless you add them to `scripts/_lib.sh` CMUX_ROLES.
+</naming_conventions>
 
-## Discovery
+<discovery>
 
 | Verb | Purpose |
 |------|---------|
@@ -62,8 +63,9 @@ role names unless you add them to `scripts/_lib.sh` CMUX_ROLES.
 | `cmux list-pane-surfaces --workspace <id> --json` | Tabs in a workspace |
 | `cmux tree --workspace <id>` | Human-readable split tree |
 | `./scripts/cmux-find.sh <project>` | One-shot lookup → JSON, exit 1 if absent |
+</discovery>
 
-## Lifecycle
+<lifecycle>
 
 | Verb | Purpose |
 |------|---------|
@@ -79,8 +81,9 @@ Directions `l`/`r`/`u`/`d` are left/right/up/down relative to the
 current split. Splits are addressable via `list-pane-surfaces` once
 named; without `--tab` they get an opaque `srf_…` id and are effectively
 anonymous. **Always pass `--tab`.**
+</lifecycle>
 
-## I/O
+<io>
 
 | Verb | Purpose |
 |------|---------|
@@ -98,8 +101,9 @@ anonymous. **Always pass `--tab`.**
 > **Refresh before read.** cmux renders asynchronously; `read-screen`
 > can return stale output until the surface repaints. Always call
 > `refresh-surfaces` (then a short sleep) before a read.
+</io>
 
-## Status & notifications
+<status_notifications>
 
 | Verb | Purpose |
 |------|---------|
@@ -112,8 +116,9 @@ anonymous. **Always pass `--tab`.**
 
 Use `set-status` for long jobs — it updates the tab chrome so you can
 see "building… 3m" without switching tabs.
+</status_notifications>
 
-## Cross-workspace targeting
+<cross_workspace_targeting>
 
 `--surface <id>` is always unambiguous — it globally identifies one
 pane. `--workspace <id>` is for workspace-level verbs (list, rename,
@@ -127,8 +132,9 @@ SID=$(./scripts/cmux-find.sh myproj \
       | jq -r '.tabs[] | select(.tab == "myproj:dev") | .surface')
 cmux refresh-surfaces --surface "$SID"
 ```
+</cross_workspace_targeting>
 
-## Gotchas (read these before anything else breaks)
+<gotchas>
 
 1. **`cmux send` has no newline.** Pair with `send-key Return` or use
    `cmux-send.sh --enter`. See `references/troubleshooting.md` §5.
@@ -141,8 +147,9 @@ cmux refresh-surfaces --surface "$SID"
 5. **Never pass both `--surface` and `--workspace`.** See §3.
 6. **Workspace restart loses surfaces.** After a cmux daemon crash,
    `close-workspace --force` and rebuild via `cmux-restore.sh`. See §6.
+</gotchas>
 
-## Workflow 1 — open or attach to a project
+<workflow_1_project_access>
 
 **Preferred entry point:** one command spins the whole workspace from
 either a `.cmux/workspace.json` in the repo, a bundled ecosystem spec,
@@ -172,8 +179,9 @@ If you need finer control, compose the primitives directly:
 Layouts (`single`, `code-dev`, `code-dev-logs`, `grid`) are only applied
 on first create — they won't clobber a workspace you're already using.
 Template details in `references/layouts.md`.
+</workflow_1_project_access>
 
-## Workflow 2 — subagent in a named tab
+<workflow_2_subagent>
 
 ```bash
 ./scripts/cmux-tab.sh myproj agent:1 "$PWD"
@@ -186,8 +194,9 @@ sleep 2
 Full lifecycle (trust-dialog handling, completion polling, harvest)
 lives in `references/subagent-pattern.md`. For fan-out across 2×2:
 `cmux-project.sh myproj grid`, then loop over `agent:0..3`.
+</workflow_2_subagent>
 
-## Workflow 3 — long-running process in a dedicated split
+<workflow_3_long_running>
 
 ```bash
 ./scripts/cmux-tab.sh myproj dev "$PWD"
@@ -201,8 +210,9 @@ cmux read-screen --surface "$SID" --scrollback 200 | tail -30
 ```
 
 `refresh-surfaces` is required before every read (gotcha #2).
+</workflow_3_long_running>
 
-## Workflow 4 — snapshot / restore
+<workflow_4_snapshot_restore>
 
 ```bash
 mkdir -p .cmux
@@ -218,8 +228,9 @@ mkdir -p .cmux
 Snapshot records the tab set and best-effort cwd per tab. Split geometry
 comes from cmux's raw `list-pane-surfaces` output and is informational —
 restore rebuilds canonical tabs, not pixel-perfect geometry.
+</workflow_4_snapshot_restore>
 
-## Feedback loop (run before declaring done)
+<feedback_loop>
 
 This skill evolves from real usage friction — the only source of signal
 the user has is **you** logging what broke or confused you.
@@ -251,8 +262,9 @@ The log lives in the skill source, not per-project, so every session
 harvests into the same pile. Do not gate this on task size — a 2-verb
 task that surprised you deserves a log entry just as much as a 20-verb
 one. Rule of thumb: if you muttered "huh" once, write it down.
+</feedback_loop>
 
-## References
+<references>
 
 - `references/workspace-spec.md` — `.cmux/workspace.json` schema,
   resolution order, Claude session resume rules (read this before
@@ -270,3 +282,4 @@ one. Rule of thumb: if you muttered "huh" once, write it down.
 - `references/troubleshooting.md` — the six-item failure-mode table
   (PTY race, stale reads, surface vs workspace, ref invalidation,
   send+newline, orphan workspace).
+</references>

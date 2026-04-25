@@ -7,7 +7,7 @@ description: "Extract session transcripts from JSONL files for making-of content
 
 Reads Claude Code session JSONL files and extracts conversation content into structured text for downstream use (video content, documentation, logging).
 
-## Session File Location
+<session_location>
 
 ```
 ~/.claude/projects/<encoded-path>/*.jsonl
@@ -20,7 +20,9 @@ Example for `/Users/jurrejan/Documents/development/_management/claude-skills`:
 ~/.claude/projects/-Users-jurrejan-Documents-development--management-claude-skills/
 ```
 
-## Capture Script
+</session_location>
+
+<capture_script>
 
 Use `scripts/capture_session.py` to extract the current or most recent session.
 
@@ -35,7 +37,9 @@ python3 scripts/capture_session.py --out /tmp/session_transcript.txt
 python3 scripts/capture_session.py --session <uuid>.jsonl
 ```
 
-## JSONL Format
+</capture_script>
+
+<jsonl_format>
 
 Each line is a JSON object. Relevant fields:
 ```json
@@ -44,9 +48,13 @@ Each line is a JSON object. Relevant fields:
 {"type": "tool_result", "content": [...]}
 ```
 
-## Workflow
+</jsonl_format>
+
+<workflow>
 
 1. Find session file: `ls -t ~/.claude/projects/<encoded-path>/*.jsonl | head -1`
 2. Run `capture_session.py --out transcript.txt`
 3. Filter to assistant text-only output for display
 4. Pass to `lyric-video-maker` as overlay content
+
+</workflow>

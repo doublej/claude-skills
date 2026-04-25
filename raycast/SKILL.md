@@ -8,11 +8,11 @@ description: >
   Replaces raycast-extensions, raycast-scripts, raycast-snippets.
 ---
 
-# Raycast Development Skill
+<framework>
 
 Three branches. Pick the right one, or combine.
 
-## Which Branch?
+<branch_selection>
 
 | Task | Branch |
 |------|--------|
@@ -20,9 +20,9 @@ Three branches. Pick the right one, or combine.
 | Executable script commands for macOS automation | [Scripts](#scripts) |
 | Text expansion snippets with dynamic placeholders | [Snippets](#snippets) |
 
----
+</branch_selection>
 
-## Extensions
+<extensions>
 
 Build Raycast extensions using React, TypeScript, and the @raycast/api package.
 
@@ -195,7 +195,7 @@ export default function Command() {
 }
 ```
 
-### Extension Best Practices
+<best_practices>
 
 - Use `isLoading` prop to show loading states
 - Implement proper error handling with toasts
@@ -204,7 +204,9 @@ export default function Command() {
 - Use sections to organize long lists
 - Follow Raycast design guidelines for consistency
 
-### Development Commands
+</best_practices>
+
+<dev_commands>
 
 ```bash
 # Run in development
@@ -221,14 +223,18 @@ npm run fix-lint
 npm run publish
 ```
 
-### Reference Files
+</dev_commands>
+
+<reference_files>
 
 - [Components Guide](references/components-guide.md) - List, Form, Detail, Grid, Actions
 - [API Reference](references/api-reference.md) - Data fetching, preferences, storage, OAuth
 
----
+</reference_files>
 
-## Scripts
+</extensions>
+
+<scripts>
 
 Create Raycast script commands - executable scripts that integrate with the Raycast launcher on macOS.
 
@@ -600,7 +606,7 @@ echo "Encoded and copied!"
 3. Make executable: `chmod +x script.sh`
 4. In Raycast: Add Script Directory -> Select folder containing scripts
 
-### Script Best Practices
+<best_practices>
 
 - Run bash scripts through ShellCheck before use
 - Use `#!/bin/bash -l` if you need login shell environment
@@ -611,15 +617,19 @@ echo "Encoded and copied!"
 - Use `needsConfirmation` for destructive operations
 - Test scripts in terminal before adding to Raycast
 
-### File Naming
+</best_practices>
+
+<file_naming>
 
 - Use descriptive hyphenated names: `git-status.sh`, `copy-uuid.py`
 - Files with `.template.` need value configuration before use
 - Group related scripts in subdirectories (becomes package name)
 
----
+</file_naming>
 
-## Snippets
+</scripts>
+
+<snippets>
 
 Create importable snippet collections for Raycast's text expansion feature.
 
@@ -701,18 +711,24 @@ See [references/placeholders.md](references/placeholders.md) for full reference.
 - `@@` for personal info: `@@email`, `@@phone`
 - `//` for comments: `//todo`, `//fix`
 
----
+</snippets>
 
-## Reference Files
+<references>
 
 - [Components Guide](references/components-guide.md) - List, Form, Detail, Grid, Actions
 - [API Reference](references/api-reference.md) - Data fetching, preferences, storage, OAuth
 - [Placeholders Reference](references/placeholders.md) - Dynamic placeholders for snippets
 
-## Documentation
+</references>
+
+<external_docs>
 
 - [Raycast API Reference](https://developers.raycast.com/api-reference)
 - [Raycast Utils](https://developers.raycast.com/utils-reference)
 - [Extension Store](https://raycast.com/store)
 - [Script Commands Repository](https://github.com/raycast/script-commands)
 - [Raycast Manual](https://manual.raycast.com/script-commands)
+
+</external_docs>
+
+</framework>

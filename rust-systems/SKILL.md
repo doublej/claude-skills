@@ -3,9 +3,9 @@ name: rust-systems
 description: "Systems programming for real-time media/VR: FFI, lock-free, unsafe, NDK, cargo"
 ---
 
-# Rust Systems Programming
+<setup_checklist>
 
-## Before Writing Code
+Before Writing Code
 
 1. **Detect project setup**:
    - Edition: check `Cargo.toml` (`edition = "2021"` or `"2024"`)
@@ -22,7 +22,9 @@ description: "Systems programming for real-time media/VR: FFI, lock-free, unsafe
    - `thiserror` for libraries
    - Raw `Result` types in hot paths
 
-## Core Rules
+</setup_checklist>
+
+<core_rules>
 
 ### Unsafe Discipline
 
@@ -42,7 +44,9 @@ let frame = unsafe { &*ptr };
 - No `mem::transmute` unless layout is identical and documented
 - `Send`/`Sync` impls justified (the type is truly thread-safe)
 
-### Hot Path Contract
+</core_rules>
+
+<hot_path>
 
 Code on frame-deadline paths MUST NOT:
 
@@ -56,7 +60,9 @@ Code on frame-deadline paths MUST NOT:
 | `HashMap` lookup | Hashing cost | `FxHashMap`, array lookup, perfect hash |
 | `thread::sleep` | Blocks thread | Spin-wait or yield for RT |
 
-### Error Handling by Path
+</hot_path>
+
+<error_handling>
 
 ```rust
 // Cold path — use anyhow/eyre, readable errors
@@ -81,7 +87,9 @@ fn process_frame(frame: &Frame) -> Result<(), FrameError> {
 }
 ```
 
-### Channel Architecture
+</error_handling>
+
+<channels>
 
 Use bounded channels for backpressure. Unbounded = OOM under load.
 
@@ -113,7 +121,9 @@ select! {
 }
 ```
 
-### Async vs Threads
+</channels>
+
+<async_vs_threads>
 
 | Use | For |
 |-----|-----|
@@ -144,7 +154,9 @@ std::thread::Builder::new()
     })?;
 ```
 
-## FFI Patterns
+</async_vs_threads>
+
+<ffi_patterns>
 
 ### bindgen Setup
 
@@ -240,7 +252,9 @@ fn register_callback(handler: Box<EventHandler>) {
 }
 ```
 
-## Memory Patterns for Media
+</ffi_patterns>
+
+<memory_patterns>
 
 ### Arena Allocator (bumpalo)
 
@@ -304,7 +318,9 @@ impl FramePool {
 }
 ```
 
-## Cargo Workspace Patterns
+</memory_patterns>
+
+<cargo_workspace>
 
 ### Multi-Crate Layout (ALVR-style)
 
@@ -359,7 +375,9 @@ v4l2 = { version = "0.1", optional = true }
 - `default-features = false` on workspace deps propagates — check `cargo tree -e features`
 - Conflicting features from different workspace members cause silent bugs
 
-## Cross-Compilation
+</cargo_workspace>
+
+<cross_compilation>
 
 ### Android NDK Setup
 
@@ -389,7 +407,9 @@ cargo build --target aarch64-linux-android --release
 - C library linking: use `cc` crate with `.target()` in build.rs
 - OpenSSL: use `rustls` instead, or `openssl = { features = ["vendored"] }`
 
-## Profiling
+</cross_compilation>
+
+<profiling>
 
 | Tool | Use Case | Integration |
 |------|----------|-------------|
@@ -440,7 +460,9 @@ opt-level = 3       # ensure hot crate is fully optimized
 opt-level = 1       # faster dev builds with some optimization
 ```
 
-## Common Pitfalls
+</profiling>
+
+<common_pitfalls>
 
 | Mistake | Fix |
 |---------|-----|
@@ -455,7 +477,9 @@ opt-level = 1       # faster dev builds with some optimization
 | `Box::into_raw` without matching `Box::from_raw` | Track ownership, free in `Drop` |
 | Feature flags that aren't additive | Test `--all-features` in CI |
 
-## Quality Gates
+</common_pitfalls>
+
+<quality_gates>
 
 - [ ] `cargo clippy --all-targets --all-features -- -D warnings`
 - [ ] `cargo test` (cold path tests)
@@ -464,7 +488,9 @@ opt-level = 1       # faster dev builds with some optimization
 - [ ] All `unsafe` blocks have `// SAFETY:` comments
 - [ ] Cross-compile targets build: `cargo build --target aarch64-linux-android`
 
-## Deep Reference
+</quality_gates>
+
+<deep_reference>
 
 Load on demand from `references/`:
 
@@ -472,3 +498,5 @@ Load on demand from `references/`:
 |-----------|----------|
 | `ffi-patterns.md` | Complex bindgen configs, opaque types, callback lifetimes, vendoring C libs |
 | `realtime-patterns.md` | Lock-free data structures, SPSC queues, atomics ordering, thread pinning, scheduling |
+
+</deep_reference>

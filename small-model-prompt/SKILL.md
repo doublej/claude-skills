@@ -7,7 +7,9 @@ description: "Prompts and configs for small 8B models (Llama 3.1), Ollama/llama.
 
 Write prompts that actually work on 8B models. These models are capable but unforgiving — they need clear, constrained prompts with no ambiguity.
 
-## Core Constraint: The 8B Reality
+<core_constraint>
+
+## The 8B Reality
 
 8B models have ~10% of a frontier model's capacity. They can follow instructions well IF you respect their limits:
 
@@ -17,7 +19,9 @@ Write prompts that actually work on 8B models. These models are capable but unfo
 - **No nested logic** — flatten conditionals into separate prompts
 - **No meta-reasoning** — "think step by step" wastes capacity; give the steps directly
 
-## Prompt Design Rules
+</core_constraint>
+
+<prompt_design_rules>
 
 ### 1. Lead with role, constrain immediately
 
@@ -61,7 +65,9 @@ Say what TO do, not what NOT to do. 8B models are bad at negation.
 
 Use common words. Avoid jargon, idioms, or complex sentence structures in system prompts. The model's instruction-following degrades with unusual phrasing.
 
-### 6. One-shot > zero-shot > few-shot
+</prompt_design_rules>
+
+<sampling_params>
 
 For 8B models:
 - **One example** dramatically improves output quality
@@ -72,7 +78,7 @@ For 8B models:
 
 For instruction following, low temperature is essential. A perfect prompt at temp=0.8 will underperform a decent prompt at temp=0.1.
 
-## Sampling Parameters
+</sampling_params>
 
 ### Instruction Following / Chat
 
@@ -110,7 +116,9 @@ For instruction following, low temperature is essential. A perfect prompt at tem
 }
 ```
 
-## Llama 3.1 8B Chat Template
+</sampling_params>
+
+<llama_chat_template>
 
 See `references/llama31-template.md` for the exact chat template format.
 
@@ -119,7 +127,9 @@ Key points:
 - System message goes first, then alternating user/assistant turns
 - Always end with `<|start_header_id|>assistant<|end_header_id|>\n\n` to prompt generation
 
-## Output: Full Config
+</llama_chat_template>
+
+<output_format>
 
 When the user describes their task, produce a complete config block:
 
@@ -145,7 +155,9 @@ expected_output: |
   {example}
 ```
 
-## Workflow
+</output_format>
+
+<workflow>
 
 1. **Clarify task** — what exactly should the model do? One thing only.
 2. **Pick task type** — instruction following, extraction, creative, classification
@@ -154,7 +166,9 @@ expected_output: |
 5. **Add one-shot example** — real input/output pair
 6. **Output full config** — yaml block with everything needed to run
 
-## Common Patterns
+</workflow>
+
+<common_patterns>
 
 ### Classification
 ```
@@ -197,7 +211,9 @@ Answer the question using only the provided context. If the answer is not in the
 ---ANSWER---
 ```
 
-## Anti-Patterns (What Breaks 8B Models)
+</common_patterns>
+
+<anti_patterns>
 
 | Anti-pattern | Why it fails | Fix |
 |---|---|---|
@@ -207,3 +223,5 @@ Answer the question using only the provided context. If the answer is not in the
 | Complex conditionals | "If X then Y, else if Z then W" | Split into separate prompts |
 | Asking for self-evaluation | No capacity for meta-cognition | Evaluate externally |
 | Markdown formatting instructions | Produces mangled markdown | Use plain text or strict JSON |
+
+</anti_patterns>

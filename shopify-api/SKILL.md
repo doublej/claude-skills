@@ -7,6 +7,8 @@ description: "Admin REST/GraphQL API: products, orders, inventory, webhooks, rat
 
 Build Shopify store integrations using the Admin API (REST and GraphQL).
 
+<authentication>
+
 ## Authentication
 
 ### Custom App Setup (Recommended)
@@ -53,6 +55,10 @@ shopify.ShopifyResource.set_headers({'X-Shopify-Access-Token': access_token})
 | Customers | `read_customers`, `write_customers` |
 | Inventory | `read_inventory`, `write_inventory` |
 | Fulfillment | `read_fulfillments`, `write_fulfillments` |
+
+</authentication>
+
+<products>
 
 ## Products
 
@@ -136,6 +142,10 @@ const query = `{
 const response = await gqlClient.query({ data: query });
 ```
 
+</products>
+
+<orders>
+
 ## Orders
 
 ### List Orders
@@ -182,6 +192,10 @@ await client.post({
   }
 });
 ```
+
+</orders>
+
+<customers>
 
 ## Customers
 
@@ -232,6 +246,10 @@ await client.put({
 });
 ```
 
+</customers>
+
+<inventory>
+
 ## Inventory
 
 ### Get Inventory Levels
@@ -268,6 +286,10 @@ await client.post({
   }
 });
 ```
+
+</inventory>
+
+<webhooks>
 
 ## Webhooks
 
@@ -314,6 +336,10 @@ const hmac = req.headers['x-shopify-hmac-sha256'];
 const isValid = verifyWebhook(req.rawBody, hmac, process.env.SHOPIFY_API_SECRET);
 ```
 
+</webhooks>
+
+<rate_limiting>
+
 ## Rate Limiting
 
 ### REST API Limits
@@ -350,6 +376,10 @@ async function apiCallWithRetry(fn, maxRetries = 3) {
 const cost = response.extensions?.cost;
 // { requestedQueryCost: 42, actualQueryCost: 35, throttleStatus: { currentlyAvailable: 965 } }
 ```
+
+</rate_limiting>
+
+<pagination>
 
 ## Pagination
 
@@ -395,6 +425,10 @@ do {
 } while (cursor);
 ```
 
+</pagination>
+
+<bulk_operations>
+
 ## Bulk Operations (Large Data)
 
 For operations on 1000+ items, use GraphQL bulk operations:
@@ -416,6 +450,10 @@ const pollQuery = `{ currentBulkOperation { id status objectCount url } }`;
 // Download results from URL when status is COMPLETED
 ```
 
+</bulk_operations>
+
+<mcp_server>
+
 ## MCP Server (Optional)
 
 For Claude Desktop integration, use [shopify-mcp](https://github.com/GeLi2001/shopify-mcp):
@@ -430,6 +468,10 @@ For Claude Desktop integration, use [shopify-mcp](https://github.com/GeLi2001/sh
   }
 }
 ```
+
+</mcp_server>
+
+<error_handling>
 
 ## Error Handling
 
@@ -448,6 +490,10 @@ try {
 }
 ```
 
+</error_handling>
+
+<api_versioning>
+
 ## API Versioning
 
 Shopify releases quarterly versions (e.g., `2024-01`, `2024-04`). Use stable versions:
@@ -459,3 +505,5 @@ import { ApiVersion } from '@shopify/shopify-api';
 ```
 
 Check deprecations at: https://shopify.dev/docs/api/release-notes
+
+</api_versioning>

@@ -7,7 +7,7 @@ description: "Scan style files for font-family declarations, generate Mermaid fl
 
 Scan project styles and output a deterministic Mermaid flowchart of all font-family declarations, rooted at body/html/:root.
 
-## Usage
+<usage>
 
 Run the bundled script and save the output as a markdown file in the project root:
 
@@ -17,7 +17,9 @@ bash {{SKILL_DIR}}/scripts/scan-fonts.sh <project-dir> > <project-dir>/font-fami
 
 Always save to `font-family-tree.md` — never just print to stdout.
 
-## What it scans
+</usage>
+
+<what_it_scans>
 
 - `.css` files
 - `.scss` / `.sass` files
@@ -26,16 +28,24 @@ Always save to `font-family-tree.md` — never just print to stdout.
 
 Excludes: `node_modules`, `.svelte-kit`, `dist`, `build`, `vendor`, `.git`, `.claude`
 
-## Graph structure
+</what_it_scans>
+
+<graph_structure>
 
 - **Root node**: `body`, `html`, or `:root` font-family declaration
 - **Child nodes**: all other selectors with `font-family` overrides
 - **Node label**: `selector → font1, font2, ... | file:line`
 - **Deterministic**: sorted by selector then location, deduped
 
-## When to use
+</graph_structure>
+
+<when_to_use>
+
+
 
 - "What fonts does this project use?"
 - "Show me the font-family hierarchy"
 - "Audit typography / font stacks"
 - "Map font overrides"
+
+</when_to_use>

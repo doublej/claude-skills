@@ -7,7 +7,7 @@ description: "Audit codebase against standards, auto-detect language, generate r
 
 Analyses an existing codebase to identify gaps between current implementation and project standards, then generates a structured refactoring plan with actionable tasks.
 
-## What This Skill Does
+<overview>
 
 1. **Detects project language** from manifest files (go.mod, package.json, pyproject.toml, Cargo.toml, etc.)
 2. **Reads project standards** from PROJECT_RULES.md, CLAUDE.md, or auto-detects conventions
@@ -18,7 +18,9 @@ Analyses an existing codebase to identify gaps between current implementation an
 7. **Generates tasks.md** with actionable refactoring tasks
 8. **User approves** the plan before execution
 
-## Analysis Dimensions
+</overview>
+
+<analysis_dimensions>
 
 | Dimension | What It Checks |
 |-----------|---------------|
@@ -27,7 +29,9 @@ Analyses an existing codebase to identify gaps between current implementation an
 | Testing | Coverage, test patterns, naming, missing tests |
 | DevOps | Containerisation, CI/CD, environment config |
 
-## Workflow
+</analysis_dimensions>
+
+<workflow>
 
 ### Step 1: Detect Language and Standards
 
@@ -99,15 +103,21 @@ docs/refactor/{timestamp}/
 
 Present plan with options: Approve all, Approve with changes, Critical only, Cancel.
 
-## Reference Files
+</workflow>
+
+<reference_files>
 
 - [Analysis Patterns](references/analysis-patterns.md) — detailed checks per dimension, agent prompts
 - [Refactoring Strategies](references/refactoring-strategies.md) — compiling, prioritisation, task format
 - [Common Rationalizations](references/common-rationalizations.md) — handling pressure to skip analysis
 
-## Related Skills
+</reference_files>
+
+<related_skills>
 
 | Skill | Relationship |
 |-------|-------------|
 | **codebase-mapper** | Generates PageRank structural map (Step 2) |
 | **repomap-analyzer** | Runs automated code quality detection (Step 3) |
+
+</related_skills>

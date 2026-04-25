@@ -7,13 +7,14 @@ description: Build 2D graphics and games with PixiJS. Use when working with Pixi
 
 Build 2D graphics, games, and interactive applications with PixiJS.
 
-## When to Use
-
+<when_to_use>
 - Building PixiJS applications
 - Working with sprites, textures, containers
 - Implementing animations and interactions
 - Debugging PixiJS rendering issues
+</when_to_use>
 
+<examples>
 ## Example Patterns
 
 ```js
@@ -28,6 +29,7 @@ import { Container } from 'pixi.js';
 const button = new Container();
 button.accessible = true;
 ```
+</examples>
 
 ## Reference Files
 

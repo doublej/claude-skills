@@ -1,0 +1,27 @@
+{
+  "query": "abstracted",
+  "projects": [
+    {
+      "project": "/Users/jurrejan/Documents/development/_management/claude-skills",
+      "query": "abstracted",
+      "match_count": 1,
+      "window_count": 1,
+      "context_messages": 2,
+      "windows": [
+        {
+          "start": "2026-04-25T21:15:19.586000+00:00",
+          "end": "2026-04-25T21:25:19.586000+00:00",
+          "duration_minutes": 10.0
+        }
+      ],
+      "matches": [
+        {
+          "timestamp": "2026-04-25T21:20:19.586Z",
+          "type": "user",
+          "session_id": "1944ea51-8547-477b-9642-021a1e947968",
+          "preview": "In the gemeente project i asked to create a philosophical and abstracted summary of what were were d"
+        }
+      ]
+    }
+  ]
+}

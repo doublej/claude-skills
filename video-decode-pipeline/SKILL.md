@@ -5,6 +5,8 @@ description: "VR headset decode: MediaCodec H.264/H.265/AV1, decode-to-texture, 
 
 # Video Decode Pipeline (VR/XR)
 
+<before_writing>
+
 ## Before Writing Code
 
 1. **Identify the target**:
@@ -19,6 +21,10 @@ description: "VR headset decode: MediaCodec H.264/H.265/AV1, decode-to-texture, 
    - Sync or async dequeue mode?
 
 3. **Read chipset quirks**: `references/chipset-quirks.md`
+
+</before_writing>
+
+<core_rules>
 
 ## Core Rules
 
@@ -68,6 +74,10 @@ On XR2 devices, also look for dedicated low-latency decoder names:
 
 These are separate codec instances that always operate in low-latency mode.
 
+</core_rules>
+
+<csd>
+
 ## Codec-Specific Data (CSD)
 
 CSD buffers contain parameter sets the decoder needs before it can decode frames.
@@ -97,6 +107,10 @@ AMediaCodec_queueInputBuffer(codec, idx, 0, csd_size,
 **Pitfall**: Do NOT submit CSD both ways. If CSD is in the format, do not also queue it as a flagged buffer -- the decoder will see it twice and may produce garbage frames or stall.
 
 **Pitfall**: Every NAL unit in CSD must start with the 4-byte start code `\x00\x00\x00\x01`. Missing start codes cause silent decoder misconfiguration.
+
+</csd>
+
+<feed_drain>
 
 ## Feed/Drain Loop
 
@@ -139,6 +153,10 @@ if (out >= 0) {
 ```
 
 **Timeout**: Use `0` for non-blocking poll in render loops. Use `10000` (10ms) if you can afford to block.
+
+</feed_drain>
+
+<decode_texture>
 
 ## Decode-to-Texture Pipeline
 
@@ -184,6 +202,10 @@ Key requirements:
 
 **XR2 quirk**: Decoded frames use `OMX_QCOM_COLOR_FormatYUV420PackedSemiPlanar32m` internally, which maps to NV12 with vendor-specific stride alignment. The Vulkan driver handles this transparently when importing via `AHardwareBuffer`, but manual stride calculations will be wrong.
 
+</decode_texture>
+
+<timestamp>
+
 ## Timestamp Management
 
 - Timestamps are in microseconds (`int64_t`)
@@ -192,6 +214,10 @@ Key requirements:
 - For low-latency: PTS order = decode order (no B-frames), so reordering is a no-op
 
 **Frame pacing**: Release output buffers at the intended display time using `AMediaCodec_releaseOutputBufferAtTime(codec, idx, display_time_ns)` for smooth playback. For VR, you typically want immediate release + compositor-side pacing.
+
+</timestamp>
+
+<error_recovery>
 
 ## Error Recovery
 
@@ -228,6 +254,10 @@ AMediaCodec_start(codec);
 
 **Pitfall**: On XR2 Gen 1, `flush()` occasionally fails silently -- output callbacks stop firing. If no output arrives within 100ms after flush + CSD + IDR, escalate to `stop()/configure()/start()`.
 
+</error_recovery>
+
+<don_ts>
+
 ## What NOT to Do
 
 - Use ByteBuffer output mode (CPU copy kills frame timing)
@@ -237,6 +267,10 @@ AMediaCodec_start(codec);
 - Assume decoder state survives `flush()` -- always resubmit CSD
 - Create more than 2 HW decoder instances (will fail silently or crash)
 - Use `BUFFER_FLAG_END_OF_STREAM` for streaming (it's for finite playback only)
+
+</don_ts>
+
+<troubleshooting>
 
 ## Troubleshooting
 
@@ -253,6 +287,10 @@ AMediaCodec_start(codec);
 | `configure()` returns error | Unsupported resolution/profile, or CSD malformed |
 | Intermittent frame drops | Async output not released fast enough, back-pressure |
 
+</troubleshooting>
+
+<deep_reference>
+
 ## Deep Reference
 
 Load on demand from `references/`:
@@ -261,3 +299,5 @@ Load on demand from `references/`:
 |-----------|----------|
 | `mediacodec-config.md` | Full configure() parameters, format keys, Vulkan import sequence |
 | `chipset-quirks.md` | Per-headset decoder limits, known bugs, workarounds |
+
+</deep_reference>

@@ -5,6 +5,8 @@ description: "Rust GPU graphics/compute: pipelines, shaders, textures, VR compos
 
 # wgpu Graphics
 
+<before_writing_code>
+
 ## Before Writing Code
 
 1. **Check wgpu version** -- API changed significantly across 0.19/0.20/22/24/25/26:
@@ -21,6 +23,10 @@ description: "Rust GPU graphics/compute: pipelines, shaders, textures, VR compos
    - HAL interop (`as_hal`, `create_texture_from_hal`) = low-level integration
    - Push constants = OpenGL/Vulkan feature, check `Features::PUSH_CONSTANTS`
    - External textures = platform-specific (EGL images, Vulkan interop)
+
+</before_writing_code>
+
+<core_architecture>
 
 ## Core Architecture
 
@@ -65,6 +71,10 @@ let (device, queue) = adapter.request_device(&wgpu::DeviceDescriptor {
 }, None).await.unwrap();
 ```
 
+</core_architecture>
+
+<backend_selection>
+
 ### Backend Selection
 
 | Backend | Platform | When to Use |
@@ -75,6 +85,10 @@ let (device, queue) = adapter.request_device(&wgpu::DeviceDescriptor {
 | `Backends::GL` | Android, Web (WebGL2) | Fallback when Vulkan unavailable |
 | `Backends::BROWSER_WEBGPU` | Web | WebGPU in browser |
 | `Backends::PRIMARY` | All | Vulkan + Metal + DX12 (recommended) |
+
+</backend_selection>
+
+<pipeline_setup>
 
 ## Pipeline Setup
 
@@ -101,6 +115,10 @@ let pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
     cache: None,
 });
 ```
+
+</pipeline_setup>
+
+<wgsl_shaders>
 
 ## WGSL Shader Patterns
 
@@ -142,6 +160,10 @@ compilation_options: PipelineCompilationOptions {
 override ENABLE_FEATURE: bool = false;
 override GAMMA_VALUE: f32 = 1.0;
 ```
+
+</wgsl_shaders>
+
+<resource_management>
 
 ## Resource Management
 
@@ -205,12 +227,20 @@ drop(data);
 staging_buf.unmap();
 ```
 
+</resource_management>
+
+<drop_based_cleanup>
+
 ### Drop-Based Cleanup
 
 wgpu resources are reference-counted and cleaned up on drop. No explicit `dispose()` needed in most cases. However:
 - **Textures/buffers from HAL** may need custom drop callbacks
 - **Mapped buffers** must be unmapped before drop
 - **Surface** must outlive its window
+
+</drop_based_cleanup>
+
+<what_not_to_do>
 
 ## What NOT to Do
 
@@ -219,6 +249,10 @@ wgpu resources are reference-counted and cleaned up on drop. No explicit `dispos
 - Use `mapped_at_creation: true` for large buffers you'll immediately unmap -- prefer `queue.write_buffer()`
 - Assume texture format support -- check `adapter.get_texture_format_features()`
 - Use `Backends::all()` when you only need native -- `Backends::PRIMARY` excludes GL/WebGL overhead
+
+</what_not_to_do>
+
+<cross_platform>
 
 ## Cross-Platform Differences
 
@@ -236,11 +270,19 @@ wgpu resources are reference-counted and cleaned up on drop. No explicit `dispos
 - Push constants mapped to Metal argument buffers -- larger size limit but different perf profile
 - `TextureFormat::Bgra8Unorm` is the standard swapchain format
 
+</metal_specific>
+
+<vulkan_specific>
+
 ### Vulkan-Specific
 
 - Enable validation: `VK_INSTANCE_LAYERS=VK_LAYER_KHRONOS_validation`
 - Push constant size varies by GPU -- query `adapter.limits().max_push_constant_size`
 - Vulkan interop for external textures: use `wgpu::hal` API
+
+</vulkan_specific>
+
+<vr_compositor>
 
 ## VR Compositor Patterns
 
@@ -250,6 +292,10 @@ See `references/vr-compositor.md` for ALVR-specific patterns including:
 - Reprojection/timewarp with matrix-based UV correction
 - Foveated encoding with shader override constants
 - Staging renderers for Android hardware buffer decode
+
+</vr_compositor>
+
+<performance>
 
 ## Performance
 
@@ -294,6 +340,10 @@ encoder.resolve_query_set(&query_set, 0..2, &timestamp_buf, 0);
 // Read back and multiply by queue.get_timestamp_period() for nanoseconds
 ```
 
+</performance>
+
+<buffer_alignment>
+
 ## Buffer Alignment
 
 | Rule | Value | Notes |
@@ -312,6 +362,10 @@ let unpadded_row = width * bytes_per_pixel;
 let padded_row = (unpadded_row + 255) & !255; // align to 256
 ```
 
+</buffer_alignment>
+
+<troubleshooting>
+
 ## Troubleshooting
 
 | Symptom | Likely Cause |
@@ -326,6 +380,10 @@ let padded_row = (unpadded_row + 255) & !255; // align to 256
 | Shader compilation error | WGSL syntax, or using features not in `required_features` |
 | Performance regression on Metal | Overuse of storage textures (Metal prefers render attachments) |
 
+</troubleshooting>
+
+<deep_reference>
+
 ## Deep Reference
 
 Load on demand from `references/`:
@@ -335,3 +393,5 @@ Load on demand from `references/`:
 | `pipeline-setup.md` | Vertex buffer layouts, render pipeline variations, depth/stencil |
 | `compute-patterns.md` | Compute shaders, workgroup sizing, image processing, GPU readback |
 | `vr-compositor.md` | ALVR patterns, OpenXR integration, HAL interop, stereo rendering |
+
+</deep_reference>

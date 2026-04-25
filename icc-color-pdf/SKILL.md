@@ -7,6 +7,7 @@ description: Manage ICC profiles and color spaces in PDF files. Covers RGB-to-CM
 
 Manage ICC color profiles and color spaces in PDF files for print and archival workflows.
 
+<when_to_use>
 ## When to Use
 
 - Converting PDF color spaces (RGB to CMYK, CMYK to gray, etc.)
@@ -15,7 +16,9 @@ Manage ICC color profiles and color spaces in PDF files for print and archival w
 - Analyzing ink coverage or color spaces in a PDF
 - Preflight validation of ICC profiles
 - Building print-ready PDF pipelines
+</when_to_use>
 
+<tools_installation>
 ## Tools & Installation
 
 ```bash
@@ -35,7 +38,9 @@ sudo apt install liblcms2-utils # Debian/Ubuntu
 brew install verapdf            # PDF/A validation
 # or download from https://verapdf.org
 ```
+</tools_installation>
 
+<ghostscript_color>
 ## Ghostscript Color Conversion
 
 ### RGB to CMYK
@@ -134,7 +139,7 @@ gs -dPDFX -dBATCH -dNOPAUSE -dQUIET \
 
 The `PDFX_IntCmyk.ps` preamble file ships with Ghostscript (in `lib/`). It sets required PDF/X metadata.
 
-## PDF/A with Output Intent
+### PDF/A with Output Intent
 
 ```bash
 gs -dPDFA=2 -dBATCH -dNOPAUSE -dQUIET \
@@ -144,7 +149,9 @@ gs -dPDFA=2 -dBATCH -dNOPAUSE -dQUIET \
    -sOutputFile=archive.pdf \
    PDFA_def.ps input.pdf
 ```
+</ghostscript_color>
 
+<analysis_preflight>
 ## Analysis & Preflight
 
 ### Ink Coverage
@@ -172,7 +179,9 @@ verapdf --flavour 2b input.pdf
 # Extract ICC profile info
 verapdf --extract input.pdf
 ```
+</analysis_preflight>
 
+<python_pikepdf>
 ## Python: pikepdf
 
 ### Read Output Intent Profile
@@ -225,7 +234,9 @@ for i, page in enumerate(pdf.pages):
     cs = resources.get("/ColorSpace", {})
     print(f"Page {i+1}: {dict(cs)}")
 ```
+</python_pikepdf>
 
+<python_pillow>
 ## Python: Pillow + pyCMS
 
 ### Convert Image Color Space with ICC
@@ -256,7 +267,9 @@ if icc:
     with open("extracted.icc", "wb") as f:
         f.write(icc)
 ```
+</python_pillow>
 
+<little_cms>
 ## Little-CMS CLI Tools
 
 | Tool | Purpose |

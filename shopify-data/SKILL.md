@@ -7,6 +7,8 @@ description: "Product data architecture: variants, metafields, collections, filt
 
 Architect product data models using Shopify's native mechanisms correctly.
 
+<four_layers>
+
 ## Four Layers
 
 | Layer | Mechanisms | Answers |
@@ -15,6 +17,10 @@ Architect product data models using Shopify's native mechanisms correctly.
 | **Classification** | Category, product type, vendor, tags, collections | What kind of thing is this? How is it grouped? |
 | **Discovery** | Filters, search controls, visibility, SEO | How do shoppers find it? |
 | **Extensibility** | Metafields, category metafields, metaobjects | What custom data is needed beyond defaults? |
+
+</four_layers>
+
+<decision_framework>
 
 ## Decision Framework
 
@@ -55,6 +61,10 @@ Separate products that should browse as one listing?
   → Combined listings (Plus/enterprise only)
 ```
 
+</decision_framework>
+
+<critical_distinctions>
+
 ### "How do shoppers filter?"
 
 ```
@@ -78,6 +88,10 @@ Filters unavailable on collections >5000 products or searches >100K results.
 | Options = attributes | Options create purchasable variant combos. Metafields for non-sellable attrs. |
 | "Not in collection" = hidden | Use status/publishing/unlisted/seo.hidden for real visibility control. |
 
+</critical_distinctions>
+
+<key_constraints>
+
 ## Key Constraints
 
 | Mechanism | Limit |
@@ -92,6 +106,10 @@ Filters unavailable on collections >5000 products or searches >100K results.
 | Product type | 1 per product (merchant-defined) |
 | Vendor | 1 per product (defaults to store name) |
 
+</key_constraints>
+
+<workflow>
+
 ## Workflow
 
 1. **Classify** — Assign product category from Shopify taxonomy first
@@ -102,6 +120,10 @@ Filters unavailable on collections >5000 products or searches >100K results.
 6. **Tune** — Synonyms, boosts, predictive search settings
 7. **Control** — Visibility via status, publishing, unlisted, seo.hidden
 
+</workflow>
+
+<references>
+
 ## References
 
 For detailed mechanism descriptions, see `references/mechanisms.md`.
@@ -111,3 +133,5 @@ Grep patterns:
 - Mechanism details: `grep -n "^### " references/mechanisms.md`
 - Specific mechanism: `grep -n "Product category\|Category metafield\|Metaobject\|Smart collection" references/mechanisms.md`
 - Patterns: `grep -n "^###" references/patterns.md`
+
+</references>

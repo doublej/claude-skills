@@ -5,12 +5,14 @@ description: "Change or check default application for file extensions on macOS"
 
 Change default file extension associations on macOS using `duti` and LaunchServices.
 
-## Workflow
+<workflow>
 
 1. Ask the user for the file extension and desired application name (use consult-user-mcp if available)
 2. Run the bundled script to make the change
 
-## Script
+</workflow>
+
+<script_section>
 
 `scripts/file-assoc.sh` handles all operations. Auto-installs `duti` via Homebrew if missing.
 
@@ -33,7 +35,9 @@ bash "$SKILL_DIR/scripts/file-assoc.sh" uti <extension>
 bash "$SKILL_DIR/scripts/file-assoc.sh" id "<App Name>"
 ```
 
-## Examples
+</script_section>
+
+<examples>
 
 ```bash
 # Open .md files in Zed
@@ -46,9 +50,13 @@ bash "$SKILL_DIR/scripts/file-assoc.sh" set pdf "Preview"
 bash "$SKILL_DIR/scripts/file-assoc.sh" get json
 ```
 
-## Notes
+</examples>
+
+<notes>
 
 - App names are case-sensitive and must match the name in `/Applications` (without `.app`)
 - The `.` prefix on extensions is optional — both `md` and `.md` work
 - Uses `duti -s <bundle-id> .<ext> all` under the hood (sets for all roles: viewer, editor, shell)
 - UTI lookup for `.ts` returns MPEG-2 transport stream, not TypeScript — the script uses extension-based binding (`.ts`) to avoid this
+
+</notes>

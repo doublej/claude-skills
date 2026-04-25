@@ -12,12 +12,14 @@ Debug PixiJS applications running in Chrome using **Claude-in-Chrome** MCP tools
 
 > **Important:** This skill requires Claude-in-Chrome (not Playwright MCP).
 
+<when_to_use>
 ## When to Use
 
 - User asks to debug, inspect, or profile a PixiJS app
 - Diagnosing rendering or performance issues
 - Exploring scene graph structure
 - Checking texture memory usage
+</when_to_use>
 
 ## Prerequisites
 
@@ -30,6 +32,7 @@ Check in order:
 
 See [troubleshooting.md](references/troubleshooting.md) for details.
 
+<commands>
 ## Commands
 
 | Command | Description |
@@ -44,7 +47,9 @@ See [troubleshooting.md](references/troubleshooting.md) for details.
 | `benchmark [ms]` | FPS benchmark (default 3000ms) |
 | `query <pattern>` | Find nodes by name pattern |
 | (no args) | Show all basic info |
+</commands>
 
+<best_practices>
 ## Best Practices
 
 ### Use Subagents
@@ -71,6 +76,7 @@ return { x: player.x, y: player.y, visible: player.visible };
 ```
 
 Agents excel at reading data structures and tracing code paths. Use these strengths.
+</best_practices>
 
 ## Implementation
 

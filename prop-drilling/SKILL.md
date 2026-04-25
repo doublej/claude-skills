@@ -9,6 +9,7 @@ Scan component trees or call chains to find props/parameters passed through 2+ i
 
 Pure analysis skill — uses Glob, Grep, Read. No scripts.
 
+<phase1>
 ## Phase 1 — Detect Framework & State Management
 
 ### Detect framework
@@ -40,7 +41,9 @@ Check `package.json` and imports:
 | `fastapi`, `Depends` | FastAPI dependency injection |
 
 If `codebase-mapper` is installed, load its output for structural context. Otherwise proceed with direct scanning.
+</phase1>
 
+<phase2>
 ## Phase 2 — Build Prop-Flow Map
 
 This is the core detection phase. Load `{SKILL_DIR}/references/detection-patterns.md` for framework-specific grep patterns.
@@ -152,7 +155,9 @@ Skip these patterns — they are NOT prop drilling:
 - **FastAPI `Depends()` results** — DI-resolved, not manually drilled
 
 See `{SKILL_DIR}/references/detection-patterns.md` for specific patterns to filter.
+</phase2>
 
+<phase3>
 ## Phase 3 — Recommend Fix Strategy
 
 Load `{SKILL_DIR}/references/fix-strategies.md` for before/after code patterns.
@@ -183,7 +188,9 @@ Before adding state management, check if the drilling can be solved by restructu
 - Move the consumer component up (closer to the data source)
 - Use compound components to share implicit context
 - Use render props or slots to pass data without intermediate props
+</phase3>
 
+<phase4>
 ## Phase 4 — Generate Report
 
 Output a markdown report with these sections:
@@ -224,6 +231,7 @@ Ordered list of fixes, grouped by strategy:
 3. **State management** — add these stores
 
 Each item: files to modify, estimated scope (small/medium/large).
+</phase4>
 
 ## Related Skills
 

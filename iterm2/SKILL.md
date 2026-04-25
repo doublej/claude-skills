@@ -10,11 +10,14 @@ description: "Manage via it2 CLI: tabs, panes, send text, profiles, arrangements
 
 Control iTerm2 via the `it2` CLI.
 
+<prerequisites>
 ## Prerequisites
 
 - iTerm2 with Python API enabled (Settings > General > Magic > Enable Python API)
 - `it2` installed (`pip install it2` or `uv tool install it2`)
+</prerequisites>
 
+<commands>
 ## Commands
 
 ### Discovery
@@ -155,7 +158,9 @@ it2 session read -s "$SID" -n 200
 |---------|-------------|
 | `it2 session get-var [-s ID] <var>` | Get session variable |
 | `it2 session set-var [-s ID] <var> <val>` | Set session variable |
+</commands>
 
+<workflows>
 ## Default workflow: iTerm2 pane + tmux (see tmux skill)
 
 When asked to "open a pane" or "run something next to this session", combine iTerm2 (visibility) with tmux (reliability):
@@ -172,7 +177,7 @@ tmux send-keys -t dev-server:0.0 Enter
 
 Or use the tmux skill's `tmux-init.sh` which does this workflow automatically.
 
-## Workflow: Quick split (no tmux)
+### Workflow: Quick split (no tmux)
 
 For simple, non-interactive commands where tmux is overkill:
 
@@ -192,7 +197,9 @@ it2 newtab
 it2 session set-name "Tests"
 it2 window arrange save "my-project"
 ```
+</workflows>
 
+<remote_windows>
 ## Remote Windows Hosts (SSH/SCP)
 
 When working with Windows machines over SSH:

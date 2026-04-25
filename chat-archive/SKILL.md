@@ -18,6 +18,7 @@ Search exported ChatGPT and Claude.ai conversations via SQLite full-text search.
 
 DB location: `~/.chat-archive/conversations.db`
 
+<context_budget>
 ## Context Budget Rules
 
 **NEVER** let raw script JSON reach the main agent context. All script execution goes through haiku subagents that return **concise formatted summaries only**.
@@ -33,7 +34,9 @@ Subagent output caps — instruct each subagent to:
 - Include metadata (total count, showing N of M, truncated notice) so main agent can offer pagination
 
 The main agent handles: query intent, refinement decisions, user interaction, and deciding what to fetch next.
+</context_budget>
 
+<phases>
 ## Phase 1: STATUS
 
 Delegate to a **haiku** subagent:
@@ -112,3 +115,4 @@ For showing a conversation, delegate to a **haiku** subagent. The script auto-li
 **ChatGPT**: Array of objects with `title`, `create_time`, `mapping` (tree of nodes with `message.content.parts[]`). Walk from `current_node` up parent chain, reverse for chronological.
 
 **Claude.ai**: Array of objects with `name`, `created_at`, `updated_at`, `chat_messages[]` each having `sender` (human/assistant), `text`, `created_at`.
+</phases>

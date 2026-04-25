@@ -18,7 +18,7 @@ metadata:
 
 Build bulletproof cookiecutter templates that work flawlessly with Claude Code agents.
 
-## When to Use This Skill
+<when_to_use>
 
 - Creating new cookiecutter templates from scratch
 - Debugging template generation failures
@@ -27,7 +27,9 @@ Build bulletproof cookiecutter templates that work flawlessly with Claude Code a
 - Adding pre/post generation hooks
 - Testing and validating templates
 
-## Quick Start
+</when_to_use>
+
+<quick_start>
 
 Minimal working template structure:
 
@@ -38,7 +40,9 @@ my-template/
     └── README.md              # At least one generated file
 ```
 
-## Core Principles
+</quick_start>
+
+<core_principles>
 
 ### 1. Fail Fast, Fail Loud
 
@@ -97,6 +101,10 @@ ${% raw %}{{{% endraw %} secrets.GITHUB_TOKEN {% raw %}}}{% endraw %}
 
 Hooks must be safe to run multiple times.
 
+</core_principles>
+
+<template_structure>
+
 ```python
 # hooks/post_gen_project.py
 import os
@@ -116,8 +124,6 @@ run_safe("git init")
 if not os.path.exists(".venv"):
     run_safe("python -m venv .venv")
 ```
-
-## Template Structure
 
 ```
 cookiecutter-my-template/
@@ -139,7 +145,9 @@ cookiecutter-my-template/
     └── test_template.py
 ```
 
-## cookiecutter.json Patterns
+</template_structure>
+
+<cookiecutter_json_patterns>
 
 ### Basic with Derived Values
 
@@ -191,11 +199,13 @@ In templates:
 {% endif %}
 ```
 
-## Pre-Generation Hook (Validation)
+</cookiecutter_json_patterns>
+
+<pre_generation_hook>
 
 **File:** `hooks/pre_gen_project.py`
 
-```python
+```
 #!/usr/bin/env python
 """Validate inputs before generating project."""
 import re
@@ -242,11 +252,13 @@ validate_python_version(PYTHON_VERSION)
 print(f"Generating {PROJECT_SLUG}...")
 ```
 
-## Post-Generation Hook (Setup)
+</pre_generation_hook>
+
+<post_generation_hook>
 
 **File:** `hooks/post_gen_project.py`
 
-```python
+```
 #!/usr/bin/env python
 """Set up generated project."""
 import os
@@ -303,7 +315,9 @@ print("  uv sync")
 print("  uv run pytest")
 ```
 
-## Claude Code Integration
+</post_generation_hook>
+
+<claude_code_integration>
 
 ### Include CLAUDE.md in Templates
 
@@ -416,11 +430,13 @@ exit 0
 
 See **[claude-code-hooks.md](references/claude-code-hooks.md)** for complete hook reference.
 
-## Testing Templates
+</claude_code_integration>
+
+<testing_templates>
 
 ### Manual Test
 
-```bash
+```
 # Test generation
 cookiecutter . --no-input -o /tmp/test-output
 
@@ -436,7 +452,7 @@ uv sync && uv run pytest
 
 **File:** `tests/test_template.py`
 
-```python
+```
 """Test cookiecutter template generation."""
 import os
 import subprocess
@@ -491,7 +507,9 @@ def test_project_runs(generated_project):
     assert result.returncode == 0
 ```
 
-## Common Pitfalls
+</testing_templates>
+
+<common_pitfalls>
 
 ### 1. Jinja Conflicts
 
@@ -523,7 +541,9 @@ def test_project_runs(generated_project):
 
 **Solution:** Every variable needs a sensible default.
 
-## Checklist
+</common_pitfalls>
+
+<checklist>
 
 Before releasing a template:
 
@@ -539,7 +559,9 @@ Before releasing a template:
 - [ ] Tests pass: generation, structure, runtime
 - [ ] Works on macOS, Linux, Windows (path separators)
 
-## Reference Files
+</checklist>
+
+<reference_files>
 
 See `references/` for detailed guides:
 
@@ -549,3 +571,5 @@ See `references/` for detailed guides:
 - **[testing-validation.md](references/testing-validation.md)** - Testing strategies
 - **[claude-code-integration.md](references/claude-code-integration.md)** - Agent optimization
 - **[claude-code-hooks.md](references/claude-code-hooks.md)** - Claude Code hooks for generated projects
+
+</reference_files>

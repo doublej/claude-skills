@@ -9,9 +9,13 @@ description: >
 
 # Monospace Conviction
 
+<intro>
 The terminal isn't a fallback. It's the constraint that makes the
 conviction visible. A grid of cells, a keyboard, a few hundred glyphs,
 maybe color. Everything that ships here ships because it earned the cell.
+</intro>
+
+<manifesto>
 
 ## The Manifesto
 
@@ -36,7 +40,9 @@ The terminal is fast. Your TUI must not be the slow part.
 
 One thesis. One verb. One focus. The rest obeys or dies.
 
----
+</manifesto>
+
+<enemies>
 
 ## The Enemies
 
@@ -85,7 +91,9 @@ support is enhancement on top, never the only path in.
 decision the user makes faster than your render is friction your taste
 imported.
 
----
+</paradoxes>
+
+<cell_brief>
 
 ## Pre-flight: The Cell Brief
 
@@ -105,7 +113,9 @@ Six commitments before any code. No "TBD." No "we'll see at runtime."
 6. **NO_COLOR fallback.** What does the screen look like with color
    stripped? Describe it before color tokens are picked.
 
----
+</cell_brief>
+
+<vocabulary>
 
 ## Visual Vocabulary
 
@@ -174,7 +184,9 @@ dark on missing. (atlas-picker `theme.rs:129`.) Live theme cycle on
 Full RGB tables, ANSI fallbacks, and the COLORFGBG algorithm are in
 `references/visual-vocabulary.md`.
 
----
+</vocabulary>
+
+<workflow>
 
 ## Workflow
 
@@ -228,7 +240,9 @@ Four artifacts, in order, no exceptions.
 No "let me know if you'd like X." No three options. Ship the four.
 Stop.
 
----
+</output_discipline>
+
+<taste_rubric>
 
 ## The Taste Rubric
 
@@ -292,7 +306,9 @@ Run before declaring done. Any failure means not done.
 14. What happens on resize during async work?
 15. What's the smallest demo that proves the thesis?
 
----
+</interrogation>
+
+<references>
 
 ## References
 
@@ -309,6 +325,8 @@ canonical pattern source — breathing-room focus, `Edges::Bottom`-only
 shared edges, hierarchical Esc, `COLORFGBG` auto-detect, `Ctrl+T` live
 theme cycle, 1.5s non-modal toasts, scroll-keep on resize.
 
----
+</references>
 
+<closing>
 The terminal is honest. Render less. Mean more.
+</closing>

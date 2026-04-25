@@ -7,16 +7,15 @@ description: "Build VST/AU plugins with JUCE, NIH-plug, iPlug2, and DSP"
 
 Build professional audio effect processors as VST3, AU, AAX, and CLAP plugins.
 
-## When to Use This Skill
-
+<when_to_use>
 - Building VST/AU audio plugins
 - Implementing DSP algorithms (filters, delays, reverbs, dynamics)
 - Learning audio programming fundamentals
 - Choosing between JUCE, NIH-plug, iPlug2, or other frameworks
 - Debugging audio processing issues
+</when_to_use>
 
-## Framework Quick Reference
-
+<framework_reference>
 | Framework | Language | Formats | Best For |
 |-----------|----------|---------|----------|
 | [JUCE](https://juce.com/) | C++ | VST, VST3, AU, AUv3, AAX, LV2 | Professional/commercial, industry standard |
@@ -37,9 +36,9 @@ Need commercial support?
     └── Prefer minimal boilerplate?
         └── Yes → iPlug2 (C++)
 ```
+</framework_reference>
 
-## Quick Start: Your First Plugin
-
+<quickstart>
 ### Option A: JUCE (C++)
 
 ```bash
@@ -188,9 +187,9 @@ nih_export_clap!(GainPlugin);
 ```
 
 See **[NIH-PLUG GUIDE](references/nih-plug-guide.md)** for complete patterns.
+</quickstart>
 
-## Core DSP Concepts
-
+<core_concepts>
 ### Audio Buffer Processing
 
 Every audio plugin processes audio in **blocks** (typically 64-512 samples):
@@ -250,9 +249,9 @@ float dB = 20.0f * std::log10(gain);
 ```
 
 See **[DSP FUNDAMENTALS](references/dsp-fundamentals.md)** for filters, FFT, and more.
+</core_concepts>
 
-## Common Audio Effects
-
+<common_effects>
 ### 1. Filters (EQ, Tone Control)
 
 **Biquad filter** (most common, 2nd-order IIR):
@@ -345,9 +344,9 @@ public:
 ```
 
 See **[COMMON EFFECTS](references/common-effects.md)** for reverbs, distortion, modulation.
+</common_effects>
 
-## Plugin Formats Explained
-
+<plugin_formats>
 | Format | Developer | Platform | Notes |
 |--------|-----------|----------|-------|
 | **VST3** | Steinberg | All | Modern standard, free license since 3.8.0 |
@@ -363,9 +362,9 @@ See **[COMMON EFFECTS](references/common-effects.md)** for reverbs, distortion, 
 - **Mac users**: Add AU
 - **Pro Tools**: Add AAX
 - **Future-proof**: Consider CLAP
+</plugin_formats>
 
-## Testing & Debugging
-
+<testing_and_debugging>
 ### Test in Multiple Hosts
 
 Different DAWs process differently:
@@ -391,9 +390,9 @@ Different DAWs process differently:
 3. **Handle edge cases** - Zero samples, channel count changes
 4. **Reset state properly** - Clear buffers on `reset()` call
 5. **Be sample rate aware** - Recalculate coefficients when rate changes
+</testing_and_debugging>
 
-## Learning Path
-
+<learning_path>
 ### Beginner
 1. Build a gain plugin (parameter smoothing)
 2. Add a simple lowpass filter
@@ -408,9 +407,9 @@ Different DAWs process differently:
 7. Convolution reverb (FFT-based)
 8. Physical modeling (waveguide synthesis)
 9. Spectral processing (phase vocoder)
+</learning_path>
 
-## Recommended Resources
-
+<resources>
 ### Books
 - **"Designing Audio Effect Plugins in C++"** by Will Pirkle - Comprehensive, covers JUCE
 - **"DAFX: Digital Audio Effects"** by Zölzer - Academic but thorough
@@ -427,3 +426,4 @@ Different DAWs process differently:
 - **[NIH-PLUG GUIDE](references/nih-plug-guide.md)** - Rust plugin development
 - **[DSP FUNDAMENTALS](references/dsp-fundamentals.md)** - Filters, FFT, math
 - **[COMMON EFFECTS](references/common-effects.md)** - Effect implementations
+</resources>

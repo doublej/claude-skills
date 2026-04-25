@@ -26,7 +26,7 @@ Aesthetic Thesis: [one sentence — the WHY behind your visual direction]
 
 The aesthetic thesis is your conviction. It drives every cell placement. "Modern and clean" is not a thesis. "Brutalist geometry that refuses decoration" is.
 
-## The Grid System
+<grid_system>
 
 ### Grid Sizes
 
@@ -39,7 +39,9 @@ The aesthetic thesis is your conviction. It drives every cell placement. "Modern
 | 7x7 | Fine | Intricate geometric patterns, detailed icons |
 | 8x8–9x9 | Precise | Pixel-art-adjacent marks, detailed emblems |
 
-### JSON Schema
+</grid_system>
+
+<json_schema>
 
 ```json
 {
@@ -61,7 +63,9 @@ Fields:
 - `cells` — array of cell definitions
 - `text` — optional, text element positioned outside the grid
 
-### Cell Properties
+</json_schema>
+
+<cell_properties>
 
 | Property | Required | Default | Description |
 |----------|----------|---------|-------------|
@@ -72,7 +76,9 @@ Fields:
 | `shape` | no | rect | Shape type |
 | `color` | yes | — | Palette key |
 
-### Shapes (7 total)
+</cell_properties>
+
+<shapes>
 
 | Shape | Description |
 |-------|-------------|
@@ -84,14 +90,18 @@ Fields:
 | `triangle-right` | Triangle pointing right |
 | `diamond` | Diamond (rotated square) inscribed in cell |
 
-### Palette Rules
+</shapes>
+
+<palette_rules>
 
 - Maximum 3 colours + transparent
 - Use single-letter keys: `a`, `b`, `c`
 - Hex values only, no named colours
 - One colour should dominate (60%+), one accent (10-30%), one optional detail
 
-## Design Rules
+</palette_rules>
+
+<design_rules>
 
 ### Banned Elements
 
@@ -116,7 +126,9 @@ Never use these in briefs or descriptions — they signal slop:
 
 Say what you actually mean instead.
 
-### Colour Strategy
+</design_rules>
+
+<colour_strategy>
 
 | Approach | When | Palette |
 |----------|------|---------|
@@ -124,7 +136,9 @@ Say what you actually mean instead.
 | Duotone | Most logos, balanced presence | 2 colours |
 | Triadic | Bold, playful, high energy | 3 colours (use sparingly) |
 
-## Text Handling
+</colour_strategy>
+
+<text_handling>
 
 Text is NOT grid-constrained. Forcing text into cells produces pixel art, not typography.
 
@@ -150,7 +164,9 @@ Only use these — they render reliably across systems:
 
 Do not specify custom web fonts. Logos must render without external dependencies.
 
-## Workflow
+</text_handling>
+
+<workflow>
 
 ### 1. Brief
 Establish brand essence, grid size, type, palette, and aesthetic thesis.
@@ -189,10 +205,10 @@ Optional:
 - **Monochrome** — single colour version
 - **Reversed** — for dark backgrounds
 
-### 6. Verify
-Run the quality checklist before delivery.
+</workflow>
 
-## Quality Checklist
+<quality_checklist>
+Run the quality checklist before delivery.
 
 Before delivery:
 - [ ] Works at 16px (favicon) — test 3x3 reduction
@@ -206,7 +222,9 @@ Before delivery:
 - [ ] No external font dependencies
 - [ ] ASCII preview matches final JSON
 
-## Output
+</quality_checklist>
+
+<output>
 
 Deliver:
 1. Logo brief (the thinking)
@@ -215,3 +233,5 @@ Deliver:
 4. SVG code (primary version)
 5. Icon variant SVG
 6. Usage notes (2-3 lines max)
+
+</output>

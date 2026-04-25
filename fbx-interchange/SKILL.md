@@ -7,7 +7,7 @@ description: Expert guidance for FBX asset interchange between Blender and Cinem
 
 Transfer 3D assets between Blender and Cinema 4D via FBX with correct scale, axes, and rig preservation.
 
-## MCP Integration
+<mcp_integration>
 
 When Blender MCP is available, automate exports directly:
 
@@ -75,14 +75,18 @@ mcp__blender__get_object_info(object_name="Armature")
 mcp__blender__get_viewport_screenshot(max_size=800)
 ```
 
-## Quick Reference
+</mcp_integration>
+
+<quick_reference>
 
 | From | To | Key Settings |
 |------|-----|--------------|
 | Blender | C4D | Scale: 1.0, Apply Transform, -Z Forward, Y Up |
 | C4D | Blender | FBX 7.4, Y-Up, Auto-detect scale |
 
-## Blender → Cinema 4D
+</quick_reference>
+
+<blender_to_c4d>
 
 ### Export Settings (Blender)
 
@@ -108,6 +112,10 @@ Export FBX (.fbx):
 Run `scripts/blender_export_for_c4d.py` in Blender for automated export.
 
 ### Import in Cinema 4D
+
+</blender_to_c4d>
+
+<c4d_to_blender>
 
 1. File → Import → FBX
 2. Settings:
@@ -144,7 +152,9 @@ Import FBX:
 └── Automatic Bone Orientation: ON
 ```
 
-## Common Issues
+</c4d_to_blender>
+
+<common_issues>
 
 | Problem | Cause | Fix |
 |---------|-------|-----|
@@ -154,8 +164,12 @@ Import FBX:
 | Missing animations | Not baked | Enable Bake Animation |
 | Deformed mesh on import | Double transforms | Disable Apply Unit in Blender |
 
-## Detailed Guides
+</common_issues>
+
+<detailed_guides>
 
 - **[references/blender-fbx.md](references/blender-fbx.md)**: Blender export/import deep dive
 - **[references/c4d-fbx.md](references/c4d-fbx.md)**: Cinema 4D export/import settings
 - **[references/troubleshooting.md](references/troubleshooting.md)**: Extended problem-solving guide
+
+</detailed_guides>

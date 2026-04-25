@@ -7,8 +7,7 @@ description: "Build AI agents: auth, query API, hooks, subagents, MCP, sessions"
 
 Build AI agents using the same tools and agent loop that power Claude Code, programmable in Python and TypeScript.
 
-## Installation
-
+<installation>
 ```bash
 # TypeScript (Node.js 18+)
 npm install @anthropic-ai/claude-agent-sdk
@@ -16,9 +15,9 @@ npm install @anthropic-ai/claude-agent-sdk
 # Python (3.10+)
 pip install claude-agent-sdk
 ```
+</installation>
 
-## Authentication
-
+<authentication>
 Priority order:
 1. `ANTHROPIC_API_KEY` env var (if set — **overrides everything**)
 2. Claude Code keychain credentials (default — works if logged into `claude` CLI)
@@ -31,8 +30,9 @@ Third-party providers:
 - **Microsoft Azure**: `CLAUDE_CODE_USE_FOUNDRY=1` + Azure credentials
 
 API keys: https://platform.claude.com/
+</authentication>
 
-## Quick Start
+<quickstart>
 
 ### TypeScript
 
@@ -64,7 +64,6 @@ async def main():
 asyncio.run(main())
 ```
 
-## query() Options
 
 ### TypeScript
 
@@ -114,8 +113,9 @@ ClaudeAgentOptions(
 - `"local"` — `.claude/settings.local.json`
 
 Recommended: `["user", "project"]` — loads credentials AND project config.
+</quickstart>
 
-## Built-in Tools
+<built_in_tools>
 
 | Tool | Description |
 |------|-------------|
@@ -129,8 +129,9 @@ Recommended: `["user", "project"]` — loads credentials AND project config.
 | WebFetch | Fetch and parse web pages |
 | Agent | Spawn subagents |
 | AskUserQuestion | Ask user clarifying questions |
+</built_in_tools>
 
-## Message Types
+<message_types>
 
 ### TypeScript
 
@@ -173,18 +174,18 @@ from claude_agent_sdk import (
     CLIJSONDecodeError,  # JSON parsing
 )
 ```
+</message_types>
 
-## Advanced features
-
+<advanced_features>
 See `references/` for detailed patterns:
 - **Hooks** — programmatic lifecycle hooks (PreToolUse, PostToolUse, Stop, etc.)
 - **Subagents** — inline specialized agents via `agents` option
 - **MCP** — external tool servers + Python in-process SDK MCP servers
 - **Sessions** — resume/fork conversations
 - **Multi-turn** — bidirectional conversations via async iterators (TS) or ClaudeSDKClient (Python)
+</advanced_features>
 
-## Common Gotchas
-
+<gotchas>
 ### Nested Session Prevention
 
 When running SDK from within a Claude Code terminal, inherited env vars cause issues:
@@ -204,10 +205,11 @@ Pin your version — breaking changes occur between releases. TS SDK is on **0.2
 With `settingSources: ["project"]`, agents get access to:
 - Subagents (`.claude/agents/`), Skills (`.claude/skills/`), Hooks (`.claude/settings.json`)
 - Slash Commands (`.claude/commands/`), Memory (`CLAUDE.md`), Plugins (via `plugins` option)
+</gotchas>
 
-## Resources
-
+<resources>
 - **Docs**: https://platform.claude.com/docs/en/agent-sdk/overview
 - **TS GitHub**: https://github.com/anthropics/claude-agent-sdk-typescript
 - **Python GitHub**: https://github.com/anthropics/claude-agent-sdk-python
 - **Examples**: https://github.com/anthropics/claude-agent-sdk-demos
+</resources>

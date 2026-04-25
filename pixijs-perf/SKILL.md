@@ -7,13 +7,16 @@ description: Analyze PixiJS code for performance issues and suggest optimization
 
 Analyze existing PixiJS code to identify performance issues and suggest targeted optimizations.
 
+<when_to_use>
 ## When to Use
 
 - Reviewing PixiJS code for performance bottlenecks
 - Diagnosing slow rendering or high memory usage
 - Auditing texture, sprite, and graphics usage
 - Optimizing particle systems or complex scenes
+</when_to_use>
 
+<performance_review>
 ## Performance Review Checklist
 
 ### 1. Texture Management
@@ -64,6 +67,9 @@ Analyze existing PixiJS code to identify performance issues and suggest targeted
 | Stale references | Objects removed but referenced | Clear references |
 | Event listener leaks | `on()` without `off()` | Remove listeners on destroy |
 
+</performance_review>
+
+<code_patterns>
 ## Code Smell Patterns
 
 ```javascript
@@ -103,7 +109,9 @@ container.removeChild(sprite);
 container.removeChild(sprite);
 sprite.destroy({ children: true, texture: false });
 ```
+</code_patterns>
 
+<quick_wins>
 ## Quick Wins
 
 1. **Enable culling** for off-screen objects: `displayObject.cullable = true`
@@ -111,6 +119,7 @@ sprite.destroy({ children: true, texture: false });
 3. **Set `interactiveChildren = false`** on non-interactive containers
 4. **Define `filterArea`** when using filters
 5. **Disable context alpha** on older devices: `useContextAlpha: false`
+</quick_wins>
 
 ## Reference Files
 

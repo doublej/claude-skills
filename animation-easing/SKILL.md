@@ -5,7 +5,7 @@ description: "Easing functions and timing: ease-out, bounce, elastic, spring for
 
 # Animation Easing: Theory & Practice
 
-## Overview
+<overview>
 
 This skill teaches animation easing functions—the mathematical curves that control how objects accelerate and decelerate during animations. Whether you're building a UI transition, designing a game animation, or creating an interactive experience, choosing the right easing function dramatically impacts how your animation feels to the user.
 
@@ -15,8 +15,9 @@ The skill covers:
 - **Real-world examples** from production interfaces (Apple, Google, Stripe, Figma)
 - **Best practices** for responsive, accessible animations
 - **Decision trees** to help choose the right easing for your specific use case
+</overview>
 
-## Quick Start: Choose Your Easing
+<quick_start>
 
 Most animations fall into these categories:
 
@@ -49,8 +50,9 @@ Most animations fall into these categories:
 **Duration:** 800-1200ms minimum
 **Why:** Personality and delight
 **Caution:** Only for casual/gaming interfaces
+</quick_start>
 
-## Core Easing Functions Explained
+<core_functions>
 
 See **[EASING GUIDE](references/easing-guide.md)** for comprehensive coverage of all easing families:
 
@@ -64,8 +66,9 @@ See **[EASING GUIDE](references/easing-guide.md)** for comprehensive coverage of
 - **Spring Physics:** Velocity-aware, damping-based (responsive)
 
 Each has specific use cases, duration requirements, and personality traits.
+</core_functions>
 
-## Platform-Specific Timing
+<platform_timing>
 
 Choose your base duration by platform:
 
@@ -88,8 +91,9 @@ Choose your base duration by platform:
 - **Adjust for:** Minimal screen real estate, quick glances
 
 **Principle:** Longer distances and larger screens = longer durations. Mobile users are more impatient than desktop users.
+</platform_timing>
 
-## Animation Selection Decision Tree
+<decision_tree>
 
 ```
 What type of animation are you creating?
@@ -126,8 +130,9 @@ What type of animation are you creating?
          Duration: 800-1200ms minimum
          Example: Attention-grabbing, fun interactions
 ```
+</decision_tree>
 
-## Material Design Motion Standards
+<material_design>
 
 Google's Material Design defines standard motion for professional interfaces:
 
@@ -150,8 +155,9 @@ Google's Material Design defines standard motion for professional interfaces:
 - **Psychology:** Asymmetry feels natural. Entering needs gentle landing; exiting should be swift and courteous.
 
 See **[BEST PRACTICES](references/best-practices.md)** for detailed timing guidelines, stagger patterns, and implementation checklists.
+</material_design>
 
-## Real-World Examples from Production
+<real_world_examples>
 
 Learn from how leading companies implement animations:
 
@@ -172,8 +178,9 @@ Uses ease-in-back (overshoot on entry) to signal intentional state changes.
 **Key learning:** Anticipatory motion adds clarity.
 
 See **[REAL-WORLD EXAMPLES](references/real-world-examples.md)** for 10 detailed case studies and implementation patterns you can directly apply.
+</real_world_examples>
 
-## Staggered Animation Pattern
+<stagger_pattern>
 
 When animating multiple elements (lists, grids):
 
@@ -193,8 +200,9 @@ Item 4: 150-450ms (animate in) <- 150ms offset total
 - Prevents overwhelming users with simultaneous motion
 - Guides attention in natural reading direction
 - Makes loading feel intentional and controlled
+</stagger_pattern>
 
-## Common Pitfalls
+<pitfalls>
 
 ### Duration Mistakes
 - ❌ Under 100ms: Animation feels like a glitch (too fast to register)
@@ -209,8 +217,9 @@ Item 4: 150-450ms (animate in) <- 150ms offset total
 ### Animation Property Mistakes
 - ❌ Animating `left`, `top`, `width`, `height` (causes reflows, janky)
 - ✅ Animate `transform`, `opacity`, `filter` (GPU-accelerated, smooth)
+</pitfalls>
 
-## Accessibility: Respecting Reduced Motion
+<accessibility>
 
 Always implement `prefers-reduced-motion` support:
 
@@ -231,8 +240,9 @@ Always implement `prefers-reduced-motion` support:
 - Older users (motion harder to track)
 
 **Best practice:** Simplify animations, don't eliminate. Opacity fade over 100ms still works without motion.
+</accessibility>
 
-## Recommended Resources
+<resources>
 
 ### For Learning Easing Theory
 - **[EASING GUIDE](references/easing-guide.md)** - Complete reference on all easing families, Disney's 12 animation principles, cubic-bezier math
@@ -248,8 +258,9 @@ Always implement `prefers-reduced-motion` support:
 - **[REAL-WORLD EXAMPLES](references/real-world-examples.md)** - 10 production animation case studies (Apple, Google, Stripe, Figma, etc.)
 - [CodePen Animation Examples](https://codepen.io) - Working examples of animations
 - Browser DevTools - Inspect animations on live websites (Chrome DevTools → Animations tab)
+</resources>
 
-## Quick Decision: Should You Add an Animation?
+<decision_guide>
 
 **Animate if:**
 - State is changing and users might miss it
@@ -262,8 +273,9 @@ Always implement `prefers-reduced-motion` support:
 - Duration would exceed 700ms
 - You're using animation as visual filler (no purpose)
 - It conflicts with reduced-motion preference
+</decision_guide>
 
-## Implementation Workflow
+<workflow>
 
 1. **Identify the purpose** - State change? Attention? Feedback?
 2. **Choose easing** - Use decision tree above
@@ -272,8 +284,9 @@ Always implement `prefers-reduced-motion` support:
 5. **Verify performance** - Target 60fps (animate transform/opacity only)
 6. **Test accessibility** - Verify `prefers-reduced-motion` support
 7. **Get feedback** - Does it feel right? Does it serve the purpose?
+</workflow>
 
-## Key Takeaways
+<key_takeaways>
 
 1. **Ease-out is your default** - Works for ~80% of UI animations
 2. **Match emotion to interface** - Professional ≠ Playful
@@ -285,3 +298,4 @@ Always implement `prefers-reduced-motion` support:
 8. **Accessibility matters** - Always support `prefers-reduced-motion`
 9. **Test with real users** - Perception matters more than theory
 10. **Use sparingly** - Personality easing loses impact if overused
+</key_takeaways>

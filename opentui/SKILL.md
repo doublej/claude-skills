@@ -5,7 +5,11 @@ description: "Build terminal UIs (TUIs) with OpenTUI: forms, components in TypeS
 
 # OpenTUI Skill
 
+<description>
 Build terminal user interfaces with OpenTUI's component-based architecture.
+</description>
+
+<when_to_use>
 
 ## When to Use
 
@@ -15,6 +19,10 @@ Build terminal user interfaces with OpenTUI's component-based architecture.
 - Custom graphics with FrameBuffer
 - Selection lists, tabs, text inputs
 
+</when_to_use>
+
+<installation>
+
 ## Installation
 
 ```bash
@@ -22,6 +30,10 @@ bun install @opentui/core
 ```
 
 **Requirement:** Zig must be installed to build native bindings.
+
+</installation>
+
+<concepts>
 
 ## Core Concepts
 
@@ -31,6 +43,10 @@ bun install @opentui/core
 | **Renderables** | Visual elements (text, boxes, inputs) with Yoga layout positioning |
 | **Constructs** | Declarative component builders returning VNodes (like React components) |
 | **FrameBuffer** | Low-level 2D cell array for custom graphics with alpha blending |
+
+</concepts>
+
+<components>
 
 ## Available Components
 
@@ -44,6 +60,10 @@ bun install @opentui/core
 | `ASCIIFont` | ASCII art text rendering |
 | `FrameBuffer` | Custom graphics surface |
 | `GroupRenderable` | Flex-based layout container |
+
+</components>
+
+<quick_start>
 
 ## Quick Start
 
@@ -85,6 +105,10 @@ renderer.root.add(panel)
 renderer.start()
 ```
 
+</quick_start>
+
+<keyboard>
+
 ## Keyboard Input
 
 ```typescript
@@ -94,8 +118,14 @@ renderer.keyInput.on("keypress", (key) => {
 })
 ```
 
+</keyboard>
+
+<references>
+
 ## Reference Files
 
 See `references/` for:
 - `components.md` - Detailed component API
 - `patterns.md` - Common patterns and examples
+
+</references>

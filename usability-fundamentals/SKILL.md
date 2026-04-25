@@ -5,6 +5,8 @@ description: "Nielsen heuristics, Laws of UX, Norman principles for UI review an
 
 # Usability Fundamentals: Design-Aware UX Principles
 
+<philosophy>
+
 ## Philosophy: Beautiful AND Usable
 
 This skill is built on a core principle: **usability and aesthetics are allies, not enemies**.
@@ -15,6 +17,10 @@ The **Aesthetic-Usability Effect** (Kurosu & Kashimura, 1995) proves that users 
 - Use aesthetics to *support* usability, not replace it
 - Every decorative element should have purpose
 - When in doubt, test with real users
+
+</philosophy>
+
+<heuristics_reference>
 
 ## Quick Reference: The 10 Usability Heuristics
 
@@ -34,6 +40,10 @@ Jakob Nielsen's heuristics are the gold standard. Apply these to any interface:
 | 10 | **Help & Documentation** | Context-aware assistance | Tooltips > manuals |
 
 See **[HEURISTICS GUIDE](references/heuristics-guide.md)** for detailed explanations and evaluation questions.
+
+</heuristics_reference>
+
+<laws_of_ux>
 
 ## Core Laws of UX
 
@@ -97,6 +107,10 @@ These psychological principles predict user behavior:
 
 See **[LAWS OF UX REFERENCE](references/laws-of-ux.md)** for complete coverage.
 
+</laws_of_ux>
+
+<design_principles>
+
 ## Don Norman's Design Principles
 
 From "The Design of Everyday Things" — timeless fundamentals:
@@ -125,6 +139,10 @@ Limitations that guide correct use. A USB only fits one way (ideally).
 ### Conceptual Model
 User's mental model of how the system works.
 - **Design implication:** Align your design with user expectations
+
+</design_principles>
+
+<evaluation_checklist>
 
 ## Usability Evaluation Checklist
 
@@ -168,6 +186,10 @@ Use this checklist when reviewing any interface:
 
 See **[EVALUATION CHECKLIST](references/evaluation-checklist.md)** for the full checklist with design-friendly solutions.
 
+</evaluation_checklist>
+
+<decision_tree>
+
 ## Decision Tree: Usability vs Aesthetics Conflicts
 
 ```
@@ -203,6 +225,10 @@ Usability issue identified. Does fixing it require:
       └─ No → Remove it
 ```
 
+</decision_tree>
+
+<patterns>
+
 ## Practical Patterns That Work
 
 ### Progressive Disclosure
@@ -235,6 +261,10 @@ Design the zero-data state thoughtfully.
 - **Why it works:** New users aren't confused; provides guidance
 - **Design-friendly:** Opportunity for brand personality
 
+</patterns>
+
+<anti_patterns>
+
 ## Anti-Patterns to Avoid
 
 ### Mystery Meat Navigation
@@ -256,6 +286,10 @@ Users lose their place; can't share location.
 ### Dark Patterns
 Manipulative UI that tricks users.
 - **Just don't:** It destroys trust permanently
+
+</anti_patterns>
+
+<testing>
 
 ## Testing Usability Without Killing Design
 
@@ -279,6 +313,10 @@ Compare variants with real users.
 - Tests: Actual behavior, not just opinions
 - Preserves: Test functional changes, not just style changes
 
+</testing>
+
+<key_takeaways>
+
 ## Key Takeaways
 
 1. **Beautiful design earns forgiveness** for minor usability issues—but not major ones
@@ -298,6 +336,10 @@ Compare variants with real users.
 - **[Laws of UX](references/laws-of-ux.md)** — Complete psychological principles reference
 - **[Evaluation Checklist](references/evaluation-checklist.md)** — Comprehensive usability review checklist
 
+</key_takeaways>
+
+<sources>
+
 ## Sources
 
 - [Nielsen Norman Group - 10 Usability Heuristics](https://www.nngroup.com/articles/ten-usability-heuristics/)
@@ -305,3 +347,5 @@ Compare variants with real users.
 - Don Norman, "The Design of Everyday Things" (Revised Edition, 2013)
 - [Interaction Design Foundation - Affordances](https://www.interaction-design.org/literature/topics/affordances)
 - [Baymard Institute - UX Design Principles](https://baymard.com/learn/ux-design-principles)
+
+</sources>

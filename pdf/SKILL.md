@@ -6,7 +6,9 @@ description: "ReportLab generation, ICC color profiles, Ghostscript processing (
 
 # PDF Skill
 
+<overview>
 Three branches. Pick the right one, or combine.
+</overview>
 
 ## Which Branch?
 
@@ -22,13 +24,13 @@ Three branches. Pick the right one, or combine.
 
 Generate PDFs with ReportLab 4.x in Python.
 
-### When to Use
-
+<when_to_use>
 - Creating PDFs programmatically from Python
 - Building reports with tables, charts, and formatted text
 - Generating invoices, certificates, or data-driven documents
 - Drawing vector graphics and shapes
 - Complex multi-page layouts with headers/footers
+</when_to_use>
 
 ### Version & Installation
 
@@ -134,14 +136,14 @@ story.append(table)
 
 Manage ICC color profiles and color spaces in PDF files for print and archival workflows.
 
-### When to Use
-
+<when_to_use>
 - Converting PDF color spaces (RGB to CMYK, CMYK to gray, etc.)
 - Embedding or extracting ICC profiles in PDFs
 - Creating PDF/X prepress or PDF/A archival files with output intents
 - Analyzing ink coverage or color spaces in a PDF
 - Preflight validation of ICC profiles
 - Building print-ready PDF pipelines
+</when_to_use>
 
 ### Tools & Installation
 
@@ -469,8 +471,7 @@ ICC profile locations:
 
 Command-line reference for Ghostscript PDF and PostScript processing.
 
-### When to Use
-
+<when_to_use>
 - Merging or splitting PDF files
 - Compressing/optimizing PDFs for web or print
 - Converting PDF to images (PNG, JPEG, TIFF, PSD)
@@ -479,6 +480,7 @@ Command-line reference for Ghostscript PDF and PostScript processing.
 - Creating PDF/A archival or PDF/X prepress files
 - Adding OCR text layers to scanned PDFs
 - Batch document processing
+</when_to_use>
 
 ### Installation
 

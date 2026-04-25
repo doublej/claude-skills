@@ -7,7 +7,7 @@ description: "Simplify entire codebase for clarity using parallel agents, preser
 
 Simplify an entire codebase using parallel agents. Read-only analysis phases, then batched edits with atomic commits and quality gates. All functionality is preserved.
 
-## Pipeline
+<pipeline>
 
 ```
 Phase 1: SCOPE      lead (sonnet)            → detect language, determine scope
@@ -18,7 +18,9 @@ Phase 5: EXECUTE    sonnet general-purpose (×N) → apply simplifications
 Phase 6: VERIFY     lead (sonnet)            → run checks, commit atomically
 ```
 
-## Phase 1: Scope
+</pipeline>
+
+<phase_1_scope>
 
 1. Detect the target project root from `$ARGUMENTS` or current working directory.
 2. Detect primary language from manifest files (`package.json`, `go.mod`, `Cargo.toml`, `Package.swift`, `pyproject.toml`, `setup.py`).
@@ -70,7 +72,9 @@ This prevents accidentally simplifying an entire monorepo when the user only wan
 git checkout -b simplify/$(date +%Y%m%d-%H%M%S)
 ```
 
-## Phase 2: Scan (read-only)
+</phase_1_scope>
+
+<phase_2_scan>
 
 **Skip for Small codebases** — lead reads files directly.
 
@@ -103,7 +107,9 @@ Return a JSON array of findings:
 
 Merge all scanner results into a single findings list.
 
-## Phase 3: Analyse (read-only)
+</phase_2_scan>
+
+<phase_3_analyse>
 
 Distribute findings across analyser agents. Spawn all in a **single message**:
 
@@ -136,7 +142,9 @@ Return JSON array of proposals:
 CRITICAL: Never propose changes that alter functionality. Only simplify HOW code works, not WHAT it does.
 ```
 
-## Phase 4: Plan
+</phase_3_analyse>
+
+<phase_4_plan>
 
 Switch to opus reasoning for this phase only. Consume all proposals and:
 
@@ -150,7 +158,9 @@ Switch to opus reasoning for this phase only. Consume all proposals and:
 
 If user selects specific batches, proceed only with those.
 
-## Phase 5: Execute
+</phase_4_plan>
+
+<phase_5_execute>
 
 For each approved batch, spawn executor agents. Spawn all executors for a batch in a **single message**:
 
@@ -180,7 +190,9 @@ Rules:
 Report: list of files modified, changes applied, any skipped changes with reasons.
 ```
 
-## Phase 6: Verify
+</phase_5_execute>
+
+<phase_6_verify>
 
 After each batch of executors completes:
 
@@ -211,7 +223,9 @@ git commit -m "simplify: {batch_summary}"
    - Files modified
    - Branch name for review
 
-## Refinement Rules
+</phase_6_verify>
+
+<refinement_rules>
 
 These rules apply to ALL simplification proposals and edits:
 
@@ -232,7 +246,11 @@ These rules apply to ALL simplification proposals and edits:
    - Remove helpful abstractions
    - Make code harder to debug or extend
 
-## Reference Files
+</refinement_rules>
+
+<reference_files>
 
 - [Simplification Patterns](references/simplification-patterns.md) — language-specific transformation patterns
 - [Agent Prompts](references/agent-prompts.md) — parameterised prompt templates for scanner, analyser, executor
+
+</reference_files>

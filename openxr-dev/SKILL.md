@@ -5,6 +5,8 @@ description: "Runtime/layer implementation, extension authoring, Vulkan bindings
 
 # OpenXR Development
 
+<before_writing>
+
 ## Before Writing Code
 
 1. **Identify the role** -- runtime, API layer, application, or extension:
@@ -18,6 +20,10 @@ description: "Runtime/layer implementation, extension authoring, Vulkan bindings
 3. **Detect graphics API**: Vulkan (`XR_KHR_vulkan_enable2`), OpenGL (`XR_KHR_opengl_enable`), OpenGL ES (`XR_KHR_opengl_es_enable`), D3D11/D3D12
 
 4. **If Rust**: check `openxrs` crate version and available extension bindings
+
+</before_writing>
+
+<object_hierarchy>
 
 ## Core Object Hierarchy
 
@@ -35,6 +41,10 @@ Entry -> Instance -> System -> Session -> {Swapchain, Space, ActionSet}
 | `XrSwapchain` | `xrCreateSwapchain` | Session | Runtime allocates images |
 | `XrSpace` | `xrCreateReferenceSpace` / `xrCreateActionSpace` | Session | Tracking origin |
 | `XrActionSet` | `xrCreateActionSet` | Instance | Attach to session once |
+
+</object_hierarchy>
+
+<session_lifecycle>
 
 ## Session Lifecycle
 
@@ -73,6 +83,10 @@ case XR_SESSION_STATE_STOPPING:
     break;
 ```
 
+</session_lifecycle>
+
+<frame_loop>
+
 ## Frame Loop
 
 ```
@@ -109,6 +123,10 @@ if (!frameState.shouldRender) {
 // Locate views, render, submit layers...
 ```
 
+</frame_loop>
+
+<swapchain>
+
 ## Swapchain
 
 **Format negotiation** -- the runtime lists supported formats, app picks one:
@@ -121,11 +139,19 @@ xrEnumerateSwapchainFormats(session, count, &count, formats);
 // Pick preferred format from the list -- DON'T assume any format exists
 ```
 
+</swapchain>
+
+<format_preference>
+
 | Preference | Vulkan | OpenGL | Use |
 |-----------|--------|--------|-----|
 | SDR | `VK_FORMAT_R8G8B8A8_SRGB` | `GL_SRGB8_ALPHA8` | Default, widest support |
 | HDR | `VK_FORMAT_R16G16B16A16_SFLOAT` | `GL_RGBA16F` | HDR passthrough/content |
 | Linear | `VK_FORMAT_R8G8B8A8_UNORM` | `GL_RGBA8` | When doing own gamma |
+
+</format_preference>
+
+<acquire_wait_release>
 
 **Acquire/wait/release cycle:**
 
@@ -144,10 +170,18 @@ xrReleaseSwapchainImage(swapchain, NULL);
 
 **Pitfall:** You MUST release before calling `xrEndFrame`. Unreleased swapchain images cause runtime errors or hangs.
 
+</acquire_wait_release>
+
+<stereo>
+
 **Stereo rendering options:**
 - Two swapchains (one per eye) -- simpler, ALVR pattern
 - One swapchain with `arraySize=2` -- single framebuffer, multi-view rendering
 - One wide swapchain, two viewports -- sideby-side
+
+</stereo>
+
+<reference_spaces>
 
 ## Reference Spaces
 
@@ -162,6 +196,10 @@ xrReleaseSwapchainImage(swapchain, NULL);
 **Pitfall:** `STAGE` may not be available on all runtimes. Fall back to `LOCAL_FLOOR` or `LOCAL` + height offset.
 
 Handle `XrEventDataReferenceSpaceChangePending` -- recenter your tracking origin.
+
+</reference_spaces>
+
+<action_system>
 
 ## Action System
 
@@ -194,6 +232,10 @@ suggestion.countSuggestedBindings = 2;
 xrSuggestInteractionProfileBindings(instance, &suggestion);
 ```
 
+</action_system>
+
+<interaction_profiles>
+
 **Common interaction profiles:**
 
 | Profile Path | Controllers |
@@ -204,6 +246,10 @@ xrSuggestInteractionProfileBindings(instance, &suggestion);
 | `/interaction_profiles/htc/vive_controller` | Vive |
 | `/interaction_profiles/bytedance/pico_neo3_controller` | Pico Neo 3 |
 | `/interaction_profiles/bytedance/pico4_controller` | Pico 4 |
+
+</interaction_profiles>
+
+<composition_layers>
 
 ## Composition Layers
 
@@ -225,6 +271,10 @@ Submitted via `xrEndFrame`. Order matters -- first layer is rendered bottommost.
 - `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` -- enable alpha blending
 - `XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT` -- if alpha is not premultiplied
 
+</composition_layers>
+
+<pose_timing>
+
 ## Pose Prediction & Timing
 
 ```c
@@ -244,6 +294,10 @@ if (location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) {
 1. Use `predictedDisplayTime` for all `xrLocateSpace` / `xrLocateViews` calls
 2. Minimize GPU work between pose query and frame submission
 3. Consider late-latching for critical poses (query as late as possible)
+
+</pose_timing>
+
+<graphics_binding>
 
 ## Graphics Binding Setup
 
@@ -268,6 +322,10 @@ sessionInfo.next = &binding;
 sessionInfo.systemId = systemId;
 ```
 
+</graphics_binding>
+
+<opengles>
+
 ### OpenGL ES (Android pattern from ALVR)
 
 ```rust
@@ -281,6 +339,10 @@ let (session, frame_waiter, frame_stream) = unsafe {
 };
 ```
 
+</opengles>
+
+<extensions>
+
 ## Extension Authoring
 
 See `references/extensions.md` for:
@@ -288,6 +350,10 @@ See `references/extensions.md` for:
 - Struct chaining with `next` pointers
 - Function pointer loading via `xrGetInstanceProcAddr`
 - ALVR's `extra_extensions` patterns for wrapping raw FFI
+
+</extensions>
+
+<openxrs_crate>
 
 ## openxrs Crate (Rust)
 
@@ -371,6 +437,10 @@ exts.other = available.other.into_iter()
 | Not calling `graphics_requirements` | Mandatory before `xrCreateSession`, even if unused |
 | Submitting stale display time | Runtime may reject frames with wrong timestamps |
 
+</pitfalls>
+
+<loader_architecture>
+
 ## Loader Architecture
 
 ```
@@ -383,6 +453,10 @@ Application -> OpenXR Loader -> [API Layers] -> Runtime
 - Android: loader is a shared library (`libopenxr_loader.so`), may have vendor variants
 - Desktop: loader reads `XR_RUNTIME_JSON` env var or system registry
 
+</loader_architecture>
+
+<deep_reference>
+
 ## Deep Reference
 
 Load on demand from `references/`:
@@ -391,6 +465,10 @@ Load on demand from `references/`:
 |-----------|----------|
 | `extensions.md` | Authoring extensions, struct chaining, FB/HTC/BD extensions, passthrough |
 | `session-lifecycle.md` | Session state machine details, error recovery, multi-session patterns |
+
+</deep_reference>
+
+<alvr_context>
 
 ## ALVR Integration Context
 
@@ -403,3 +481,5 @@ ALVR's `client_openxr` crate at `rust/alvr/repo/alvr/client_openxr/` demonstrate
 - Projection layer building with alpha config
 - Haptic feedback via action system
 - Reference space change handling
+
+</alvr_context>

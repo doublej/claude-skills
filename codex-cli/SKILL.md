@@ -7,7 +7,7 @@ description: "Automate with OpenAI Codex CLI: approval modes, sandboxing, script
 
 OpenAI's Codex CLI (`codex`) is an AI coding agent with three autonomy levels, sandboxed execution, and multi-provider support.
 
-## Quick Start
+<quick_start>
 
 ```bash
 # Interactive TUI
@@ -22,6 +22,8 @@ codex -q "explain utils.ts"
 # Resume last session
 codex resume --last
 ```
+
+</quick_start>
 
 ## Quick Command Reference
 
@@ -55,7 +57,7 @@ codex resume --last
 | `--no-project-doc` | Disable AGENTS.md loading |
 | `--json` | Output as JSON |
 
-## Approval Modes
+<approval_modes>
 
 ### Suggest (Default)
 
@@ -94,7 +96,9 @@ codex -a full-auto "fix all tests and run them"
 - Directory sandboxed
 - No approval required
 
-## Sandboxing
+</approval_modes>
+
+<sandboxing>
 
 ### macOS (12+)
 
@@ -115,6 +119,8 @@ Uses Docker with `iptables`:
 # Main directory + additional writable dirs
 codex --cd apps/frontend --add-dir ../backend --add-dir ../shared "update imports"
 ```
+
+</sandboxing>
 
 ## Session Management
 

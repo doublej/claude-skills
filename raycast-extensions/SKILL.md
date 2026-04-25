@@ -7,14 +7,15 @@ description: Build Raycast extensions with React and TypeScript. Covers project 
 
 Guide for building Raycast extensions using React, TypeScript, and the @raycast/api package.
 
-## When to Use
-
+<when_to_use>
 - Building extensions with rich UI (lists, forms, grids)
 - Creating integrations with external APIs
 - Adding preferences and persistent storage
 - Building OAuth-authenticated extensions
 - Creating complex multi-view workflows
+</when_to_use>
 
+<quick_start>
 ## Quick Start
 
 ### Create Extension

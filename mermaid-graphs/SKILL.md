@@ -5,7 +5,11 @@ description: "Create and render diagrams: flowcharts, sequence, ER, gantt, mindm
 
 # Mermaid Graphs
 
+<description>
 Create diagrams from text using Mermaid syntax and present them visually.
+</description>
+
+<quick_methods>
 
 ## Quick Presentation Methods
 
@@ -33,6 +37,10 @@ state = {"code": code, "mermaid": {"theme": "default"}, "autoSync": True}
 encoded = base64.urlsafe_b64encode(zlib.compress(json.dumps(state).encode(), 9)).decode()
 webbrowser.open(f"https://mermaid.live/edit#pako:{encoded}")
 ```
+
+</quick_methods>
+
+<diagram_types>
 
 ## Diagram Types & Syntax
 
@@ -159,6 +167,10 @@ quadrantChart
 ```
 
 ### Git Graph
+
+</diagram_types>
+
+<styling>
 ```mermaid
 gitGraph
     commit
@@ -186,8 +198,14 @@ graph LR
 - `dark` - Dark background
 - `neutral` - Grayscale
 
+</styling>
+
+<workflow>
+
 ## Workflow
 
 1. Write diagram in `.mmd` file or inline
 2. Preview quickly: `python3 scripts/preview.py file.mmd`
 3. If needed, render to file: `python3 scripts/render.py file.mmd -o output.png`
+
+</workflow>

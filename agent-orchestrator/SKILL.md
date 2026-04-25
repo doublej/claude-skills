@@ -5,6 +5,7 @@ description: "Multi-agent workflows: subagents, worktrees, fan-out, pipelines"
 
 Orchestrate multi-agent work using the tools below. Pick the simplest pattern that fits.
 
+<decision>
 ## Decision: Subagents vs Agent Teams
 
 | Need | Use |
@@ -13,7 +14,9 @@ Orchestrate multi-agent work using the tools below. Pick the simplest pattern th
 | Parallel implementation (shared repo) | Agent Teams with worktree isolation |
 | Sequential pipeline (stage → stage) | Tasks with `depends_on` |
 | Single focused task delegation | One subagent (foreground) |
+</decision>
 
+<core_tools>
 ## Core Tools
 
 ### Agent — Spawn a subagent
@@ -88,7 +91,9 @@ TaskGet(task_id: "task-001")  # full details for one task
 TaskOutput(task_id: "task-001", lines: 50)  # read output from background bash
 TaskStop(task_id: "task-001")               # kill background task
 ```
+</core_tools>
 
+<patterns>
 ## Orchestration Patterns
 
 ### Pattern 1: Fan-Out (parallel research)
@@ -187,7 +192,9 @@ for i in range(num_agents):
 ```
 
 **When:** Many similar, independent work items.
+</patterns>
 
+<agent_definitions>
 ## Agent Definitions
 
 Define reusable agent types in `.claude/agents/<name>.md`:
@@ -225,7 +232,9 @@ You are a senior code reviewer. Analyze code changes and report issues by severi
 1. `.claude/agents/` (project, checked in)
 2. `~/.claude/agents/` (user-level)
 3. Plugin `agents/` directory
+</agent_definitions>
 
+<lifecycle_hooks>
 ## Lifecycle Hooks
 
 Configure in `settings.json` under `hooks`:
@@ -247,7 +256,9 @@ Exit 2 = task NOT marked complete, agent gets feedback.
 ### WorktreeCreate / WorktreeRemove — Custom VCS
 
 Override git worktree behavior for SVN/Perforce/Mercurial.
+</lifecycle_hooks>
 
+<best_practices>
 ## Best Practices
 
 1. **Include full context in prompts** — subagents don't see your conversation
@@ -260,7 +271,9 @@ Override git worktree behavior for SVN/Perforce/Mercurial.
 8. **Don't broadcast often** — sends to ALL teammates, scales cost
 9. **Background for independence** — foreground when you need the result next
 10. **Tasks persist across compaction** — use them as coordination memory
+</best_practices>
 
+<limitations>
 ## Limitations
 
 - No session resume with in-process teammates
@@ -269,3 +282,4 @@ Override git worktree behavior for SVN/Perforce/Mercurial.
 - One team per session
 - Background agents can't ask questions
 - Worktree changes only tracked via git
+</limitations>

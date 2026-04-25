@@ -5,10 +5,13 @@ description: "Professional graphics with Python Pillow: shapes, text, cards, bad
 
 # Pillow Drawing
 
+<overview>
 Create professional-looking graphics programmatically. Requires `pillow` (`uv add pillow`).
 
 For image manipulation, format conversion, and batch processing, see `references/image-operations.md`.
+</overview>
 
+<rules>
 ## Rule #1: Anti-Alias Everything
 
 Pillow's `ImageDraw` has NO native anti-aliasing for shapes. Without it, everything looks jagged. **Always supersample**: draw at 2-4x, downscale with LANCZOS.
@@ -36,7 +39,9 @@ result.save("output.png")
 ```
 
 All coordinates and sizes must be multiplied by SCALE when drawing. Font sizes too.
+</rules>
 
+<how_to_use>
 ## Text That Doesn't Suck
 
 ### Always use a real font
@@ -325,6 +330,7 @@ result.save("card.png")
 
 ## Quality Checklist
 
+<quality_gates>
 Before saving final output:
 
 1. **Anti-aliased?** — Drew at SCALE, downscaled with LANCZOS
@@ -335,3 +341,4 @@ Before saving final output:
 6. **Alpha compositing correct?** — `alpha_composite()`, not bare `paste()`
 7. **JPEG quality?** — `quality=95` for graphics, never default 75
 8. **Font sizes proportional?** — Calculated relative to canvas, not hardcoded
+</quality_gates>

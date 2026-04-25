@@ -5,6 +5,7 @@ description: "GPU color correction for VR: shaders, color spaces, LUTs, Vulkan c
 
 # GPU Color Correction for VR Streaming
 
+<processing_chain>
 ## Processing Chain Order
 
 Order matters. Wrong order = wrong colors, banding, or clipped highlights.
@@ -25,7 +26,9 @@ Encoder
 - Adjustments in linear space are physically correct (additive light)
 - Sharpening in perceptual space matches human edge perception
 - YUV conversion is always last (encoder expects it, not a visual operation)
+</processing_chain>
 
+<transfer_functions>
 ## Transfer Functions
 
 ### sRGB (SDR)
@@ -79,6 +82,7 @@ vec3 pq_to_linear(vec3 N) {
 
 ### HLG (Hybrid Log-Gamma)
 
+
 ```glsl
 const float hlg_a = 0.17883277;
 const float hlg_b = 0.28466892;  // 1 - 4*a
@@ -90,7 +94,9 @@ vec3 linear_to_hlg(vec3 L) {
     return mix(hi, lo, step(L, vec3(1.0 / 12.0)));
 }
 ```
+</transfer_functions>
 
+<color_adjustments>
 ## Color Adjustments (Linear Space)
 
 All operations below assume linear-light RGB input.
@@ -152,7 +158,9 @@ vec3 white_balance(vec3 c, float temperature) {
     return max(c, 0.0);
 }
 ```
+</color_adjustments>
 
+<sharpening>
 ## Sharpening
 
 Apply in perceptual (gamma) space, not linear. Linearize -> adjust -> re-gamma -> sharpen -> continue.
@@ -201,7 +209,9 @@ vec3 unsharp_mask(sampler2D tex, vec2 uv, vec2 texel_size, float amount) {
 ```
 
 **ALVR note**: ALVR uses Snapdragon GSR (SGSR) which combines edge detection + Lanczos-based upscaling with sharpening in a single pass. See `stream.wgsl` for the implementation.
+</sharpening>
 
+<color_space_conversion>
 ## Color Space Conversion
 
 ### RGB to YUV (NV12 / P010)
@@ -252,6 +262,7 @@ vec3 full_to_limited_8bit(vec3 yuv) {
 
 ### Gamut Mapping (BT.709 <-> BT.2020)
 
+
 ```glsl
 // BT.709 -> BT.2020 (3x3 matrix)
 const mat3 BT709_TO_BT2020 = mat3(
@@ -269,7 +280,9 @@ const mat3 BT2020_TO_BT709 = mat3(
 ```
 
 **Pitfall**: BT.2020 -> BT.709 can produce negative values (out-of-gamut). Clamp or use soft-clip tonemapping before conversion.
+</color_space_conversion>
 
+<compute_vs_fragment>
 ## Compute vs Fragment Shaders
 
 | Aspect | Fragment Shader | Compute Shader |
@@ -314,7 +327,9 @@ compute_pass.dispatch_workgroups(workgroups_x, workgroups_y, 1);
 | Mobile (Quest) | 8x8 | 64 | Adreno GPUs prefer 64 threads |
 
 **ALVR context**: ALVR uses fragment shaders via wgpu's render pipeline for stream color correction. The shader constants are set via `PipelineCompilationOptions` (specialization constants equivalent), not push constants, for static configuration like `ENABLE_SRGB_CORRECTION`.
+</compute_vs_fragment>
 
+<lut_correction>
 ## LUT-Based Correction
 
 ### 1D LUT
@@ -355,6 +370,7 @@ vec3 apply_3d_lut(vec3 c) {
 
 ### Loading .cube LUT Files
 
+
 ```rust
 // Parse Adobe .cube format (common LUT interchange)
 fn parse_cube_lut(data: &str) -> (usize, Vec<[f32; 3]>) {
@@ -374,7 +390,9 @@ fn parse_cube_lut(data: &str) -> (usize, Vec<[f32; 3]>) {
     (size, entries)
 }
 ```
+</lut_correction>
 
+<headset_calibration>
 ## Per-Headset Calibration
 
 Different VR headsets have different display characteristics:
@@ -405,7 +423,9 @@ struct HeadsetColorProfile {
     max_nits: f32,
 }
 ```
+</headset_calibration>
 
+<pitfalls>
 ## Common Pitfalls
 
 ### Banding from Low Precision

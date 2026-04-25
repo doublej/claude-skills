@@ -19,12 +19,12 @@ metadata:
 
 Data validation using Python type hints. Fast, extensible, IDE-friendly.
 
-## When to Use
-
+<when_to_use>
 - Creating data models with validation
 - Building API request/response schemas
 - Validating configuration or user input
 - Generating JSON Schema for documentation
+</when_to_use>
 
 ## Installation
 

@@ -8,6 +8,7 @@ description: "Design CLIs optimized for LLM/agent consumption and parsing"
 
 Build CLIs that minimize agent memory burden, token usage, and repair loops.
 
+<core_properties>
 ## Core Properties
 
 An agent-friendly CLI is:
@@ -20,7 +21,9 @@ An agent-friendly CLI is:
 6. **Infrastructure-buffered** — rate limits, cache, sessions internalized
 7. **Batch-capable** — one command replaces repetitive loops
 8. **Workflow-complete** — full task lifecycle inside the CLI
+</core_properties>
 
+<workflow>
 ## Workflow
 
 Determine the task type:
@@ -40,7 +43,9 @@ Determine the task type:
 **Auditing a CLI:**
 1. Run through `references/evaluation-rubric.md` checklist
 2. Report findings with priority ranking
+</workflow>
 
+<design_template>
 ## Design Template
 
 When designing a CLI, address each layer:
@@ -91,7 +96,9 @@ Categories: `user_error`, `transient`, `upstream`, `internal`
 ### 7. Workflow Model
 - discover → inspect → refine → export → resume
 - Full lifecycle without leaving the CLI
+</design_template>
 
+<routing_examples>
 ## Intent-First Routing Examples
 
 ```
@@ -101,7 +108,9 @@ mytool file.json       # file → import/process
 mytool @1 @2           # refs → compare
 mytool                 # no args → interactive/status
 ```
+</routing_examples>
 
+<self_description>
 ## Self-Description Command
 
 Every CLI should have a `guide` (or `prime`) command that returns:
@@ -118,14 +127,18 @@ Every CLI should have a `guide` (or `prime`) command that returns:
   "config": { "path": "~/.config/mytool/config.toml", "keys": [] }
 }
 ```
+</self_description>
 
+<input_normalization>
 ## Input Normalization
 
 Accept flexibly, emit strictly:
 - Dates: `2025-01-13`, `jan 13 2025`, `13/01/2025` → always output ISO 8601
 - IDs: case-insensitive input → canonical case output
 - Amounts: `1000`, `1,000`, `1k` → normalized number
+</input_normalization>
 
+<antipatterns>
 ## Key Anti-Patterns
 
 - Prose-only output with no structured option
@@ -134,3 +147,4 @@ Accept flexibly, emit strictly:
 - Agent must manage sleep/retry/cache externally
 - No way to reference previous results
 - N identical calls where one batch call suffices
+</antipatterns>

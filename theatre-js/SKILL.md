@@ -7,6 +7,8 @@ description: "Timeline animations, keyframes, Studio editor, @theatre/r3f, motio
 
 Motion design editor and animation library for the web. Provides a visual timeline editor (Studio) with programmatic control for high-fidelity animations.
 
+<setup>
+
 ## Installation
 
 ```bash
@@ -59,7 +61,9 @@ obj.onValuesChange((values) => {
 sheet.sequence.play({ iterationCount: Infinity })
 ```
 
-## Core Concepts
+</quick_start>
+
+<core_concepts>
 
 | Concept | Description |
 |---------|-------------|
@@ -69,7 +73,9 @@ sheet.sequence.play({ iterationCount: Infinity })
 | **Sequence** | Timeline with keyframes; controls playback |
 | **Props** | Typed values (number, compound, rgba, etc.) |
 
-## Reference Index
+</core_concepts>
+
+<reference_index>
 
 | Reference | Use When |
 |-----------|----------|
@@ -81,7 +87,9 @@ sheet.sequence.play({ iterationCount: Infinity })
 | `references/06-production.md` | Export state, deployment, tree-shaking |
 | `references/07-audio-sync.md` | Audio synchronization with animations |
 
-## Common Patterns
+</reference_index>
+
+<common_patterns>
 
 ### Animate DOM Element
 
@@ -100,7 +108,9 @@ obj.onValuesChange(({ x, y, rotation, scale, opacity }) => {
 })
 ```
 
-### HTML/SVG Animation (No Bundler)
+</common_patterns>
+
+<html_svg_animation>
 
 ```html
 <script type="module">
@@ -148,7 +158,9 @@ await seq.play({ iterationCount: 1 })
 console.log('Animation complete')
 ```
 
-### React Three Fiber Scene
+</sequence_playback>
+
+<react_three_fiber>
 
 ```tsx
 import { Canvas } from '@react-three/fiber'
@@ -182,7 +194,9 @@ function App() {
 }
 ```
 
-### Vanilla Three.js Scene
+</react_three_fiber>
+
+<vanilla_three>
 
 ```tsx
 import * as THREE from 'three'
@@ -225,7 +239,9 @@ meshObj.onValuesChange((values) => {
 })
 ```
 
-### Theatric Controls (Quick Prototyping)
+</vanilla_three>
+
+<theatric_controls>
 
 ```tsx
 import { useControls, types, button } from 'theatric'
@@ -245,7 +261,9 @@ function Component() {
 }
 ```
 
-### Audio Synchronization
+</theatric_controls>
+
+<audio_sync>
 
 ```tsx
 // Attach audio to sequence
@@ -264,7 +282,9 @@ sheet.sequence.attachAudio({
 })
 ```
 
-## Prop Types Reference
+</audio_sync>
+
+<prop_types>
 
 ```tsx
 import { types } from '@theatre/core'
@@ -300,7 +320,9 @@ const obj = sheet.object('Example', {
 })
 ```
 
-## Studio Keyboard Shortcuts
+</prop_types>
+
+<studio_shortcuts>
 
 | Shortcut | Action |
 |----------|--------|
@@ -310,7 +332,9 @@ const obj = sheet.object('Example', {
 | `Right-click prop` | Sequence prop / add keyframe |
 | `Click keyframe connector` | Open tween/easing editor |
 
-## Critical Mistakes to Avoid
+</studio_shortcuts>
+
+<mistakes>
 
 ### 1. Studio in Production
 ```tsx
@@ -389,7 +413,9 @@ button.onclick = async () => {
 }
 ```
 
-## Production Checklist
+</mistakes>
+
+<production_checklist>
 
 1. Export state JSON from Studio (Project → Export)
 2. Import state in `getProject({ state })`
@@ -416,3 +442,5 @@ button.onclick = async () => {
 | Export state | Studio → Project → Export (JSON) |
 | Toggle studio | `Alt/Option + \` |
 | Remove object | `sheet.detachObject('Key')` |
+
+</quick_reference>

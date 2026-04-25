@@ -3,16 +3,18 @@ name: realtime-audio-streaming
 description: "Low-latency audio capture/encoding for VR: WASAPI, PipeWire, Opus, CPAL"
 ---
 
-# Real-Time Audio Streaming for VR
+<setup_checklist>
 
-## Before Writing Code
+Before Writing Code
 
 1. **Identify platform**: Windows (WASAPI) / Linux (PipeWire/PulseAudio) / cross-platform (CPAL)
 2. **Determine audio path**: game audio capture (loopback) vs microphone input vs virtual mic forwarding
 3. **Check existing setup**: sample rate, channel count, buffer sizes already in use
 4. **Identify codec needs**: Opus (networked) vs raw PCM (local/high bandwidth)
 
-## Core Architecture
+</setup_checklist>
+
+<core_architecture>
 
 VR audio pipeline has two directions:
 
@@ -34,7 +36,9 @@ Total motion-to-photon target: 20ms. Audio gets a slice of that.
 | Decode + playback | 1-3ms | Opus decode is fast; playback buffer adds latency |
 | **Total** | **~10-30ms** | Acceptable for VR |
 
-## Audio Capture
+</core_architecture>
+
+<audio_capture>
 
 ### CPAL (Cross-Platform, Rust)
 
@@ -110,7 +114,9 @@ let stream = pw::stream::Stream::new(
 
 See `references/platform-audio.md` for PipeWire quantum tuning and PulseAudio `tsched` config.
 
-## Opus Encoding
+</audio_capture>
+
+<opus_encoding>
 
 Opus is the standard codec for VR audio streaming. See `references/opus-config.md` for full parameter reference.
 
@@ -158,7 +164,9 @@ let bytes: Vec<u8> = samples.iter()
 
 Use raw PCM when: latency budget is extremely tight (<5ms total), bandwidth is abundant, or CPU is constrained.
 
-## Packet Loss and Jitter
+</opus_encoding>
+
+<packet_loss_jitter>
 
 ### Jitter Buffer
 
@@ -234,7 +242,9 @@ if buffer_frames > 2 * target + batch {
 }
 ```
 
-## Virtual Microphone Setup
+</packet_loss_jitter>
+
+<virtual_microphone>
 
 For forwarding VR headset microphone audio back to the PC as a standard input device.
 
@@ -270,7 +280,9 @@ stream.connect(spa::utils::Direction::Output, None,
 
 Apps see "ALVR Microphone" as a regular input device.
 
-## Channel Downmixing
+</virtual_microphone>
+
+<channel_downmixing>
 
 VR headsets typically play stereo. Games may output 5.1/7.1 surround.
 
@@ -294,7 +306,9 @@ let i16_sample: i16 = (f32_sample.clamp(-1.0, 1.0) * i16::MAX as f32) as i16;
 let f32_sample: f32 = i16_sample as f32 / i16::MAX as f32;
 ```
 
-## Spatial Audio
+</channel_downmixing>
+
+<spatial_audio>
 
 ### HRTF (Head-Related Transfer Function)
 
@@ -329,7 +343,9 @@ Capture game audio (t=0) → encode → network (t=5ms) → jitter buffer →
 
 Timestamp each audio packet with the video frame it corresponds to. On the headset, match audio playback to the pose used for that video frame.
 
-## Clock Drift Compensation
+</spatial_audio>
+
+<clock_drift>
 
 PC and headset have independent clocks. Over minutes, audio drifts relative to video.
 
@@ -343,7 +359,9 @@ PC and headset have independent clocks. Over minutes, audio drifts relative to v
 
 **Never resample by large ratios** -- introduces audible artifacts. Drift correction should be < 0.5% rate adjustment.
 
-## Troubleshooting
+</clock_drift>
+
+<troubleshooting>
 
 | Symptom | Likely Cause |
 |---------|-------------|
@@ -358,7 +376,9 @@ PC and headset have independent clocks. Over minutes, audio drifts relative to v
 | One-sided stereo | Channel mapping wrong in downmix, check L/R coefficients |
 | Exclusive mode fails | Another app holds the device, fall back to shared mode |
 
-## Anti-Patterns
+</troubleshooting>
+
+<anti_patterns>
 
 - **Allocating in audio callback** -- causes GC/allocation jitter. Pre-allocate all buffers.
 - **Locking a mutex in audio callback** -- use `try_lock()` or lock-free ring buffers.
@@ -367,7 +387,9 @@ PC and headset have independent clocks. Over minutes, audio drifts relative to v
 - **Hardcoding device names** -- devices vary per system. Use substring matching or index fallback.
 - **Mixing blocking I/O with audio thread** -- network sends in audio callback cause underruns. Use a channel/queue.
 
-## Deep Reference
+</anti_patterns>
+
+<deep_reference>
 
 Load on demand from `references/`:
 
@@ -375,3 +397,5 @@ Load on demand from `references/`:
 |-----------|----------|
 | `opus-config.md` | Opus encoder/decoder parameters, CTL values, frame sizes, FEC/DTX/PLC details |
 | `platform-audio.md` | WASAPI exclusive/shared mode setup, PipeWire quantum tuning, PulseAudio low-latency config |
+
+</deep_reference>

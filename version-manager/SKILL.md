@@ -7,6 +7,8 @@ description: "Bump versions, releases, git tags, changelogs. Python/Node/Rust/Go
 
 Comprehensive versioning for all project types with four progressive patterns: simple (VERSION file), standard (package manager + automation), advanced (multi-component tracking), and automated (full CI/CD).
 
+<quick_start>
+
 ## Quick Start
 
 **Initialize versioning in a project:**
@@ -23,6 +25,10 @@ python3 scripts/bump_version.py
 ```bash
 python3 scripts/validate_version.py
 ```
+
+</quick_start>
+
+<patterns>
 
 ## Four Versioning Patterns
 
@@ -68,6 +74,10 @@ python3 scripts/validate_version.py
 **Setup:** `init_versioning.py --pattern automated` configures semantic-release
 
 See `references/patterns.md` for decision matrix.
+
+</patterns>
+
+<core_scripts>
 
 ## Core Scripts
 
@@ -143,6 +153,10 @@ python3 scripts/validate_version.py --version 1.2.3
 
 Exits with error code 1 on failure (CI-friendly).
 
+</core_scripts>
+
+<generate_changelog>
+
 ### generate_changelog.py
 Generate CHANGELOG.md from structured data:
 
@@ -185,6 +199,10 @@ Configure targets in `.version-sync.json`:
 }
 ```
 
+</generate_changelog>
+
+<git_hooks>
+
 ## Git Hooks
 
 Installed to `.git/hooks/` (not tracked in repo).
@@ -213,6 +231,10 @@ Validates tag format before push:
 ```bash
 bash scripts/install_hooks.sh
 ```
+
+</git_hooks>
+
+<multi_component>
 
 ## Multi-Component Versioning (Pattern 3)
 
@@ -254,6 +276,10 @@ Based on consult-user-mcp's approach.
 3. Run `bump_version.py` (syncs all files)
 4. Commit, tag, push
 
+</multi_component>
+
+<cookiecutter_templates>
+
 ## Cookiecutter Templates
 
 Pre-configured project templates with versioning baked in.
@@ -293,6 +319,10 @@ cookiecutter cookiecutters/multi-component/
 - Automated changelog generation script
 - CI validation workflows
 
+</cookiecutter_templates>
+
+<integration>
+
 ## Integration with CLAUDE.md
 
 `init_versioning.py` adds a versioning section to project CLAUDE.md:
@@ -323,6 +353,10 @@ Use conventional commit format:
 ### Git Tags
 Format: vX.Y.Z (e.g., v1.0.0)
 ```
+
+</integration>
+
+<workflows>
 
 ## Common Workflows
 
@@ -383,6 +417,10 @@ python3 scripts/bump_version.py --major
 git push && git push --tags
 ```
 
+</workflows>
+
+<version_format>
+
 ## Version Format
 
 All patterns use semantic versioning: MAJOR.MINOR.PATCH
@@ -394,6 +432,10 @@ All patterns use semantic versioning: MAJOR.MINOR.PATCH
 Pre-release: `1.0.0-alpha.1`, `1.0.0-beta.2`, `1.0.0-rc.1`
 
 See `references/semver.md` for full specification.
+
+</version_format>
+
+<troubleshooting>
 
 ## Troubleshooting
 
@@ -424,9 +466,15 @@ git tag -d v1.0.0                    # Delete local tag
 git push origin :refs/tags/v1.0.0   # Delete remote tag
 ```
 
+</troubleshooting>
+
+<references>
+
 ## References
 
 - `references/patterns.md` - Pattern selection decision matrix
 - `references/conventional-commits.md` - Commit message specification
 - `references/semver.md` - Semantic versioning reference
 - `assets/schema/releases.schema.json` - JSON schema for releases.json
+
+</references>

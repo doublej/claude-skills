@@ -11,11 +11,13 @@ Always use `bunx` instead of `npx` for running wrangler commands.
 
 Default Cloudflare account: `jurrejan@gmail.com` (Account ID: `e26bfba81a629fb8b4dcd538b1f73781`). Dashboard: https://dash.cloudflare.com/e26bfba81a629fb8b4dcd538b1f73781
 
+<accounts>
 Other available accounts:
 - `Jrs@haist.one` — `ed64021ce50096c7eb065bb773a34be8`
 - `Jurrejan@poolsuite.net` — `015478e13d7ca9d81172aafcf5f199b6`
+</accounts>
 
-## Workflow
+<workflow>
 
 1. Detect project type (SvelteKit, Astro, Next.js, static, Worker)
 2. Create or update wrangler config
@@ -87,7 +89,9 @@ compatibility_flags = ["nodejs_compat"]
 ```
 
 See `references/wrangler-config.md` for bindings, environments, and advanced config.
+</workflow>
 
+<justfile_recipes>
 ## Justfile Deploy Recipes
 
 Add to the project's Justfile. Detect which pattern applies:
@@ -141,8 +145,9 @@ cf-deploy-client: build
 # Deploy everything
 cf-deploy: cf-deploy-worker cf-deploy-client
 ```
+</justfile_recipes>
 
-## Essential Commands
+<commands>
 
 | Command | Purpose |
 |---------|---------|
@@ -160,8 +165,9 @@ cf-deploy: cf-deploy-worker cf-deploy-client
 | `wrangler r2 bucket create <name>` | Create R2 bucket |
 | `wrangler kv namespace create <name>` | Create KV namespace |
 | `wrangler tail` | Stream live Worker logs |
+</commands>
 
-## Framework Output Directories
+<framework_dirs>
 
 | Framework | Output Directory |
 |-----------|-----------------|
@@ -171,8 +177,9 @@ cf-deploy: cf-deploy-worker cf-deploy-client
 | Next.js (on Pages) | `.vercel/output/static` |
 | Hugo | `public` |
 | Static (no build) | `.` or `public` |
+</framework_dirs>
 
-## Setup Checklist
+<setup_checklist>
 
 When setting up a new project:
 
@@ -183,8 +190,9 @@ When setting up a new project:
 5. First deploy: `wrangler pages deploy <dir> --project-name <name>`
 6. Add `cf-deploy` recipe to Justfile
 7. Verify: `just cf-deploy`
+</setup_checklist>
 
-## Official MCP Servers
+<mcp_servers>
 
 Cloudflare provides remote MCP servers for deeper integration. Add to `.mcp.json`:
 
@@ -204,3 +212,4 @@ Cloudflare provides remote MCP servers for deeper integration. Add to `.mcp.json
 ```
 
 Available servers: docs, bindings, builds, observability, radar, containers, browser-rendering, logpush, ai-gateway, autorag, audit-logs, dns-analytics, graphql.
+</mcp_servers>

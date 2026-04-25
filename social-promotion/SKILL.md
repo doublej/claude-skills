@@ -7,7 +7,7 @@ description: "Write social posts for X.com, Threads, and Substack launches"
 
 Write promotional social content for applications, tools, and products across X.com (Twitter), Threads, and Substack.
 
-## Workflow
+<workflow>
 
 ```
 1. BRIEF → Gather product context and promotion goal
@@ -17,7 +17,9 @@ Write promotional social content for applications, tools, and products across X.
 5. DELIVER → Output all variants with posting notes
 ```
 
-## Step 1: Brief
+</workflow>
+
+<step_brief>
 
 Gather before writing:
 - **What** is being promoted (product/feature/update)
@@ -26,7 +28,9 @@ Gather before writing:
 - **Proof** — any metrics, testimonials, demos, screenshots available?
 - **Tone** — the user's voice (default: direct, confident, no hype)
 
-## Step 2: Angle
+</step_brief>
+
+<step_angle>
 
 Every post must pass the **Three Pillars Test** before drafting:
 
@@ -48,7 +52,9 @@ Pick ONE angle per post. Never combine.
 | Curiosity gap | Any | "The trick to X that nobody talks about." |
 | Direct value | Tutorials, tips | "How to do X in 30 seconds:" |
 
-## Step 3: Draft
+</step_angle>
+
+<step_draft>
 
 Write for each requested platform. See `references/` for platform-specific rules:
 - `references/x-writing.md` — X.com posts and threads
@@ -65,7 +71,9 @@ Write for each requested platform. See `references/` for platform-specific rules
 6. **Links suppress reach** on X and Threads. Put links in replies or at the end.
 7. **End with a pull.** Question, CTA, or open loop — give people a reason to engage.
 
-## Step 4: Refine
+</step_draft>
+
+<step_refine>
 
 Check every draft against these filters:
 
@@ -87,7 +95,9 @@ Check every draft against these filters:
 
 Cut ruthlessly. If a sentence doesn't earn its place, delete it.
 
-## Step 5: Deliver
+</step_refine>
+
+<step_deliver>
 
 Output format per platform:
 
@@ -109,7 +119,9 @@ Output format per platform:
 
 If promoting the same thing across all platforms, adapt — never copy-paste between platforms.
 
-## Content Campaign Mode
+</step_deliver>
+
+<campaign_mode>
 
 When asked for a campaign (multiple posts over time), plan a sequence:
 
@@ -123,7 +135,9 @@ When asked for a campaign (multiple posts over time), plan a sequence:
 
 Adapt the cadence to the user's actual posting rhythm.
 
-## Vault Integration
+</campaign_mode>
+
+<vault_integration>
 
 When working on promotion for a project, check for a promotion vault folder:
 
@@ -145,3 +159,5 @@ If no vault folder exists, create content in the conversation and suggest:
 ```
 Run: bun run _management/promotion-vault/scripts/promote.ts {project} init
 ```
+
+</vault_integration>

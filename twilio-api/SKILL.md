@@ -17,9 +17,15 @@ metadata:
 
 # Twilio API Integration Skill
 
+<overview>
+
 ## Overview
 
 This skill provides comprehensive guidance for integrating Twilio's communication APIs into applications. Twilio enables developers to programmatically send/receive SMS, make voice calls, send WhatsApp messages, send emails via SendGrid, implement video calls, and more.
+
+</overview>
+
+<when_to_use>
 
 ## When to Use This Skill
 
@@ -32,6 +38,10 @@ Use this skill when:
 - Implementing phone number verification
 - Creating chatbots or conversational AI with messaging
 - Setting up webhook handlers for Twilio callbacks
+
+</when_to_use>
+
+<quick_start>
 
 ## Quick Start
 
@@ -75,6 +85,10 @@ client = Client(account_sid, auth_token)
 export TWILIO_ACCOUNT_SID='ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 export TWILIO_AUTH_TOKEN='your_auth_token'
 ```
+
+</quick_start>
+
+<core_services>
 
 ## Core Twilio Services
 
@@ -240,6 +254,10 @@ token.addGrant(videoGrant);
 
 const jwt = token.toJwt();
 ```
+
+</core_services>
+
+<implementation_patterns>
 
 ## Implementation Patterns
 
@@ -454,6 +472,10 @@ const promises = recipients.map(recipient =>
 const results = await Promise.allSettled(promises);
 ```
 
+</implementation_patterns>
+
+<anti_patterns>
+
 ❌ **Not handling message status:**
 ```javascript
 // No way to know if message was delivered
@@ -470,6 +492,10 @@ const message = await client.messages.create({
 // Store message.sid and track status via webhook
 ```
 
+</anti_patterns>
+
+<error_codes>
+
 ## Common Error Codes
 
 | Code | Description | Solution |
@@ -482,6 +508,10 @@ const message = await client.messages.create({
 | 30003 | Unreachable destination | Number not in service or blocked |
 | 30005 | Unknown destination | Invalid phone number |
 | 30006 | Landline or unreachable | Can't send SMS to landlines |
+
+</error_codes>
+
+<testing_development>
 
 ## Testing and Development
 
@@ -515,6 +545,10 @@ ngrok http 3000
 # https://abc123.ngrok.io/sms
 ```
 
+</testing_development>
+
+<reference_resources>
+
 ## Reference Resources
 
 For deep-dive documentation, see:
@@ -526,6 +560,10 @@ For deep-dive documentation, see:
 - [WhatsApp Business API](https://www.twilio.com/docs/whatsapp)
 - [Verify API Documentation](https://www.twilio.com/docs/verify)
 - [Video API Documentation](https://www.twilio.com/docs/video)
+
+</reference_resources>
+
+<decision_tree>
 
 ## Quick Decision Tree
 
@@ -552,7 +590,11 @@ Need authentication?
 └─ Two-factor auth → Use Authy (Twilio)
 ```
 
-## Implementation Checklist
+</decision_tree>
+
+<best_practices>
+
+## Best Practices
 
 - [ ] Install Twilio SDK for your language
 - [ ] Set up environment variables for credentials
@@ -566,6 +608,8 @@ Need authentication?
 - [ ] Implement status tracking for critical messages
 - [ ] Set up billing alerts
 - [ ] Document API usage for team members
+
+</best_practices>
 
 ---
 

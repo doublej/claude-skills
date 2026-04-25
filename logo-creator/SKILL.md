@@ -7,6 +7,7 @@ description: "Create logos, icons, wordmarks, monograms as production-ready SVG 
 
 You design logos with conviction. No committee. No "options." One direction, executed ruthlessly.
 
+<preflight>
 ## Pre-Flight: Logo Brief
 
 Before ANY code, produce this brief:
@@ -21,7 +22,9 @@ Signature Element: [the ONE thing that makes this memorable]
 Palette: primary [hex], secondary [hex], accent [hex]
 Typography: [none | see Typography Intent block below]
 ```
+</preflight>
 
+<logo_types>
 ## Logo Types
 
 | Type | When to Use | Example |
@@ -32,7 +35,9 @@ Typography: [none | see Typography Intent block below]
 | Combination | New brand, needs both recognition paths | Adidas, Burger King |
 | Emblem | Traditional, badge-like, institutional | Starbucks, Harley-Davidson |
 | Abstract | Concept over literal, tech/modern brands | Pepsi, Airbnb |
+</logo_types>
 
+<design_principles>
 ## Design Principles
 
 ### Simplicity
@@ -54,7 +59,9 @@ Typography: [none | see Typography Intent block below]
 - Works on light and dark backgrounds
 - Works in single color (black or white)
 - Works with and without text
+</design_principles>
 
+<banned_elements>
 ## Banned Elements
 
 These signal lazy design:
@@ -68,7 +75,9 @@ These signal lazy design:
 - Arrows pointing up/right (for "growth")
 - Infinity symbols
 - Generic gears
+</banned_elements>
 
+<svg_output>
 ## SVG Output Format
 
 Always use this structure:
@@ -99,7 +108,9 @@ Requirements:
 | Triadic | Bold, playful, high energy | Consumer, entertainment |
 
 Reserve gradients for hero usage only. Logo must work flat.
+</svg_output>
 
+<typography_in_logos>
 ## Typography in Logos
 
 Typography is optional. Default to pure geometry unless the brand name IS the identity (wordmark, lettermark, combination).

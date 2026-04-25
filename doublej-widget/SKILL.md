@@ -11,12 +11,14 @@ description: "Set up, deploy, and embed the DoubleJ project-linking widget"
 Embeddable corner widget with path-based profile matching. Lives at:
 `~/Documents/development/web/doublej-project-linking`
 
-## Tech Stack
+<tech_stack>
 
 SvelteKit 5 + Svelte 5, Bun, Vite. Deployed to GitHub Pages via GitHub Actions.
 Widget compiles to a single IIFE `widget.js` with injected CSS (shadow DOM).
 
-## Quick Reference
+</tech_stack>
+
+<quick_reference>
 
 ### CLI (`widget-link`)
 
@@ -48,7 +50,9 @@ bun run build:static     # Both of the above
 bun run dev              # Dev server on :5173 (management UI)
 ```
 
-## Workflows
+</quick_reference>
+
+<workflows>
 
 ### 1. Initial Setup (first time only)
 
@@ -160,7 +164,7 @@ Rules live in `profiles/rules/<slug>-rule.json`:
 /**             → priority 1    (catch-all)
 ```
 
-## Architecture
+<architecture>
 
 ```
 src/
@@ -181,10 +185,14 @@ profiles/
 
 Widget fetches config flow: script tag → detect URL → `/api/widget-config?domain=X&pathname=Y` → fallback to static `widget-manifest.json` → mount in shadow DOM or hide.
 
-## Management UI
+</architecture>
 
 Run `bun run dev` and open http://localhost:5173 to:
 - Create/edit profiles visually
 - Configure matching rules
 - Test URL matching
 - Copy embed code
+
+</workflows>
+
+<management_ui>

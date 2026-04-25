@@ -7,10 +7,13 @@ description: "ExtendScript (.jsx) automation via osascript on macOS"
 
 Automate your local Illustrator installation via scripts triggered from the terminal. No cloud API or licence needed.
 
+<overview>
 ## Bundled CLI (`tools/ai`)
 
 A ready-to-use Python CLI is included. No dependencies — stdlib only.
+</overview>
 
+<setup>
 ### Setup (one-time)
 
 ```bash
@@ -18,7 +21,9 @@ A ready-to-use Python CLI is included. No dependencies — stdlib only.
 chmod +x ~/.claude/skills/adobe-illustrator/tools/ai
 ln -s ~/.claude/skills/adobe-illustrator/tools/ai /usr/local/bin/ai-illustrator
 ```
+</setup>
 
+<commands>
 ### Commands
 
 ```bash
@@ -54,9 +59,10 @@ ai --app "Adobe Illustrator 2024" export design.ai
 ```
 
 The app name is auto-detected from `/Applications` (latest version wins).
+</commands>
 
----
 
+<triggering>
 ## Triggering from Terminal
 
 ```bash
@@ -79,7 +85,9 @@ Find your installed version name:
 ```bash
 ls /Applications | grep -i illustrator
 ```
+</triggering>
 
+<patterns>
 ## ExtendScript Patterns (.jsx)
 
 ### Open, edit, export
@@ -206,7 +214,9 @@ placed.position = [100, 500];
 placed.width = 300;
 placed.height = 200;
 ```
+</patterns>
 
+<reference>
 ## Common Operations Reference
 
 ### Save / Export formats
@@ -300,7 +310,9 @@ range.paragraphAttributes.justification = Justification.CENTER;
 ```javascript
 app.doScript("My Action", "My Action Set");
 ```
+</reference>
 
+<orchestration>
 ## Python Orchestration Pattern
 
 ```python
@@ -326,11 +338,15 @@ var doc = app.activeDocument;
 doc.layers[0].name = "Updated";
 """)
 ```
+</orchestration>
 
+<api_reference>
 ## API Reference
 
 For comprehensive Illustrator DOM details (all object types, properties, methods, enumerations), see `references/api_reference.md`.
+</api_reference>
 
+<notes>
 ## Notes
 
 - Always use **absolute paths** in scripts — relative paths resolve against the AI app bundle, not your cwd
@@ -340,3 +356,4 @@ For comprehensive Illustrator DOM details (all object types, properties, methods
 - Test scripts interactively first via `File > Scripts > Other Script…` before wiring to terminal
 - Illustrator app name varies by version — check with `ls /Applications | grep -i illustrator`
 - Actions in Illustrator use `app.doScript()` (not `app.doAction()` like Photoshop)
+</notes>

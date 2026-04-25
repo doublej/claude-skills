@@ -7,15 +7,25 @@ description: "Debug UIs with smart control suggestions from data types"
 
 Build Tweakpane debug UIs with intelligent control suggestions.
 
+<when_to_use>
+
 ## When to Use
 
 - Building debug/settings panels with Tweakpane
 - Need UI control recommendations for parameter types
 - Creating Tweakpane configurations
 
+</when_to_use>
+
+<workflow>
+
 ## Control Selection Decision Tree
 
 Pick the right control by asking: **what is the user choosing?**
+
+</workflow>
+
+<control_reference>
 
 ### Numbers
 
@@ -85,6 +95,10 @@ Pick the right control by asking: **what is the user choosing?**
 | Grid of buttons | Button grid | `pane.addBlade({ view: 'buttongrid', ... })` |
 | Easing curve | Cubic bezier | `addBinding(obj, 'ease', { view: 'cubicbezier' })` |
 
+</control_reference>
+
+<common_mistakes>
+
 ## Common Mistakes
 
 - **Slider for enum values** — use dropdown (`options: {}`) when there are named choices
@@ -92,6 +106,10 @@ Pick the right control by asking: **what is the user choosing?**
 - **Slider for discrete options** — if there are only 3-5 fixed values, prefer dropdown
 - **Missing `view: 'color'`** — hex numbers like `0xff0055` need explicit `view: 'color'`
 - **No monitors** — use `readonly: true` for values the user shouldn't edit (FPS, timing, state)
+
+</common_mistakes>
+
+<examples>
 
 ## Example
 
@@ -146,6 +164,12 @@ pane.addButton({ title: 'Reset' }).on('click', () => {
 });
 ```
 
+</examples>
+
+<reference_files>
+
 ## Reference Files
 
 See `references/` for API documentation.
+
+</reference_files>

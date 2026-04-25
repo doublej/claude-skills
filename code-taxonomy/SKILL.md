@@ -9,8 +9,7 @@ Audit naming quality across a codebase. Goes beyond style checking (snake_case v
 
 Scanner does mechanical extraction. Claude does semantic judgment.
 
-## Pipeline
-
+<pipeline>
 ```
 Phase 1: SCOPE      run scanner + optional codebase-mapper
 Phase 2: ANALYSIS   Claude reviews tree + quality data with semantic judgment
@@ -19,8 +18,9 @@ Phase 4: PLAN       batch rename proposals (style + verb + clarity)
 Phase 5: EXECUTE    apply renames with quality gates per batch
 Phase 6: VERIFY     test suite + summary
 ```
+</pipeline>
 
-## Phase 1: Scope
+<phase_1_scope>
 
 1. Detect the target project root from `$ARGUMENTS` or current working directory.
 2. Run the naming scanner with tree and quality analysis:

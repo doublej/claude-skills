@@ -7,13 +7,15 @@ description: "Headless CMS: SDK v19 queries, filter rules, programmatic schema, 
 
 Self-hosted headless CMS. This skill covers the TypeScript SDK (`@directus/sdk` v19+), REST admin calls, programmatic schema management, extensions, Docker self-hosting, and the official MCP server.
 
-## When to use
+<when_to_use>
 
 Trigger: user asks about Directus, mentions `@directus/sdk`, `directus_*` collections, writes Directus flows/extensions, edits `docker-compose.yml` with `directus/directus` image, or runs `directus schema snapshot`.
 
 Not this skill: generic headless CMS comparison, other CMSes (Strapi, Payload, Contentful), custom frontend rendering unrelated to Directus APIs.
 
-## Setup
+</when_to_use>
+
+<setup>
 
 Env vars (match the user's haist-cms convention):
 
@@ -41,7 +43,9 @@ await directus.login({ email, password })    // tokens stored; auto-refresh
 
 Deep dive: `references/sdk-cookbook.md`.
 
-## CRUD quick reference
+</setup>
+
+<crud_quick_reference>
 
 All requests go through `directus.request(<composable>(...))`.
 
@@ -57,7 +61,9 @@ All requests go through `directus.request(<composable>(...))`.
 | Singleton | `readSingleton` / `updateSingleton` | `updateSingleton('site', { title: 'New' })` |
 | Me | `readMe` | `readMe({ fields: ['*', 'role.*'] })` |
 
-## Filter essentials
+</crud_quick_reference>
+
+<filter_essentials>
 
 Filters are JSON — field → operator → value. `_and` / `_or` for logic. Dynamic: `$CURRENT_USER`, `$CURRENT_ROLE`, `$NOW`, `$NOW(+7 days)`.
 
@@ -76,7 +82,9 @@ filter: {
 
 Full operator table + nested / relational / `_some` / `_none`: `references/filter-rules.md`.
 
-## Schema management — decision tree
+</filter_essentials>
+
+<schema_management>
 
 | Situation | Approach |
 |---|---|
@@ -93,7 +101,9 @@ docker compose exec directus npx directus schema apply ./snapshots/schema.yaml
 
 Programmatic: `references/schema-builder.md` — contains the battle-tested M2A junction recipe (5 steps), O2M recipe (3 steps), UUID primary-key pattern, and the `safePost` idempotency wrapper.
 
-## Idempotent operations — the `safePost` pattern
+</schema_management>
+
+<idempotent_operations>
 
 Schema/seed scripts must be re-runnable. Catch `RECORD_NOT_UNIQUE` and existence errors so CI doesn't fail on the second run:
 
@@ -111,7 +121,9 @@ async function safePost(path: string, body: Json): Promise<void> {
 
 Use for `/collections`, `/fields`, `/relations`, `/presets`. For items with unique slugs, prefer the delete-then-create pattern — see `references/schema-builder.md`.
 
-## Singletons
+</idempotent_operations>
+
+<singletons>
 
 Collections with a single row. At creation time: `meta: { singleton: true }`. At runtime:
 
@@ -125,7 +137,9 @@ await directus.request(updateSingleton('site', { title: 'New' }))
 //   PATCH /items/site   (no id in path)
 ```
 
-## Files & assets
+</singletons>
+
+<files_assets>
 
 ```ts
 // Upload (FormData required)
@@ -140,7 +154,9 @@ const file = await directus.request(uploadFiles(fd))
 
 `fit`: `cover` (default), `contain`, `inside`, `outside`. `format`: `jpg`, `png`, `webp`, `tiff`, `avif`. Details in `references/sdk-cookbook.md`.
 
-## Extensions
+</files_assets>
+
+<extensions>
 
 Nine types: `interface`, `display`, `layout`, `module`, `panel` (app), `hook`, `endpoint`, `operation`, `bundle` (api). Scaffold:
 
@@ -152,7 +168,9 @@ npx directus-extension create interface my-slider
 
 Each type + minimal snippet: `references/extensions.md`.
 
-## Common gotchas
+</extensions>
+
+<common_gotchas>
 
 - **Schema cache** — SDK caches collection schemas; call `directus.reset()` after schema changes within the same process
 - **Permissions vs Policies** — Directus 11+ uses **Policies** (attached to roles). Old `directus_permissions` rules still work but admin UI edits go through Policies
@@ -162,7 +180,9 @@ Each type + minimal snippet: `references/extensions.md`.
 - **`directus_*` system collections** — users, roles, files, policies; non-admins have limited visibility
 - **UUID primary keys** — when creating collections via REST, explicitly include the id field with `special: ['uuid']` and `is_primary_key: true` (Directus does NOT auto-create one)
 
-## Official MCP server
+</common_gotchas>
+
+<official_mcp_server>
 
 `@directus/content-mcp` is the Directus-team-maintained MCP. Use it for **runtime data operations** from an LLM (read/write items, files, fields, flows). It's complementary to this skill — the skill teaches authoring patterns, the MCP exposes live Directus tools.
 
@@ -183,11 +203,15 @@ Each type + minimal snippet: `references/extensions.md`.
 
 Safety: the MCP intentionally blocks destructive schema ops (delete collections, delete fields). Restrict further with `DISABLE_TOOLS=delete-item,update-field`. Full tool list + env vars: `references/mcp-server.md`.
 
-## Self-hosting
+</official_mcp_server>
+
+<self_hosting>
 
 Minimal `docker-compose.yml`, required env vars (`KEY`, `SECRET`, `DB_*`, `STORAGE_*`), websockets, and the snapshot workflow: `references/self-hosting.md`.
 
-## References index
+</self_hosting>
+
+<references_index>
 
 | File | Load when |
 |---|---|
@@ -197,3 +221,5 @@ Minimal `docker-compose.yml`, required env vars (`KEY`, `SECRET`, `DB_*`, `STORA
 | `extensions.md` | Building any of the 9 extension types |
 | `self-hosting.md` | Editing `docker-compose.yml`, env vars, upgrades, backups |
 | `mcp-server.md` | Installing or configuring `@directus/content-mcp` |
+
+</references_index>

@@ -7,10 +7,13 @@ description: "ExtendScript (.jsx) or UXP (.psjs) automation via osascript on mac
 
 Automate your local Photoshop installation via scripts triggered from the terminal. No cloud API or licence needed.
 
+<overview>
 ## Bundled CLI (`tools/ps`)
 
 A ready-to-use Python CLI is included. No dependencies — stdlib only.
+</overview>
 
+<setup>
 ### Setup (one-time)
 
 ```bash
@@ -18,7 +21,9 @@ A ready-to-use Python CLI is included. No dependencies — stdlib only.
 chmod +x ~/.claude/skills/adobe-photoshop/tools/ps
 ln -s ~/.claude/skills/adobe-photoshop/tools/ps /usr/local/bin/ps-photoshop
 ```
+</setup>
 
+<commands>
 ### Commands
 
 ```bash
@@ -48,16 +53,18 @@ ps --app "Adobe Photoshop 2023" export design.psd
 ```
 
 The app name is auto-detected from `/Applications` (latest version wins).
+</commands>
 
----
-
+<approaches>
 ## Two Scripting Approaches
 
 | Approach | File ext | PS version | Best for |
 |----------|----------|-----------|----------|
 | **ExtendScript** | `.jsx` | All versions | Reliable, widely supported, most examples online |
 | **UXP Script** | `.psjs` | 22.5+ (2021+) | Modern API, async/await, better type safety |
+</approaches>
 
+<triggering_extendscript>
 ## Triggering from Terminal (ExtendScript)
 
 ```bash
@@ -80,11 +87,15 @@ Find your installed version name:
 ```bash
 ls /Applications | grep -i photoshop
 ```
+</triggering_extendscript>
 
+<triggering_uxp>
 ## Triggering from Terminal (UXP Scripts)
 
 UXP Scripts can't be reliably triggered via AppleScript. Use the **Scripts menu** inside Photoshop (`File → Scripts → Browse…`) or the UXP Developer Tool. For fully programmatic use, prefer ExtendScript.
+</triggering_uxp>
 
+<patterns_extendscript>
 ## ExtendScript Patterns (.jsx)
 
 ### Open, edit, export
@@ -178,7 +189,9 @@ for (var i = 0; i < groups.length; i++) {
     );
 }
 ```
+</patterns_extendscript>
 
+<patterns_uxp>
 ## UXP Script Patterns (.psjs)
 
 ```javascript
@@ -202,7 +215,9 @@ await executeAsModal(async () => {
     );
 }, { commandName: "Update and Export" });
 ```
+</patterns_uxp>
 
+<reference>
 ## Common Operations Reference
 
 ### Save / Export formats
@@ -255,7 +270,9 @@ doc.crop([0, 0, 1920, 1080]); // [left, top, right, bottom]
 // Run an Action from the Actions panel
 app.doAction("My Action", "My Action Set");
 ```
+</reference>
 
+<orchestration>
 ## Python Orchestration Pattern
 
 ```python
@@ -281,7 +298,9 @@ var doc = app.activeDocument;
 doc.layers[0].name = "Updated";
 """)
 ```
+</orchestration>
 
+<notes>
 ## Notes
 
 - Always use **absolute paths** in scripts — relative paths resolve against the PS app bundle, not your cwd
@@ -290,3 +309,4 @@ doc.layers[0].name = "Updated";
 - Test scripts interactively first via `File → Scripts → Browse…` before wiring to terminal
 - For heavy batch jobs, run Photoshop headless via Actions + Batch (`File → Automate → Batch`) instead of custom scripts
 - Photoshop app name varies by version — check with `ls /Applications | grep -i photoshop`
+</notes>

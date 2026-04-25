@@ -5,7 +5,11 @@ description: "Enable, disable, inspect MCP integrations across Claude Code confi
 
 # mcpick-plus
 
+<description>
 CLI tool for managing MCP integrations in Claude Code. Reduces startup time and token usage by selectively enabling only the MCP servers you need.
+</description>
+
+<quick_reference>
 
 ## Quick Reference
 
@@ -30,6 +34,10 @@ bunx mcpick-plus integrations list --layer project
 bunx mcpick-plus integrations describe docs-context7
 ```
 
+</quick_reference>
+
+<layers>
+
 ## Layers
 
 | Layer | Flag | Config file | Scope |
@@ -48,6 +56,10 @@ bunx mcpick-plus layers paths
 bunx mcpick-plus layers effective
 ```
 
+</layers>
+
+<agents>
+
 ## Agents
 
 Create dedicated agents with pre-configured MCP integrations:
@@ -64,6 +76,10 @@ bunx mcpick-plus agents remove my-researcher
 
 Agents are markdown files with YAML frontmatter saved to `.claude/agents/` (project) or `~/.claude/agents/` (user). Agent names must be lowercase alphanumeric with hyphens only.
 
+</agents>
+
+<profiles>
+
 ## Profiles
 
 Save and restore entire MCP configurations:
@@ -73,6 +89,10 @@ bunx mcpick-plus profiles save my-setup
 bunx mcpick-plus profiles load my-setup
 bunx mcpick-plus profiles list
 ```
+
+</profiles>
+
+<other_commands>
 
 ## Other Commands
 
@@ -90,9 +110,17 @@ bunx mcpick-plus mcp tools docs-context7
 bunx mcpick-plus mcp call docs-context7 resolve-library-id --arg libraryName=react
 ```
 
+</other_commands>
+
+<global_flags>
+
 ## Global Flags
 
 All commands accept: `--layer <layer>`, `--format json|table`, `--cwd <path>`, `--quiet`, `--verbose`.
+
+</global_flags>
+
+<catalog>
 
 ## Built-in Catalog
 
@@ -106,9 +134,15 @@ All commands accept: `--layer <layer>`, `--format json|table`, `--cwd <path>`, `
 
 Custom integrations can be added via the interactive menu or registered in `~/.claude/mcpick/servers.json`.
 
+</catalog>
+
+<gotchas>
+
 ## Gotchas
 
 - Only stdio servers supported for `mcp call` — HTTP/SSE configs can be stored but not invoked at runtime
 - Catalog entries take precedence over user registry entries on name collision
 - The `mcpick-plus-index` MCP server is auto-prepended to configs when enabling integrations (enables agent discovery)
 - Plugin state tracked separately in `~/.claude/mcpick/plugin-state.json` — disabling doesn't modify plugin files
+
+</gotchas>

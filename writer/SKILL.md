@@ -7,6 +7,8 @@ description: "Draft/rewrite text: blog posts, Slack/Email/WhatsApp messages, Dut
 
 Write text that says something real, says it clearly, and respects the reader's time.
 
+<mode_routing>
+
 ## Mode Routing
 
 Detect the mode from the user's request:
@@ -24,7 +26,9 @@ Each mode has a quick and guided path. Default to quick — rewrite immediately 
 
 **Guided** triggers: input is very rough/ambiguous, user explicitly asks for help, or critical info is missing. Ask at most 2 questions.
 
----
+</mode_routing>
+
+<blog_mode>
 
 ## Blog Mode
 
@@ -131,7 +135,9 @@ If it exists:
 
 If not, suggest: `bun run _management/promotion-vault/scripts/promote.ts {project} init`
 
----
+</blog_mode>
+
+<message_mode>
 
 ## Message Mode
 
@@ -215,7 +221,9 @@ Before outputting, verify:
 - The ask or point is on line 1, not buried
 - No AI rhythm (see Sentence Variety in Shared Rules)
 
----
+</message_mode>
+
+<rewrite_mode>
 
 ## Rewrite Mode
 
@@ -242,7 +250,9 @@ When the content involves bad news, rejections, complaints, or sensitive topics:
 - Don't soften so much that the message becomes ambiguous.
 - End with a clear next step, not a vague "let me know."
 
----
+</rewrite_mode>
+
+<dutch_mode>
 
 ## Dutch Mode
 
@@ -321,7 +331,9 @@ If input was long (>3 paragraphs), show the register used:
 **Dutch output (friendly):**
 > We liggen goed op schema. Volgende week gaan we live.
 
----
+</dutch_mode>
+
+<shared_rules>
 
 ## Shared Rules
 
@@ -378,3 +390,5 @@ When the user provides a writing sample or `references/voice-samples.md` has con
 3. **Match** throughout. When unsure, lean shorter and more direct.
 
 No samples? Default to direct and natural.
+
+</shared_rules>

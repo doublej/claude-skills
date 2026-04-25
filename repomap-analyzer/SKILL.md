@@ -3,15 +3,19 @@ name: repomap-analyzer
 description: "Audit code quality via call graph: dead code, duplicates, naming issues"
 ---
 
-# Repomap Analyzer
+<intro>
 
 Automated code quality analysis powered by codebase-mapper's PageRank call graph. Detects deprecated patterns, naming inconsistencies, dead code, and duplicate methods.
 
-## Prerequisites
+</intro>
+
+<prerequisites>
 
 Requires the **codebase-mapper** skill installed alongside this skill (uses its bundled repomap).
 
-## Usage
+</prerequisites>
+
+<usage>
 
 ```bash
 python3 {SKILL_DIR}/analyze.py <path-to-repo>
@@ -30,7 +34,9 @@ python3 {SKILL_DIR}/analyze.py <path-to-repo> --output report.md --map-tokens 16
 | `--output` | `repomap-analysis.md` | Output report file path |
 | `--map-tokens` | `32768` | Token limit for repomap generation |
 
-## Detectors
+</usage>
+
+<detectors>
 
 | Detector | What It Finds |
 |----------|---------------|
@@ -39,7 +45,9 @@ python3 {SKILL_DIR}/analyze.py <path-to-repo> --output report.md --map-tokens 16
 | `deadcode` | PageRank=0 definitions (unreferenced), commented-out code, unused imports |
 | `duplicates` | Duplicate function signatures across files, similar function bodies |
 
-## Output Format
+</detectors>
+
+<output_format>
 
 ```markdown
 # Repository Analysis Report
@@ -68,7 +76,9 @@ python3 {SKILL_DIR}/analyze.py <path-to-repo> --output report.md --map-tokens 16
 
 Findings are sorted by severity (critical > high > medium > low), then by file and line number.
 
-## Workflow: Quick Audit
+</output_format>
+
+<workflows>
 
 1. Run analysis: `python3 {SKILL_DIR}/analyze.py /path/to/project`
 2. Review `repomap-analysis.md` for issues
@@ -80,9 +90,13 @@ Findings are sorted by severity (critical > high > medium > low), then by file a
 2. Run analysis: `python3 {SKILL_DIR}/analyze.py .`
 3. Use findings as input for dev-refactor to generate actionable tasks
 
-## Related Skills
+</workflows>
+
+<related_skills>
 
 | Skill | Relationship |
 |-------|-------------|
 | **codebase-mapper** | Provides the repomap engine (required dependency) |
 | **dev-refactor** | Consumes analysis output to generate refactoring tasks |
+
+</related_skills>

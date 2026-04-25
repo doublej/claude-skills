@@ -7,6 +7,7 @@ description: Comprehensive Ghostscript command-line reference for PDF/PostScript
 
 Command-line reference for Ghostscript PDF and PostScript processing.
 
+<when_to_use>
 ## When to Use
 
 - Merging or splitting PDF files
@@ -18,7 +19,9 @@ Command-line reference for Ghostscript PDF and PostScript processing.
 - Adding OCR text layers to scanned PDFs
 - Batch document processing
 - Ink coverage analysis for print jobs
+</when_to_use>
 
+<installation>
 ## Installation
 
 ```bash
@@ -31,7 +34,9 @@ sudo apt install ghostscript
 # Check version
 gs --version
 ```
+</installation>
 
+<basic_syntax>
 ## Basic Syntax
 
 ```bash
@@ -52,7 +57,9 @@ gs -dBATCH -dNOPAUSE -dQUIET -sDEVICE=<device> -sOutputFile=<output> <input>
 # Equivalent shorthand:
 gs -dQUIET -sDEVICE=<device> -o <output> <input>
 ```
+</basic_syntax>
 
+<common_tasks>
 ## Common Tasks
 
 ### Merge PDFs
@@ -170,7 +177,9 @@ gs -dBATCH -dNOPAUSE -dQUIET -sDEVICE=bbox input.pdf
 # Ink coverage analysis (per page CMYK percentages)
 gs -dBATCH -dNOPAUSE -dQUIET -sDEVICE=inkcov input.pdf
 ```
+</common_tasks>
 
+<quick_reference>
 ## Quick Reference Tables
 
 ### PDF Settings
@@ -201,7 +210,9 @@ gs -dBATCH -dNOPAUSE -dQUIET -sDEVICE=inkcov input.pdf
 | `inkcov` | — | Ink coverage % |
 | `pdfocr24` | PDF+OCR | OCR text layer |
 | `nullpage` | — | Validation only |
+</quick_reference>
 
+<reference_files>
 ## Reference Files
 
 For advanced usage, consult the reference files:
@@ -223,9 +234,12 @@ For advanced usage, consult the reference files:
 | OCR | advanced-features.md | `OCR` |
 | Font embedding | advanced-features.md | `Font` |
 | Image resampling | advanced-features.md | `Resamp\|Downsample` |
+</reference_files>
 
+<documentation>
 ## Documentation
 
 - [Ghostscript Docs](https://ghostscript.readthedocs.io/en/latest/Use.html)
 - [pdfwrite Device](https://ghostscript.readthedocs.io/en/latest/VectorDevices.html)
 - [Output Devices](https://ghostscript.readthedocs.io/en/latest/Devices.html)
+</documentation>

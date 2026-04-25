@@ -10,14 +10,18 @@ metadata:
 
 Automatically tracks skill invocations within the claude-skills project for usage analysis and optimization.
 
-## Features
+<features>
 
 - 📊 Real-time tracking via PostToolUse hook
 - 👋 Welcome statistics via SessionStart hook
 - 🔍 Query tools for detailed analysis
 - 💡 Actionable suggestions for skill management
 
+</features>
+
 ## Database
+
+<database_info>
 
 **Location**: `.claude/skill-usage.db` (SQLite with WAL mode)
 
@@ -34,7 +38,9 @@ CREATE TABLE skill_usage (
 );
 ```
 
-## Usage
+</database_info>
+
+<usage>
 
 ### View Comprehensive Statistics
 
@@ -84,7 +90,11 @@ GROUP BY day
 ORDER BY day DESC;
 ```
 
-## Configuration
+</usage>
+
+<configuration>
+
+
 
 ### Disable Welcome Message
 
@@ -124,7 +134,11 @@ The hooks are registered in `.claude/settings.json`:
 }
 ```
 
-## Maintenance
+</configuration>
+
+<maintenance>
+
+
 
 ### Initialize Database
 
@@ -153,14 +167,22 @@ Errors are logged to `.claude/skill-usage.log`:
 tail -f .claude/skill-usage.log
 ```
 
-## How It Works
+</maintenance>
+
+<how_it_works>
+
+
 
 1. **Invocation**: User invokes skill via Claude Code
 2. **PostToolUse Hook**: `track_usage.py` captures invocation → writes to SQLite
 3. **SessionStart Hook**: `welcome_stats.py` reads DB → displays statistics
 4. **Analysis**: User runs scripts to query/analyze usage patterns
 
-## Welcome Message Format
+</how_it_works>
+
+<welcome_message_format>
+
+
 
 ```
 👋 Welcome back! Here are your skill usage statistics:
@@ -181,21 +203,31 @@ tail -f .claude/skill-usage.log
    → Consider archiving 8 skills with < 3 total uses
 ```
 
-## Performance
+</welcome_message_format>
+
+<performance>
+
+
 
 - Hook overhead: ~10-50ms per invocation
 - SQLite write: ~5-20ms (WAL mode)
 - Welcome message: ~50-100ms (once per session)
 - Total impact: Negligible
 
-## Error Handling
+</performance>
+
+<error_handling>
+
+
 
 - Hook failures logged to `.claude/skill-usage.log`
 - Never blocks skill execution (always exits 0)
 - Database locked: 5-second timeout, then skip write
 - Auto-creates database on first use
 
-## Dependencies
+</error_handling>
+
+<dependencies>
 
 Python 3.7+ standard library only:
 - json
@@ -205,3 +237,5 @@ Python 3.7+ standard library only:
 - argparse
 
 No external packages required
+
+</dependencies>

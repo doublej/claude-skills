@@ -5,6 +5,8 @@ description: "Video-over-UDP for VR: packet sharding, FEC, adaptive bitrate, ALV
 
 # Low-Latency UDP Streaming
 
+<core_constraints>
+
 ## Core Constraints
 
 VR streaming has unique requirements that differ from standard video streaming:
@@ -18,6 +20,10 @@ VR streaming has unique requirements that differ from standard video streaming:
 | Jitter budget | <3ms | Decoder needs consistent frame arrival |
 
 **Key difference from regular video streaming**: you cannot simply reduce quality during congestion. Below a visual quality floor, users get sick. The system must maintain framerate even at the cost of resolution.
+
+</core_constraints>
+
+<packet_sharding>
 
 ## Packet Sharding
 
@@ -95,6 +101,10 @@ impl FrameAssembler {
 }
 ```
 
+</packet_sharding>
+
+<idr_recovery>
+
 ## IDR Frame Recovery
 
 ### Detection
@@ -115,6 +125,10 @@ Track frame indices. If `current_frame_index > last_complete + 1`, a frame was l
 - **Rate-limit IDR requests**: max 1 per 100ms. If loss is persistent, the problem is bandwidth, not a single dropped packet.
 - **ALVR's `aggressive_keyframe_resend`**: when enabled, resends the last IDR's shards on packet loss instead of requesting a new one. Useful but doubles bandwidth during loss events.
 - **AV1 codec note**: some AV1 encoders drop IDR frames or produce non-conformant keyframes. Test IDR insertion explicitly with your encoder.
+
+</idr_recovery>
+
+<socket_configuration>
 
 ## Socket Configuration
 
@@ -162,6 +176,10 @@ for shard in &shards {
 
 At 90fps with 200 shards per frame, that's ~55us between shards -- achievable with busy-wait or high-resolution timers, not `thread::sleep` (which has ~1ms granularity on most OS).
 
+</socket_configuration>
+
+<network_statistics>
+
 ## Network Statistics
 
 ### RTT Measurement
@@ -206,6 +224,10 @@ bw_estimate = alpha * measured_bw + (1 - alpha) * bw_estimate
 // alpha = 0.1-0.3 for stability
 ```
 
+</network_statistics>
+
+<adaptive_bitrate>
+
 ## Adaptive Bitrate for VR
 
 ### Strategy: Step-Wise with Floor
@@ -237,6 +259,10 @@ elif loss_rate < 0.5% AND rtt < 15ms AND bandwidth_headroom > 20%:
 
 **Never** adjust by dropping frames. Every frame must be delivered.
 
+</adaptive_bitrate>
+
+<fec_strategies>
+
 ## FEC Strategies
 
 See `references/fec-strategies.md` for detailed comparison and implementation patterns.
@@ -249,6 +275,10 @@ See `references/fec-strategies.md` for detailed comparison and implementation pa
 | WiFi, 1-3% loss | Reed-Solomon GF(2^8) | ~20-30% |
 | Wired, <0.1% loss | None (rely on IDR recovery) | 0% |
 | High loss, can't retransmit | Fountain codes (RaptorQ) | Variable |
+
+</fec_strategies>
+
+<quic_transport>
 
 ## QUIC as Alternative Transport
 
@@ -265,6 +295,10 @@ See `references/fec-strategies.md` for detailed comparison and implementation pa
 - Cannot disable reliability per-stream in most implementations
 
 **Verdict**: promising for control channels and audio. For video data, raw UDP with application-layer FEC still wins on latency. ALVR uses a hybrid approach: TCP/QUIC for control, UDP for video shards.
+
+</quic_transport>
+
+<wifi_vs_wired>
 
 ## WiFi vs. Wired Latency
 
@@ -285,6 +319,10 @@ See `references/fec-strategies.md` for detailed comparison and implementation pa
 - [ ] Dedicated SSID for VR (no other traffic)
 - [ ] Set DSCP/QoS priority for VR traffic
 - [ ] Monitor channel utilization; switch if >50% busy
+
+</wifi_vs_wired>
+
+<alvr_integration>
 
 ## ALVR Integration Patterns
 
@@ -320,6 +358,10 @@ ConnectionDesc {
 }
 ```
 
+</alvr_integration>
+
+<troubleshooting>
+
 ## Troubleshooting
 
 | Symptom | Likely Cause | Fix |
@@ -333,9 +375,15 @@ ConnectionDesc {
 | One-way latency asymmetric | WiFi uplink slower than downlink | Normal; adjust jitter buffer accordingly |
 | Decoder stalls after loss | Missing IDR recovery | Implement gap detection + IDR request |
 
+</troubleshooting>
+
+<references>
+
 ## Deep Reference
 
 | Reference | Use When |
 |-----------|----------|
 | `fec-strategies.md` | Choosing and implementing FEC; XOR vs Reed-Solomon vs fountain codes |
 | `packet-format.md` | Detailed packet layouts, header fields, serialization patterns |
+
+</references>

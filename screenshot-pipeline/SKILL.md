@@ -3,11 +3,13 @@ name: screenshot-pipeline
 description: "Polished promotional screenshots with device framing and compositing"
 ---
 
-# Screenshot Pipeline
+<intro>
 
 Produce polished, platform-optimized promotional screenshots from any project type. Supports full-page, window, and individual element capture with transparency preservation.
 
-## Before Starting
+</intro>
+
+<initial_planning>
 
 Before doing any work, present the user with a plan overview. Scan the project to determine:
 
@@ -33,7 +35,9 @@ Manifest:        yes — OCR, colors, contrast, dimensions
 
 Wait for user confirmation before proceeding.
 
-## Workflow
+</initial_planning>
+
+<workflow>
 
 ```
 DETECT → CAPTURE → COMPOSE → EXPORT → MANIFEST → REVIEW
@@ -156,7 +160,9 @@ This skill creates the visuals; `social-promotion` writes the copy. Natural chai
 1. Run screenshot-pipeline to create images
 2. Run social-promotion referencing those images
 
-## Output
+</workflow>
+
+<output>
 
 Place all generated files in a `screenshots/` directory in the project root:
 ```
@@ -169,3 +175,5 @@ screenshots/
 ├── compose.html      # Source composition (for iteration)
 └── manifest.json     # OCR, dimensions, contrast, colors per screenshot
 ```
+
+</output>

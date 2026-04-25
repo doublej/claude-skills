@@ -7,6 +7,7 @@ description: "Monitor macOS CPU/memory, find resource hogs, periodic health remi
 
 Monitor macOS processes and system resources with optional auto-reminders.
 
+<commands>
 ## Quick Commands
 
 Analyze current resources:
@@ -18,7 +19,9 @@ Get JSON output:
 ```bash
 uv run python ~/.claude/skills/process-monitor/scripts/analyze.py --json
 ```
+</commands>
 
+<daemon>
 ## Daemon Control
 
 Start background monitoring (sends reminders every 5 min):
@@ -35,7 +38,9 @@ Check status:
 ```bash
 uv run python ~/.claude/skills/process-monitor/scripts/daemon.py status
 ```
+</daemon>
 
+<responding>
 ## Responding to Auto-Reminders
 
 When you see `[Auto-reminder] Check system resources`:
@@ -44,16 +49,21 @@ When you see `[Auto-reminder] Check system resources`:
 2. Report any processes using >50% CPU or >10% memory
 3. Compare with previous if pattern seems abnormal
 4. Suggest killing runaway processes if appropriate
+</responding>
 
+<manual>
 ## Manual Injection
 
 Send a message to terminal (for testing):
 ```bash
 uv run python ~/.claude/skills/process-monitor/scripts/inject_message.py "your message here"
 ```
+</manual>
 
+<files>
 ## Files
 
 - `~/.claude/process-monitor.pid` - Daemon PID
 - `~/.claude/process-monitor.log` - Daemon log
 - `~/.claude/process-monitor-snapshot.json` - Latest resource snapshot
+</files>

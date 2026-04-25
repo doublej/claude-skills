@@ -5,12 +5,18 @@ description: "NVENC/AMF hardware encoder tuning for low-latency H.264/HEVC/AV1 s
 
 # NVENC / AMF Hardware Encoding
 
+<preflight>
+
 ## Before Configuring
 
 1. **Identify the GPU vendor** -- NVENC (NVIDIA) and AMF (AMD) have different APIs, presets, and property names
 2. **Identify the codec** -- H.264, HEVC, or AV1. Each has different config structs and capability levels
 3. **Identify the use case** -- VR streaming, game streaming, recording, or transcoding dictate very different parameter choices
 4. **Check driver version** -- encoder capabilities depend on driver, not just hardware generation
+
+</preflight>
+
+<vr_pipeline>
 
 ## VR Streaming Encoder Pipeline
 
@@ -27,6 +33,10 @@ Key constraints:
 - Single-frame latency: no B-frames, no lookahead, no reordering
 - Bitrate adapts dynamically based on network conditions
 - IDR insertion is manual (on packet loss), not periodic
+
+</vr_pipeline>
+
+<nvenc_config>
 
 ## NVENC Configuration (NVIDIA)
 
@@ -50,6 +60,10 @@ NVENC uses a two-axis system: **quality preset** (P1-P7) and **tuning info**.
 | `NV_ENC_TUNING_INFO_LOSSLESS` | Lossless mode, very high bitrate |
 
 Setting tuning info auto-configures most latency-related params. Override individual settings only when needed.
+
+</nvenc_config>
+
+<amf_config>
 
 ### Initialization Pattern (C++)
 
@@ -85,6 +99,10 @@ encodeConfig.rcParams.maxBitRate = bitrate_bps;
 encodeConfig.rcParams.averageBitRate = bitrate_bps;
 ```
 
+</amf_config>
+
+<codec_config>
+
 ### Codec-Specific Config
 
 ```cpp
@@ -107,6 +125,10 @@ av1.repeatSeqHdr = 1;
 av1.idrPeriod = NVENC_INFINITE_GOPLENGTH;
 ```
 
+</codec_config>
+
+<dynamic_reconfig>
+
 ### Dynamic Reconfiguration
 
 NVENC supports mid-stream bitrate/framerate changes without reinitializing:
@@ -116,6 +138,10 @@ NV_ENC_RECONFIGURE_PARAMS reconfig = { NV_ENC_RECONFIGURE_PARAMS_VER };
 reconfig.reInitEncodeParams = initParams;  // updated params
 encoder->Reconfigure(&reconfig);
 ```
+
+</dynamic_reconfig>
+
+<idr_insertion>
 
 ### IDR Insertion
 
@@ -129,6 +155,10 @@ if (need_idr) {
 encoder->EncodeFrame(packets, &picParams);
 ```
 
+</idr_insertion>
+
+<multipass>
+
 ### Multi-Pass and Adaptive Quantization
 
 | Feature | Setting | Effect on VR |
@@ -137,6 +167,10 @@ encoder->EncodeFrame(packets, &picParams);
 | Multi-pass (full res) | `NV_ENC_TWO_PASS_FULL_RESOLUTION` | Better quality, higher latency |
 | Spatial AQ | `enableAQ = 1` | Reduces banding, good default |
 | Temporal AQ | `enableTemporalAQ = 1` | Better overall quality, tiny perf cost |
+
+</multipass>
+
+<intra_refresh>
 
 ### Intra Refresh (Alternative to IDR)
 
@@ -149,6 +183,10 @@ config.intraRefreshCnt = 5;      // how many frames the refresh wave spans
 ```
 
 **Tradeoff**: smoother bitrate but slower error recovery than instant IDR.
+
+</intra_refresh>
+
+<amf>
 
 ## AMF Configuration (AMD)
 
@@ -168,6 +206,10 @@ config.intraRefreshCnt = 5;      // how many frames the refresh wave spans
 | Low Latency | `AMF_VIDEO_ENCODER_USAGE_LOW_LATENCY` | Game streaming |
 | Webcam | `AMF_VIDEO_ENCODER_USAGE_WEBCAM` | Video chat |
 | Transcoding | `AMF_VIDEO_ENCODER_USAGE_TRANSCODING` | Offline processing |
+
+</amf>
+
+<amf_init>
 
 ### Initialization Pattern (C++)
 
@@ -194,6 +236,10 @@ encoder->SetProperty(AMF_VIDEO_ENCODER_RATE_CONTROL_METHOD,
 encoder->SetProperty(AMF_VIDEO_ENCODER_FILLER_DATA_ENABLE, false);
 ```
 
+</amf_init>
+
+<amf_quality>
+
 ### AMF Quality Enhancements
 
 | Feature | Property | Effect |
@@ -206,6 +252,10 @@ encoder->SetProperty(AMF_VIDEO_ENCODER_FILLER_DATA_ENABLE, false);
 **VBAQ**: safe to enable for VR, negligible perf impact.
 **HMQB**: safe for VR, small benefit in fast-motion scenes.
 **Pre-analysis**: avoid for VR -- adds latency. Only useful for recording.
+
+</amf_quality>
+
+<amf_pattern>
 
 ### AMF Submit/Query Pattern
 
@@ -231,6 +281,10 @@ if (res == AMF_OK && data) {
 
 **Pitfall**: `QueryOutput` may return `AMF_REPEAT` -- you must poll. For VR, use `QueryOutput` with a tight timeout loop (1ms sleep between polls, max ~16ms total).
 
+</amf_pattern>
+
+<rate_control>
+
 ## Rate Control for VR
 
 | Mode | When to Use | Notes |
@@ -240,6 +294,10 @@ if (res == AMF_OK && data) {
 | **CQP** | Debugging/testing only | Fixed quality, unpredictable bitrate |
 
 CBR + adaptive bitrate (measuring network throughput and adjusting target) is the standard approach for VR streaming.
+
+</rate_control>
+
+<vbv_buffer>
 
 ### VBV Buffer Sizing
 
@@ -251,6 +309,10 @@ vbvBufferSize = bitrate_bps / framerate * 1.1
 
 Larger buffers allow better quality but add latency. For VR, keep it tight.
 
+</vbv_buffer>
+
+<entropy>
+
 ## Entropy Coding: CAVLC vs CABAC
 
 | | CAVLC | CABAC |
@@ -260,6 +322,10 @@ Larger buffers allow better quality but add latency. For VR, keep it tight.
 | VR recommendation | Default | Only if decoder handles it well |
 
 ALVR defaults to CAVLC because mobile VR decoders (Quest) handle it faster. If your target decoder is powerful (PC-to-PC streaming), CABAC is fine.
+
+</entropy>
+
+<color>
 
 ## Color Configuration
 
@@ -277,6 +343,10 @@ encoder->SetProperty(AMF_VIDEO_ENCODER_OUTPUT_COLOR_PROFILE,
                      AMF_VIDEO_CONVERTER_COLOR_PROFILE_FULL_709);
 ```
 
+</color>
+
+<hdr>
+
 ### HDR
 
 Use BT.2020 primaries with 10-bit encoding:
@@ -291,6 +361,10 @@ transferCharacteristics = SRGB;  // sRGB EOTF, not PQ
 matrixCoefficients = BT2020_NCL;
 ```
 
+</hdr>
+
+<split_frame>
+
 ## Split-Frame Encoding (Ada Lovelace+)
 
 GPUs with multiple NVENC engines (RTX 4090, etc.) can split a frame horizontally across engines:
@@ -300,6 +374,10 @@ GPUs with multiple NVENC engines (RTX 4090, etc.) can split a frame horizontally
 - Automatic when using SDK -- driver handles load balancing
 
 Not user-configurable via the encode API directly; the driver decides based on resolution and available engines.
+
+</split_frame>
+
+<session_limits>
 
 ## Session Limits
 
@@ -312,6 +390,10 @@ Not user-configurable via the encode API directly; the driver decides based on r
 
 Exceeding the limit returns `NV_ENC_ERR_OUT_OF_MEMORY` on session creation.
 
+</session_limits>
+
+<alvr_integration>
+
 ## ALVR Integration Notes
 
 ALVR's encoder lives in C++ (`alvr/server_openvr/cpp/platform/`) with Rust FFI:
@@ -323,6 +405,10 @@ ALVR's encoder lives in C++ (`alvr/server_openvr/cpp/platform/`) with Rust FFI:
 - **Settings flow**: Rust `settings.rs` defines `NvencConfig`/`AmfConfig` structs -> C++ `Settings` reads them
 - **Codec selection**: H.264 default, HEVC for better quality at cost of encoder latency
 - **AV1**: Supported on NVENC (Ada+) and AMF (RDNA3+), requires IVF header stripping on NVENC
+
+</alvr_integration>
+
+<troubleshooting>
 
 ## Troubleshooting
 
@@ -339,6 +425,10 @@ ALVR's encoder lives in C++ (`alvr/server_openvr/cpp/platform/`) with Rust FFI:
 | Encoder returns empty output | Input surface not properly filled | Verify texture copy completed before encode call |
 | 10-bit not working (Linux+NVIDIA) | Driver limitation | 10-bit NVENC on Linux requires specific driver versions |
 
+</troubleshooting>
+
+<deep_ref>
+
 ## Deep Reference
 
 Load on demand from `references/`:
@@ -347,3 +437,5 @@ Load on demand from `references/`:
 |-----------|----------|
 | `nvenc-presets.md` | Detailed NVENC preset/tuning combinations, per-codec settings, advanced rate control |
 | `amf-config.md` | AMF property reference, HEVC/AV1 differences, preprocessing pipeline, color management |
+
+</deep_ref>

@@ -7,6 +7,7 @@ description: "SVG export, batch conversion, path ops, optimization via CLI"
 
 Control Inkscape via CLI for SVG manipulation, export, and vector graphics automation.
 
+<setup>
 ## Setup
 
 Inkscape binary on macOS: `/Applications/Inkscape.app/Contents/MacOS/inkscape`
@@ -19,7 +20,9 @@ alias inkscape="/Applications/Inkscape.app/Contents/MacOS/inkscape"
 ```
 
 Use full path in scripts/MCP configs. Verify: `inkscape --version`
+</setup>
 
+<export>
 ## Export
 
 ```bash
@@ -60,7 +63,9 @@ inkscape in.svg -o out.png -b "#ffffff" -y 1.0
 | `--export-area=x0:y0:x1:y1` | `-a` | Custom rectangle |
 | `--export-id=ID` | `-i` | Export specific object |
 | `--export-id-only` | `-j` | Hide everything else |
+</export>
 
+<query>
 ## Query
 
 ```bash
@@ -68,7 +73,9 @@ inkscape in.svg -W -H              # drawing dimensions
 inkscape in.svg -I myObj -X -Y -W -H  # object bounding box
 inkscape in.svg -S                  # all objects: id,x,y,w,h
 ```
+</query>
 
+<actions>
 ## Actions
 
 Chain operations with `--actions="action1;action2"`. End exports with `export-do`.
@@ -96,7 +103,9 @@ inkscape in.svg --actions="vacuum-defs; export-plain-svg; export-filename:clean.
 | **File** | `file-open:path`, `file-close` |
 
 Full list: `inkscape --action-list`
+</actions>
 
+<batch_processing>
 ## Batch Processing
 
 ### Shell mode (keeps Inkscape resident, faster for multiple files)
@@ -112,7 +121,9 @@ EOF
 ```bash
 inkscape --export-type=png file1.svg file2.svg file3.svg
 ```
+</batch_processing>
 
+<svg_optimization>
 ## SVG Optimization
 
 ```bash
@@ -127,7 +138,9 @@ scour -i in.svg -o out.svg --enable-viewboxing --enable-id-stripping \
 inkscape in.svg --vacuum-defs --export-plain-svg --export-filename=- | \
   scour -i - -o optimized.svg --enable-viewboxing --shorten-ids
 ```
+</svg_optimization>
 
+<python_inkex>
 ## Python (inkex)
 
 For programmatic SVG manipulation without GUI. Install: `pip install inkex`
@@ -148,6 +161,7 @@ root.append(rect)
 # Call Inkscape CLI from Python
 from inkex.command import inkscape
 inkscape("input.svg", export_type="png", export_filename="out.png")
+</python_inkex>
 ```
 
 See `references/cli-reference.md` for complete flag/action reference.

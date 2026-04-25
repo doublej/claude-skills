@@ -7,15 +7,15 @@ description: "Visualize CLAUDE.md hierarchy with token counts and inheritance ch
 
 Visualize the CLAUDE.md context hierarchy for the current project.
 
-## Run
-
+<run>
 Execute the scanner from the current working directory:
 
 ```bash
 python3 {SKILL_DIR}/scripts/context_cascade.py --cwd "$(pwd)"
 ```
+</run>
 
-## Display
+<display>
 
 Parse the JSON output and render a cascade tree. Format:
 
@@ -45,7 +45,9 @@ Rules for the cascade:
 - Include a 1-line summary of each file's content (read the file to determine this)
 - Show totals at the bottom
 
-## Full Content
+</display>
+
+<full_content>
 
 After the cascade tree, show the full content of each CLAUDE.md file with clear visual separation and cascading structure that mirrors the tree hierarchy. Format:
 
@@ -77,7 +79,9 @@ Rules:
 - Render each file's content verbatim (markdown will be rendered naturally)
 - Leave a blank line between the header box and the content, and between sections
 
-## Post-display
+</full_content>
+
+<post_display>
 
 After showing the full content, ask the user via `consult-user-mcp` `ask_confirmation`:
 
@@ -87,3 +91,5 @@ If confirmed, provide a brief analysis covering:
 1. **Override chain** — which rules override which (project > parent > global)
 2. **Key policies** — the most impactful rules active in this context
 3. **Gaps or conflicts** — any contradictions or missing coverage between levels
+
+</post_display>

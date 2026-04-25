@@ -36,7 +36,7 @@ bot.start(ctx => ctx.reply('Hello!'));
 bot.launch();
 ```
 
-## Framework Selection
+<framework_selection>
 
 | Framework | Language | Best For |
 |-----------|----------|----------|
@@ -50,7 +50,9 @@ See `references/` for framework-specific patterns:
 - `references/telegraf.md` - Node.js patterns
 - `references/raw-api.md` - Direct HTTP API
 
-## Core Patterns
+</framework_selection>
+
+<core_patterns>
 
 ### Command Handlers
 
@@ -174,7 +176,9 @@ def handler(event, context):
     return {"statusCode": 200, "body": "ok"}
 ```
 
-## Common Bot Methods
+</deployment>
+
+<common_methods>
 
 | Method | Purpose |
 |--------|---------|
@@ -187,7 +191,9 @@ def handler(event, context):
 | `get_chat_member` | Get user in chat |
 | `ban_chat_member` | Ban user |
 
-## Error Handling
+</common_methods>
+
+<error_handling>
 
 ```python
 from telegram.error import TelegramError, NetworkError, TimedOut
@@ -205,16 +211,22 @@ async def error_handler(update, context):
 app.add_error_handler(error_handler)
 ```
 
-## Rate Limits
+</error_handling>
+
+<rate_limits>
 
 - 30 messages/second to same chat
 - 20 messages/minute to same group
 - Bulk: max 30 messages/second overall
 - Use `asyncio.sleep()` for bulk operations
 
-## Security
+</rate_limits>
+
+<security>
 
 - Validate webhook requests (check secret token)
 - Never expose bot token
 - Sanitize user input before using in commands
 - Use `chat_id` to verify authorized users
+
+</security>

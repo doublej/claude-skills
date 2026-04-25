@@ -5,7 +5,11 @@ description: "Lyric-synced HTML5 video pages with CSS animations from timed text
 
 # Lyric Video Maker
 
+<description>
 Generates a self-contained HTML5 lyric video. Audio plays in browser; lyrics animate on beat using CSS keyframes + JavaScript timing.
+</description>
+
+<input_format>
 
 ## Input Format
 
@@ -30,6 +34,10 @@ Generates a self-contained HTML5 lyric video. Audio plays in browser; lyrics ani
 }
 ```
 
+</input_format>
+
+<workflow>
+
 ## Generate Script
 
 ```bash
@@ -51,3 +59,5 @@ Opens `lyric_video.html` in browser. Audio must be local or CORS-accessible.
 3. Add overlay content from `transcript-capture` output
 4. Run `generate_video.py` → open in browser
 5. Record screen + mix with audio for final MP4 (use QuickTime or OBS)
+
+</workflow>

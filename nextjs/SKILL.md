@@ -5,6 +5,8 @@ description: "App Router: server/client components, caching, streaming, Next.js 
 
 # Next.js App Router Development
 
+<before_writing>
+
 ## Before Writing Code
 
 1. **Detect repo setup** (do not guess):
@@ -25,6 +27,10 @@ description: "App Router: server/client components, caching, streaming, Next.js 
    - Is there a `lib/` or `utils/` directory for shared code?
    - How are layouts structured (nested, route groups)?
 
+</before_writing>
+
+<file_conventions>
+
 ## File Conventions
 
 | File | Purpose | Notes |
@@ -39,6 +45,10 @@ description: "App Router: server/client components, caching, streaming, Next.js 
 | `default.tsx` | Fallback for parallel route slots | Required for parallel routes |
 | `middleware.ts` | Request interception (root only) | Deprecated in Next.js 16 → `proxy.ts` |
 | `proxy.ts` | Network boundary (Next.js 16+) | Replaces middleware, Node.js only |
+
+</file_conventions>
+
+<server_client>
 
 ## Server vs Client Decision Tree
 
@@ -55,6 +65,10 @@ Does this component need...
 Server Component benefits:
 - Zero client JS, direct DB/API access, secure secrets, smaller bundles
 ```
+
+</server_client>
+
+<composition_pattern>
 
 ### The Composition Pattern (Children Slot)
 
@@ -85,6 +99,10 @@ export default function Page() {
 - `'use client'` marks the boundary — all *imports* become client
 - But `children` (passed as props) keep their original rendering
 - Use this to wrap server content with client interactivity
+
+</composition_pattern>
+
+<core_patterns>
 
 ## Core Patterns
 
@@ -137,6 +155,10 @@ export async function createPostWithState(prevState: any, formData: FormData) {
 - Validate all inputs — server actions are public HTTP endpoints
 - See `references/server-actions.md` for full patterns
 
+</core_patterns>
+
+<async_apis>
+
 ### Async Request APIs (Next.js 15+)
 
 ```tsx
@@ -154,6 +176,10 @@ export default async function Page({
 }
 ```
 
+</async_apis>
+
+<anti_patterns>
+
 ## Anti-Patterns Quick Reference
 
 | Anti-Pattern | Fix | Reference |
@@ -166,6 +192,10 @@ export default async function Page({
 | `useEffect` for browser detection | Direct check in component body | `anti-patterns.md` |
 | Server Action returning data for forms | Use `useActionState` or return void | `server-actions.md` |
 | Barrel file imports | Import directly from source | `performance.md` |
+
+</anti_patterns>
+
+<changes>
 
 ## Next.js 15/16 Changes
 
@@ -185,6 +215,10 @@ export default async function Page({
 - `experimental.turbopack` → top-level `turbopack` config
 - Run `npx @next/codemod@canary upgrade latest` for automated migration
 
+</changes>
+
+<context7>
+
 ## Context7 Integration
 
 For up-to-date API details, use Context7 MCP:
@@ -192,6 +226,10 @@ For up-to-date API details, use Context7 MCP:
 resolve-library-id: "next.js" or "react"
 query-docs: "use cache directive" or "server actions" or "metadata API"
 ```
+
+</context7>
+
+<quality_gates>
 
 ## Quality Gates
 
@@ -218,7 +256,13 @@ Load on demand from `references/`:
 | `anti-patterns.md` | Catalog with before/after code fixes |
 | `performance.md` | Waterfall elimination, bundle size, parallel fetching |
 
+</deep_reference>
+
+<scripts>
+
 ## Scripts
 
 Run without loading source:
 - `scripts/nextjs-doctor.mjs` — Repo pattern audit
+
+</scripts>
