@@ -3,8 +3,10 @@ name: monospace-conviction
 description: >
   Ship terminal interfaces that earn the medium. Layout, theming, keybinds,
   focus, capability detection for ratatui, Textual, Ink, Bubble Tea, iocraft,
-  OpenTUI, vaxis. Triggers on "TUI", "terminal app", "interactive CLI",
-  "fzf-style", "lazygit-style", "make this terminal app feel good".
+  OpenTUI, vaxis. Nerd font icons, powerline glyphs, PUA range safety, NF v2/v3
+  version contracts. Triggers on "TUI", "terminal app", "interactive CLI",
+  "fzf-style", "lazygit-style", "make this terminal app feel good", "nerd font",
+  "powerline", "status bar", "file tree icons".
 ---
 
 # Monospace Conviction
@@ -274,6 +276,13 @@ Run before declaring done. Any failure means not done.
 14. **The "could this be JSON" check.** If `cmd | jq` plus a `--watch`
     flag would do the job, ship the pipe instead. The TUI must justify
     the frame.
+15. **The nerd font fallback check.** Every BMP PUA glyph has an ASCII
+    fallback defined. No Supplementary PUA (U+F0000+) in aligned
+    contexts. A space follows every icon glyph. NF version declared in
+    config.
+16. **The capability-off test.** Run with icons disabled or on Apple
+    Terminal. Hierarchy survives — no boxes, no alignment breaks, no
+    missing state.
 
 ---
 
@@ -306,6 +315,93 @@ Run before declaring done. Any failure means not done.
 
 </interrogation>
 
+<nerd_fonts>
+
+## Nerd Fonts
+
+Full detail in `references/nerd-fonts.md`. Summary rules:
+
+### The PUA contract
+
+Two ranges. Different rules.
+
+- **BMP PUA** (U+E000–U+F8FF) — 3,877 glyphs. Spec'd as 1-cell wide.
+  The safe range for all aligned contexts. Powerline, Codicons, Octicons,
+  dev-icons all live here.
+- **Supplementary PUA** (U+F0000+) — 6,880 glyphs. Material Design icons.
+  **Width undefined by Unicode.** Terminals render these as 0, 1, or 2 cells.
+  Never in aligned columns, tables, or list prefixes. Decorative use only,
+  +1 explicit pad cell.
+
+### The capability contract
+
+No env var reliably signals nerd font support. **Default off. User declares.**
+
+```
+Pattern: expose a config key   icons: "nf3" | "nf2" | "ascii" | "none"
+         or honor              $NERD_FONTS_VERSION env var
+Never:   assume support based on TERM, COLORTERM, or TERM_PROGRAM alone
+```
+
+### The version contract
+
+NF v3 (2023) remapped hundreds of glyphs. Declare version. Expose config.
+Build a glyph constants module with both NF3 and ASCII sets — every icon
+has a fallback at compile time. See `references/nerd-fonts.md` for the module
+pattern.
+
+### Powerline core (6 glyphs — all you need)
+
+```
+U+E0A0  pl-branch              git branch ()
+U+E0A1  pl-line_number         line number
+U+E0A2  pl-readonly            readonly / lock
+U+E0B0  pl-left_hard_divider   solid arrow → (segment separator)
+U+E0B1  pl-left_soft_divider   thin line (same-bg separator)
+U+E0B2  pl-right_hard_divider  solid arrow ← (right-align segments)
+```
+
+Hard dividers: fg = source segment color, bg = target segment color.
+Soft dividers: between segments sharing the same background.
+
+### Icon set priority
+
+1. Geometric Unicode (`▲ ● ◆ ✓ ✗ ⚠`) — no nerd font needed
+2. Codicons (`cod-`, U+EA60–EBEB) — clean, minimal, BMP PUA
+3. Octicons (`oct-`, U+F400–F533) — GitHub icons, BMP PUA
+4. dev-icons (`dev-`, U+E700–E7FF) — language logos, BMP PUA
+5. Font Awesome (`fa-`) — BMP PUA, larger set
+6. Material Design (`md-`, U+F0000+) — decorative only, never aligned
+
+Never reach for MD first. 95% of TUI needs are covered by Codicons + Octicons.
+
+### Fallback chain
+
+```
+NF3 enabled  → BMP PUA glyph (version-declared constants)
+NF2 enabled  → NF2 BMP PUA glyph (different address)
+NF off       → geometric glyph from visual-vocabulary.md
+ASCII mode   → ASCII punctuation (+ - * # ~)
+NO_COLOR=1   → suppress icons or use ASCII, strip colors
+```
+
+### Width rule
+
+Always pad with a space after an icon when followed by text.
+`"\u{E0A0} branch"` not `"\u{E0A0}branch"` — cursor advancement breaks
+without the space on many terminals.
+
+### The 3 nerd font anti-patterns to avoid
+
+1. **Supplementary PUA in aligned contexts** — undefined width kills columns
+2. **No ASCII fallback per icon** — CI runners and Apple Terminal users are real
+3. **Skipping the space after the glyph** — misalignment on most terminals
+
+See `references/nerd-fonts.md` for the full 8-pattern list, the glyph
+vocabulary table, powerline composition patterns, and the terminal test matrix.
+
+</nerd_fonts>
+
 <references>
 
 - `references/library-decision.md` — pick the right toolkit, when not
@@ -314,6 +410,9 @@ Run before declaring done. Any failure means not done.
   COLORFGBG algorithm.
 - `references/anti-patterns.md` — fourteen traps with fixes and
   diagnostics.
+- `references/nerd-fonts.md` — PUA ranges, powerline glyphs, icon sets,
+  capability detection, NF v2/v3 version contract, width-safe rendering,
+  terminal matrix, fallback chain, powerline composition patterns.
 
 Inline reference (no separate file): atlas-picker
 (`multi-stack/project-atlas/atlas-picker/`) is cited throughout as the
