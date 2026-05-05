@@ -34,14 +34,62 @@ Output lands in `CWD/tmp/` by default.
 
 </workflow>
 
-<prompt_shaping>
+<prompt_mode>
 
-Before passing the user's prompt to the script, augment it lightly:
+Before generating, determine how the user wants their prompt handled. Use `consult-user-mcp ask` with a pick dialog:
+
+```
+title: "Prompt mode"
+body: "How should I handle your prompt?"
+type: pick
+choices:
+  - "Raw — pass my prompt exactly as-is to Codex"
+  - "Polish — light cleanup, add style/medium if missing"
+  - "Director — full rewrite into an optimal gpt-image-2 prompt using project context"
+descriptions:
+  - "No interpretation. Your words, verbatim."
+  - "Minor augmentation: style, quality, constraints. No invented content."
+  - "I'll study the project (colors, brand, assets, purpose), then craft a detailed structured prompt. You review before I generate."
+```
+
+### Raw mode
+
+Pass the user's prompt string directly to the script unchanged. No augmentation, no rewrites.
+
+### Polish mode
+
+Light-touch augmentation:
 - Add style/medium if not specified (e.g., "digital illustration", "photograph")
 - Add "high quality, detailed" if the prompt is bare
+- Append "no watermark, no text" unless text was explicitly requested
 - Keep augmentation minimal — don't invent content the user didn't ask for
 
-</prompt_shaping>
+### Director mode
+
+Full prompt engineering pass. Before writing the prompt:
+
+1. **Gather project context** — scan for: brand colors (CSS variables, design tokens, tailwind config), existing assets/logos, README/package.json for project purpose, any style guides or design system files.
+
+2. **Craft a structured prompt** using the gpt-image-2 schema:
+   ```
+   Use case: <taxonomy slug from list below>
+   Asset type: <where this image will be used>
+   Primary request: <user's core intent, expanded>
+   Scene/backdrop: <environment>
+   Subject: <main subject with specifics>
+   Style/medium: <photo/illustration/3D/vector-style/etc>
+   Composition/framing: <layout, camera angle, spacing>
+   Lighting/mood: <lighting + atmosphere>
+   Color palette: <derived from project or user request>
+   Constraints: <must-haves>
+   Avoid: <negative constraints>
+   ```
+
+3. **Show the crafted prompt** to the user via `consult-user-mcp ask` (type: confirm) before generating. Let them approve or request changes.
+
+Use-case taxonomy slugs: `photorealistic-natural`, `product-mockup`, `ui-mockup`, `infographic-diagram`, `logo-brand`, `illustration-story`, `stylized-concept`, `ads-marketing`, `scientific-educational`, `productivity-visual`, `historical-scene`.
+
+</prompt_mode>
 
 <gpt_image_2_parameters>
 
