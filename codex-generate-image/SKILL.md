@@ -43,6 +43,30 @@ Before passing the user's prompt to the script, augment it lightly:
 
 </prompt_shaping>
 
+<gpt_image_2_parameters>
+
+Parameters accepted by gpt-image-2 (passed via prompt instructions to Codex):
+
+| Parameter | Values | Notes |
+|-----------|--------|-------|
+| `prompt` | string (required) | Image description |
+| `n` | 1–10 | Number of images to generate |
+| `size` | `auto`, `1024x1024`, `1536x1024`, `1024x1536`, `2048x2048`, `2048x1152`, `3840x2160`, `2160x3840`, or custom WxH | Max edge ≤ 3840px, both edges multiples of 16px, ratio ≤ 3:1, total pixels 655,360–8,294,400 |
+| `quality` | `low`, `medium`, `high`, `auto` | `low` = fast drafts; `high` = final assets |
+| `output_format` | `png`, `webp`, `jpeg` | PNG for transparency-ready; webp for smaller size |
+| `output_compression` | 0–100 | Percentage, only for webp/jpeg |
+| `moderation` | `auto`, `low` | Content filter strictness |
+
+**Not supported on gpt-image-2:**
+- `background` (transparent) — gpt-image-1.5 only
+- `input_fidelity` — always high fidelity for image inputs
+
+**Edit-specific parameters** (when modifying existing images):
+- `image` — input image(s) to edit
+- `mask` — mask for inpainting (white = edit area)
+
+</gpt_image_2_parameters>
+
 <error_handling>
 
 - If `codex` is not installed: tell user to run `npm i -g @openai/codex`
