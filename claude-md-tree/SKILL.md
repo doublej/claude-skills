@@ -1,9 +1,9 @@
 ---
-name: claude-md-architect
-description: Architect CLAUDE.md files across a larger codebase as context packets, not commandments. Use when asked to "explode CLAUDE.md", "complete CLAUDE.md", "add CLAUDE.md to subfolders", design nested CLAUDE.md hierarchy, set up context for a monorepo, decide where to put rules vs CLAUDE.md vs skills, audit context architecture, or apply the context-packet pattern across a tree. Verified against Claude Code docs (memory, context-window, claude-directory).
+name: claude-md-tree
+description: Architect a CLAUDE.md tree across a larger codebase as context packets, not commandments. Use when asked to "explode CLAUDE.md", "complete CLAUDE.md", "add CLAUDE.md to subfolders", design nested CLAUDE.md hierarchy, set up context for a monorepo, decide where to put rules vs CLAUDE.md vs skills, audit context architecture, or apply the context-packet pattern across a tree. Verified against Claude Code docs (memory, context-window, claude-directory).
 ---
 
-# CLAUDE.md Architect
+# CLAUDE.md Tree
 
 ## Overview
 
@@ -209,7 +209,7 @@ python3 scripts/audit_tree.py <repo-root>
 CLAUDE_CODE_NEW_INIT=1 claude   # then /init
 
 # Install the skill after edits (this repo)
-./install-skill.sh claude-md-architect
+./install-skill.sh claude-md-tree
 ```
 
 ## What to deliver
