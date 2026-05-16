@@ -151,3 +151,15 @@ This is a hook. Configure it in `.claude/settings.json` and it runs whether Clau
 Setting up CLAUDE.md once and never revisiting. Code moves, conventions change, half the files now contradict reality. Adherence drops because Claude is reading stale guidance.
 
 Fix: schedule a quarterly audit. Run `/memory` in a real session, walk the files, delete or update anything that no longer matches the code. The `claudeMdExcludes` setting is your friend when other teams' files drift.
+
+## 16. The vocabulary-less tree
+
+A complete CLAUDE.md tree (root + nested packets + rules) with no `GLOSSARY.md` and no `<vocabulary>` block. Each packet uses subtly different words for the same concept — `User` here, `Customer` there, `Account` elsewhere. Agents mirror the drift back into code, commits, and PR titles. Within weeks the codebase has three nouns for the same thing.
+
+Fix: add a `GLOSSARY.md` at root (or per bounded context for ecosystems) and a `<vocabulary>` block in root CLAUDE.md pointing to it. Delegate the curation to the `ubiquitous-language` skill. Then audit existing packets — any rejected synonym appearing in a CLAUDE.md is a defect.
+
+## 17. The competing-vocabulary tree
+
+Multiple sub-projects in an ecosystem each define `Product` to mean different things, with no context map. Agent reading both gets contradictory signals — uses whichever it saw last.
+
+Fix: either align on one shared `GLOSSARY.md` at ecosystem root, or accept per-context glossaries AND write a context-map at ecosystem root that names the translation ("In `wallgen`, `Product` = an unpublished render. In `shopify-template`, `Product` = a published SKU. The two are linked by `WallgenPublishedProductId`.").

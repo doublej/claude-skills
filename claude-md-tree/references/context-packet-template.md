@@ -80,6 +80,12 @@ The smallest relevant test commands. Not the full test suite — the subset that
 
 Outbound links. Use relative paths for in-repo files; full URLs for external dashboards. ADRs are especially valuable — they explain *why* a non-obvious design exists.
 
+## Use canonical vocabulary
+
+When writing the packet, **use the terms defined in the project's `GLOSSARY.md`** — not synonyms. If the glossary says `Product`, do not write "wallpaper" or "decoration" in the mental model section. Rejected synonyms from the glossary should never appear in a CLAUDE.md.
+
+If a term you need is missing from the glossary, that is a glossary update — pause and route to the `ubiquitous-language` skill before completing the packet. Inventing a new word in a CLAUDE.md is the most common way vocabulary drift starts.
+
 ## Things to leave out
 
 - Anything Claude can infer by reading the code (file names, exports, type signatures).

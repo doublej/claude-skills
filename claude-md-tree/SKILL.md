@@ -29,11 +29,12 @@ Five mechanisms, five jobs (verified — see `references/verified-docs.md`):
 | -------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------- |
 | Root `CLAUDE.md`                 | Loaded in full at every session start. Survives `/compact`.  | Whole-project orientation, repo map, global invariants.       |
 | Nested `CLAUDE.md` in subfolders | Loaded on demand when Claude reads files in that subfolder. **Not** re-injected after `/compact`. | Folder-local context packets: domain model, invariants, verification. |
+| `GLOSSARY.md` (root or per-context) | Linked from CLAUDE.md, loaded on demand. | Project's **ubiquitous language** — canonical terms + rejected synonyms. One concept, one word. |
 | `.claude/rules/*.md`             | Without `paths:` frontmatter → loaded at session start. With `paths:` → loaded when matching files are read. | Cross-cutting topical rules (testing, a11y, generated files, api-contracts). |
 | `.claude/skills/<name>/SKILL.md` | Listed at startup (description only). Body loads only when invoked. | Repeatable procedures ("how to do a job"). Knowledge belongs in CLAUDE.md / rules. |
 | Hooks / settings                 | Enforced shell commands at lifecycle events.                 | Things that *must* run, not just "should."                    |
 
-Folder context tells Claude **what is true**. Skills tell Claude **what to do**. Rules apply behavior **conditionally**. Hooks enforce behavior **mechanically**.
+Folder context tells Claude **what is true**. Vocabulary tells Claude **what to call it**. Skills tell Claude **what to do**. Rules apply behavior **conditionally**. Hooks enforce behavior **mechanically**.
 
 ## Philosophy: context packets, not commandments
 
@@ -62,6 +63,34 @@ Point to docs, ADRs, schemas, specs, or parent folders.
 ```
 
 Rules are only one section — usually the smallest one. See `references/context-packet-template.md` for the canonical template, and `references/examples/` for filled-in cases.
+
+## Vocabulary: the ubiquitous language layer
+
+A CLAUDE.md tree without a vocabulary layer leaks. The agent will happily call the same thing `Product`, `WallDecoration`, `Wallpaper`, and `Item` across files because nothing tells it which word is canonical.
+
+**Always check for / propose a `GLOSSARY.md`** when architecting a CLAUDE.md tree. It is part of the deliverable, not optional.
+
+Decision:
+
+| Domain noun count | Treatment |
+|-------------------|-----------|
+| 0–5 | Inline a short `<vocabulary>` section in root CLAUDE.md. No separate file. |
+| 6–50 | Standalone `GLOSSARY.md` at project root. Link from CLAUDE.md. |
+| 50+ or multiple sub-projects with divergent meanings | **Per bounded context** — one `GLOSSARY.md` per sub-project, plus a context-map at ecosystem root explaining translations. |
+
+Wire it in by adding a short `<vocabulary>` block near the top of root CLAUDE.md:
+
+```xml
+<vocabulary>
+Canonical terms defined in GLOSSARY.md. Use these names exactly — they are this project's ubiquitous language.
+Top concepts: {Product}, {Generation}, {Variant}, {Order}, {Customer}
+Full glossary: ./GLOSSARY.md
+</vocabulary>
+```
+
+For curating the glossary itself (harvest candidate terms, cluster synonyms, pick canonical, write definitions + rejected synonyms), **delegate to the `ubiquitous-language` skill**. This skill (claude-md-tree) wires the result into the CLAUDE.md tree; that skill produces the glossary content. Hand off explicitly:
+
+> "I've inventoried the tree. Run the `ubiquitous-language` skill to build / update `GLOSSARY.md`, then come back here to wire it into CLAUDE.md."
 
 ## The 5-pass workflow
 
@@ -130,9 +159,10 @@ Root `CLAUDE.md` should give Claude orientation and **point to** deeper context,
 Required sections:
 1. **What this project is** — one short paragraph.
 2. **Architecture map** — top-level folders with one-line purposes.
-3. **Context boundaries** — "before editing X, read `X/CLAUDE.md`".
-4. **Global invariants** — only the truly global ones.
-5. **Commands** — build, test, format, lint.
+3. **Vocabulary** — `<vocabulary>` block listing top canonical terms + pointer to `GLOSSARY.md` (see Vocabulary section above).
+4. **Context boundaries** — "before editing X, read `X/CLAUDE.md`".
+5. **Global invariants** — only the truly global ones.
+6. **Commands** — build, test, format, lint.
 
 See `references/examples/root-claude-md.md` for a worked example.
 
@@ -192,6 +222,7 @@ See `references/anti-patterns.md` for the full list. The biggest ones:
 5. **Using CLAUDE.md to specify procedures** — procedures are skills. CLAUDE.md is knowledge.
 6. **Forgetting compaction behavior** — putting compaction-critical invariants only in nested files.
 7. **Hand-edited generated content** — if you have generated folders, say so in the parent CLAUDE.md and link a rule.
+8. **No vocabulary layer** — tree without `GLOSSARY.md` or `<vocabulary>` block. Agents drift between synonyms (`Product`/`Wallpaper`/`Item`) within a single session. Delegate curation to the `ubiquitous-language` skill.
 
 ## Quick reference: commands you will use
 
@@ -217,11 +248,12 @@ CLAUDE_CODE_NEW_INIT=1 claude   # then /init
 When asked to "explode" or "complete" CLAUDE.md across a repo, deliver in this order:
 
 1. **Inventory report** — output of `audit_tree.py` plus your human-judgment annotations.
-2. **Proposed file list** — which CLAUDE.md, rules, and skills you'll add or modify.
-3. **Root CLAUDE.md rewrite** — first, before the nested packets.
-4. **Nested context packets** — one per chosen zone, using the template.
-5. **Rules extraction** — cross-cutting rules pulled into `.claude/rules/`.
-6. **Verification log** — output of `/memory` and `/context` after the changes.
+2. **Vocabulary check** — does a `GLOSSARY.md` exist? Is it current? If absent or stale, flag to delegate to the `ubiquitous-language` skill before writing nested packets (so packets can reference canonical terms).
+3. **Proposed file list** — which CLAUDE.md, GLOSSARY.md, rules, and skills you'll add or modify.
+4. **Root CLAUDE.md rewrite** — first, before the nested packets. Includes `<vocabulary>` block.
+5. **Nested context packets** — one per chosen zone, using the template. Reference canonical terms from GLOSSARY.md.
+6. **Rules extraction** — cross-cutting rules pulled into `.claude/rules/`.
+7. **Verification log** — output of `/memory` and `/context` after the changes.
 
 Confirm the inventory + proposed file list with the user **before** writing the packets. Adding CLAUDE.md to the wrong places is the most common failure and the most expensive to undo.
 
@@ -233,3 +265,4 @@ Confirm the inventory + proposed file list with the user **before** writing the 
 - `references/anti-patterns.md` — failure modes catalogue
 - `references/examples/` — worked examples (root, billing, db, charts)
 - `scripts/audit_tree.py` — inventory script
+- `../ubiquitous-language/SKILL.md` — sibling skill that curates `GLOSSARY.md`. Delegate vocabulary work to it; this skill wires the result into the CLAUDE.md tree.

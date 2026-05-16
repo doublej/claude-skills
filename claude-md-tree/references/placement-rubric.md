@@ -9,6 +9,8 @@ Before adding any line to a CLAUDE.md, classify it. Most "what's wrong with my C
 | Project mission, stack, repo map                           | root `CLAUDE.md`                                       | Needed every session, top-level orientation.                       |
 | Global invariants ("never push to main")                   | root `CLAUDE.md`                                       | Apply everywhere.                                                  |
 | Folder-local domain model, invariants, verification        | nested `CLAUDE.md`                                     | Only relevant when working in that subtree.                        |
+| Project's canonical vocabulary (one concept → one term)    | `GLOSSARY.md` at project (or bounded-context) root, linked from CLAUDE.md | Stops agents drifting between synonyms (`Product`/`Wallpaper`/`Item`). Curate via the `ubiquitous-language` skill. |
+| One-off rejected synonym / "do not use this word"          | `GLOSSARY.md` entry under the canonical term, **Rejected synonyms** line | Tells agents what NOT to say. Half the value of a glossary is the rejected list. |
 | Same rule that applies to many paths matching a glob       | `.claude/rules/<topic>.md` with `paths:` frontmatter   | One source of truth. Loads only when matching files are read.      |
 | Same rule everywhere, no path scope                        | `.claude/rules/<topic>.md` without `paths:`            | Loads at session start; same priority as `.claude/CLAUDE.md`.      |
 | Repeatable procedure ("how to add an API endpoint")        | `.claude/skills/<name>/SKILL.md`                       | Skills are workflows. CLAUDE.md is knowledge.                      |
