@@ -444,48 +444,85 @@ For projects needing multiple processes (worker + client, frontend + backend), u
 
 Key structure:
 - `_session := "name"` — short session name (3-5 chars)
-- `tmux-dev` — create session with panes, open iTerm
-- `tmux-attach` — attach to existing session
+- `tmux-dev` — create session with panes, open a terminal window attached
+- `tmux-attach` — attach to existing session (in current shell)
 - `tmux-kill` — kill session
 - `tmux-restart` — kill + dev
 - `tmux-logs-<pane>` — capture last 50 lines from pane
 - `tmux-status` — show session and pane info
+- `_attach-window` — private helper that auto-detects iTerm / Ghostty / fallback
 
-Example:
+### Terminal auto-detection (CRITICAL — do not hardcode iTerm)
+
+`tmux-dev` must open a new window using the **user's current terminal**, not a hardcoded `osascript "iTerm"` call. Detect at runtime via `$TERM_PROGRAM`:
+
+| Value of `$TERM_PROGRAM` | Spawn command |
+|---|---|
+| `iTerm.app` | `osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t SESSION"'` |
+| `ghostty` | `open -na Ghostty --args --command="tmux attach -t SESSION"` |
+| `Apple_Terminal` | `osascript -e 'tell application "Terminal" to do script "tmux attach -t SESSION"'` |
+| anything else | print `→ Attach manually: tmux attach -t SESSION` and exit 0 |
+
+Also check `$TMUX` first — if already inside tmux, use `tmux switch-client -t SESSION` instead of opening a new window.
+
+Use a shebang recipe (`#!/usr/bin/env bash`) for the dispatch — line-continuation `\` chains get unreadable fast with `case` statements.
+
+Full template lives in `references/tmux-recipes.md`. Inline example:
+
 ```just
 _session := "myapp"
 
 [group('develop')]
 tmux-dev:
-    @if tmux has-session -t {{_session}} 2>/dev/null; then \
-        echo "Session '{{_session}}' already running. Opening iTerm..."; \
-        osascript -e 'tell application "iTerm" to create window with default profile command "/opt/homebrew/bin/tmux attach -t {{_session}}"'; \
-    else \
-        tmux new-session -d -s {{_session}} -c {{justfile_directory()}}; \
-        tmux send-keys -t {{_session}} 'npm run dev' Enter; \
-        tmux split-window -h -t {{_session}} -c {{justfile_directory()}}; \
-        tmux send-keys -t {{_session}} 'npm run build:watch' Enter; \
-        tmux select-pane -t {{_session}}:0.0; \
-        echo "Started tmux session '{{_session}}'"; \
-        sleep 0.5; \
-        osascript -e 'tell application "iTerm" to create window with default profile command "/opt/homebrew/bin/tmux attach -t {{_session}}"'; \
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if tmux has-session -t {{_session}} 2>/dev/null; then
+        echo "Session '{{_session}}' already running."
+    else
+        tmux new-session -d -s {{_session}} -c {{justfile_directory()}}
+        tmux send-keys -t {{_session}} 'npm run dev' Enter
+        tmux split-window -h -t {{_session}} -c {{justfile_directory()}}
+        tmux send-keys -t {{_session}} 'npm run build:watch' Enter
+        tmux select-pane -t {{_session}}:0.0
+        echo "Started tmux session '{{_session}}'"
+        sleep 0.5
+    fi
+    just _attach-window
+
+# Open a terminal window attached to {{_session}} (auto-detects iTerm/Ghostty/Terminal)
+[private]
+_attach-window:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -n "${TMUX:-}" ]; then
+        tmux switch-client -t {{_session}}
+    elif [ "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
+        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{_session}}"'
+    elif [ "${TERM_PROGRAM:-}" = "ghostty" ]; then
+        open -na Ghostty --args --command="tmux attach -t {{_session}}"
+    elif [ "${TERM_PROGRAM:-}" = "Apple_Terminal" ]; then
+        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{_session}}"'
+    else
+        echo "→ Attach manually: tmux attach -t {{_session}}"
     fi
 
 [group('develop')]
 tmux-attach:
-    @if tmux has-session -t {{_session}} 2>/dev/null; then \
-        tmux attach -t {{_session}}; \
-    else \
-        echo "No session '{{_session}}' found. Use 'just tmux-dev' to start."; \
+    #!/usr/bin/env bash
+    if tmux has-session -t {{_session}} 2>/dev/null; then
+        tmux attach -t {{_session}}
+    else
+        echo "No session '{{_session}}' found. Use 'just tmux-dev' to start."
     fi
 
 [group('develop')]
 tmux-kill:
-    @if tmux has-session -t {{_session}} 2>/dev/null; then \
-        tmux kill-session -t {{_session}}; \
-        echo "Killed session '{{_session}}'"; \
-    else \
-        echo "No session '{{_session}}' to kill."; \
+    #!/usr/bin/env bash
+    if tmux has-session -t {{_session}} 2>/dev/null; then
+        tmux kill-session -t {{_session}}
+        echo "Killed session '{{_session}}'"
+    else
+        echo "No session '{{_session}}' to kill."
     fi
 
 [group('develop')]
@@ -493,10 +530,11 @@ tmux-restart: tmux-kill tmux-dev
 
 [group('develop')]
 tmux-logs-dev:
-    @if tmux has-session -t {{_session}} 2>/dev/null; then \
-        tmux capture-pane -t {{_session}}:0.0 -p -S -50; \
-    else \
-        echo "No session '{{_session}}' found."; \
+    #!/usr/bin/env bash
+    if tmux has-session -t {{_session}} 2>/dev/null; then
+        tmux capture-pane -t {{_session}}:0.0 -p -S -50
+    else
+        echo "No session '{{_session}}' found."
     fi
 ```
 
