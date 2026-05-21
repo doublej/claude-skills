@@ -49,7 +49,7 @@ git commit -m "fix(<skill>): <one-line summary> (bd-<id>)"
 ### 6. Close the ticket
 
 ```bash
-bd close <id> --notes "Fixed in commit <sha>. <one-line summary of change>."
+bd close <id> -r "Fixed in commit <sha>. <one-line summary of change>."
 ```
 
 ### 7. Report back
