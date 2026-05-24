@@ -1,0 +1,64 @@
+/* Subtle Swagger UI polish.
+ * Copy into the project's static/ folder and reference via swagger_css_url
+ * when overriding the /docs handler — see references/swagger_ui_tweaks.md.
+ */
+
+:root {
+  --sw-bg: #0b1220;
+  --sw-surface: #0f172a;
+  --sw-border: #1e293b;
+  --sw-text: #e2e8f0;
+  --sw-text-dim: #94a3b8;
+  --sw-primary: #6366f1;
+  --sw-accent: #22d3ee;
+}
+
+/* Tighter top bar */
+.swagger-ui .topbar { display: none; }
+
+/* Card-like operation blocks */
+.swagger-ui .opblock {
+  border-radius: 10px;
+  border: 1px solid var(--sw-border);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+  margin: 0 0 12px;
+}
+
+.swagger-ui .opblock .opblock-summary {
+  padding: 10px 16px;
+}
+
+.swagger-ui .opblock-summary-method {
+  border-radius: 6px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+/* Calmer "Try it out" buttons */
+.swagger-ui .btn.execute {
+  background: var(--sw-primary);
+  border-color: var(--sw-primary);
+}
+
+/* Tag headers as pills */
+.swagger-ui .opblock-tag {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 14px 8px 10px;
+  border-bottom: 1px solid var(--sw-border);
+}
+
+/* Code blocks: nicer mono font */
+.swagger-ui .highlight-code,
+.swagger-ui .microlight,
+.swagger-ui pre {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace !important;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* Schema tables — less cramped */
+.swagger-ui table tbody tr td { padding: 8px 12px; }
+
+/* Hide the "Schemas" mega-section if you set defaultModelsExpandDepth: -1 */
+/* .swagger-ui section.models { display: none; } */
