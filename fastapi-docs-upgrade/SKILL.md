@@ -1,6 +1,6 @@
 ---
 name: fastapi-docs-upgrade
-description: Audit and upgrade a FastAPI app's auto-generated docs from "thin Swagger" to rich, production-grade API reference. Enriches app metadata, openapi_tags, per-route summaries/descriptions/examples/responses, Pydantic Field examples, custom_openapi hook, and mounts modern alt UIs (Scalar, RapiDoc, Stoplight Elements) alongside Swagger UI + ReDoc. Triggers on "/fastapi-docs-upgrade", "make my fastapi docs better", "richer swagger docs", "add scalar to fastapi", "upgrade openapi docs".
+description: Audit and upgrade a FastAPI app's auto-generated docs from "thin Swagger" to rich, production-grade API reference. Enriches app metadata, openapi_tags, per-route summaries/descriptions/examples/responses, Pydantic Field examples, custom_openapi hook, and mounts Scalar as the primary docs UI at /docs (replacing the default Swagger UI). RapiDoc, Stoplight Elements, and a relocated Swagger UI are optional extras, built only when the user asks. Triggers on "/fastapi-docs-upgrade", "make my fastapi docs better", "richer swagger docs", "add scalar to fastapi", "upgrade openapi docs".
 ---
 
 # FastAPI Docs Upgrade
@@ -103,46 +103,43 @@ Use `assets/custom_openapi_hook.py` as the template. Only add this phase if the 
 
 **Commit:** `docs(api): install custom_openapi hook for branding and ordering`
 
-## Phase 6 — Alt UIs (Scalar as primary at /docs, plus RapiDoc, Elements, Swagger)
+## Phase 6 — Mount Scalar at /docs (default: build ONLY this UI)
 
-**Scalar takes over `/docs` as the default landing UI.** Swagger UI moves to `/swagger`.
+**By default, build exactly one alt UI: Scalar at `/docs`.** Do NOT mount Swagger, RapiDoc, or Stoplight Elements unless the user explicitly asks for them. The earlier "build all five" behavior is gone — the default is Scalar only.
 
-Final route map:
-- `/docs` — **Scalar** (new primary, via `scalar-fastapi`)
-- `/swagger` — Swagger UI (relocated from `/docs`)
-- `/redoc` — ReDoc (existing)
-- `/rapidoc` — RapiDoc (new, single-file HTMLResponse)
-- `/elements` — Stoplight Elements (new, single-file HTMLResponse)
+Default route map:
+- `/docs` — **Scalar** (the one UI this skill builds, via `scalar-fastapi`)
+- `/redoc` — ReDoc (FastAPI built-in, stays for free — no code, no dep; leave it unless the user wants it gone via `redoc_url=None`)
 
-How to wire this:
-1. In Phase 1 you already set `docs_url=None` on `FastAPI(...)`. Also set `swagger_ui_oauth2_redirect_url=None` if the app doesn't use OAuth2 redirect, or leave it.
+How to wire the default:
+1. In Phase 1 you already set `docs_url=None` on `FastAPI(...)`, freeing `/docs`.
 2. Mount Scalar at `/docs` (see `assets/mount_scalar.py`).
-3. Mount Swagger UI manually at `/swagger` using `fastapi.openapi.docs.get_swagger_ui_html` (see `assets/mount_swagger.py`).
-4. Mount RapiDoc (`assets/mount_rapidoc.py`) and Elements (`assets/mount_elements.py`).
+3. Add the dep: `uv add scalar-fastapi` if the project uses uv (check `pyproject.toml`), else `pip install scalar-fastapi` with a note to add to requirements.
 
-Code lives in `assets/mount_*.py`. Either copy into the app file or create `app/docs_ui.py` and import.
+That's it for the default. Stop here unless the user asked for more.
 
-For Scalar, add to deps: `scalar-fastapi`. Use `uv add scalar-fastapi` if the project uses uv (check `pyproject.toml`), else `pip install scalar-fastapi` with a note to add to requirements.
+### Optional — only when the user explicitly requests extra UIs
 
-Also polish the manually-mounted Swagger UI:
-- Pass the same `swagger_ui_parameters` dict to `get_swagger_ui_html(swagger_ui_parameters={...})`
-- For ReDoc, customizations live in the custom_openapi hook (`x-logo`, etc.) since FastAPI doesn't expose redoc_ui_parameters
+If (and only if) the user asks for Swagger / RapiDoc / Elements, mount the ones they named:
+- `/swagger` — Swagger UI, re-mounted manually via `get_swagger_ui_html` (see `assets/mount_swagger.py`). Pass the `swagger_ui_parameters` dict there.
+- `/rapidoc` — RapiDoc (see `assets/mount_rapidoc.py`)
+- `/elements` — Stoplight Elements (see `assets/mount_elements.py`)
 
-See `references/alt_uis.md` for full details.
+Code lives in `assets/mount_*.py`. Either copy into the app file or create `app/docs_ui.py` and import. See `references/alt_uis.md` for full details. For ReDoc theming, customizations live in the custom_openapi hook (`x-logo`, etc.).
 
-**Commit:** `docs(api): mount Scalar, RapiDoc, and Stoplight Elements; polish Swagger UI`
+**Commit:** `docs(api): mount Scalar as the primary docs UI at /docs`
 
 ## Phase 7 — Verify
 
-Start the app (use `references/run_hints.md`) and curl each docs route:
+Start the app (use `references/run_hints.md`) and curl the docs routes you actually mounted (default: `docs` and `redoc`; add any optional UIs the user requested):
 ```bash
 curl -fsS http://localhost:PORT/openapi.json | jq '.info, .tags[0], (.paths | to_entries[0])' | head -40
-for path in docs swagger redoc rapidoc elements; do
+for path in docs redoc; do  # add swagger/rapidoc/elements only if you mounted them
   curl -fsSo /dev/null -w "%{http_code} /$path\n" http://localhost:PORT/$path
 done
 ```
 
-All five should return 200. `/docs` should serve Scalar (grep response body for `scalar` to confirm). The openapi.json should show populated `info.description`, `info.contact`, `tags[].description`, and at least one route with `description`/`responses`/`examples`.
+Each mounted route should return 200. `/docs` should serve Scalar (grep response body for `scalar` to confirm). The openapi.json should show populated `info.description`, `info.contact`, `tags[].description`, and at least one route with `description`/`responses`/`examples`.
 
 If the project has a typecheck/test step, run it. Surface any failures.
 
@@ -165,10 +162,10 @@ If the project has a typecheck/test step, run it. Surface any failures.
 - `app_metadata.py` — full FastAPI(...) constructor template
 - `tags_metadata.py` — tags_metadata list template
 - `custom_openapi_hook.py` — cached openapi hook with x-logo, servers, externalDocs
-- `mount_scalar.py` — Scalar mount route (binds `/docs`, the primary UI)
-- `mount_swagger.py` — Swagger UI mounted manually at `/swagger`
-- `mount_rapidoc.py` — RapiDoc mount route
-- `mount_elements.py` — Stoplight Elements mount route
+- `mount_scalar.py` — Scalar mount route (binds `/docs`, the primary UI — the only one built by default)
+- `mount_swagger.py` — Swagger UI mounted manually at `/swagger` (optional, only on request)
+- `mount_rapidoc.py` — RapiDoc mount route (optional, only on request)
+- `mount_elements.py` — Stoplight Elements mount route (optional, only on request)
 - `swagger_custom.css` — subtle Swagger UI polish (optional, mount via swagger_ui_parameters)
 
 </bundled_resources>

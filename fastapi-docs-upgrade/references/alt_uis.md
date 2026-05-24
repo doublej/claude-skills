@@ -1,6 +1,8 @@
 # Alt UIs: Scalar (primary), Swagger, RapiDoc, Stoplight Elements
 
-All UIs feed off the same `/openapi.json` FastAPI already serves. Scalar is mounted at `/docs` as the **primary** UI; Swagger UI is relocated to `/swagger`.
+All UIs feed off the same `/openapi.json` FastAPI already serves.
+
+**Default:** mount only Scalar at `/docs`. The Swagger / RapiDoc / Elements sections below are **opt-in** — build them only when the user explicitly asks. ReDoc stays at `/redoc` for free (FastAPI built-in).
 
 ## Scalar (primary — binds /docs)
 
