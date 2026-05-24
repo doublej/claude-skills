@@ -53,14 +53,9 @@ app = FastAPI(
         {"url": "http://localhost:8000", "description": "Local dev"},
     ],
     openapi_tags=tags_metadata,
-    swagger_ui_parameters={
-        "docExpansion": "none",
-        "defaultModelsExpandDepth": 1,
-        "displayRequestDuration": True,
-        "filter": True,
-        "tryItOutEnabled": True,
-        "persistAuthorization": True,
-        "syntaxHighlight.theme": "obsidian",
-        "requestSnippetsEnabled": True,
-    },
+    # Scalar takes over /docs (see assets/mount_scalar.py).
+    # Built-in Swagger UI is disabled here and re-mounted at /swagger (see assets/mount_swagger.py).
+    docs_url=None,
+    # swagger_ui_parameters is unused when docs_url=None — the same dict is passed
+    # to get_swagger_ui_html() in mount_swagger.py instead.
 )

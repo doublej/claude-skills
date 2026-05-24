@@ -1,10 +1,12 @@
-# Alt UIs: Scalar, RapiDoc, Stoplight Elements
+# Alt UIs: Scalar (primary), Swagger, RapiDoc, Stoplight Elements
 
-All three feed off the same `/openapi.json` FastAPI already serves. Mount as extra routes — they coexist with `/docs` and `/redoc`.
+All UIs feed off the same `/openapi.json` FastAPI already serves. Scalar is mounted at `/docs` as the **primary** UI; Swagger UI is relocated to `/swagger`.
 
-## Scalar (recommended primary)
+## Scalar (primary — binds /docs)
 
-Modern UI from scalar.com. Best-looking defaults of the three.
+Modern UI from scalar.com. Best-looking defaults of the bunch. Takes over `/docs`.
+
+**Prereq:** set `docs_url=None` on `FastAPI(...)` so the built-in Swagger doesn't claim `/docs`.
 
 **Install:** `pip install scalar-fastapi` (or `uv add scalar-fastapi`)
 
@@ -12,7 +14,7 @@ Modern UI from scalar.com. Best-looking defaults of the three.
 ```python
 from scalar_fastapi import get_scalar_api_reference
 
-@app.get("/scalar", include_in_schema=False)
+@app.get("/docs", include_in_schema=False)
 async def scalar_html():
     return get_scalar_api_reference(
         openapi_url=app.openapi_url,
@@ -30,6 +32,35 @@ async def scalar_html():
 ```
 
 `get_scalar_api_reference` returns an `HTMLResponse`. The `include_in_schema=False` keeps the docs route out of the spec itself.
+
+## Swagger UI (manual mount at /swagger)
+
+Since `docs_url=None` disables FastAPI's auto-mount, re-mount it manually so try-it-out and OAuth2 redirect still work:
+
+```python
+from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
+
+SWAGGER_UI_PARAMETERS = {
+    "docExpansion": "none",
+    "filter": True,
+    "tryItOutEnabled": True,
+    "persistAuthorization": True,
+    "syntaxHighlight.theme": "obsidian",
+}
+
+@app.get("/swagger", include_in_schema=False)
+async def swagger_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=f"{app.title} — Swagger UI",
+        oauth2_redirect_url="/swagger/oauth2-redirect",
+        swagger_ui_parameters=SWAGGER_UI_PARAMETERS,
+    )
+
+@app.get("/swagger/oauth2-redirect", include_in_schema=False)
+async def swagger_oauth_redirect():
+    return get_swagger_ui_oauth2_redirect_html()
+```
 
 ## RapiDoc
 
@@ -121,8 +152,8 @@ async def docs_index():
   small{{color:#64748b}}
 </style>
 <h1>{app.title} API</h1>
-<a href="/scalar"><strong>Scalar</strong><br><small>Recommended — modern reference UI</small></a>
-<a href="/docs"><strong>Swagger UI</strong><br><small>Interactive try-it-out</small></a>
+<a href="/docs"><strong>Scalar</strong><br><small>Primary — modern reference UI</small></a>
+<a href="/swagger"><strong>Swagger UI</strong><br><small>Interactive try-it-out</small></a>
 <a href="/redoc"><strong>ReDoc</strong><br><small>Long-form documentation layout</small></a>
 <a href="/rapidoc"><strong>RapiDoc</strong><br><small>Single-page dense reference</small></a>
 <a href="/elements"><strong>Stoplight Elements</strong><br><small>Hierarchical browser</small></a>

@@ -1,13 +1,13 @@
 # Swagger UI + ReDoc tweaks
 
-FastAPI exposes Swagger UI knobs via `swagger_ui_parameters=`. ReDoc has fewer first-class knobs — most ReDoc theming happens through the OpenAPI spec itself (`x-logo`, custom CSS via `redoc_ui_parameters` on a custom handler).
+In this skill Scalar takes over `/docs`, so the built-in Swagger UI is disabled (`docs_url=None`) and re-mounted manually at `/swagger`. That means **`swagger_ui_parameters` on `FastAPI(...)` no longer applies** — pass the same dict to `get_swagger_ui_html(swagger_ui_parameters=...)` in `mount_swagger.py` instead. ReDoc has fewer first-class knobs — most ReDoc theming happens through the OpenAPI spec itself (`x-logo`, custom CSS via a custom handler).
 
 ## Swagger UI parameters worth setting
 
+Pass this dict to `get_swagger_ui_html(swagger_ui_parameters=...)` (see `assets/mount_swagger.py`):
+
 ```python
-app = FastAPI(
-    ...,
-    swagger_ui_parameters={
+SWAGGER_UI_PARAMETERS = {
         # Layout
         "docExpansion": "none",            # "list" (default) | "full" | "none"
         "defaultModelsExpandDepth": 1,     # -1 hides the schemas section entirely
@@ -21,31 +21,30 @@ app = FastAPI(
         "requestSnippetsEnabled": True,    # show curl/Node/etc snippets
         "showExtensions": True,            # show x-* fields
         "showCommonExtensions": True,
-    },
-)
+}
 ```
 
 ## Injecting custom CSS into Swagger UI
 
-`swagger_ui_parameters` doesn't expose a CSS hook directly. To inject CSS, override the Swagger UI HTML handler:
+Extend the `/swagger` handler in `mount_swagger.py` with a CSS URL:
 
 ```python
 from fastapi.openapi.docs import get_swagger_ui_html
 
-@app.get("/docs", include_in_schema=False)
+@app.get("/swagger", include_in_schema=False)
 async def custom_swagger():
     return get_swagger_ui_html(
         openapi_url=app.openapi_url,
         title=f"{app.title} — Swagger",
         swagger_favicon_url="/static/favicon.svg",
-        swagger_ui_parameters=app.swagger_ui_parameters,
+        swagger_ui_parameters=SWAGGER_UI_PARAMETERS,
         # serve your overrides as a static file:
         swagger_css_url="/static/swagger_custom.css",
         # swagger_js_url defaults to the CDN bundle; override if you self-host
     )
 ```
 
-Then disable the default `/docs` route by passing `docs_url=None` on the `FastAPI()` constructor.
+`docs_url=None` was already set in Phase 1 so `/docs` is free for Scalar.
 
 A minimal `swagger_custom.css` (in `assets/swagger_custom.css`) is bundled with this skill — copy to `static/` of the project.
 
