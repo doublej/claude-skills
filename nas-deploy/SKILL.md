@@ -49,14 +49,32 @@ authenticate as `admin`, and tick "Remember this password in my keychain".
 
 </preflight>
 
+<caution>
+
+## Caution
+
+- **`rsync --delete` overwrites.** `www/` already holds live sites (e.g. `demo`,
+  `hello-world`). Never deploy under a name that exists unless you mean to replace
+  it — check `ls /Volumes/Container/caddy/www/` first. `deploy-frontend.sh` refuses
+  to clobber an existing site unless run with `--force`.
+- **`apply_from_mac.sh` reloads unconditionally.** A malformed `.caddy` in *any*
+  site fails the reload for *all* sites. Validate before applying:
+  `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy validate --config /etc/caddy/Caddyfile'`
+
+</caution>
+
 <quick_ref>
 
 ## Quick Reference
 
 ### Static Frontend
 ```bash
-# Build and copy to www directory
-rsync -av --delete dist/ /Volumes/Container/caddy/www/myapp.jurrejan.com/
+# Build and copy to www directory (refuses to clobber an existing site)
+./deploy-frontend.sh
+
+# ...or by hand — confirm the name is free first:
+ls /Volumes/Container/caddy/www/ | grep myapp || \
+  rsync -av --delete dist/ /Volumes/Container/caddy/www/myapp.jurrejan.com/
 
 # Apply Caddy config
 cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
@@ -78,18 +96,26 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 ```
 /Volumes/Container/caddy/
 ├── etc/
-│   ├── Caddyfile              # Main Caddyfile (imports from www/*/*.caddy and apps/*/*.caddy)
-│   └── apply_from_mac.sh      # Regenerates imports & reloads Caddy via SSH
-├── www/                       # Static sites
+│   ├── Caddyfile              # Main Caddyfile: imports Caddyfile.imports + sites/*.caddy
+│   ├── Caddyfile.imports      # Auto-generated: one `import /var/www/<site>/*.caddy` per static site
+│   ├── sites/                 # App reverse-proxy configs (copied here from each app's app.caddy)
+│   ├── snippets/common.caddy  # Shared snippets: default_site, security_headers, site_10mb, …
+│   └── apply_from_mac.sh      # Regenerates Caddyfile.imports & reloads Caddy via SSH
+├── www/                       # Static sites (mounted at /var/www inside the Caddy container)
 │   └── ${SUBDOMAIN}.jurrejan.com/
 │       ├── index.html
-│       └── ${SUBDOMAIN}.caddy
-└── apps/                      # Node.js apps
+│       └── ${SUBDOMAIN}.caddy # site block; root points at /var/www/${SUBDOMAIN}.jurrejan.com
+└── apps/                      # Node.js apps (run by PM2 on the NAS host, not in a container)
     └── ${SUBDOMAIN}.jurrejan.com/
         ├── build/             # SvelteKit build output (or server.js for plain Node)
         ├── ecosystem.config.js # PM2 configuration
-        └── app.caddy          # Caddy reverse proxy config
+        └── app.caddy          # Reverse proxy; deploy-app.sh copies it to etc/sites/<name>.caddy
 ```
+
+Static sites are NOT imported from `www/*/*.caddy` directly — `apply_from_mac.sh`
+scans `www/` and regenerates `etc/Caddyfile.imports`. App proxy configs are not
+imported from `apps/` either — `deploy-app.sh` copies each `app.caddy` into
+`etc/sites/<name>.caddy` (the `.jurrejan.com` suffix is stripped).
 
 </directory_structure>
 
@@ -113,9 +139,11 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 
 <templates>
 
+- `scripts/mount-nas.sh` - Idempotent SMB mount helper (run from the preflight)
 - `templates/frontend-caddy.caddy` - Caddy config for static sites
 - `templates/node-caddy.caddy` - Caddy reverse proxy config for Node apps
 - `templates/ecosystem.config.js` - PM2 config template
-- `templates/deploy-frontend.sh` - Frontend deployment script
+- `templates/deploy-frontend.sh` - Frontend deployment script (renders config, refuses to clobber)
+- `templates/deploy-node.sh` - Node.js deployment script
 
 </templates>
