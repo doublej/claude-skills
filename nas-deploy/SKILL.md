@@ -57,9 +57,11 @@ authenticate as `admin`, and tick "Remember this password in my keychain".
   `hello-world`). Never deploy under a name that exists unless you mean to replace
   it — check `ls /Volumes/Container/caddy/www/` first. `deploy-frontend.sh` refuses
   to clobber an existing site unless run with `--force`.
-- **`apply_from_mac.sh` reloads unconditionally.** A malformed `.caddy` in *any*
-  site fails the reload for *all* sites. Validate before applying:
-  `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy validate --config /etc/caddy/Caddyfile'`
+- **`apply_from_mac.sh` validates before reloading** (a malformed `.caddy` in any
+  site aborts the reload, leaving the live config untouched). To check by hand:
+  `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile'`
+- **The SMB share has no Trash**, so macOS `rm`/Finder-delete fails on the mount.
+  To remove a retired site, delete it NAS-side: `ssh nas 'rm -rf /share/CACHEDEV1_DATA/Container/caddy/www/<site>'`, then re-run `apply_from_mac.sh`.
 
 </caution>
 
