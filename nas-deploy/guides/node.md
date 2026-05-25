@@ -31,13 +31,13 @@ For plain Node.js (non-SvelteKit):
 
 ## Port Allocation
 
-| Port | App |
-|------|-----|
-| 3100 | hello-api (example) |
-| 3101 | marktplaats |
-| 3102+ | Available |
+Each app's port lives in its `ecosystem.config.js`. Don't trust a hardcoded
+table — query PM2 on the NAS for what's actually in use, then pick the next free
+port (existing apps cluster in the 31xx range):
 
-**Pick the next available port for new apps.**
+```bash
+ssh nas "PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 list"
+```
 
 ## Required Files
 
@@ -118,10 +118,13 @@ ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan
 ```
 
 This script:
-- Stops existing PM2 process (if any)
-- Installs dependencies (if package.json exists)
-- Starts/restarts the app with PM2
-- Reloads Caddy config
+- Installs dependencies (if `package.json` exists and there's no prebuilt `build/`)
+- Starts/restarts the app with PM2 (`PM2_HOME=/share/CACHEDEV1_DATA/pm2`)
+- Copies `app.caddy` → `etc/sites/${SUBDOMAIN}.caddy` (the `.jurrejan.com` suffix is stripped)
+- Validates the Caddy config, then reloads only if valid
+
+Note: retiring or renaming an app leaves its `etc/sites/<name>.caddy` behind —
+delete it by hand on the NAS, or the old proxy route lingers.
 
 ## PM2 Commands
 
@@ -151,9 +154,9 @@ set -e
 SUBDOMAIN="myapp"
 TARGET_DIR="/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com"
 
-# Check mount
+# Check mount (or run scripts/mount-nas.sh for an idempotent mount)
 if [ ! -d "/Volumes/Container/caddy/apps" ]; then
-    open smb://nas.local/Container
+    open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
     echo "Mount volume and retry"
     exit 1
 fi

@@ -35,7 +35,10 @@ bun run build
 
 ```bash
 SUBDOMAIN="myapp"
-mkdir -p "/Volumes/Container/caddy/www/${SUBDOMAIN}.jurrejan.com"
+SITE="/Volumes/Container/caddy/www/${SUBDOMAIN}.jurrejan.com"
+# Guard: www/ holds live sites — do not overwrite one by accident
+[ -d "$SITE" ] && { echo "$SUBDOMAIN already exists; pick another name"; exit 1; }
+mkdir -p "$SITE"
 ```
 
 ### 3. Copy Built Files
@@ -72,8 +75,9 @@ cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
 
 This script:
 - Scans `www/*/` for `*.caddy` files
-- Regenerates import statements in main Caddyfile
-- Triggers Caddy reload via SSH
+- Regenerates `etc/Caddyfile.imports` (`import /var/www/<site>/*.caddy` per site)
+- Validates the full config in the container, then triggers Caddy reload via SSH
+  (a malformed `.caddy` in any site aborts the reload for all)
 
 ## SPA Routing
 
@@ -96,9 +100,9 @@ set -e
 SUBDOMAIN="myapp"
 TARGET_DIR="/Volumes/Container/caddy/www/${SUBDOMAIN}.jurrejan.com"
 
-# Check mount
+# Check mount (or run scripts/mount-nas.sh for an idempotent mount)
 if [ ! -d "/Volumes/Container/caddy/www" ]; then
-    open smb://nas.local/Container
+    open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
     echo "Mount volume and retry"
     exit 1
 fi
