@@ -35,16 +35,17 @@ Deploy applications to a QNAP NAS running Caddy.
 
 ## Pre-flight: Check SMB Connection
 
-Before deploying, verify the NAS volume is mounted:
+Before deploying, mount (or verify) the NAS volume with the idempotent helper.
+It skips if already mounted, picks a reachable address (`jongserve.local`, then
+the IP), and confirms the right volume — aborting deploy if it can't:
 
 ```bash
-if [ ! -d "/Volumes/Container/caddy" ]; then
-    open smb://nas.local/Container
-    echo "SMB share not mounted. Opening connection dialog..."
-    echo "Please authenticate and retry deployment."
-    exit 1
-fi
+"$(dirname "$0")/../scripts/mount-nas.sh" || exit 1
 ```
+
+First run needs the password saved once: in Finder press Cmd-K and connect to
+`smb://jongserve.local/Container` (not `nas.local` — that name does not resolve),
+authenticate as `admin`, and tick "Remember this password in my keychain".
 
 </preflight>
 

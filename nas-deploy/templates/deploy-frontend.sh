@@ -21,7 +21,7 @@ echo -e "${YELLOW}Deploying ${SUBDOMAIN}.jurrejan.com...${NC}"
 # Check mount
 if [ ! -d "/Volumes/Container/caddy/www" ]; then
     echo -e "${RED}Error: Caddy volume not mounted${NC}"
-    open smb://nas.local/Container
+    open "smb://jongserve.local/Container"
     echo "Please authenticate and retry."
     exit 1
 fi
