@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 22px; background: #f4f4f5; }
+  .stage { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; align-items: start; }
+  .row { display: flex; gap: 16px; margin-top: 16px; align-items: stretch; }
+
+  /* ====== Effect 1 — Aurora card border ====== */
+  .card {
+    position: relative;
+    background: var(--color-bg-elev);
+    border-radius: 12px;
+    padding: 16px;
+    isolation: isolate;
+    box-shadow: var(--hairline-highlight);
+  }
+  .card::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: var(--hairline); background: var(--grad-border-card);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* ====== Effect 2 — Fade-out divider ====== */
+  .divrow { display: flex; justify-content: space-between; padding: 8px 0; font-size: 13px; position: relative; }
+  .divrow + .divrow::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: var(--hairline);
+    background: var(--grad-divider); pointer-events: none;
+  }
+  .divrow .l { color: var(--color-fg-2); }
+  .divrow .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* ====== Effect 3 — Catch-light button ====== */
+  .btn {
+    position: relative; isolation: isolate;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    height: 32px; padding: 0 16px;
+    border: 0; border-radius: 6px;
+    font: 500 13px var(--font-sans);
+    cursor: pointer; color: #fff;
+    background: var(--color-accent);
+  }
+  .btn::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: var(--hairline);
+    background: linear-gradient(180deg,
+      rgba(255,255,255,0.45) 0%,
+      rgba(255,255,255,0.10) 35%,
+      rgba(0,0,0,0.12) 70%,
+      rgba(0,0,0,0.22) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .btn.secondary {
+    background: var(--color-bg-elev); color: var(--color-fg);
+    border: var(--hairline) solid var(--color-border-strong);
+    box-shadow: var(--hairline-highlight);
+  }
+  .btn.secondary::before { display: none; }
+
+  /* ====== Effect 4 — Directional focus halo ====== */
+  .input {
+    height: 32px; padding: 0 10px;
+    border-radius: 6px;
+    border: var(--hairline) solid var(--color-border-strong);
+    background: var(--color-bg-elev);
+    box-shadow: var(--hairline-highlight);
+    font: 13px var(--font-sans);
+    outline: none;
+    color: var(--color-fg);
+  }
+  .input.focused {
+    border-color: var(--color-ring);
+    box-shadow:
+      var(--hairline-highlight),
+      0 0 0 3px color-mix(in oklab, var(--color-ring) 18%, transparent),
+      0 -1px 0 0 color-mix(in oklab, var(--color-ring) 40%, transparent);
+  }
+
+  /* ====== Effect 5 — Tab underline that fades ====== */
+  .tabs { display: flex; gap: 16px; position: relative; padding-bottom: 0; }
+  .tabs::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--hairline);
+    background: var(--grad-divider); pointer-events: none;
+  }
+  .tab {
+    font-size: 13px; color: var(--color-muted); padding: 10px 0;
+    position: relative; cursor: pointer; background: transparent; border: 0;
+  }
+  .tab.active { color: var(--color-fg); font-weight: 500; }
+  .tab.active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--color-fg) 15%, var(--color-fg) 85%, transparent 100%);
+  }
+
+  .tag {
+    display: inline-block; padding: 1px 6px; border-radius: 4px;
+    background: var(--color-accent-soft); color: var(--color-accent-soft-fg);
+    font: 500 10px/1.4 var(--font-mono); margin-right: 6px;
+    vertical-align: middle;
+  }
+  .label { font-size: 11px; color: var(--color-muted); letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; margin-bottom: 8px; }
+  .swatch-row { display: flex; gap: 12px; align-items: center; }
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="card">
+      <div class="label"><span class="tag">01</span> Aurora · gradient card border</div>
+      <div style="font-family: var(--font-display); font-size: 30px; line-height: 1; letter-spacing: -0.015em;">$128,402<span style="color: var(--color-muted); font-size: 0.7em;">.10</span></div>
+      <div style="font-family: var(--font-mono); font-size: 12px; color: var(--color-pos); margin-top: 4px;">+$1,540.20 · +1.2% today</div>
+    </div>
+
+    <div class="card">
+      <div class="label"><span class="tag">02</span> Fade-out dividers</div>
+      <div class="divrow"><span class="l">VTI</span><span class="v">$31,826.46</span></div>
+      <div class="divrow"><span class="l">VTSAX</span><span class="v">$14,550.20</span></div>
+      <div class="divrow"><span class="l">BND</span><span class="v">$14,560.00</span></div>
+      <div class="divrow"><span class="l">MSFT</span><span class="v">$12,098.80</span></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="card" style="flex: 1;">
+      <div class="label"><span class="tag">03</span> Catch-light · primary button</div>
+      <div class="swatch-row">
+        <button class="btn">Connect account</button>
+        <button class="btn secondary">Export</button>
+      </div>
+    </div>
+
+    <div class="card" style="flex: 1;">
+      <div class="label"><span class="tag">04</span> Focus halo · directional</div>
+      <div class="swatch-row">
+        <input class="input" placeholder="idle" style="width: 100px;"/>
+        <input class="input focused" value="focused" style="width: 100px;"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top: 16px;">
+    <div class="label"><span class="tag">05</span> Hairline tab underline · fades at ends</div>
+    <div class="tabs">
+      <button class="tab active">Holdings</button>
+      <button class="tab">Activity</button>
+      <button class="tab">Performance</button>
+      <button class="tab">Documents</button>
+    </div>
+  </div>
+</body>
+</html>

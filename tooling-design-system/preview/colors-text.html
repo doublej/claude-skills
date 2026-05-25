@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .panel { padding: 14px; border-radius: 12px; border: 0.5px solid var(--color-border); }
+  .panel.light { background: #fff; }
+  .panel.dark  { background: #111114; }
+  .row { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; }
+  .row .swatch { width: 10px; height: 10px; border-radius: 999px; flex: none; }
+  .row .name { font-size: 12px; font-weight: 500; min-width: 64px; }
+  .row .hex { font-family: var(--font-mono); font-size: 11px; opacity: 0.55; margin-left: auto; }
+  .panel.light { color: #0a0a0a; }
+  .panel.dark { color: #fafafa; }
+  .panel-title { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.55; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+  <div class="pair">
+    <div class="panel light">
+      <div class="panel-title">Light · text</div>
+      <div class="row"><span class="swatch" style="background:#0a0a0a"></span><span class="name">fg</span><span style="color:#0a0a0a">Primary</span><span class="hex">#0a0a0a</span></div>
+      <div class="row"><span class="swatch" style="background:#27272a"></span><span class="name">fg-2</span><span style="color:#27272a">Secondary</span><span class="hex">#27272a</span></div>
+      <div class="row"><span class="swatch" style="background:#71717a"></span><span class="name">muted</span><span style="color:#71717a">Muted label</span><span class="hex">#71717a</span></div>
+      <div class="row"><span class="swatch" style="background:#a1a1aa"></span><span class="name">muted-2</span><span style="color:#a1a1aa">Hint</span><span class="hex">#a1a1aa</span></div>
+      <div class="row"><span class="swatch" style="background:#d4d4d8"></span><span class="name">disabled</span><span style="color:#d4d4d8">Disabled</span><span class="hex">#d4d4d8</span></div>
+    </div>
+    <div class="panel dark">
+      <div class="panel-title">Dark · text</div>
+      <div class="row"><span class="swatch" style="background:#fafafa"></span><span class="name">fg</span><span style="color:#fafafa">Primary</span><span class="hex">#fafafa</span></div>
+      <div class="row"><span class="swatch" style="background:#e4e4e7"></span><span class="name">fg-2</span><span style="color:#e4e4e7">Secondary</span><span class="hex">#e4e4e7</span></div>
+      <div class="row"><span class="swatch" style="background:#a1a1aa"></span><span class="name">muted</span><span style="color:#a1a1aa">Muted label</span><span class="hex">#a1a1aa</span></div>
+      <div class="row"><span class="swatch" style="background:#71717a"></span><span class="name">muted-2</span><span style="color:#71717a">Hint</span><span class="hex">#71717a</span></div>
+      <div class="row"><span class="swatch" style="background:#3f3f46"></span><span class="name">disabled</span><span style="color:#3f3f46">Disabled</span><span class="hex">#3f3f46</span></div>
+    </div>
+  </div>
+</body>
+</html>

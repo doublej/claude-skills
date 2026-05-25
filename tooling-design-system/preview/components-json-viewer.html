@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">JSON viewer · with key highlights and annotations</h3>
+  <div class="json-tree">
+<div class="row"><span class="punc">{</span></div>
+<div class="row" style="padding-left: 16px;"><span class="k hl">"engine_version"</span><span class="punc">: </span><span class="s">"calc-engine 2.4.1"</span><span class="punc">,</span><span class="ann">// pinned at session-close</span></div>
+<div class="row" style="padding-left: 16px;"><span class="k hl">"rule_version"</span><span class="punc">: </span><span class="s">"rule:prj-114:v3"</span><span class="punc">,</span><span class="ann">// snapshotted reference</span></div>
+<div class="row" style="padding-left: 16px;"><span class="k hl">"input"</span><span class="punc">: </span><span class="punc">{</span></div>
+<div class="row" style="padding-left: 32px;"><span class="k">"clock_in_utc"</span><span class="punc">: </span><span class="s">"2026-05-24T07:32:00Z"</span><span class="punc">,</span></div>
+<div class="row" style="padding-left: 32px;"><span class="k">"clock_out_utc"</span><span class="punc">: </span><span class="s">"2026-05-24T15:02:00Z"</span></div>
+<div class="row" style="padding-left: 16px;"><span class="punc">},</span></div>
+<div class="row" style="padding-left: 16px;"><span class="k hl">"steps"</span><span class="punc">: </span><span class="punc">[</span><span class="ann">// ordered, immutable</span></div>
+<div class="row" style="padding-left: 32px;"><span class="punc">{ </span><span class="k">"op"</span><span class="punc">: </span><span class="s">"duration_minutes"</span><span class="punc">, </span><span class="k">"out"</span><span class="punc">: </span><span class="n">450</span><span class="punc"> },</span></div>
+<div class="row" style="padding-left: 32px;"><span class="punc">{ </span><span class="k">"op"</span><span class="punc">: </span><span class="s">"subtract_lunch"</span><span class="punc">, </span><span class="k">"out"</span><span class="punc">: </span><span class="n">420</span><span class="punc"> }</span></div>
+<div class="row" style="padding-left: 16px;"><span class="punc">],</span></div>
+<div class="row" style="padding-left: 16px;"><span class="k hl">"output"</span><span class="punc">: </span><span class="punc">{</span></div>
+<div class="row" style="padding-left: 32px;"><span class="k">"billable_minutes"</span><span class="punc">: </span><span class="n">420</span><span class="punc">,</span></div>
+<div class="row" style="padding-left: 32px;"><span class="k">"total_cents"</span><span class="punc">: </span><span class="n">31500</span></div>
+<div class="row" style="padding-left: 16px;"><span class="punc">}</span></div>
+<div class="row"><span class="punc">}</span></div>
+  </div>
+  <p class="pv-note">Use the <code>highlights</code> prop to dim non-essential keys; <code>annotations</code> renders side comments anchored to a key.</p>
+</div></body></html>

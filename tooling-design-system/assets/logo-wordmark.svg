@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" width="120" height="24" fill="none">
+  <rect x="0" y="2" width="20" height="20" rx="5" fill="currentColor"></rect>
+  <path d="M4 8h12v2.2H4zM4 11.4h8V13.6H4zM4 15h12v2.2H4z" fill="var(--color-bg, #fff)"></path>
+  <text x="28" y="17" font-family="Geist, Inter, system-ui, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.01em" fill="currentColor">Tooling</text>
+</svg>

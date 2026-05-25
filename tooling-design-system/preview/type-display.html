@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 24px; }
+  .group {
+    margin-bottom: 28px;
+  }
+  .group-head {
+    display: flex; align-items: baseline; gap: 10px;
+    padding-bottom: 10px;
+    background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px;
+    margin-bottom: 12px;
+  }
+  .group-head .name {
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--color-fg); font-weight: 600;
+  }
+  .group-head .meta {
+    font-size: 11px; color: var(--color-muted); font-family: var(--font-mono);
+  }
+  .group-head .pill {
+    margin-left: auto;
+    font-size: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 999px;
+    background: var(--color-card-2); color: var(--color-muted);
+    border: 0.5px solid var(--color-border-strong);
+  }
+  .group-head .pill.opt { color: var(--color-accent-soft-fg); background: var(--color-accent-soft); border-color: transparent; }
+  .row {
+    display: flex; align-items: baseline; gap: 16px;
+    padding: 8px 0;
+    background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px;
+  }
+  .row:last-child { background: none; }
+  .label { width: 96px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .t-serif-display {
+    font-family: var(--font-display);
+    font-size: 56px;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    color: var(--color-fg);
+  }
+  .t-serif-h1 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+    color: var(--color-fg);
+  }
+  .t-serif-h2 {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: -0.005em;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--color-fg);
+  }
+  .note {
+    margin-top: 8px;
+    font-size: 11px; color: var(--color-muted); line-height: 1.5;
+    max-width: 640px;
+  }
+  .note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+  <div class="group">
+    <div class="group-head">
+      <span class="name">Sans · Geist</span>
+      <span class="meta">default · used everywhere except hero numerals</span>
+      <span class="pill">default</span>
+    </div>
+    <div class="row">
+      <div class="label">Display</div>
+      <div class="t-display">Net worth $128,402</div>
+      <div class="spec">Geist · 40 / 600 / -0.02em</div>
+    </div>
+    <div class="row">
+      <div class="label">H1</div>
+      <div class="t-h1">Portfolio overview</div>
+      <div class="spec">Geist · 28 / 600 / -0.015em</div>
+    </div>
+    <div class="row">
+      <div class="label">H2</div>
+      <div class="t-h2">Recent transactions</div>
+      <div class="spec">Geist · 20 / 600 / -0.01em</div>
+    </div>
+    <div class="row">
+      <div class="label">H3</div>
+      <div class="t-h3">Holdings by account</div>
+      <div class="spec">Geist · 16 / 600</div>
+    </div>
+  </div>
+
+  <div class="group">
+    <div class="group-head">
+      <span class="name">Serif · Instrument Serif</span>
+      <span class="meta">editorial display — page-anchor headings only, paired with Geist body</span>
+      <span class="pill opt">optional direction</span>
+    </div>
+    <div class="row">
+      <div class="label">Display</div>
+      <div class="t-serif-display">Net worth $128,402</div>
+      <div class="spec">Instrument Serif · 56 / 400 / -0.02em</div>
+    </div>
+    <div class="row">
+      <div class="label">H1</div>
+      <div class="t-serif-h1">Portfolio overview</div>
+      <div class="spec">Instrument Serif · 36 / 400 / -0.01em</div>
+    </div>
+    <div class="row">
+      <div class="label">H2 · italic</div>
+      <div class="t-serif-h2">Recent transactions</div>
+      <div class="spec">Instrument Serif Italic · 24 / 400</div>
+    </div>
+    <div class="row">
+      <div class="label">H3</div>
+      <div class="t-h3">Holdings by account</div>
+      <div class="spec">Geist · 16 / 600 — body sizes stay sans</div>
+    </div>
+    <div class="note">
+      The serif option swaps in <code>--font-display</code> (Instrument Serif) only at <strong>display + H1</strong>, leaves <strong>H2</strong> available as an italic accent for editorial section opens, and keeps H3/body in Geist for legibility. Hero numerals in Stat cards and donut totals already use this same serif by default — picking this option means the page-anchor headings come along.
+    </div>
+  </div>
+
+</body>
+</html>

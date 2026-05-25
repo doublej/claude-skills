@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--color-fg-2); }
+  .field .hint { font-size: 11px; color: var(--color-muted); }
+  .input { height: 34px; padding: 0 12px; border-radius: 6px; border: 0.5px solid var(--color-border-strong); background: var(--color-bg-elev); font-family: var(--font-sans); font-size: 13px; color: var(--color-fg); outline: none; }
+  .input:focus { border-color: var(--color-ring); box-shadow: 0 0 0 3px rgba(94,106,210,0.18); }
+  .input.error { border-color: var(--color-neg); }
+  .input.error + .hint { color: var(--color-neg); }
+  .input-group { position: relative; }
+  .input-group svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--color-muted); }
+  .input-group .input { padding-left: 32px; }
+  .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .check { width: 16px; height: 16px; border-radius: 4px; border: 0.5px solid var(--color-border-strong); display: inline-flex; align-items: center; justify-content: center; background: var(--color-bg-elev); }
+  .check.on { background: var(--color-accent); border-color: var(--color-accent); color: #fff; }
+  .switch { width: 32px; height: 18px; border-radius: 999px; background: var(--color-card-2); position: relative; transition: background var(--duration-fast); }
+  .switch.on { background: var(--color-accent); }
+  .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 999px; background: #fff; transition: transform var(--duration-fast) var(--ease-out); }
+  .switch.on::after { transform: translateX(14px); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="field">
+      <label for="a">Account nickname</label>
+      <input id="a" class="input" value="Brokerage · Fidelity"/>
+      <span class="hint">Shown in nav and reports.</span>
+    </div>
+    <div class="field">
+      <label for="b">Search</label>
+      <div class="input-group">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="b" class="input" placeholder="Search transactions, tickers…"/>
+      </div>
+      <span class="hint t-mono">⌘K</span>
+    </div>
+    <div class="field">
+      <label for="c">Routing number</label>
+      <input id="c" class="input error" value="0211"/>
+      <span class="hint">Must be 9 digits.</span>
+    </div>
+    <div class="field" style="gap: 12px;">
+      <div class="check-row"><span class="check on"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span> Include cash positions</div>
+      <div class="check-row"><span class="check"></span> Show realized gains only</div>
+      <div class="check-row"><span class="switch on"></span> Privacy blur on idle</div>
+    </div>
+  </div>
+</body>
+</html>

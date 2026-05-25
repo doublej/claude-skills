@@ -1,0 +1,320 @@
+/* =============================================================
+   Tooling Design System — colors_and_type.css
+   Data-dense neutral aesthetic (Linear / Vercel / Stripe school)
+   Semantic CSS vars re-themed by `.dark` class
+   ============================================================= */
+
+/* ---------- Fonts ---------- */
+/* Geist Variable for text, Geist Mono for numbers.
+   We load via Google Fonts CDN in HTML; @font-face references below
+   are kept for codebase parity with @fontsource-variable/geist. */
+
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Geist Variable"), local("Geist"), local("Inter"), local("system-ui");
+  font-display: swap;
+}
+
+/* ---------- Tokens: Light (default) ---------- */
+:root {
+  /* Surfaces */
+  --color-bg:        #fafafa;   /* page background, near-white */
+  --color-bg-elev:   #ffffff;   /* elevated panels / popovers */
+  --color-card:      #ffffff;   /* card / section surface */
+  --color-card-2:    #f4f4f5;   /* secondary card (zinc-100) */
+  --color-overlay:   rgba(10, 10, 10, 0.40);
+
+  /* Text */
+  --color-fg:        #0a0a0a;   /* primary text */
+  --color-fg-2:      #27272a;   /* secondary text (zinc-800) */
+  --color-muted:     #71717a;   /* muted / labels (zinc-500) */
+  --color-muted-2:   #a1a1aa;   /* extra muted (zinc-400) */
+  --color-disabled:  #d4d4d8;   /* disabled (zinc-300) */
+
+  /* Lines */
+  --hairline:        0.5px;
+  --color-border:        rgba(10, 10, 10, 0.09);
+  --color-border-soft:   rgba(10, 10, 10, 0.04);
+  --color-border-strong: rgba(10, 10, 10, 0.16);
+  /* Aurora — gradient border for rounded surfaces (top lighter, bottom darker).
+     Apply via the ::before mask trick to keep border-radius intact. */
+  --grad-border-card: linear-gradient(180deg,
+    rgba(10,10,10,0.04) 0%,
+    rgba(10,10,10,0.09) 40%,
+    rgba(10,10,10,0.16) 100%);
+  /* Highlight — 0.5px inner top edge, like light catching the rim */
+  --hairline-highlight: inset 0 var(--hairline) 0 rgba(255,255,255,0.7);
+  /* Fade-out — for divider rules that don't touch the surface edges */
+  --grad-divider: linear-gradient(90deg,
+    transparent 0%,
+    var(--color-border) 8%,
+    var(--color-border) 92%,
+    transparent 100%);
+  --color-ring:      #5e6ad2;   /* focus ring */
+
+  /* Brand / Accent (Linear-ish indigo) */
+  --color-accent:    #5e6ad2;
+  --color-accent-fg: #ffffff;
+  --color-accent-soft: #eef0fb;
+  --color-accent-soft-fg: #3a44a3;
+
+  /* Semantic */
+  --color-pos:       #16a34a;   /* positive / gain (green-600) */
+  --color-pos-soft:  #dcfce7;
+  --color-neg:       #dc2626;   /* negative / loss (red-600) */
+  --color-neg-soft:  #fee2e2;
+  --color-warn:      #d97706;   /* amber-600 */
+  --color-warn-soft: #fef3c7;
+  --color-info:      #2563eb;   /* blue-600 */
+  --color-info-soft: #dbeafe;
+
+  /* Chart palette (categorical) */
+  --chart-1: #5e6ad2;
+  --chart-2: #16a34a;
+  --chart-3: #d97706;
+  --chart-4: #dc2626;
+  --chart-5: #0891b2;
+  --chart-6: #7c3aed;
+  --chart-7: #db2777;
+  --chart-8: #65a30d;
+
+  /* Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Spacing (4px base) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Density — drives table cell padding, list item padding, card head/body,
+     toolbar height. Tune here, not at the call site. These are the single
+     source for all row/cell rhythm across the system. */
+  --row-py:        12px;          /* table/list row vertical pad */
+  --row-px:        16px;          /* table/list row horizontal pad */
+  --row-min-h:     40px;          /* minimum row height */
+  --head-py:       10px;          /* table head vertical pad */
+  --card-pad:      18px;          /* generic card body padding */
+  --card-head-py:  14px;
+  --card-head-px:  18px;
+  --toolbar-py:    10px;
+  --toolbar-px:    12px;
+  --toolbar-gap:   6px;
+  --page-pad:      24px;
+  --section-gap:   24px;
+
+  /* Elevation — used sparingly. The aesthetic favors borders over shadows. */
+  --shadow-xs: 0 1px 0 rgba(10, 10, 10, 0.04);
+  --shadow-sm: 0 1px 2px rgba(10, 10, 10, 0.06), 0 1px 1px rgba(10, 10, 10, 0.04);
+  --shadow-md: 0 4px 12px rgba(10, 10, 10, 0.06), 0 2px 4px rgba(10, 10, 10, 0.04);
+  --shadow-lg: 0 12px 32px rgba(10, 10, 10, 0.10), 0 4px 8px rgba(10, 10, 10, 0.04);
+  --shadow-inset-border: inset 0 0 0 1px var(--color-border);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 240ms;
+
+  /* Type families */
+  --font-sans: "Geist", "Geist Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-display: "Instrument Serif", "Times New Roman", Georgia, serif;
+
+  /* Layout */
+  --col-max:  1100px;
+  --nav-h:    56px;
+  --bottom-nav-h: 64px;
+  --touch:    44px;
+}
+
+/* ---------- Tokens: Dark ---------- */
+.dark {
+  --color-bg:        #0a0a0a;
+  --color-bg-elev:   #131316;
+  --color-card:      #111114;
+  --color-card-2:    #18181b;
+  --color-overlay:   rgba(0, 0, 0, 0.60);
+
+  --color-fg:        #fafafa;
+  --color-fg-2:      #e4e4e7;
+  --color-muted:     #a1a1aa;
+  --color-muted-2:   #71717a;
+  --color-disabled:  #3f3f46;
+
+  --color-border:        rgba(255, 255, 255, 0.10);
+  --color-border-soft:   rgba(255, 255, 255, 0.05);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+  --grad-border-card: linear-gradient(180deg,
+    rgba(255,255,255,0.14) 0%,
+    rgba(255,255,255,0.08) 40%,
+    rgba(255,255,255,0.04) 100%);
+  --hairline-highlight: inset 0 var(--hairline) 0 rgba(255,255,255,0.06);
+  --grad-divider: linear-gradient(90deg,
+    transparent 0%,
+    var(--color-border) 8%,
+    var(--color-border) 92%,
+    transparent 100%);
+  --color-ring:      #8b93e6;
+
+  --color-accent:    #8b93e6;
+  --color-accent-fg: #0a0a0a;
+  --color-accent-soft: rgba(139, 147, 230, 0.14);
+  --color-accent-soft-fg: #b6bcef;
+
+  --color-pos:       #22c55e;
+  --color-pos-soft:  rgba(34, 197, 94, 0.14);
+  --color-neg:       #ef4444;
+  --color-neg-soft:  rgba(239, 68, 68, 0.14);
+  --color-warn:      #f59e0b;
+  --color-warn-soft: rgba(245, 158, 11, 0.14);
+  --color-info:      #60a5fa;
+  --color-info-soft: rgba(96, 165, 250, 0.14);
+
+  --chart-1: #8b93e6;
+  --chart-2: #22c55e;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #22d3ee;
+  --chart-6: #a78bfa;
+  --chart-7: #f472b6;
+  --chart-8: #a3e635;
+
+  --shadow-xs: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* ---------- Base / reset-lite ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* ---------- Type scale (semantic) ---------- */
+.t-display {
+  font-family: var(--font-sans);
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+.t-h1, h1 {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+  margin: 0;
+}
+.t-h2, h2 {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin: 0;
+}
+.t-h3, h3 {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.4;
+  font-weight: 600;
+  margin: 0;
+}
+.t-body, p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+}
+.t-body-lg {
+  font-size: 16px;
+  line-height: 1.55;
+}
+.t-small {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.t-caption {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--color-muted);
+  letter-spacing: 0.01em;
+}
+.t-eyebrow {
+  font-size: 11px;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+  font-weight: 500;
+}
+.t-mono, code, kbd, samp, pre {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  font-feature-settings: "tnum", "ss01";
+}
+
+/* Numerals — right-align column class */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  letter-spacing: -0.01em;
+}
+
+/* Muted helpers */
+.muted   { color: var(--color-muted); }
+.muted-2 { color: var(--color-muted-2); }
+
+/* ---------- Focus ---------- */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-soft-fg);
+}
+
+/* ---------- Scrollbar (subtle) ---------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-strong) transparent;
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

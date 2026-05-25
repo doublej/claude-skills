@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 22px; background: #f4f4f5; }
+  .phone { width: 320px; height: 200px; margin: 0 auto; background: var(--color-bg); border: 0.5px solid var(--color-border); border-radius: 22px; overflow: hidden; position: relative; box-shadow: 0 4px 12px rgba(10,10,10,0.06); }
+  .body { padding: 20px 16px; }
+  .h { font-size: 14px; font-weight: 600; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; }
+  .v { font-family: var(--font-mono); font-size: 18px; font-variant-numeric: tabular-nums; font-weight: 500; }
+  .sub { font-size: 11px; color: var(--color-muted); margin-top: 2px; }
+  .bnav { position: absolute; bottom: 0; left: 0; right: 0; height: 64px; display: flex; align-items: stretch; background: var(--color-bg-elev); border-top: 0.5px solid var(--color-border); }
+  .item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: 10px; color: var(--color-muted); min-height: 44px; padding: 6px 0; }
+  .item.active { color: var(--color-fg); }
+  .item.active::before { content: ""; position: absolute; top: 0; width: 32px; height: 2px; border-radius: 2px; background: var(--color-accent); transform: translateY(-1px); }
+  .item { position: relative; }
+  .item svg { width: 18px; height: 18px; stroke-width: 1.5; }
+  .note { font-size: 11px; color: var(--color-muted); margin-top: 14px; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="body">
+      <div class="h">Overview</div>
+      <div class="row" style="margin-top: 10px;"><span style="font-size:11px;color:var(--color-muted);text-transform:uppercase;letter-spacing:0.06em">Net worth</span><span style="font-size:11px;color:var(--color-pos)">+1.2%</span></div>
+      <div class="v">$128,402.10</div>
+      <div class="sub">+$1,540 today · 14 holdings</div>
+    </div>
+    <nav class="bnav">
+      <a class="item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/></svg>
+        Home
+      </a>
+      <a class="item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 6-6"/></svg>
+        Markets
+      </a>
+      <a class="item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M3 10h18M7 14h4"/></svg>
+        Holdings
+      </a>
+      <a class="item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2"/></svg>
+        Activity
+      </a>
+      <a class="item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+        More
+      </a>
+    </nav>
+  </div>
+  <div class="note">Mobile BottomNav · 64px · 44px touch targets · 4–5 items</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">Stepper · linear progression</h3>
+  <div class="stepper" style="margin-top: 12px;">
+    <div class="step done"><span class="status tone-muted"><span class="dot"></span><span class="lbl">DRAFT</span></span></div>
+    <span class="arr">→</span>
+    <div class="step current"><span class="status tone-info"><span class="dot"></span><span class="lbl">READY</span></span></div>
+    <span class="arr">→</span>
+    <div class="step"><span class="status tone-pos"><span class="dot"></span><span class="lbl">EXPORTED</span></span></div>
+  </div>
+</div>
+<div class="pv-group">
+  <h3 class="pv-h">Forked · stale path beside a new draft</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    A fork branches off an old completed path. The fork keeps the prior <em>EXPORTED</em> row visible (dimmed) while a new <em>DRAFT</em> begins under an upgraded rule version.
+  </p>
+  <div class="stepper">
+    <div class="step done"><span class="status tone-muted"><span class="dot"></span><span class="lbl">DRAFT</span></span></div>
+    <span class="arr">→</span>
+    <div class="step done" style="opacity: 0.55;"><span class="status tone-muted"><span class="dot"></span><span class="lbl">READY</span></span><span style="font-size: 10px; color: var(--color-muted)">stale · rule v2</span></div>
+    <span class="arr">→</span>
+    <div class="step done" style="opacity: 0.55;"><span class="status tone-muted"><span class="dot"></span><span class="lbl">EXPORTED</span></span></div>
+    <span class="arr" style="color: var(--color-warn)">↘</span>
+    <div class="step fork"><span class="status tone-warn"><span class="dot"></span><span class="lbl">DRAFT</span></span><span style="font-size: 10px;">new · rule v3</span></div>
+  </div>
+</div></body></html>

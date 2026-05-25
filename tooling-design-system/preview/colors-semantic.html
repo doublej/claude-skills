@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .col { display: flex; flex-direction: column; gap: 6px; }
+  .sw { padding: 8px 10px; border-radius: 8px; font-family: var(--font-mono); font-size: 11px; display: flex; justify-content: space-between; align-items: center; }
+  .sw .n { font-family: var(--font-sans); font-weight: 500; font-size: 12px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+  .lbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+  <div class="lbl">Semantic</div>
+  <div class="grid">
+    <div class="col">
+      <div class="sw" style="background:#16a34a; color:#fff"><span class="n">pos</span><span>#16a34a</span></div>
+      <div class="chip" style="background:#dcfce7; color:#166534">+2.4% today</div>
+    </div>
+    <div class="col">
+      <div class="sw" style="background:#dc2626; color:#fff"><span class="n">neg</span><span>#dc2626</span></div>
+      <div class="chip" style="background:#fee2e2; color:#991b1b">−1.1% today</div>
+    </div>
+    <div class="col">
+      <div class="sw" style="background:#d97706; color:#fff"><span class="n">warn</span><span>#d97706</span></div>
+      <div class="chip" style="background:#fef3c7; color:#92400e">Action needed</div>
+    </div>
+    <div class="col">
+      <div class="sw" style="background:#2563eb; color:#fff"><span class="n">info</span><span>#2563eb</span></div>
+      <div class="chip" style="background:#dbeafe; color:#1e40af">Sync running</div>
+    </div>
+  </div>
+</body>
+</html>

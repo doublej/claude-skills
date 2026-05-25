@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Border variants — archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 0; background: #f4f4f5; margin: 0; }
+
+  /* ---------- archive banner ---------- */
+  .archive-banner {
+    position: sticky; top: 0; z-index: 50;
+    background: repeating-linear-gradient(135deg,
+      #ffe9b8 0 14px,
+      #ffd982 14px 28px);
+    border-bottom: 0.5px solid rgba(0,0,0,0.15);
+    padding: 10px 22px;
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--font-mono); font-size: 11px;
+    color: #4a3500;
+  }
+  .archive-banner .stamp {
+    font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 3px;
+    background: #2a1f00; color: #ffd982;
+  }
+  .archive-banner .copy {
+    line-height: 1.5; max-width: 720px;
+  }
+  .archive-banner .copy b { color: #2a1f00; }
+
+  /* ---------- section ---------- */
+  section { padding: 28px 22px 8px; }
+  section + section { padding-top: 12px; }
+  .sec-head {
+    display: flex; align-items: baseline; gap: 12px;
+    padding-bottom: 12px; margin-bottom: 18px;
+    background: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.10) 8%, rgba(0,0,0,0.10) 92%, transparent) no-repeat bottom / 100% 0.5px;
+  }
+  .sec-head h2 {
+    font-family: var(--font-sans); font-size: 14px; font-weight: 600;
+    margin: 0; color: var(--color-fg);
+    letter-spacing: -0.005em;
+  }
+  .sec-head .sub {
+    font-size: 11px; color: var(--color-muted);
+    font-family: var(--font-sans);
+    line-height: 1.4;
+  }
+  .sec-head .tag {
+    margin-left: auto;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--color-fg-2); background: var(--color-card);
+    border: 0.5px solid var(--color-border-strong);
+    padding: 2px 8px; border-radius: 999px;
+    letter-spacing: 0.02em;
+  }
+  .sec-head .tag.canonical {
+    background: #1e3a25; color: #c4f1c8; border-color: transparent;
+  }
+
+  /* ---------- demo grid ---------- */
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px 16px; }
+
+  .demo {
+    position: relative;
+    background: var(--color-bg-elev);
+    border-radius: 12px;
+    padding: 14px 16px;
+    height: 96px;
+    isolation: isolate;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .demo .eyebrow {
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--color-muted); font-weight: 500;
+  }
+  .demo .hero {
+    font-family: var(--font-display);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-size: 26px; font-weight: 400; letter-spacing: -0.015em; line-height: 1;
+  }
+  .demo .hero .sym { font-size: 0.7em; vertical-align: 0.18em; margin-right: 1px; }
+  .demo .delta {
+    font-family: var(--font-mono); font-size: 11px; color: var(--color-pos);
+    font-variant-numeric: tabular-nums;
+  }
+  .caption {
+    margin-top: 8px; font-size: 11px;
+    display: flex; gap: 8px; align-items: baseline;
+  }
+  .caption .name {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--color-accent-soft-fg); background: var(--color-accent-soft);
+    padding: 2px 6px; border-radius: 3px; font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .caption .name.base { color: var(--color-fg); background: var(--color-card-2); }
+  .caption .name.canonical { color: #c4f1c8; background: #1e3a25; }
+  .caption .desc { color: var(--color-muted); line-height: 1.4; }
+
+  /* ================================================================
+     SECTION 1 — A–F · original survey
+     ================================================================ */
+
+  /* A — Aurora */
+  .v-aurora { box-shadow: var(--hairline-highlight); }
+  .v-aurora::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: var(--hairline);
+    background: linear-gradient(180deg,
+      rgba(10,10,10,0.04) 0%,
+      rgba(10,10,10,0.09) 40%,
+      rgba(10,10,10,0.16) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  /* B — Diagonal (simple) */
+  .v-diagonal-s { box-shadow: inset 1px 1px 0 rgba(255,255,255,0.6); }
+  .v-diagonal-s::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: var(--hairline);
+    background: linear-gradient(135deg,
+      rgba(10,10,10,0.02) 0%,
+      rgba(10,10,10,0.08) 35%,
+      rgba(10,10,10,0.14) 65%,
+      rgba(10,10,10,0.22) 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  /* C — Etched */
+  .v-etched {
+    border: var(--hairline) solid var(--color-border);
+    box-shadow:
+      inset 0 var(--hairline) 0 rgba(255,255,255,0.85),
+      inset 0 -1px 0 rgba(10,10,10,0.05),
+      inset 0 -6px 8px -8px rgba(10,10,10,0.10);
+  }
+  /* D — Pinstripe */
+  .v-pinstripe { box-shadow: var(--hairline-highlight); }
+  .v-pinstripe::before {
+    content: ""; position: absolute; inset: 0; border-radius: 12px;
+    border: var(--hairline) solid var(--color-border);
+    pointer-events: none;
+  }
+  .v-pinstripe::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    border: var(--hairline) solid var(--color-border-soft);
+    pointer-events: none;
+  }
+  /* E — Rim-light */
+  .v-rimlight { box-shadow: var(--hairline-highlight); }
+  .v-rimlight::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: var(--hairline);
+    background:
+      conic-gradient(from 200deg at 30% 30%,
+        var(--color-accent) 0deg,
+        color-mix(in oklab, var(--color-accent) 50%, transparent) 18deg,
+        var(--color-border) 80deg,
+        var(--color-border) 360deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  /* F — Corner marks */
+  .v-corners { background: var(--color-bg-elev); border-radius: 6px; box-shadow: none; }
+  .v-corners::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2)),
+      linear-gradient(var(--color-fg-2), var(--color-fg-2));
+    background-repeat: no-repeat;
+    background-size:
+      14px 0.5px, 0.5px 14px, 14px 0.5px, 0.5px 14px,
+      14px 0.5px, 0.5px 14px, 14px 0.5px, 0.5px 14px;
+    background-position:
+      top left, top left, top right, top right,
+      bottom left, bottom left, bottom right, bottom right;
+    opacity: 0.55; pointer-events: none;
+  }
+
+  /* ================================================================
+     SECTION 2 — D, D₁–D₅ · pinstripe sub-survey
+     ================================================================ */
+  .v-d::before, .v-d1::before, .v-d2::before, .v-d3::before, .v-d4::before, .v-d5::before {
+    content: ""; position: absolute; inset: 0; border-radius: 12px;
+    border: var(--hairline) solid var(--color-border);
+    pointer-events: none;
+  }
+  .v-d, .v-d1, .v-d2, .v-d3, .v-d4, .v-d5 { box-shadow: var(--hairline-highlight); }
+  .v-d::after  { content: ""; position: absolute; inset: 4px; border-radius: 8px; border: var(--hairline) solid var(--color-border-soft); pointer-events: none; }
+  .v-d1::after { content: ""; position: absolute; inset: 2px; border-radius: 10px; border: var(--hairline) solid var(--color-border); pointer-events: none; }
+  .v-d2::after { content: ""; position: absolute; inset: 8px; border-radius: 4px; border: var(--hairline) solid var(--color-border); pointer-events: none; }
+  .v-d3::after { content: ""; position: absolute; inset: 4px; border-radius: 8px; border: var(--hairline) solid color-mix(in oklab, var(--color-accent) 35%, transparent); pointer-events: none; }
+  .v-d4::before { border-color: var(--color-border-soft); }
+  .v-d4::after { content: ""; position: absolute; inset: 4px; border-radius: 8px; border: var(--hairline) solid var(--color-border-strong); pointer-events: none; }
+  .v-d5::after {
+    content: ""; position: absolute; inset: 4px; pointer-events: none;
+    background-image:
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong)),
+      linear-gradient(var(--color-border-strong), var(--color-border-strong));
+    background-repeat: no-repeat;
+    background-size:
+      18px 0.5px, 0.5px 18px, 18px 0.5px, 0.5px 18px,
+      18px 0.5px, 0.5px 18px, 18px 0.5px, 0.5px 18px;
+    background-position:
+      top left, top left, top right, top right,
+      bottom left, bottom left, bottom right, bottom right;
+  }
+
+  /* ================================================================
+     SECTION 3 — D₃, D₃a–D₃e · accent inner sub-survey
+     ================================================================ */
+  .v-base, .v-fade, .v-halo, .v-bracket, .v-underline, .v-twotone { box-shadow: var(--hairline-highlight); }
+  .v-base::before, .v-fade::before, .v-halo::before, .v-bracket::before, .v-underline::before, .v-twotone::before {
+    content: ""; position: absolute; inset: 0; border-radius: 12px;
+    border: var(--hairline) solid var(--color-border);
+    pointer-events: none;
+  }
+  .v-base::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    border: var(--hairline) solid color-mix(in oklab, var(--color-accent) 35%, transparent);
+    pointer-events: none;
+  }
+  .v-fade::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: linear-gradient(180deg, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 40%, transparent) 50%, transparent 95%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .v-halo {
+    box-shadow:
+      var(--hairline-highlight),
+      0 0 0 0.5px color-mix(in oklab, var(--color-accent) 18%, transparent),
+      0 4px 16px -2px color-mix(in oklab, var(--color-accent) 22%, transparent);
+  }
+  .v-halo::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    border: var(--hairline) solid color-mix(in oklab, var(--color-accent) 55%, transparent);
+    pointer-events: none;
+  }
+  .v-bracket::after {
+    content: ""; position: absolute; inset: 4px; pointer-events: none;
+    --acc: color-mix(in oklab, var(--color-accent) 65%, transparent);
+    background-image:
+      linear-gradient(var(--acc), var(--acc)), linear-gradient(var(--acc), var(--acc)),
+      linear-gradient(var(--acc), var(--acc)), linear-gradient(var(--acc), var(--acc)),
+      linear-gradient(var(--acc), var(--acc)), linear-gradient(var(--acc), var(--acc)),
+      linear-gradient(var(--acc), var(--acc)), linear-gradient(var(--acc), var(--acc));
+    background-repeat: no-repeat;
+    background-size:
+      14px 0.5px, 0.5px 14px, 14px 0.5px, 0.5px 14px,
+      14px 0.5px, 0.5px 14px, 14px 0.5px, 0.5px 14px;
+    background-position:
+      top left, top left, top right, top right,
+      bottom left, bottom left, bottom right, bottom right;
+  }
+  .v-underline::after {
+    content: ""; position: absolute; left: 12px; right: 12px; bottom: 6px;
+    height: var(--hairline);
+    background: linear-gradient(90deg, transparent 0%, var(--color-accent) 10%, var(--color-accent) 90%, transparent 100%);
+    pointer-events: none;
+  }
+  .v-twotone::before { border-color: color-mix(in oklab, var(--color-accent) 28%, transparent); }
+  .v-twotone::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    border: var(--hairline) solid var(--color-border);
+    pointer-events: none;
+  }
+
+  /* ================================================================
+     SECTION 4 — C₁–C₆ · directional halo sub-survey
+     ================================================================ */
+  .lit::before {
+    content: ""; position: absolute; inset: 0; border-radius: 12px;
+    border: var(--hairline) solid var(--color-border);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .v-vertical {
+    box-shadow:
+      var(--hairline-highlight),
+      0 -2px 6px -1px color-mix(in oklab, var(--color-accent) 22%, transparent),
+      0 -10px 24px -2px color-mix(in oklab, var(--color-accent) 14%, transparent);
+  }
+  .v-vertical::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: linear-gradient(180deg, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 35%, transparent) 50%, transparent 95%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .v-diag-c {
+    box-shadow:
+      var(--hairline-highlight),
+      -2px -2px 8px -1px color-mix(in oklab, var(--color-accent) 26%, transparent),
+      -8px -8px 28px -4px color-mix(in oklab, var(--color-accent) 16%, transparent);
+  }
+  .v-diag-c::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: linear-gradient(135deg, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 45%, transparent) 35%, transparent 80%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .v-uplight {
+    box-shadow:
+      var(--hairline-highlight),
+      0 4px 10px -1px color-mix(in oklab, var(--color-accent) 22%, transparent),
+      0 12px 28px -4px color-mix(in oklab, var(--color-accent) 18%, transparent);
+  }
+  .v-uplight::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: linear-gradient(0deg, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 40%, transparent) 45%, transparent 90%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .v-corner-c {
+    box-shadow:
+      var(--hairline-highlight),
+      -4px -4px 12px -2px color-mix(in oklab, var(--color-accent) 32%, transparent),
+      -1px -1px 0 0 color-mix(in oklab, var(--color-accent) 14%, transparent);
+  }
+  .v-corner-c::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: radial-gradient(circle at 0% 0%, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 60%, transparent) 20%, color-mix(in oklab, var(--color-accent) 20%, transparent) 50%, transparent 85%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .v-side {
+    box-shadow:
+      var(--hairline-highlight),
+      -4px 0 10px -1px color-mix(in oklab, var(--color-accent) 24%, transparent),
+      -12px 0 28px -4px color-mix(in oklab, var(--color-accent) 14%, transparent);
+  }
+  .v-side::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: linear-gradient(90deg, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 40%, transparent) 45%, transparent 90%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+  .v-anti {
+    box-shadow:
+      var(--hairline-highlight),
+      -2px 2px 8px -1px color-mix(in oklab, var(--color-accent) 26%, transparent),
+      -8px 8px 28px -4px color-mix(in oklab, var(--color-accent) 16%, transparent);
+  }
+  .v-anti::after {
+    content: ""; position: absolute; inset: 4px; border-radius: 8px;
+    padding: var(--hairline);
+    background: linear-gradient(45deg, var(--color-accent) 0%, color-mix(in oklab, var(--color-accent) 45%, transparent) 35%, transparent 80%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="archive-banner">
+  <span class="stamp">Archive</span>
+  <div class="copy">
+    <b>Historical border exploration · not the canonical system.</b><br>
+    Four exploratory surveys preserved as one document. The system shipped on
+    <b>C₂ · Diagonal</b> — see <code>border-hairline-system.html</code> for the live spec.
+  </div>
+</div>
+
+<section>
+  <div class="sec-head">
+    <h2>1 · A–F · original survey</h2>
+    <span class="sub">Six families. The branch into D and C was decided from this set.</span>
+    <span class="tag">archive</span>
+  </div>
+  <div class="grid">
+    <div><div class="demo v-aurora">     <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">A · Aurora</span><span class="desc">Vertical gradient, ambient light from above.</span></div></div>
+    <div><div class="demo v-diagonal-s"> <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">B · Diagonal</span><span class="desc">135° neutral gradient. Predecessor to C₂.</span></div></div>
+    <div><div class="demo v-etched">     <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">C · Etched</span><span class="desc">Flat hairline + inset highlight + inset shadow.</span></div></div>
+    <div><div class="demo v-pinstripe">  <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D · Pinstripe</span><span class="desc">Two parallel hairlines, 4px apart.</span></div></div>
+    <div><div class="demo v-rimlight">   <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">E · Rim-light</span><span class="desc">Conic gradient, accent catches at top-left.</span></div></div>
+    <div><div class="demo v-corners">    <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">F · Corner marks</span><span class="desc">No continuous border — L-shapes at each corner.</span></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>2 · D · pinstripe sub-survey</h2>
+    <span class="sub">Gap, weighting and corner-break studies on the double-line idea.</span>
+    <span class="tag">archive</span>
+  </div>
+  <div class="grid">
+    <div><div class="demo v-d"> <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name base">D · Pinstripe</span><span class="desc">Baseline. 4px gap, both neutral.</span></div></div>
+    <div><div class="demo v-d1"><div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₁ · Tight</span><span class="desc">2px gap. Watch-bezel intimacy.</span></div></div>
+    <div><div class="demo v-d2"><div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₂ · Wide</span><span class="desc">8px gap. Matted, formal.</span></div></div>
+    <div><div class="demo v-d3"><div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₃ · Accent inner</span><span class="desc">Inner picks up brand indigo.</span></div></div>
+    <div><div class="demo v-d4"><div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₄ · Inverted</span><span class="desc">Outer faint, inner strong. Eye drawn inward.</span></div></div>
+    <div><div class="demo v-d5"><div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₅ · Corner breaks</span><span class="desc">Inner broken at corners. Passport stamp.</span></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>3 · D₃ · accent-inner sub-survey</h2>
+    <span class="sub">Different ways the inner accent could carry the brand.</span>
+    <span class="tag">archive</span>
+  </div>
+  <div class="grid">
+    <div><div class="demo v-base">      <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name base">D₃ · Baseline</span><span class="desc">Solid indigo inner at 35% alpha.</span></div></div>
+    <div><div class="demo v-fade">      <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₃a · Fade</span><span class="desc">Inner accent strongest at top, dissolves down.</span></div></div>
+    <div><div class="demo v-halo">      <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₃b · Halo</span><span class="desc">Solid inner + soft accent glow outside.</span></div></div>
+    <div><div class="demo v-bracket">   <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₃c · Bracket</span><span class="desc">Indigo only at the four corners.</span></div></div>
+    <div><div class="demo v-underline"> <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₃d · Underline</span><span class="desc">One accent hairline near the bottom.</span></div></div>
+    <div><div class="demo v-twotone">   <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">D₃e · Two-tone</span><span class="desc">Inverted — accent on the outer rim.</span></div></div>
+  </div>
+</section>
+
+<section>
+  <div class="sec-head">
+    <h2>4 · C · directional halo sub-survey</h2>
+    <span class="sub">Where the light source sits. C₂ won and became the canonical card.</span>
+    <span class="tag canonical">C₂ shipped</span>
+  </div>
+  <div class="grid">
+    <div><div class="demo lit v-vertical"> <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name base">C₁ · Vertical</span><span class="desc">Light from directly above.</span></div></div>
+    <div><div class="demo lit v-diag-c">   <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name canonical">C₂ · Diagonal — shipped</span><span class="desc">Light from upper-left. The canonical card.</span></div></div>
+    <div><div class="demo lit v-uplight">  <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">C₃ · Uplight</span><span class="desc">Footlights / stage hero.</span></div></div>
+    <div><div class="demo lit v-corner-c"> <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">C₄ · Corner pull</span><span class="desc">Radial from the top-left corner itself.</span></div></div>
+    <div><div class="demo lit v-side">     <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">C₅ · Side</span><span class="desc">Window off-frame to the left.</span></div></div>
+    <div><div class="demo lit v-anti">     <div class="eyebrow">Net worth</div><div class="hero"><span class="sym">$</span>128,402</div><div class="delta">+$1,540 · +1.2%</div></div><div class="caption"><span class="name">C₆ · Anti-diagonal</span><span class="desc">Rare angle, dramatic.</span></div></div>
+  </div>
+</section>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">Field wrapper</h3>
+  <div class="pv-stack" style="max-width: 380px;">
+    <div class="field">
+      <label>Worker ID</label>
+      <div class="input-frame"><span class="val left" style="font-family: var(--font-mono)">w-42</span></div>
+      <span class="help">Opaque string, no directory lookup.</span>
+    </div>
+    <div class="field">
+      <label>Round to</label>
+      <div class="input-frame is-focus"><span class="val left">5 min</span></div>
+      <span class="audit-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg> will be recorded in audit</span>
+    </div>
+    <div class="field">
+      <label>Travel rate</label>
+      <div class="input-frame is-error"><span class="prefix">€</span><span class="val">−1,20</span><span class="suffix">EUR</span></div>
+      <span class="err"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg> Negative rates not supported.</span>
+    </div>
+  </div>
+</div>
+<div class="pv-group">
+  <h3 class="pv-h">Segmented · default · large · full-width</h3>
+  <div class="pv-stack" style="gap: 14px;">
+    <div class="segmented">
+      <button class="active">5 min</button>
+      <button>15 min</button>
+      <button>None</button>
+    </div>
+    <div class="segmented lg">
+      <button class="active"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Travel</button>
+      <button><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> On site</button>
+    </div>
+    <div class="segmented full lg">
+      <button>Off</button>
+      <button class="active">On</button>
+    </div>
+  </div>
+</div>
+<div class="pv-group">
+  <h3 class="pv-h">Toggle · Radio</h3>
+  <div class="pv-row" style="gap: 16px;">
+    <span class="toggle on"></span>
+    <span class="toggle"></span>
+    <span style="margin-left: 24px;"></span>
+    <span class="radio-dot on"></span>
+    <span class="radio-dot"></span>
+  </div>
+</div></body></html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .card { background: var(--color-card); border: 0.5px solid var(--color-border); border-radius: 12px; overflow: hidden; }
+  .card-head { display: flex; align-items: center; padding: 14px 16px; border-bottom: 0.5px solid var(--color-border); }
+  .card-head h3 { font-size: 13px; font-weight: 600; }
+  .card-head .actions { margin-left: auto; display: flex; gap: 6px; }
+  .btn { height: 26px; padding: 0 10px; border-radius: 5px; font-size: 12px; font-weight: 500; border: 0.5px solid var(--color-border-strong); background: var(--color-card); color: var(--color-fg); cursor: pointer; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 8px 16px; text-align: left; font-size: 13px; border-bottom: 0.5px solid var(--color-border); }
+  thead th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-muted); font-weight: 500; padding-top: 10px; padding-bottom: 10px; background: var(--color-card-2); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: var(--color-card-2); }
+  .num { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  th.num { text-align: right; }
+  .pos { color: var(--color-pos); }
+  .neg { color: var(--color-neg); }
+  .tic { font-family: var(--font-mono); font-weight: 500; }
+  .name { color: var(--color-muted); font-size: 12px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-head">
+      <h3>Holdings</h3>
+      <div class="actions">
+        <button class="btn">Filter</button>
+        <button class="btn">Export</button>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Ticker</th><th>Account</th><th class="num">Shares</th><th class="num">Price</th><th class="num">Market value</th><th class="num">Day</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tic">VTI</span> <span class="name">Vanguard Total</span></td><td>Brokerage</td><td class="num">120.500</td><td class="num">$264.12</td><td class="num">$31,826.46</td><td class="num pos">+1.2%</td></tr>
+        <tr><td><span class="tic">VXUS</span> <span class="name">Total Intl</span></td><td>Brokerage</td><td class="num">85.000</td><td class="num">$62.40</td><td class="num">$5,304.00</td><td class="num pos">+0.4%</td></tr>
+        <tr><td><span class="tic">BND</span> <span class="name">Total Bond</span></td><td>IRA</td><td class="num">200.000</td><td class="num">$72.80</td><td class="num">$14,560.00</td><td class="num neg">−0.1%</td></tr>
+        <tr><td><span class="tic">AAPL</span> <span class="name">Apple Inc.</span></td><td>Brokerage</td><td class="num">42.000</td><td class="num">$208.55</td><td class="num">$8,759.10</td><td class="num pos">+2.4%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

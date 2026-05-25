@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 24px; display: flex; gap: 32px; }
+  .col { flex: 1; }
+  .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 0.5px solid var(--color-border); }
+  .row:last-child { border-bottom: 0; }
+  .row .l { color: var(--color-muted); font-size: 13px; }
+  .row .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .col-title { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 12px; }
+</style>
+</head>
+<body>
+  <div class="col">
+    <div class="col-title">Tabular numerals · .num</div>
+    <div class="row"><span class="l">USD balance</span><span class="v">$128,402.10</span></div>
+    <div class="row"><span class="l">Cost basis</span><span class="v">$112,940.00</span></div>
+    <div class="row"><span class="l">Day change</span><span class="v" style="color: var(--color-pos)">+$1,540.20</span></div>
+    <div class="row"><span class="l">YTD return</span><span class="v" style="color: var(--color-pos)">+13.7%</span></div>
+    <div class="row"><span class="l">Cash</span><span class="v">$2,084.55</span></div>
+  </div>
+  <div class="col">
+    <div class="col-title">Code · &lt;code&gt;</div>
+    <div style="font-family: var(--font-mono); font-size: 13px; line-height: 1.7;">
+      <div><span class="muted">$</span> bun add @fontsource-variable/geist</div>
+      <div><span style="color: var(--color-accent)">const</span> price = <span style="color: var(--color-pos)">204.32</span>;</div>
+      <div><span class="muted">// tabular-nums everywhere</span></div>
+      <div>0123456789 · 0123456789</div>
+    </div>
+  </div>
+</body>
+</html>

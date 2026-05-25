@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">DateTimeDisplay · UTC-explicit</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    Stored format is ISO 8601 UTC. The viewing timezone is presentation, never canonical — it gets its own pill so they read distinctly.
+  </p>
+  <div class="pv-stack" style="gap: 10px;">
+    <span class="datetime"><span class="iso">2026-05-24T07:32:00Z</span><span class="tz">UTC</span></span>
+    <span class="datetime"><span class="iso">2026-05-24T07:32:00Z</span><span class="tz">UTC</span><span class="rel">9h ago</span></span>
+    <span class="datetime"><span class="iso">2026-05-24T09:32:00+02:00</span><span class="tz">Europe/Amsterdam</span></span>
+  </div>
+</div>
+<div class="pv-group">
+  <h3 class="pv-h">DateTimePicker · framed input</h3>
+  <div class="pv-stack" style="max-width: 380px; gap: 10px;">
+    <div class="input-frame"><span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span class="val left" style="font-family: var(--font-mono)">2026-05-24T07:32:00Z</span><span style="font-family: var(--font-mono); font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: var(--color-card-2); color: var(--color-muted); border: var(--hairline) solid var(--color-border); letter-spacing: 0.04em; text-transform: uppercase;">UTC</span></div>
+    <div class="input-frame is-focus"><span class="ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span class="val left" style="font-family: var(--font-mono)">2026-05-24T15:48:00Z</span><span style="font-family: var(--font-mono); font-size: 9.5px; padding: 1px 4px; border-radius: 3px; background: var(--color-card-2); color: var(--color-muted); border: var(--hairline) solid var(--color-border); letter-spacing: 0.04em; text-transform: uppercase;">UTC</span></div>
+  </div>
+</div></body></html>

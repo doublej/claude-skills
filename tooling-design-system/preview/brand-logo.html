@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 22px; background: #f4f4f5; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .panel { display: flex; align-items: center; justify-content: center; padding: 22px; border-radius: 12px; border: 0.5px solid var(--color-border); gap: 22px; }
+  .panel.light { background: #fff; color: #0a0a0a; }
+  .panel.dark { background: #0a0a0a; color: #fafafa; }
+  .panel-title { position: absolute; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.55; }
+  .mark { width: 32px; height: 32px; }
+  .word { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 18px; letter-spacing: -0.01em; }
+  .word .m { width: 22px; height: 22px; border-radius: 6px; background: currentColor; display: inline-flex; align-items: center; justify-content: center; }
+  .word .m svg { width: 14px; height: 14px; }
+  .lbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 10px; text-align: center; }
+</style>
+</head>
+<body>
+  <div class="lbl">Logo · monochrome, drawn in currentColor</div>
+  <div class="grid">
+    <div class="panel light">
+      <svg class="mark" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="currentColor"/>
+        <path d="M8 8h8v2.5H8zM8 11.5h5V14H8zM8 15h8v2.5H8z" fill="#fff"/>
+      </svg>
+      <div class="word">
+        <span class="m"><svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v3H6zM6 11h8v3H6zM6 15h12v3H6z" fill="#fff"/></svg></span>
+        Tooling
+      </div>
+    </div>
+    <div class="panel dark">
+      <svg class="mark" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="currentColor"/>
+        <path d="M8 8h8v2.5H8zM8 11.5h5V14H8zM8 15h8v2.5H8z" fill="#0a0a0a"/>
+      </svg>
+      <div class="word">
+        <span class="m"><svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v3H6zM6 11h8v3H6zM6 15h12v3H6z" fill="#0a0a0a"/></svg></span>
+        Tooling
+      </div>
+    </div>
+  </div>
+</body>
+</html>

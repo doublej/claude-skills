@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; align-items: center; }
+  .lbl { width: 88px; font-size: 11px; color: var(--color-muted); letter-spacing: 0.06em; text-transform: uppercase; flex: none; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 500; line-height: 1.4; }
+  .dot { width: 6px; height: 6px; border-radius: 999px; }
+  .tag { display: inline-flex; align-items: center; gap: 6px; padding: 3px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 11px; background: var(--color-card-2); color: var(--color-fg-2); border: 0.5px solid var(--color-border); }
+</style>
+</head>
+<body>
+  <div class="row">
+    <span class="lbl">Status</span>
+    <span class="badge" style="background:var(--color-pos-soft); color:#166534"><span class="dot" style="background:#16a34a"></span> Active</span>
+    <span class="badge" style="background:var(--color-warn-soft); color:#92400e"><span class="dot" style="background:#d97706"></span> Action needed</span>
+    <span class="badge" style="background:var(--color-neg-soft); color:#991b1b"><span class="dot" style="background:#dc2626"></span> Failed</span>
+    <span class="badge" style="background:var(--color-card-2); color:var(--color-muted)"><span class="dot" style="background:#a1a1aa"></span> Idle</span>
+    <span class="badge" style="background:var(--color-info-soft); color:#1e40af"><span class="dot" style="background:#2563eb"></span> Syncing</span>
+  </div>
+  <div class="row">
+    <span class="lbl">Delta</span>
+    <span class="badge" style="background:var(--color-pos-soft); color:#166534">+2.4%</span>
+    <span class="badge" style="background:var(--color-pos-soft); color:#166534">+$1,240</span>
+    <span class="badge" style="background:var(--color-neg-soft); color:#991b1b">−1.1%</span>
+    <span class="badge" style="background:var(--color-neg-soft); color:#991b1b">−$308</span>
+  </div>
+  <div class="row">
+    <span class="lbl">Tags</span>
+    <span class="tag">USD</span>
+    <span class="tag">ETF</span>
+    <span class="tag">Tax-advantaged</span>
+    <span class="tag">Plaid</span>
+    <span class="tag" style="color: var(--color-accent-soft-fg); background: var(--color-accent-soft); border-color: transparent;">Watchlist</span>
+  </div>
+</body>
+</html>

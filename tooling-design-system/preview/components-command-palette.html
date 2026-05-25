@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 24px; background: #f4f4f5; }
+  .palette { width: 100%; max-width: 480px; margin: 0 auto; background: var(--color-bg-elev); border: 0.5px solid var(--color-border); border-radius: 12px; box-shadow: 0 12px 32px rgba(10,10,10,0.10), 0 4px 8px rgba(10,10,10,0.04); overflow: hidden; }
+  .search { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 0.5px solid var(--color-border); }
+  .search input { flex: 1; border: 0; outline: none; font-family: var(--font-sans); font-size: 14px; background: transparent; color: var(--color-fg); }
+  .search svg { width: 16px; height: 16px; color: var(--color-muted); }
+  .search .kbd { font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border: 0.5px solid var(--color-border-strong); border-radius: 4px; background: var(--color-card-2); color: var(--color-muted); }
+  .group { padding: 6px 0; }
+  .group-label { padding: 6px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-muted); font-weight: 500; }
+  .item { display: flex; align-items: center; gap: 10px; padding: 8px 14px; font-size: 13px; cursor: default; }
+  .item.active { background: var(--color-card-2); }
+  .item svg { width: 14px; height: 14px; color: var(--color-muted); }
+  .item .meta { margin-left: auto; font-family: var(--font-mono); font-size: 10px; color: var(--color-muted); }
+</style>
+</head>
+<body>
+  <div class="palette">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input value="trans"/>
+      <span class="kbd">⌘K</span>
+    </div>
+    <div class="group">
+      <div class="group-label">Actions</div>
+      <div class="item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 7h10v10H7z"/></svg> New transfer <span class="meta">⌘T</span></div>
+      <div class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Export transactions <span class="meta">⌘E</span></div>
+    </div>
+    <div class="group" style="border-top: 0.5px solid var(--color-border)">
+      <div class="group-label">Navigate</div>
+      <div class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg> Transactions <span class="meta">G T</span></div>
+      <div class="item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 4-4 3 3 6-6"/></svg> Holdings <span class="meta">G H</span></div>
+    </div>
+  </div>
+</body>
+</html>

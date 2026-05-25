@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">Phone frame · mobile mock chrome</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    Generic device chrome for prototypes. Drop any screen content inside <code>.phone-frame .screen</code>.
+    Touch targets in field mode should hit ≥56px; the <code>.touch-btn</code> class enforces it.
+  </p>
+  <div style="display: flex; gap: 24px; align-items: flex-start;">
+    <div class="phone-frame">
+      <div class="screen">
+        <div class="statusbar"><span>09:32</span><span>5G</span></div>
+        <div class="topbar">
+          <span class="identicon sm"><span style="background:oklch(0.55 0.08 116)"></span><span style="background:transparent"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:transparent"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:transparent"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:transparent"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:transparent"></span><span style="background:oklch(0.55 0.08 116)"></span><span style="background:transparent"></span><span style="background:oklch(0.55 0.08 116)"></span></span>
+          <div>
+            <div style="font-size: 13px; font-weight: 600;">w-42</div>
+            <div style="font-size: 10px; color: var(--color-muted);">Renovatie Stationsplein</div>
+          </div>
+          <div style="margin-left: auto;"><span class="status tone-info"><span class="dot"></span><span class="lbl">OPEN</span></span></div>
+        </div>
+        <div class="body">
+          <div style="text-align: center; padding: 8px 0 16px;">
+            <div class="t-eyebrow">Open session</div>
+            <div style="font-family: var(--font-display); font-size: 48px; line-height: 1; margin-top: 8px; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -0.02em;">07:32</div>
+            <div style="font-size: 11px; color: var(--color-muted); font-family: var(--font-mono); margin-top: 4px;">2026-05-24 · UTC</div>
+          </div>
+          <div class="segmented full lg" style="margin-bottom: 12px;">
+            <button>Travel</button>
+            <button class="active">On site</button>
+          </div>
+          <button class="touch-btn destructive"><span>Clock out</span><span class="meta">SPACE</span></button>
+        </div>
+      </div>
+    </div>
+    <div style="flex: 1;">
+      <h3 class="pv-h">Touch button</h3>
+      <div class="pv-stack" style="max-width: 320px;">
+        <button class="touch-btn primary"><span>Clock in · ON_SITE</span><span class="meta">SPACE</span></button>
+        <button class="touch-btn"><span>Switch project</span><span class="meta">⌘P</span></button>
+        <button class="touch-btn destructive"><span>End shift</span><span class="meta">SHIFT</span></button>
+      </div>
+    </div>
+  </div>
+</div></body></html>

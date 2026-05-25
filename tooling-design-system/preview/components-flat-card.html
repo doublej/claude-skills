@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">Flat card · default container</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    Hairline border + highlight only. Use for the <strong>majority</strong> of containers: list cards, table wrappers, side panels, modals.
+  </p>
+  <section class="flat-card" style="max-width: 460px;">
+    <header class="head">
+      <div>
+        <h3>Pending proposals</h3>
+        <div class="sub">3 awaiting decision</div>
+      </div>
+    </header>
+    <div class="body">
+      <p style="font-size: 13px; color: var(--color-fg-2)">Body content uses <code style="font-family: var(--font-mono); font-size: 11px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px;">--card-pad</code> spacing.</p>
+    </div>
+  </section>
+</div>
+<div class="pv-group">
+  <h3 class="pv-h">Hero card · reserved for focal points</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    The <code>.card</code> class carries the diagonal accent halo. Reserve it for one or two cards per page — the calculation result, the active review item, the page-summary stat.
+  </p>
+  <section class="card" style="max-width: 460px; padding: 18px;">
+    <h3 style="font-size: 13px; font-weight: 600; margin: 0 0 4px;">Calculation result</h3>
+    <div style="font-size: 12px; color: var(--color-muted);">Deterministic. Same inputs + versions → same output.</div>
+    <hr class="sep" style="height: 0.5px; background: var(--grad-divider); border: 0; margin: 14px 0;"/>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+      <div><div class="t-eyebrow">Billable</div><div style="font-family: var(--font-mono); font-size: 18px; margin-top: 4px;">7h 00m</div></div>
+      <div><div class="t-eyebrow">Non-bill</div><div style="font-family: var(--font-mono); font-size: 18px; color: var(--color-muted); margin-top: 4px;">+30m</div></div>
+      <div><div class="t-eyebrow">Total</div><div style="font-family: var(--font-display); font-size: 22px; margin-top: 4px;"><span style="font-size: 0.6em; vertical-align: 0.25em; color: var(--color-fg-2);">€</span> 315,00</div></div>
+    </div>
+  </section>
+</div></body></html>

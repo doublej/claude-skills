@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+  .lbl { width: 88px; font-size: 11px; color: var(--color-muted); letter-spacing: 0.06em; text-transform: uppercase; flex: none; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0 14px; height: 32px; border-radius: 6px; font-family: var(--font-sans); font-size: 13px; font-weight: 500; cursor: pointer; border: 0.5px solid transparent; transition: filter var(--duration-fast) var(--ease-out), background var(--duration-fast); }
+  .btn-primary { background: var(--color-accent); color: var(--color-accent-fg); }
+  .btn-secondary { background: var(--color-card); color: var(--color-fg); border-color: var(--color-border-strong); }
+  .btn-ghost { background: transparent; color: var(--color-fg); }
+  .btn-ghost:hover { background: var(--color-card-2); }
+  .btn-destructive { background: var(--color-neg); color: #fff; }
+  .btn-sm { height: 26px; padding: 0 10px; font-size: 12px; border-radius: 5px; }
+  .btn-lg { height: 38px; padding: 0 18px; font-size: 14px; border-radius: 8px; }
+  .btn[aria-disabled="true"] { color: var(--color-disabled); cursor: not-allowed; background: var(--color-card-2); border-color: var(--color-border); }
+  .btn .ico { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <span class="lbl">Primary</span>
+    <button class="btn btn-primary">Connect account</button>
+    <button class="btn btn-primary"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> New transfer</button>
+    <button class="btn btn-primary" style="filter:brightness(0.96)">Hover</button>
+    <button class="btn btn-primary" aria-disabled="true">Disabled</button>
+  </div>
+  <div class="row">
+    <span class="lbl">Secondary</span>
+    <button class="btn btn-secondary">Export CSV</button>
+    <button class="btn btn-secondary"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Download</button>
+    <button class="btn btn-ghost">Cancel</button>
+    <button class="btn btn-destructive">Delete</button>
+  </div>
+  <div class="row">
+    <span class="lbl">Sizes</span>
+    <button class="btn btn-primary btn-sm">Small</button>
+    <button class="btn btn-primary">Default</button>
+    <button class="btn btn-primary btn-lg">Large</button>
+  </div>
+</body>
+</html>

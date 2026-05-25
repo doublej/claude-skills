@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .sw { aspect-ratio: 2/1; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; border: 0.5px solid var(--color-border); font-family: var(--font-mono); font-size: 11px; }
+  .sw .n { font-family: var(--font-sans); font-weight: 500; font-size: 12px; }
+  .lbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-muted); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+  <div class="lbl">Accent — Linear-leaning indigo</div>
+  <div class="grid">
+    <div class="sw" style="background:#5e6ad2; color:#fff"><span class="n">accent</span><span>#5e6ad2</span></div>
+    <div class="sw" style="background:#eef0fb; color:#3a44a3"><span class="n">accent-soft</span><span>#eef0fb</span></div>
+    <div class="sw" style="background:#8b93e6; color:#0a0a0a"><span class="n">accent · dark</span><span>#8b93e6</span></div>
+    <div class="sw" style="background:#1a1d3d; color:#b6bcef"><span class="n">accent-soft · dark</span><span>14% alpha</span></div>
+  </div>
+</body>
+</html>

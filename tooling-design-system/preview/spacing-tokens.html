@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 6px 0; border-bottom: 0.5px solid var(--color-border); }
+  .row:last-child { border-bottom: 0; }
+  .name { width: 56px; font-family: var(--font-mono); font-size: 11px; color: var(--color-muted); }
+  .px { width: 56px; font-family: var(--font-mono); font-size: 11px; color: var(--color-fg-2); }
+  .bar { height: 14px; background: var(--color-accent); border-radius: 3px; }
+  .ratio { margin-left: auto; font-size: 11px; color: var(--color-muted); font-family: var(--font-mono); }
+</style>
+</head>
+<body>
+  <div class="row"><span class="name">space-1</span><span class="px">4px</span><div class="bar" style="width:4px"></div><span class="ratio">·</span></div>
+  <div class="row"><span class="name">space-2</span><span class="px">8px</span><div class="bar" style="width:8px"></div><span class="ratio">2×</span></div>
+  <div class="row"><span class="name">space-3</span><span class="px">12px</span><div class="bar" style="width:12px"></div><span class="ratio">3×</span></div>
+  <div class="row"><span class="name">space-4</span><span class="px">16px</span><div class="bar" style="width:16px"></div><span class="ratio">4×</span></div>
+  <div class="row"><span class="name">space-6</span><span class="px">24px</span><div class="bar" style="width:24px"></div><span class="ratio">6×</span></div>
+  <div class="row"><span class="name">space-8</span><span class="px">32px</span><div class="bar" style="width:32px"></div><span class="ratio">8×</span></div>
+  <div class="row"><span class="name">space-12</span><span class="px">48px</span><div class="bar" style="width:48px"></div><span class="ratio">12×</span></div>
+  <div class="row"><span class="name">space-16</span><span class="px">64px</span><div class="bar" style="width:64px"></div><span class="ratio">16×</span></div>
+</body>
+</html>

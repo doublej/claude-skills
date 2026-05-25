@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">Density tokens · single source for spacing rhythm</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    These tokens live in <code>colors_and_type.css</code>. Tune them once;
+    every <code>.sw-table</code>, <code>.desk-table</code>, <code>.flat-card</code>, toolbar, and page-shell follows.
+  </p>
+  <table class="sw-table">
+    <thead><tr><th>Token</th><th>Default</th><th>Drives</th></tr></thead>
+    <tbody>
+      <tr><td><code class="t-mono">--row-py</code></td><td class="num">12px</td><td>Table/list row vertical pad</td></tr>
+      <tr><td><code class="t-mono">--row-px</code></td><td class="num">16px</td><td>Table/list row horizontal pad</td></tr>
+      <tr><td><code class="t-mono">--row-min-h</code></td><td class="num">40px</td><td>Minimum row height</td></tr>
+      <tr><td><code class="t-mono">--head-py</code></td><td class="num">10px</td><td>Table head vertical pad</td></tr>
+      <tr><td><code class="t-mono">--card-pad</code></td><td class="num">18px</td><td>Generic card body padding</td></tr>
+      <tr><td><code class="t-mono">--card-head-py</code> / <code class="t-mono">--card-head-px</code></td><td class="num">14 / 18</td><td>Card head pad</td></tr>
+      <tr><td><code class="t-mono">--toolbar-py</code> / <code class="t-mono">--toolbar-px</code></td><td class="num">10 / 12</td><td>Toolbar / filter bar</td></tr>
+      <tr><td><code class="t-mono">--page-pad</code></td><td class="num">24px</td><td>Page column gutter</td></tr>
+      <tr><td><code class="t-mono">--section-gap</code></td><td class="num">24px</td><td>Vertical gap between sections</td></tr>
+    </tbody>
+  </table>
+</div>
+<div class="pv-group">
+  <h3 class="pv-h">Compact opt-in</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">Add <code>.compact</code> to a table to drop into a denser variant — 8/12/32px, 12px font.</p>
+  <table class="sw-table compact">
+    <thead><tr><th>Field</th><th>Type</th><th class="num">Bytes</th></tr></thead>
+    <tbody>
+      <tr><td>session_id</td><td>string</td><td class="num">12</td></tr>
+      <tr><td>worker_id</td><td>string</td><td class="num">8</td></tr>
+      <tr><td>billable_minutes</td><td>i32</td><td class="num">4</td></tr>
+      <tr><td>total_cents</td><td>i64</td><td class="num">8</td></tr>
+    </tbody>
+  </table>
+</div>
+</body></html>

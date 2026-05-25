@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 20px; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .panel { padding: 12px; border-radius: 12px; border: 0.5px solid var(--color-border); }
+  .panel.light { background: #fafafa; color: #0a0a0a; --b: rgba(10,10,10,0.08); }
+  .panel.dark  { background: #0a0a0a; color: #fafafa; --b: rgba(255,255,255,0.08); }
+  .swatches { display: flex; gap: 6px; margin-top: 10px; }
+  .sw { flex: 1; height: 36px; border-radius: 6px; border: 0.5px solid var(--b); display: flex; align-items: flex-end; padding: 4px 6px; font-family: var(--font-mono); font-size: 10px; color: inherit; opacity: 0.85; }
+  .panel-title { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.6; margin-bottom: 0; }
+</style>
+</head>
+<body>
+  <div class="pair">
+    <div class="panel light">
+      <div class="panel-title">Light surfaces</div>
+      <div class="swatches">
+        <div class="sw" style="background:#fafafa">bg</div>
+        <div class="sw" style="background:#ffffff">card</div>
+        <div class="sw" style="background:#ffffff">elev</div>
+        <div class="sw" style="background:#f4f4f5">card-2</div>
+      </div>
+    </div>
+    <div class="panel dark">
+      <div class="panel-title">Dark surfaces</div>
+      <div class="swatches">
+        <div class="sw" style="background:#0a0a0a">bg</div>
+        <div class="sw" style="background:#111114">card</div>
+        <div class="sw" style="background:#131316">elev</div>
+        <div class="sw" style="background:#18181b">card-2</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

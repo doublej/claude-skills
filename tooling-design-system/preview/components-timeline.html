@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../ui_kits/finance_dashboard/tokens.css">
+<style>
+  body { padding: 22px; background: #fafafa; }
+  .pv-row { display: flex; align-items: baseline; gap: 16px; padding: 10px 0; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat bottom / 100% 0.5px; }
+  .pv-row:last-child { background: none; }
+  .pv-label { width: 132px; color: var(--color-muted); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; flex: none; }
+  .pv-spec { color: var(--color-muted); font-family: var(--font-mono); font-size: 11px; margin-left: auto; }
+  .pv-group { margin-bottom: 24px; }
+  .pv-group + .pv-group { margin-top: 24px; padding-top: 14px; background: linear-gradient(90deg, transparent 0%, var(--color-border) 8%, var(--color-border) 92%, transparent) no-repeat top / 100% 0.5px; }
+  .pv-h { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-fg); font-weight: 600; margin: 0 0 12px; }
+  .pv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .pv-stack { display: flex; flex-direction: column; gap: 12px; }
+  .pv-note { margin-top: 12px; font-size: 11px; color: var(--color-muted); line-height: 1.5; max-width: 600px; }
+  .pv-note code { font-family: var(--font-mono); font-size: 10.5px; background: var(--color-card-2); padding: 0 4px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="pv-group">
+  <h3 class="pv-h">Timeline · append-only</h3>
+  <p class="pv-note" style="margin-bottom: 14px;">
+    No edit / reorder affordances. Entries flow forward only; corrections are <em>new</em> entries, not mutations of old ones.
+    Marker tone (info / pos / warn / neg) maps to the event class.
+  </p>
+  <div class="timeline" style="max-width: 480px;">
+    <div class="timeline-item tone-pos">
+      <div class="timeline-head">
+        <span class="status tone-info"><span class="dot"></span><span class="lbl">OPEN</span></span>
+        <span class="who">w-42</span>
+        <span style="color: var(--color-muted)">clocked in</span>
+      </div>
+      <div class="timeline-meta">
+        <span class="datetime"><span class="iso">2026-05-24T07:32:00Z</span><span class="tz">UTC</span><span class="rel">9h 32m ago</span></span>
+      </div>
+    </div>
+    <div class="timeline-item tone-info">
+      <div class="timeline-head">
+        <span class="status tone-muted"><span class="dot"></span><span class="lbl">CLOSED</span></span>
+        <span class="who">w-42</span>
+        <span style="color: var(--color-muted)">clocked out</span>
+      </div>
+      <div class="timeline-meta">
+        <span class="datetime"><span class="iso">2026-05-24T15:02:00Z</span><span class="tz">UTC</span><span class="rel">2h ago</span></span>
+      </div>
+    </div>
+    <div class="timeline-item tone-warn">
+      <div class="timeline-head">
+        <span class="pill warn">prop-1408</span>
+        <span class="who">automation-01</span>
+        <span style="color: var(--color-muted)">created correction proposal</span>
+      </div>
+      <div class="timeline-meta">
+        <span class="datetime"><span class="iso">2026-05-24T16:12:11Z</span><span class="tz">UTC</span><span class="rel">55m ago</span></span>
+      </div>
+      <div style="margin-top: 6px; font-size: 12px; color: var(--color-fg-2)">+46m · derived from gate-scan · confidence 82%</div>
+    </div>
+    <div class="timeline-item tone-pos">
+      <div class="timeline-head">
+        <span class="status tone-pos"><span class="dot"></span><span class="lbl">APPROVED</span></span>
+        <span class="who">admin-7</span>
+        <span style="color: var(--color-muted)">approved proposal</span>
+      </div>
+      <div class="timeline-meta">
+        <span class="datetime"><span class="iso">2026-05-24T17:04:22Z</span><span class="tz">UTC</span><span class="rel">14m ago</span></span>
+      </div>
+      <div style="margin-top: 6px; font-size: 12px; color: var(--color-fg-2)">Reason: gate-scan correction confirmed.</div>
+    </div>
+  </div>
+</div></body></html>

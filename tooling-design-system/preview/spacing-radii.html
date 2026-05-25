@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .box { width: 64px; height: 64px; background: var(--color-card); border: 0.5px solid var(--color-border-strong); }
+  .name { font-size: 11px; color: var(--color-fg-2); font-weight: 500; }
+  .val { font-family: var(--font-mono); font-size: 10px; color: var(--color-muted); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="item"><div class="box" style="border-radius:4px"></div><span class="name">xs</span><span class="val">4px</span></div>
+    <div class="item"><div class="box" style="border-radius:6px"></div><span class="name">sm</span><span class="val">6px</span></div>
+    <div class="item"><div class="box" style="border-radius:8px"></div><span class="name">md</span><span class="val">8px</span></div>
+    <div class="item"><div class="box" style="border-radius:12px"></div><span class="name">lg</span><span class="val">12px</span></div>
+    <div class="item"><div class="box" style="border-radius:16px"></div><span class="name">xl</span><span class="val">16px</span></div>
+    <div class="item"><div class="box" style="border-radius:9999px"></div><span class="name">full</span><span class="val">9999px</span></div>
+  </div>
+</body>
+</html>

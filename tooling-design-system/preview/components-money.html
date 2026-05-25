@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { padding: 22px; }
+  .stack { display: flex; flex-direction: column; gap: 14px; max-width: 540px; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 8px 0; border-bottom: 0.5px solid var(--color-border); }
+  .row:last-child { border-bottom: 0; }
+  .lbl { width: 140px; font-size: 12px; color: var(--color-muted); }
+  .money { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; margin-left: auto; }
+  .privacy { position: relative; }
+  .privacy::after { content: ""; position: absolute; inset: -2px -4px; background: var(--color-fg); border-radius: 4px; filter: blur(7px); opacity: 0.65; }
+  .privacy > span { position: relative; z-index: 1; opacity: 0.001; }
+  .kbd { font-family: var(--font-mono); font-size: 10px; padding: 1px 5px; border: 0.5px solid var(--color-border-strong); border-radius: 4px; background: var(--color-card-2); color: var(--color-fg-2); margin-left: 6px; }
+  .note { font-size: 11px; color: var(--color-muted); margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="stack">
+    <div class="row">
+      <span class="lbl">Default — &lt;Money/&gt;</span>
+      <span class="money">$128,402.10</span>
+    </div>
+    <div class="row">
+      <span class="lbl">Positive delta</span>
+      <span class="money" style="color: var(--color-pos)">+$1,540.20</span>
+    </div>
+    <div class="row">
+      <span class="lbl">Negative delta</span>
+      <span class="money" style="color: var(--color-neg)">−$308.45</span>
+    </div>
+    <div class="row">
+      <span class="lbl">Privacy blur</span>
+      <span class="money privacy"><span>$128,402.10</span></span>
+      <span class="kbd">⌘⇧P</span>
+    </div>
+    <div class="note">Money applies tabular-nums and renders a ::before/::after privacy overlay when <span class="t-mono">.privacy</span> mode is on. Math minus (−) for negatives, never a hyphen.</div>
+  </div>
+</body>
+</html>
