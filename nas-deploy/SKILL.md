@@ -43,9 +43,18 @@ the IP), and confirms the right volume — aborting deploy if it can't:
 "$(dirname "$0")/../scripts/mount-nas.sh" || exit 1
 ```
 
-First run needs the password saved once: in Finder press Cmd-K and connect to
-`smb://jongserve.local/Container` (not `nas.local` — that name does not resolve),
-authenticate as `admin`, and tick "Remember this password in my keychain".
+Credentials come from **onenv** (1Password), not the macOS Keychain. Store the
+share password once (the script reads it on every mount):
+
+```bash
+onenv set nas SMB_PASSWORD     # the 'admin' share password
+onenv set nas SMB_USER         # optional — defaults to 'admin'
+```
+
+The helper mounts via the macOS automounter (which creates `/Volumes/Container`
+without sudo) using these creds, so no Finder/Keychain prompt is needed. Override
+the namespace with `NAS_ONENV_NS=<ns>`. The NAS is `jongserve.local` — `nas.local`
+does not resolve.
 
 </preflight>
 
