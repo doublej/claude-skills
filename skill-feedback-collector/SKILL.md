@@ -101,6 +101,7 @@ python3 skill-feedback-collector/scripts/token_report.py --since 2026-05-01
 - The analyzer is calibrated to return empty findings for clean runs — most invocations produce zero tickets
 - Dedup: existing open tickets with the same title for the same skill are not duplicated
 - Every Sonnet call appends a token+cost record to `state/token_usage.jsonl` (append-only, gitignored)
+- Fires a macOS notification (`osascript`) each time the analyzer begins processing new markers — not on empty Stop turns
 - All paths resolved from `SKILL_DIR` — no hardcoded absolute paths inside scripts
 
 </rules>

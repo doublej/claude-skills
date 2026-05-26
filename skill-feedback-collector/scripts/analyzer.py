@@ -46,6 +46,18 @@ def log(msg: str) -> None:
     print(f"[{ts}] {msg}", flush=True)
 
 
+def notify(title: str, message: str) -> None:
+    """Best-effort macOS notification. Never raises into the analyzer."""
+    try:
+        script = (
+            f"display notification {json.dumps(message)} "
+            f"with title {json.dumps(title)} sound name \"Tink\""
+        )
+        subprocess.run(["osascript", "-e", script], capture_output=True, timeout=10)
+    except Exception as e:
+        log(f"notify failed: {e}")
+
+
 def load_payload(path: str) -> dict[str, Any]:
     with open(path, "r") as f:
         return json.load(f)
@@ -275,6 +287,8 @@ def process_session(session_id: str) -> None:
             return
 
         log(f"Analyzing {len(unanalyzed)} marker(s) for session {session_id}")
+        skills = ", ".join(sorted({m.get("skill", "?") for m in unanalyzed}))
+        notify("Skill analysis started", f"{len(unanalyzed)} invocation(s): {skills}")
 
         dedup_cache: dict[str, set[str]] = {}
 
