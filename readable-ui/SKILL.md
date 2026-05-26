@@ -37,6 +37,7 @@ Use this skill when interface clarity depends on typography, spacing, contrast, 
 - For empty states, buttons, and alerts, say what happened and what the user should do next.
 - For review work, check whether the interface can be understood by scanning headings, labels, values, and actions in a few seconds.
 
-## Reference
+## Resources
 
-Use [references/readability-guidelines.md](references/readability-guidelines.md) for the detailed principles, examples, and checklist.
+- [assets/tokens.css](assets/tokens.css) — copy-pasteable, contrast-safe type/spacing/color scale and semantic role classes. Start here when generating UI.
+- [references/readability-guidelines.md](references/readability-guidelines.md) — detailed principles, good/bad examples, and a review checklist.
