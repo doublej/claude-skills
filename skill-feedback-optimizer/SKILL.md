@@ -24,13 +24,38 @@ Never hardcode paths.
 bash "$SKILLS_ROOT/skill-feedback-optimizer/scripts/next_ticket.sh"
 ```
 
-Returns JSON with `id`, `title`, `description`, `priority`, `skill`, `kind`. Returns `{}` if the backlog is empty — in that case, tell the user "Backlog clean. Nothing to optimize." and exit.
+Returns JSON with `id`, `title`, `description`, `priority`, `skill`, `kind`, plus date-awareness fields:
+
+- `created_at` — when the ticket was filed.
+- `possibly_stale` — `true` if the skill was committed to around/after the report (the collector analyzes *older* transcript moments, so a fix may already have shipped).
+- `skill_commits_since_report` — list of `{sha, date, subject}` for those commits.
+
+Returns `{}` if the backlog is empty — in that case, tell the user "Backlog clean. Nothing to optimize." and exit.
+
+Tickets are ordered by priority (highest first), then oldest report first.
 
 ### 3. Read the ticket + the affected skill
 
 - Read the ticket description in full (`bd show <id>` if you need more detail than `next_ticket.sh` returned).
 - Read `$SKILLS_ROOT/<skill>/SKILL.md` and any referenced scripts.
 - Understand evidence and suggestion. The ticket description includes both.
+
+### 3.5 Reconcile against skill history (date-awareness)
+
+The collector files tickets against a transcript moment that predates `created_at`, so a fix may already have shipped. **Before editing, decide whether the finding still applies.**
+
+- If `possibly_stale` is `true`, inspect each commit in `skill_commits_since_report`:
+  ```bash
+  git show --stat <sha>   # what that commit changed
+  ```
+- Re-read the *current* `SKILL.md` / scripts and check whether the evidence in the ticket is still reproducible.
+- **If already addressed** by a recent commit, close the ticket as stale instead of re-fixing:
+  ```bash
+  bd close <id> -r "Stale: already addressed in <sha> (filed <created_at>). <one-line why>."
+  ```
+  Report it as a stale close and exit — do not commit a redundant edit.
+- **If still valid** (the commits touched unrelated parts), proceed to step 4 as normal.
+- When `possibly_stale` is `false`, do a quick sanity re-read but proceed.
 
 ### 4. Apply the fix
 
@@ -79,6 +104,7 @@ In this mode:
 
 <safety>
 
+- **Never** apply a redundant fix to a stale ticket — reconcile against `skill_commits_since_report` first (step 3.5) and close-as-stale when already addressed
 - **Never** auto-close a ticket you didn't actually fix
 - **Never** commit + close if `install-skill.sh` failed — surface the error instead
 - If the suggested fix conflicts with existing skill design, prefer skipping over forcing it: add a comment to the ticket via `bd update <id> --append-notes "skipped: <reason>"` and bail
