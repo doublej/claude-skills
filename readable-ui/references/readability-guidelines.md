@@ -79,11 +79,51 @@ Readable UI is mostly a product of hierarchy, spacing, contrast, and clear copy.
 - Does the layout still work with increased text spacing?
 - Is contrast strong enough for normal reading?
 
+## Concrete Examples
+
+Start from `assets/tokens.css` for a contrast-safe type, spacing, and color scale, then tune to the brand.
+
+### Form field
+
+Bad — placeholder is the only label, error is vague and far from the field:
+
+```html
+<input type="email" placeholder="Email">
+<p class="form-error">Invalid input.</p>
+```
+
+Good — persistent label above, helper near the field, specific inline error, input preserved:
+
+```html
+<label class="label" for="email">Work email</label>
+<input class="body" id="email" type="email" value="ana@" aria-describedby="email-help email-err">
+<p class="helper" id="email-help">We use this to send your receipt.</p>
+<p class="error" id="email-err">Add the part after @, e.g. ana@acme.com.</p>
+```
+
+### Button label
+
+Bad: `OK` · `Submit` · `Continue` (action and object unclear).
+Good: `Create account` · `Delete 3 invoices` · `Save draft` (verb + object; consequence named).
+
+### Dashboard metric
+
+Bad — value and label compete; number is non-tabular; meaning is color-only:
+
+```html
+<div><span style="font-size:16px;color:#999">Revenue</span>
+     <span style="font-size:16px;color:green">$12,480 ▲</span></div>
+```
+
+Good — value dominates, label is muted but readable, tabular numerals, direction has a word:
+
+```html
+<div class="metric">
+  <div class="metric-value">$12,480</div>
+  <div class="metric-label">Revenue · up 8% vs last week</div>
+</div>
+```
+
 ## Source Notes
 
-This skill is based on the same core evidence used by major design systems and accessibility guidance:
-
-- WCAG contrast, resize, and text spacing guidance
-- Material, Fluent, Carbon, GOV.UK, and USWDS typography conventions
-- Baymard form-label guidance
-- Nielsen Norman Group research on scanning, grouping, and cognitive load
+Based on WCAG (contrast, resize, text-spacing), Material/Fluent/Carbon/GOV.UK/USWDS typography conventions, Baymard form-label research, and NN/g work on scanning and cognitive load.
