@@ -27,6 +27,9 @@ SKILLS_ROOT = SKILL_DIR.parent
 MARKERS_DIR = SKILL_DIR / "state" / "markers"
 ANALYZED_DIR = SKILL_DIR / "state" / "analyzed"
 PROMPT_FILE = SKILL_DIR / "scripts" / "prompts" / "analyzer_prompt.md"
+USAGE_LOG = SKILL_DIR / "state" / "token_usage.jsonl"
+
+ANALYZER_MODEL = "claude-sonnet-4-6"
 
 SEVERITY_TO_PRIORITY = {"high": "1", "medium": "2", "low": "3"}
 KIND_TO_BD_TYPE = {
@@ -79,8 +82,34 @@ def find_skill_md(skill_name: str) -> Path | None:
     return None
 
 
-def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str) -> dict[str, Any]:
-    """Invoke `claude -p` with Sonnet to analyze a single skill invocation."""
+def log_token_usage(skill_name: str, session_id: str, result_obj: dict[str, Any]) -> None:
+    """Append one token-usage record per Sonnet analyzer call. Append-only JSONL."""
+    usage = result_obj.get("usage") or {}
+    rec = {
+        "ts": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "skill": skill_name,
+        "session_id": session_id,
+        "model": ANALYZER_MODEL,
+        "input_tokens": usage.get("input_tokens", 0),
+        "output_tokens": usage.get("output_tokens", 0),
+        "cache_creation_input_tokens": usage.get("cache_creation_input_tokens", 0),
+        "cache_read_input_tokens": usage.get("cache_read_input_tokens", 0),
+        "cost_usd": result_obj.get("total_cost_usd"),
+        "duration_ms": result_obj.get("duration_ms"),
+    }
+    try:
+        USAGE_LOG.parent.mkdir(parents=True, exist_ok=True)
+        with open(USAGE_LOG, "a") as f:
+            f.write(json.dumps(rec) + "\n")
+    except OSError as e:
+        log(f"Failed to write token usage: {e}")
+
+
+def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str, session_id: str) -> dict[str, Any]:
+    """Invoke `claude -p` with Sonnet to analyze a single skill invocation.
+
+    Uses --output-format json so token usage is captured (and logged) per call.
+    """
     prompt_template = PROMPT_FILE.read_text()
     full_prompt = (
         f"{prompt_template}\n\n"
@@ -100,8 +129,8 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str) -> di
             [
                 "claude",
                 "-p",
-                "--model", "claude-sonnet-4-6",
-                "--output-format", "text",
+                "--model", ANALYZER_MODEL,
+                "--output-format", "json",
             ],
             stdin=open(prompt_path, "r"),
             capture_output=True,
@@ -116,7 +145,26 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str) -> di
         log(f"claude -p failed (rc={proc.returncode}): {proc.stderr[:500]}")
         return {"findings": []}
 
-    raw = proc.stdout.strip()
+    # --output-format json emits an array of events; the final type=result object
+    # carries both the model's text (result) and token usage.
+    try:
+        events = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        log(f"Could not parse claude -p envelope. Raw (first 500): {proc.stdout[:500]}")
+        return {"findings": []}
+
+    events = events if isinstance(events, list) else [events]
+    result_obj = next(
+        (e for e in reversed(events) if isinstance(e, dict) and e.get("type") == "result"),
+        None,
+    )
+    if result_obj is None:
+        log("No result event in claude -p output")
+        return {"findings": []}
+
+    log_token_usage(skill_name, session_id, result_obj)
+
+    raw = (result_obj.get("result") or "").strip()
     # Strip markdown fences if Sonnet ignored instructions
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[1] if "\n" in raw else raw
@@ -127,7 +175,7 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str) -> di
     try:
         result = json.loads(raw)
     except json.JSONDecodeError:
-        log(f"Could not parse Sonnet output as JSON. Raw (first 500): {raw[:500]}")
+        log(f"Could not parse Sonnet findings as JSON. Raw (first 500): {raw[:500]}")
         return {"findings": []}
 
     if not isinstance(result.get("findings"), list):
@@ -250,7 +298,7 @@ def process_session(session_id: str) -> None:
                 marker["skip_reason"] = "empty_slice"
                 continue
 
-            result = run_sonnet(skill_name, skill_md_text, slice_text)
+            result = run_sonnet(skill_name, skill_md_text, slice_text, session_id)
             findings = result.get("findings", [])
             log(f"  {skill_name}: {len(findings)} finding(s)")
 

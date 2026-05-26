@@ -1,3 +1,4 @@
 state/markers/
 state/analyzed/
 state/logs/
+state/token_usage.jsonl
