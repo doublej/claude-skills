@@ -1,0 +1,4 @@
+interface:
+  display_name: "Readable UI"
+  short_description: "Typography, spacing, and UI copy"
+  default_prompt: "Use $readable-ui to review the typography, spacing, contrast, and copy of this interface."
