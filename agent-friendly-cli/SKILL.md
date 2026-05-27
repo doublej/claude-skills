@@ -1,12 +1,14 @@
 ---
 name: agent-friendly-cli
-description: "Design CLIs optimized for LLM/agent consumption and parsing"
-  or auditing a CLI's agent-friendliness.
+description: Design, refactor, or audit CLIs optimized for LLM/agent consumption — structured output, token economy, self-describing primers, atomic writes. Use when building a CLI agents will drive, making an existing CLI agent-friendly, or scoring one's agent-friendliness.
 ---
 
 # Agent-Friendly CLI
 
 Build CLIs that minimize agent memory burden, token usage, and repair loops.
+
+For the full briefed checklist of every area to focus on, read
+`references/focus-areas.md`. The map below is the index into it.
 
 <core_properties>
 An agent-friendly CLI is:
@@ -20,6 +22,24 @@ An agent-friendly CLI is:
 7. **Batch-capable** — one command replaces repetitive loops
 8. **Workflow-complete** — full task lifecycle inside the CLI
 </core_properties>
+
+<focus_areas>
+Ten areas to design and audit against. Each is briefed bullet-by-bullet in
+`references/focus-areas.md` — open it for the detail.
+
+1. **Output & formatting** — auto-JSON on pipe, color-off off-TTY, raw scalars, stdout=data/stderr=diagnostics, dense tables.
+2. **Token economy** — output caps + truncation notice, field projection, verbosity presets, compact tokens, fingerprints over values.
+3. **Input ergonomics** — bare-arg intent routing, fuzzy resolution, short aliases, target shorthands, stable short IDs, `@`-refs.
+4. **Defaults & config** — useful no-arg action, zero-config baseline, persistent defaults that shrink calls, flags override config.
+5. **Discoverability & help** — described subcommands, runnable examples, inline arg semantics, generated completion, one source of truth.
+6. **Errors & feedback** — structured code/message/hint, categories, retryable flag, valid-options-on-failure, meaningful exit codes, fail-fast non-TTY.
+7. **Agent contract (`prime`)** — one-shot full primer, format-switching, self-described output contract, detected env block, workflow + guardrails.
+8. **Safety & writes** — atomic mutate-with-rollback, validate-before-commit, idempotent/guarded, `--dry-run`, secrets via env not stdout.
+9. **Round-trip reduction** — cache by query shape, read-only never hits backend, compose from cache, embedded health probe, graceful degradation.
+10. **Automation & interop** — inject-and-exec, read-only query escape hatch, pipe-through loops, stdin `-`, session lifecycle.
+
+Prioritize when time-limited: structured output → atomic writes → `prime` → structured errors → caps/density → state & cache. See the "Highest-leverage first" section in the reference.
+</focus_areas>
 
 <workflow>
 Determine the task type:
