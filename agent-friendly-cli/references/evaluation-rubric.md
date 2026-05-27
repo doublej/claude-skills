@@ -1,70 +1,78 @@
 # Agent-Friendly CLI Evaluation Rubric
 
-Score each category 0-2: 0=missing, 1=partial, 2=complete.
+Score each of the 10 focus areas 0-2: 0=missing, 1=partial, 2=complete.
+Each area maps to a section in `focus-areas.md` — consult it for what "complete" means.
 
 ## Checklist
 
-### Self-Description (0-2)
-- [ ] Machine-readable guide/help command exists
-- [ ] Returns capabilities, examples, error codes in structured format
-- [ ] Agent can bootstrap without external docs
+### 1. Output & formatting (0-2)
+- [ ] Auto-emits JSON when piped (non-TTY); color auto-off off-TTY / on `NO_COLOR`
+- [ ] Raw scalar for single-value commands; stdout=data, stderr=diagnostics
+- [ ] Dense tables (no box chrome); multiple machine formats (json/jsonl/tsv/csv)
 
-### Intent Routing (0-2)
-- [ ] Common actions work without memorizing subcommand trees
-- [ ] Argument shape implies intent (ID → inspect, string → search)
-- [ ] Explicit subcommands available as escape hatches
+### 2. Token economy (0-2)
+- [ ] Default row limits + "showing N of M" truncation notice
+- [ ] Field projection (`--fields`) and verbosity presets (`--view min|std|full`)
+- [ ] Per-column truncation; noise suppressed by default with opt-in
 
-### Structured Output (0-2)
-- [ ] JSON/JSONL output available for all commands
-- [ ] Field projection supported (`--fields`)
-- [ ] Stable schemas across versions
-- [ ] Verbosity tiers (brief/standard/full)
+### 3. Input ergonomics (0-2)
+- [ ] Bare-arg intent routing (ID→inspect, string→search)
+- [ ] Fuzzy/substring resolution; short flags & aliases
+- [ ] Stable short IDs that survive re-query; `@1`/`@last` refs
 
-### Error Model (0-2)
-- [ ] Errors return structured JSON with code, message, hint
-- [ ] Errors indicate retryability
-- [ ] Suggestions for correction included
-- [ ] Categories distinguish user/transient/upstream/internal
+### 4. Defaults & config (0-2)
+- [ ] No-arg invocation does something useful (not a help dump)
+- [ ] Zero-config baseline; persistent defaults shrink later calls
+- [ ] Explicit flags override config; user-definable shortcuts
 
-### State & References (0-2)
-- [ ] Results include stable IDs
-- [ ] IDs from output can be passed to subsequent commands
-- [ ] Config file for persistent defaults
-- [ ] Ephemeral references for recent context (@1, @last)
+### 5. Discoverability & help (0-2)
+- [ ] Every subcommand described; runnable examples block
+- [ ] Inline argument semantics in signatures
+- [ ] Generated shell completion from a single command model
 
-### Infrastructure Shielding (0-2)
-- [ ] Built-in rate limiting/throttling
-- [ ] Transparent caching with override flags
-- [ ] Auto-retry for transient failures
-- [ ] Session management handled internally
+### 6. Errors & feedback (0-2)
+- [ ] Structured errors with code/message/hint (+ suggestion)
+- [ ] Categories (user/transient/upstream/internal) + retryable flag
+- [ ] Valid-options-on-failure; meaningful exit codes; fail-fast in non-TTY
 
-### Batch Operations (0-2)
-- [ ] Multi-item inspect/query in single call
-- [ ] Search grid / matrix operations
-- [ ] Compare/diff primitives
-- [ ] Bulk export
+### 7. Agent contract — `prime` (0-2)
+- [ ] One-shot primer: commands, flags, output shapes, error codes
+- [ ] Format-switches (XML/Markdown/JSON); self-described output contract
+- [ ] Live "detected" env block; workflow + operational guardrails
 
-### Workflow Completeness (0-2)
-- [ ] discover → inspect → refine → export lifecycle
-- [ ] No external tool needed for common workflows
-- [ ] Resume/continue support for long operations
+### 8. Safety & writes (0-2)
+- [ ] Atomic mutate-with-rollback; validate before commit
+- [ ] Idempotent/guarded writes (`--force`); `--dry-run` before bulk
+- [ ] Secrets injected via env, never printed; clear read/write separation
+
+### 9. Round-trip reduction (0-2)
+- [ ] Cache by full query shape with TTL + `--refresh`
+- [ ] Read-only commands never hit the backend; compose from cache
+- [ ] Embedded health probe in outcomes; graceful degradation when deps down
+
+### 10. Automation & interop (0-2)
+- [ ] Inject-and-exec (`run -- cmd`) mirroring child exit code
+- [ ] Read-only query escape hatch (hardened allowlist); stdin (`-`) support
+- [ ] Pipe-through workflows; auto-managed session lifecycle
 
 ## Scoring
 
 | Score | Rating |
 |-------|--------|
-| 0-4   | Poor — agent will struggle significantly |
-| 5-8   | Basic — usable but with friction |
-| 9-12  | Good — most agent workflows supported |
-| 13-16 | Excellent — fully agent-native |
+| 0-6   | Poor — agent will struggle significantly |
+| 7-11  | Basic — usable but with friction |
+| 12-15 | Good — most agent workflows supported |
+| 16-20 | Excellent — fully agent-native |
 
-## Priority Order for Improvements
+## Priority order for improvements
 
-1. Structured output (biggest immediate impact)
-2. Error model (reduces repair loops)
-3. Self-description (reduces bootstrapping cost)
-4. Batch operations (reduces token waste)
-5. State/references (enables composition)
-6. Intent routing (reduces memorization)
-7. Infrastructure shielding (reduces boilerplate)
-8. Workflow completeness (enables autonomy)
+1. **Output & formatting** — biggest immediate impact; agents stop scraping prose
+2. **Safety & writes** — atomic/idempotent writes kill the verify-fix-retry loop
+3. **Agent contract (`prime`)** — removes exploration and invented-flag failures
+4. **Errors & feedback** — turns dead-ends into one-step corrections
+5. **Token economy** — bounds worst-case context blowups
+6. **Round-trip reduction** — enables free composition across calls
+7. **Input ergonomics** — reduces memorization and lookups
+8. **Defaults & config** — shrinks repeated invocations
+9. **Discoverability & help** — lowers bootstrapping cost
+10. **Automation & interop** — enables autonomous pipelines
