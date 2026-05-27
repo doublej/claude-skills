@@ -82,7 +82,7 @@ round-trips, not from formatting.
 <agent_contract>
 ## 7. Agent contract (`prime` / `guide`)
 - **One-shot full primer** — A single command emits the whole contract — role, rules, commands, flags, output shapes, error codes — so the agent never explores or guesses.
-- **Format-switch the primer** — Structured/XML on a TTY, Markdown when piped, JSON with `--json`, matching the consumer.
+- **Markdown by default** — `prime` emits Markdown unconditionally (TTY or piped), because its consumer is the agent's reasoning, not a parser; Markdown delineates sections cheaply and stays human-readable. This is the one place the auto-JSON-on-pipe rule does not apply. Offer `--json` (machine ingest) and optionally `--xml` (tag-structured) as opt-ins.
 - **Self-described output contract** — State when JSON triggers and the raw-vs-envelope shapes so the agent can depend on them.
 - **Per-command output schema + error codes** — Enumerate each command's return shape and every error code inside the primer.
 - **Live "detected" environment block** — Append cwd/config/env state and a next-step hint, gated to real projects so a primer from `$HOME` stays generic.

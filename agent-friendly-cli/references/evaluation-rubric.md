@@ -37,7 +37,7 @@ Each area maps to a section in `focus-areas.md` — consult it for what "complet
 
 ### 7. Agent contract — `prime` (0-2)
 - [ ] One-shot primer: commands, flags, output shapes, error codes
-- [ ] Format-switches (XML/Markdown/JSON); self-described output contract
+- [ ] Defaults to Markdown (TTY or piped); `--json`/`--xml` opt-in; self-described output contract
 - [ ] Live "detected" env block; workflow + operational guardrails
 
 ### 8. Safety & writes (0-2)

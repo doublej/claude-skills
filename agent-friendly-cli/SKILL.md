@@ -33,7 +33,7 @@ Ten areas to design and audit against. Each is briefed bullet-by-bullet in
 4. **Defaults & config** — useful no-arg action, zero-config baseline, persistent defaults that shrink calls, flags override config.
 5. **Discoverability & help** — described subcommands, runnable examples, inline arg semantics, generated completion, one source of truth.
 6. **Errors & feedback** — structured code/message/hint, categories, retryable flag, valid-options-on-failure, meaningful exit codes, fail-fast non-TTY.
-7. **Agent contract (`prime`)** — one-shot full primer, format-switching, self-described output contract, detected env block, workflow + guardrails.
+7. **Agent contract (`prime`)** — one-shot full primer, Markdown by default (`--json`/`--xml` opt-in), self-described output contract, detected env block, workflow + guardrails.
 8. **Safety & writes** — atomic mutate-with-rollback, validate-before-commit, idempotent/guarded, `--dry-run`, secrets via env not stdout.
 9. **Round-trip reduction** — cache by query shape, read-only never hits backend, compose from cache, embedded health probe, graceful degradation.
 10. **Automation & interop** — inject-and-exec, read-only query escape hatch, pipe-through loops, stdin `-`, session lifecycle.
@@ -67,7 +67,7 @@ When designing a CLI, address each layer:
 ### 1. Entry Surface
 - Natural invocation (argument shape implies intent)
 - Explicit subcommands as escape hatches
-- `guide` or `prime` command for machine-readable self-description
+- `prime` (or `guide`) command for self-description — Markdown by default, `--json`/`--xml` opt-in
 
 ### 2. Data Contract
 - `--format json|jsonl|table|csv` (default: json when piped, table when TTY)
@@ -127,19 +127,46 @@ mytool                 # no args → interactive/status
 <self_description>
 ## Self-Description Command
 
-Every CLI should have a `guide` (or `prime`) command that returns:
+Every CLI should have a `prime` (or `guide`) command that emits its full contract.
+
+**Default to Markdown, unconditionally.** Unlike data commands (which auto-JSON on
+a pipe), the primer's consumer is the agent's reasoning, not a parser — Markdown
+delineates the contract cheaply and stays human-readable, so emit it whether stdout
+is a TTY or piped. Offer `--json` for machine ingest and optionally `--xml` for
+tag-structured consumption.
+
+```markdown
+# mytool v1.0.0
+One-sentence purpose.
+
+## Commands
+- `search <query>` — find records; emits JSON when piped
+- `inspect <id|@n>` — full record for one result
+
+## Workflows
+1. search → inspect → export
+
+## Output contract
+- Data commands emit JSON on pipe, dense table on TTY
+- Errors: `{code, message, hint, retryable}` in machine mode
+
+## Error codes
+- `NOT_FOUND` — no match; lists valid options
+- `RATE_LIMITED` — retryable; back off and retry smaller
+
+## Config
+~/.config/mytool/config.toml — keys: currency, default_limit
+
+## Detected
+cwd=… · config=found · next: `mytool search "…"`
+```
+
+Same model backs `--json`:
 
 ```json
-{
-  "name": "mytool",
-  "version": "1.0.0",
-  "purpose": "One-sentence description",
-  "commands": [],
-  "workflows": [],
-  "examples": [],
-  "error_codes": [],
-  "config": { "path": "~/.config/mytool/config.toml", "keys": [] }
-}
+{ "name": "mytool", "version": "1.0.0", "purpose": "…",
+  "commands": [], "workflows": [], "error_codes": [],
+  "config": { "path": "~/.config/mytool/config.toml", "keys": [] } }
 ```
 </self_description>
 
