@@ -1,5 +1,5 @@
 ---
-name: codex-generate-image
+name: codex-image
 description: "Generate images via Codex CLI's built-in image_gen tool and return the local file path. Use when user wants to generate an image and get the result back into this Claude session. Triggers on '/codex-generate-image', 'generate an image with codex', 'codex image'. Requires codex CLI installed."
 ---
 
