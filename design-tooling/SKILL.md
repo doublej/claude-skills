@@ -1,6 +1,5 @@
 ---
-name: tooling-design-system
-description: Use this skill to generate well-branded interfaces and assets for Tooling — a data-dense neutral design system (Linear/Vercel/Stripe lane) for SvelteKit 2 + Tailwind v4 dashboards. Use for production code or throwaway prototypes/mocks. Contains design guidelines, semantic color/type tokens, fonts, logo assets, preview spec cards, and UI kit components.
+name: design-toolingdescription: Use this skill to generate well-branded interfaces and assets for Tooling — a data-dense neutral design system (Linear/Vercel/Stripe lane) for SvelteKit 2 + Tailwind v4 dashboards. Use for production code or throwaway prototypes/mocks. Contains design guidelines, semantic color/type tokens, fonts, logo assets, preview spec cards, and UI kit components.
 user-invocable: true
 ---
 

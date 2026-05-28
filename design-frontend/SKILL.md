@@ -1,6 +1,5 @@
 ---
-name: frontend-design
-description: "Distinctive, polished web UIs that avoid generic AI aesthetics"
+name: design-frontenddescription: "Distinctive, polished web UIs that avoid generic AI aesthetics"
 ---
 
 # Frontend Design

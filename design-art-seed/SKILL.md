@@ -1,6 +1,5 @@
 ---
-name: seed-for-art
-description: "Distill any source into a 3-stage art seed: philosophical fragments, formal variations, editorial illustration brief. Triggers on philosophical seed, art seed, editorial illustration brief, image prompt from dossier, turn this project into images."
+name: design-art-seeddescription: "Distill any source into a 3-stage art seed: philosophical fragments, formal variations, editorial illustration brief. Triggers on philosophical seed, art seed, editorial illustration brief, image prompt from dossier, turn this project into images."
 ---
 
 <intro>
