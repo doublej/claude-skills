@@ -1,5 +1,5 @@
 ---
-name: github-pages-generator
+name: deploy-github-pages
 description: "Generate animated docs site with SvelteKit and GitHub Actions deploy"
 allowed-tools: [Bash, Read, Write, Glob, Grep, Edit]
 ---

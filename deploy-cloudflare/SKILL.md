@@ -1,5 +1,5 @@
 ---
-name: cloudflare
+name: deploy-cloudflare
 description: "Pages/Workers with Wrangler: D1/KV/R2 bindings, wrangler.toml"
 ---
 

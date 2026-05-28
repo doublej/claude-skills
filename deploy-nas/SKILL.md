@@ -1,5 +1,5 @@
 ---
-name: nas-deploy
+name: deploy-nas
 description: "Deploy static sites and Node.js apps to NAS Caddy via mounted volume"
 allowed-tools:
   - Bash
