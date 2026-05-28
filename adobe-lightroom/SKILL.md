@@ -1,5 +1,5 @@
 ---
-name: lightroom
+name: adobe-lightroom
 description: Automate Adobe Lightroom (the cloud/desktop app, version 7.x-9.x — formerly "Lightroom CC") via two paths. Path A is XMP sidecar editing — offline, no auth, write develop settings/ratings/keywords to .xmp files alongside RAW/JPEG. Path B is the Lightroom Services REST API — cloud catalog (assets, albums, metadata) plus async AI ops (auto-tone, auto-straighten, preset application) via Lightroom Service / Firefly Services. NOT for Lightroom Classic — that's a different app with .lrcat catalogs and a Lua plugin SDK. Triggers on "lightroom" (no "Classic"), "Lightroom CC", "Lightroom desktop", "Lightroom cloud", "XMP sidecar", "develop preset XMP", "auto-tone via API", "Adobe Lightroom REST", ".xmp file", "edit metadata on RAW".
 ---
 
