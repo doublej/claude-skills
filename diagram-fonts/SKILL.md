@@ -1,5 +1,5 @@
 ---
-name: font-family-tree
+name: diagram-fonts
 description: "Scan style files for font-family declarations, generate Mermaid flowchart"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: mermaid-graphs
+name: diagram-mermaid
 description: "Create and render diagrams: flowcharts, sequence, ER, gantt, mindmaps"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: erdantic
+name: diagram-erd
 description: "Generate ERD diagrams from Python data models (Pydantic, dataclasses, attrs)"
 ---
 
