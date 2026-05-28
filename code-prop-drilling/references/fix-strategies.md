@@ -1,6 +1,6 @@
 # Fix Strategies — Before/After Patterns
 
-Reference file for the prop-drilling skill. Each strategy shows the drilling problem and its fix.
+Reference file for the code-prop-drilling skill. Each strategy shows the drilling problem and its fix.
 
 ## 1. React Context API
 

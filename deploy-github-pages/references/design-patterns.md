@@ -469,7 +469,7 @@ a:focus-visible {
 
 ## Anti-Patterns (Avoid)
 
-Based on frontend-design skill:
+Based on design-frontend skill:
 
 **Don't use:**
 - Inter font (use Instrument Sans instead)

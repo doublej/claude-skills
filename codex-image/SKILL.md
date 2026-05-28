@@ -1,6 +1,6 @@
 ---
 name: codex-image
-description: "Generate images via Codex CLI's built-in image_gen tool and return the local file path. Use when user wants to generate an image and get the result back into this Claude session. Triggers on '/codex-generate-image', 'generate an image with codex', 'codex image'. Requires codex CLI installed."
+description: "Generate images via Codex CLI's built-in image_gen tool and return the local file path. Use when user wants to generate an image and get the result back into this Claude session. Triggers on '/codex-image', 'generate an image with codex', 'codex image'. Requires codex CLI installed."
 ---
 
 # codex-generate-image
@@ -10,7 +10,7 @@ Generate images using Codex's built-in `image_gen` tool. Unlike `codex-launch`, 
 <usage>
 
 ```
-/codex-generate-image <prompt>
+/codex-image <prompt>
 ```
 
 Output lands in `CWD/tmp/` by default.

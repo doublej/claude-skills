@@ -86,7 +86,7 @@ Findings are sorted by severity (critical > high > medium > low), then by file a
 
 ## Workflow: Feed into Refactoring
 
-1. Run structural map first: `bash codebase-mapper/scripts/repomap.sh . --root . --exclude-unranked`
+1. Run structural map first: `bash code-map/scripts/repomap.sh . --root . --exclude-unranked`
 2. Run analysis: `python3 {SKILL_DIR}/analyze.py .`
 3. Use findings as input for dev-refactor to generate actionable tasks
 

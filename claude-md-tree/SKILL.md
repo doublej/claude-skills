@@ -88,9 +88,9 @@ Full glossary: ./GLOSSARY.md
 </vocabulary>
 ```
 
-For curating the glossary itself (harvest candidate terms, cluster synonyms, pick canonical, write definitions + rejected synonyms), **delegate to the `ubiquitous-language` skill**. This skill (claude-md-tree) wires the result into the CLAUDE.md tree; that skill produces the glossary content. Hand off explicitly:
+For curating the glossary itself (harvest candidate terms, cluster synonyms, pick canonical, write definitions + rejected synonyms), **delegate to the `code-glossary` skill**. This skill (claude-md-tree) wires the result into the CLAUDE.md tree; that skill produces the glossary content. Hand off explicitly:
 
-> "I've inventoried the tree. Run the `ubiquitous-language` skill to build / update `GLOSSARY.md`, then come back here to wire it into CLAUDE.md."
+> "I've inventoried the tree. Run the `code-glossary` skill to build / update `GLOSSARY.md`, then come back here to wire it into CLAUDE.md."
 
 ## The 5-pass workflow
 
@@ -222,7 +222,7 @@ See `references/anti-patterns.md` for the full list. The biggest ones:
 5. **Using CLAUDE.md to specify procedures** — procedures are skills. CLAUDE.md is knowledge.
 6. **Forgetting compaction behavior** — putting compaction-critical invariants only in nested files.
 7. **Hand-edited generated content** — if you have generated folders, say so in the parent CLAUDE.md and link a rule.
-8. **No vocabulary layer** — tree without `GLOSSARY.md` or `<vocabulary>` block. Agents drift between synonyms (`Product`/`Wallpaper`/`Item`) within a single session. Delegate curation to the `ubiquitous-language` skill.
+8. **No vocabulary layer** — tree without `GLOSSARY.md` or `<vocabulary>` block. Agents drift between synonyms (`Product`/`Wallpaper`/`Item`) within a single session. Delegate curation to the `code-glossary` skill.
 
 ## Quick reference: commands you will use
 
@@ -248,7 +248,7 @@ CLAUDE_CODE_NEW_INIT=1 claude   # then /init
 When asked to "explode" or "complete" CLAUDE.md across a repo, deliver in this order:
 
 1. **Inventory report** — output of `audit_tree.py` plus your human-judgment annotations.
-2. **Vocabulary check** — does a `GLOSSARY.md` exist? Is it current? If absent or stale, flag to delegate to the `ubiquitous-language` skill before writing nested packets (so packets can reference canonical terms).
+2. **Vocabulary check** — does a `GLOSSARY.md` exist? Is it current? If absent or stale, flag to delegate to the `code-glossary` skill before writing nested packets (so packets can reference canonical terms).
 3. **Proposed file list** — which CLAUDE.md, GLOSSARY.md, rules, and skills you'll add or modify.
 4. **Root CLAUDE.md rewrite** — first, before the nested packets. Includes `<vocabulary>` block.
 5. **Nested context packets** — one per chosen zone, using the template. Reference canonical terms from GLOSSARY.md.
@@ -266,4 +266,4 @@ Confirm the inventory + proposed file list with the user **before** writing the 
 - `../claude-md-optimizer/references/formatting-examples.md` — central formatting reference (structure/shape: flat sections, one instruction per line, no noisy tables / over-nesting / emphasis overload)
 - `references/examples/` — worked examples (root, billing, db, charts)
 - `scripts/audit_tree.py` — inventory script
-- `../ubiquitous-language/SKILL.md` — sibling skill that curates `GLOSSARY.md`. Delegate vocabulary work to it; this skill wires the result into the CLAUDE.md tree.
+- `../code-glossary/SKILL.md` — sibling skill that curates `GLOSSARY.md`. Delegate vocabulary work to it; this skill wires the result into the CLAUDE.md tree.

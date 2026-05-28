@@ -12,12 +12,12 @@ Monitor macOS processes and system resources with optional auto-reminders.
 
 Analyze current resources:
 ```bash
-uv run python ~/.claude/skills/process-monitor/scripts/analyze.py
+uv run python ~/.claude/skills/proc-monitor/scripts/analyze.py
 ```
 
 Get JSON output:
 ```bash
-uv run python ~/.claude/skills/process-monitor/scripts/analyze.py --json
+uv run python ~/.claude/skills/proc-monitor/scripts/analyze.py --json
 ```
 </commands>
 
@@ -26,17 +26,17 @@ uv run python ~/.claude/skills/process-monitor/scripts/analyze.py --json
 
 Start background monitoring (sends reminders every 5 min):
 ```bash
-uv run python ~/.claude/skills/process-monitor/scripts/daemon.py start
+uv run python ~/.claude/skills/proc-monitor/scripts/daemon.py start
 ```
 
 Stop daemon:
 ```bash
-uv run python ~/.claude/skills/process-monitor/scripts/daemon.py stop
+uv run python ~/.claude/skills/proc-monitor/scripts/daemon.py stop
 ```
 
 Check status:
 ```bash
-uv run python ~/.claude/skills/process-monitor/scripts/daemon.py status
+uv run python ~/.claude/skills/proc-monitor/scripts/daemon.py status
 ```
 </daemon>
 
@@ -56,7 +56,7 @@ When you see `[Auto-reminder] Check system resources`:
 
 Send a message to terminal (for testing):
 ```bash
-uv run python ~/.claude/skills/process-monitor/scripts/inject_message.py "your message here"
+uv run python ~/.claude/skills/proc-monitor/scripts/inject_message.py "your message here"
 ```
 </manual>
 

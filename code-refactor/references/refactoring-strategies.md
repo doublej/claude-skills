@@ -6,7 +6,7 @@ Compiling findings, prioritisation, and task generation.
 
 Collect outputs from all sources and merge into structured report:
 
-1. **Collect** automated findings (repomap-analyzer) + agent outputs
+1. **Collect** automated findings (code-audit) + agent outputs
 2. **Parse** findings from each source (severity, location, issue, recommendation)
 3. **Deduplicate** overlapping findings
 4. **Categorise** by dimension (Architecture, Code Quality, Testing, DevOps)

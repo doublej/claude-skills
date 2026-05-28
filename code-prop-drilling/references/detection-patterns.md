@@ -1,6 +1,6 @@
 # Detection Patterns — Framework-Specific Heuristics
 
-Reference file for the prop-drilling skill. Contains grep patterns and search strategies per framework.
+Reference file for the code-prop-drilling skill. Contains grep patterns and search strategies per framework.
 
 ## 1. React prop signatures
 

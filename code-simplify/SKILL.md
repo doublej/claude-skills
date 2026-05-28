@@ -33,7 +33,7 @@ python3 {SKILL_DIR}/scripts/scan_codebase.py <project-root> --json
 4. **(Optional)** If the codebase-mapper skill is installed, generate a codebase map for structural context:
 
 ```bash
-MAPPER_SCRIPT="${HOME}/.claude/skills/codebase-mapper/scripts/repomap.sh"
+MAPPER_SCRIPT="${HOME}/.claude/skills/code-map/scripts/repomap.sh"
 [ -f "$MAPPER_SCRIPT" ] && bash "$MAPPER_SCRIPT" <project-root> --root <project-root> --map-tokens 8192 --exclude-unranked
 ```
 

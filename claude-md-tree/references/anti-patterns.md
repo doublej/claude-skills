@@ -160,7 +160,7 @@ Fix: schedule a quarterly audit. Run `/memory` in a real session, walk the files
 
 A complete CLAUDE.md tree (root + nested packets + rules) with no `GLOSSARY.md` and no `<vocabulary>` block. Each packet uses subtly different words for the same concept — `User` here, `Customer` there, `Account` elsewhere. Agents mirror the drift back into code, commits, and PR titles. Within weeks the codebase has three nouns for the same thing.
 
-Fix: add a `GLOSSARY.md` at root (or per bounded context for ecosystems) and a `<vocabulary>` block in root CLAUDE.md pointing to it. Delegate the curation to the `ubiquitous-language` skill. Then audit existing packets — any rejected synonym appearing in a CLAUDE.md is a defect.
+Fix: add a `GLOSSARY.md` at root (or per bounded context for ecosystems) and a `<vocabulary>` block in root CLAUDE.md pointing to it. Delegate the curation to the `code-glossary` skill. Then audit existing packets — any rejected synonym appearing in a CLAUDE.md is a defect.
 
 ## 17. The competing-vocabulary tree
 
