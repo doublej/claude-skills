@@ -1,12 +1,13 @@
 ---
 name: prompt-crafter
 description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design"
-arguments: "model: Literal['opus-4-7', 'opus-4-6', 'sonnet', 'generic'] = 'generic'"
 ---
 
 # Prompt Crafter
 
 Craft high-quality prompts for Claude Code across all surfaces: interactive sessions, CLAUDE.md files, system prompts, slash commands, and CLI automation.
+
+Optional argument (`$ARGUMENTS`): target model — one of `opus-4-7`, `opus-4-6`, `sonnet`, `generic`. Default: `generic`.
 
 <lint_rewrite>
 ## Lint + Rewrite (model-specific)
@@ -213,6 +214,8 @@ Structure your CLAUDE.md from broadest to most specific:
 - **Include commands**: Build, test, lint commands save repeated lookups
 - **Budget tokens**: The file loads every session — every line costs across all conversations
 - **Use @imports** for large references: `@docs/api-conventions.md`
+- **Mind the formatting**: flat sections, one instruction per line, sparing emphasis — see worked
+  good/bad examples in `../claude-md-optimizer/references/formatting-examples.md`
 </authoring>
 
 <path_rules>
@@ -330,5 +333,6 @@ Before finalising any prompt, check:
 
 - For deep XML tag patterns: use the `xml-prompt` skill
 - For CLAUDE.md optimisation: use the `claude-md-optimizer` skill
+- For CLAUDE.md/AGENT.md formatting (good vs bad examples): `../claude-md-optimizer/references/formatting-examples.md`
 - For CLI automation patterns: use the `claude-skill` skill
 - Extended patterns and examples: `references/patterns.md`
