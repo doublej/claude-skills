@@ -1,6 +1,5 @@
 ---
-name: logo-creator
-description: "Create logos, icons, wordmarks, monograms as production-ready SVG code"
+name: logo-createdescription: "Create logos, icons, wordmarks, monograms as production-ready SVG code"
 ---
 
 # Logo Creator
