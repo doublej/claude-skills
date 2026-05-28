@@ -1,5 +1,5 @@
 ---
-name: terminal-kit
+name: tui-kit
 description: "Node.js terminal apps: colors, menus, inputs, progress, screen buffers"
 ---
 

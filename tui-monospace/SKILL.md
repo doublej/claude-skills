@@ -1,5 +1,5 @@
 ---
-name: monospace-conviction
+name: tui-monospace
 description: >
   Ship terminal interfaces that earn the medium. Layout, theming, keybinds,
   focus, capability detection for ratatui, Textual, Ink, Bubble Tea, iocraft,
