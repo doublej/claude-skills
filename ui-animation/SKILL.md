@@ -1,6 +1,5 @@
 ---
-name: animation-easing
-description: "Easing functions and timing: ease-out, bounce, elastic, spring for UI motion"
+name: ui-animationdescription: "Easing functions and timing: ease-out, bounce, elastic, spring for UI motion"
 ---
 
 # Animation Easing: Theory & Practice
