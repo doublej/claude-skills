@@ -262,7 +262,8 @@ Confirm the inventory + proposed file list with the user **before** writing the 
 - `references/context-packet-template.md` — canonical template for nested files
 - `references/placement-rubric.md` — decision table for where knowledge lives
 - `references/verified-docs.md` — verified Claude Code behavior with doc links
-- `references/anti-patterns.md` — failure modes catalogue
+- `references/anti-patterns.md` — failure modes catalogue (content/placement)
+- `../claude-md-optimizer/references/formatting-examples.md` — central formatting reference (structure/shape: flat sections, one instruction per line, no noisy tables / over-nesting / emphasis overload)
 - `references/examples/` — worked examples (root, billing, db, charts)
 - `scripts/audit_tree.py` — inventory script
 - `../ubiquitous-language/SKILL.md` — sibling skill that curates `GLOSSARY.md`. Delegate vocabulary work to it; this skill wires the result into the CLAUDE.md tree.

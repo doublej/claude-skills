@@ -2,6 +2,10 @@
 
 The failure modes that show up over and over in real codebases. Audit existing CLAUDE.md files against this list.
 
+These are **content/placement** failures (wrong knowledge in the wrong file). For **formatting/shape**
+failures (noisy tables, over-nested tags, dense blobs, emphasis overload, fake config, fragmented
+sections), see `../../claude-md-optimizer/references/formatting-examples.md`.
+
 ## 1. The sprinkle
 
 Adding a `CLAUDE.md` to every folder "just in case." Result: most files are 3 lines saying "follow existing patterns," they consume nothing useful, and the genuinely valuable packets get lost in the noise.
