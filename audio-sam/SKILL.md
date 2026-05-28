@@ -1,5 +1,5 @@
 ---
-name: sam-audio
+name: audio-sam
 description: "Meta SAM for audio source separation: model loading, batch processing"
 ---
 
