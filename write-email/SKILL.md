@@ -1,5 +1,5 @@
 ---
-name: human-email
+name: write-email
 description: "Write emails that read human, not AI. Strips em-dashes, zero-width watermarks, RTF/HTML residue, and slop phrases before output. Triggers on \"write an email\", \"draft an email\", \"reply to this email\", or pasted email text the user wants rewritten."
 ---
 

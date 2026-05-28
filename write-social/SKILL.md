@@ -1,5 +1,5 @@
 ---
-name: social-promotion
+name: write-social
 description: "Write social posts for X.com, Threads, and Substack launches"
 ---
 
