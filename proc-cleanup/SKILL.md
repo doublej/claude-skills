@@ -1,5 +1,5 @@
 ---
-name: process-cleanup
+name: proc-cleanup
 description: "Kill orphaned MCP servers, dev servers, Claude Code processes to free ports"
 ---
 

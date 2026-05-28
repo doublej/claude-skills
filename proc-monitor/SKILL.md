@@ -1,5 +1,5 @@
 ---
-name: process-monitor
+name: proc-monitor
 description: "Monitor macOS CPU/memory, find resource hogs, periodic health reminders"
 ---
 
