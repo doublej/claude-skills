@@ -1,6 +1,6 @@
 ---
 name: code-arch-drift
-description: "Detect architectural drift — layer/dependency boundaries eroding as code is added (UI importing the DB directly, controllers reaching into repositories, forbidden cross-module deps, cycles). Rules live in a CLAUDE.md ## Architecture block; a stdlib-only checker parses imports and reports violations. Run on-demand to audit a repo, or wire as a Claude Code hook for in-session correction. Python, JS/TS, Go, Rust, Swift. Use on 'architecture drift', 'check layering', 'boundary violations', 'are we leaking layers', '/code-arch-drift'."
+description: "Detect architectural drift — layer/dependency boundaries eroding as code grows (UI importing the DB, controllers reaching into repositories, forbidden cross-module deps, cycles). Rules live in a CLAUDE.md ## Architecture block; a stdlib-only checker parses imports and reports violations. Run on-demand or wire as a Claude Code hook. Python, JS/TS, Go, Rust, Swift. Use on 'architecture drift', 'check layering', 'boundary violations', '/code-arch-drift'."
 ---
 
 # code-arch-drift
