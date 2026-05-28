@@ -1,6 +1,5 @@
 ---
-name: codebase-mapper
-description: "Importance-ranked repo maps via Tree-sitter parsing and PageRank"
+name: code-mapdescription: "Importance-ranked repo maps via Tree-sitter parsing and PageRank"
 ---
 
 # Codebase Mapper

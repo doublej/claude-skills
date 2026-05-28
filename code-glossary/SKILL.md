@@ -1,6 +1,5 @@
 ---
-name: ubiquitous-language
-description: "Curate a project's ubiquitous language — the shared vocabulary that humans, code, and AI agents all use for the same concepts. Builds and maintains a domain glossary (GLOSSARY.md) so 'wallpaper' vs 'wall decoration' vs 'product' stop drifting across docs, code, and prompts. Use when starting a new project, when agents keep using wrong words, when team/docs/code diverge on naming, or when onboarding a new agent into a project. Triggers on 'ubiquitous language', 'domain glossary', 'project vocabulary', 'name things consistently', 'we keep calling this different things', 'agent uses wrong word'."
+name: code-glossarydescription: "Curate a project's ubiquitous language — the shared vocabulary that humans, code, and AI agents all use for the same concepts. Builds and maintains a domain glossary (GLOSSARY.md) so 'wallpaper' vs 'wall decoration' vs 'product' stop drifting across docs, code, and prompts. Use when starting a new project, when agents keep using wrong words, when team/docs/code diverge on naming, or when onboarding a new agent into a project. Triggers on 'ubiquitous language', 'domain glossary', 'project vocabulary', 'name things consistently', 'we keep calling this different things', 'agent uses wrong word'."
 ---
 
 # Ubiquitous Language

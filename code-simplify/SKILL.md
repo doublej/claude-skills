@@ -1,6 +1,5 @@
 ---
-name: codebase-simplify
-description: "Simplify entire codebase for clarity using parallel agents, preserving behavior"
+name: code-simplifydescription: "Simplify entire codebase for clarity using parallel agents, preserving behavior"
 ---
 
 # Codebase Simplify

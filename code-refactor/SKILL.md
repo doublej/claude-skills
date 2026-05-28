@@ -1,6 +1,5 @@
 ---
-name: dev-refactor
-description: "Audit codebase against standards, auto-detect language, generate refactor tasks"
+name: code-refactordescription: "Audit codebase against standards, auto-detect language, generate refactor tasks"
 ---
 
 # Dev Refactor

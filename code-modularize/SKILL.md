@@ -1,6 +1,5 @@
 ---
-name: modularize
-description: Intelligently split oversized files into focused, single-responsibility modules. Use when files exceed ~150 lines, have mixed responsibilities, or need structural cleanup.
+name: code-modularizedescription: Intelligently split oversized files into focused, single-responsibility modules. Use when files exceed ~150 lines, have mixed responsibilities, or need structural cleanup.
 ---
 
 # Modularize

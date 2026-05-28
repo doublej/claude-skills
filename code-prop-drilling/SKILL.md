@@ -1,6 +1,5 @@
 ---
-name: prop-drilling
-description: "Detect/fix props passed through 2+ layers unused in React, Vue, Svelte, Python"
+name: code-prop-drillingdescription: "Detect/fix props passed through 2+ layers unused in React, Vue, Svelte, Python"
 ---
 
 # Prop Drilling Detector
