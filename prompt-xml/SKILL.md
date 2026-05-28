@@ -1,6 +1,5 @@
 ---
-name: xml-prompt
-description: Write well-structured XML prompts for Claude following Anthropic's official best practices. Use when writing system prompts, CLAUDE.md files, skill instructions, API prompts, or any structured prompt that benefits from XML tags. Covers the 10-component framework, common tag patterns, long context structure, and chain-of-thought with XML.
+name: prompt-xmldescription: Write well-structured XML prompts for Claude following Anthropic's official best practices. Use when writing system prompts, CLAUDE.md files, skill instructions, API prompts, or any structured prompt that benefits from XML tags. Covers the 10-component framework, common tag patterns, long context structure, and chain-of-thought with XML.
 ---
 
 # XML Prompt Writing

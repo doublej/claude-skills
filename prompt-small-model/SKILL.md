@@ -1,6 +1,5 @@
 ---
-name: small-model-prompt
-description: "Prompts and configs for small 8B models (Llama 3.1), Ollama/llama.cpp"
+name: prompt-small-modeldescription: "Prompts and configs for small 8B models (Llama 3.1), Ollama/llama.cpp"
 ---
 
 # Small Model Prompt
