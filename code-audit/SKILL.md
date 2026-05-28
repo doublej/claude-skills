@@ -1,5 +1,6 @@
 ---
-name: code-auditdescription: "Audit code quality via call graph: dead code, duplicates, naming issues"
+name: code-audit
+description: "Audit code quality via call graph: dead code, duplicates, naming issues"
 ---
 
 <intro>

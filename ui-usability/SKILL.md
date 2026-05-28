@@ -1,5 +1,6 @@
 ---
-name: ui-usabilitydescription: "Nielsen heuristics, Laws of UX, Norman principles for UI review and design"
+name: ui-usability
+description: "Nielsen heuristics, Laws of UX, Norman principles for UI review and design"
 ---
 
 # Usability Fundamentals: Design-Aware UX Principles

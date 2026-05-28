@@ -1,5 +1,6 @@
 ---
-name: prompt-gpt51description: "Optimize prompts for GPT-5.1: reasoning modes, tool calling, metaprompting"
+name: prompt-gpt51
+description: "Optimize prompts for GPT-5.1: reasoning modes, tool calling, metaprompting"
 ---
 
 # GPT-5.1 Prompt Optimization

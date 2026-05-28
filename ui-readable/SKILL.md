@@ -1,5 +1,6 @@
 ---
-name: ui-readabledescription: "Typography, spacing, contrast, labels, and copy for readable interfaces; use when designing or reviewing UI text, forms, dashboards, onboarding, or long-form content."
+name: ui-readable
+description: "Typography, spacing, contrast, labels, and copy for readable interfaces; use when designing or reviewing UI text, forms, dashboards, onboarding, or long-form content."
 ---
 
 # Readable UI

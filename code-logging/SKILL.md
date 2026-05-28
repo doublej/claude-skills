@@ -1,5 +1,6 @@
 ---
-name: code-loggingdescription: "Audit and improve logging across a codebase: relevel mismatched log calls, rewrite vague messages into scannable structured form, and add logs at silent error branches and external calls. Cross-language (Python, JS/TS, Rust, Go, Swift). Use when the user asks to 'clean up logging', 'optimize log levels', 'add more logging', 'make logs scannable', or '/logging-audit'."
+name: code-logging
+description: "Audit and improve logging across a codebase: relevel mismatched log calls, rewrite vague messages into scannable structured form, and add logs at silent error branches and external calls. Cross-language (Python, JS/TS, Rust, Go, Swift). Use when the user asks to 'clean up logging', 'optimize log levels', 'add more logging', 'make logs scannable', or '/logging-audit'."
 ---
 
 # Logging Audit

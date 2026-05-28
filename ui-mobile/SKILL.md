@@ -1,5 +1,6 @@
 ---
-name: ui-mobiledescription: "Mobile HTML optimization: viewport, safe areas, touch targets, dark mode, PWA"
+name: ui-mobile
+description: "Mobile HTML optimization: viewport, safe areas, touch targets, dark mode, PWA"
 ---
 
 # Mobile Web Optimization

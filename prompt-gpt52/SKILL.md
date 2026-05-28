@@ -1,5 +1,6 @@
 ---
-name: prompt-gpt52description: "Optimize prompts for GPT-5.2: reasoning modes, compaction, tool preambles"
+name: prompt-gpt52
+description: "Optimize prompts for GPT-5.2: reasoning modes, compaction, tool preambles"
 ---
 
 # GPT-5.2 Prompt Optimization

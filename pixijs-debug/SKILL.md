@@ -1,5 +1,6 @@
 ---
-name: pixijs-debugdescription: Debug PixiJS applications in the browser via Claude-in-Chrome. Get scene stats, rendering info, textures, performance benchmarks. Use when user asks to debug, inspect, profile, or analyze a PixiJS app.
+name: pixijs-debug
+description: Debug PixiJS applications in the browser via Claude-in-Chrome. Get scene stats, rendering info, textures, performance benchmarks. Use when user asks to debug, inspect, profile, or analyze a PixiJS app.
 invocation: user
 command: pixi-debug
 arguments: "[command]"

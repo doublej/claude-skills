@@ -1,5 +1,6 @@
 ---
-name: claude-md-cascadedescription: "Visualize CLAUDE.md hierarchy with token counts and inheritance chain"
+name: claude-md-cascade
+description: "Visualize CLAUDE.md hierarchy with token counts and inheritance chain"
 ---
 
 # Context Cascade

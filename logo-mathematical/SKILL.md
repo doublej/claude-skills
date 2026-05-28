@@ -1,5 +1,6 @@
 ---
-name: logo-mathematicaldescription: "Logos from geometric first principles: grid systems, tangency, Bezier, SVG"
+name: logo-mathematical
+description: "Logos from geometric first principles: grid systems, tangency, Bezier, SVG"
 ---
 
 # Mathematical Logo Creator

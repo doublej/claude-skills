@@ -1,5 +1,6 @@
 ---
-name: logo-systematicdescription: Design logos using a constrained grid system. Instead of free-form SVG, define logos as JSON grid maps (3x3 to 9x9) that force geometric alignment. Use when user needs a logo, icon, wordmark, monogram, or brand mark. Triggers on "create logo", "design logo", "make icon", "brand identity", "logomark", "grid logo".
+name: logo-systematic
+description: Design logos using a constrained grid system. Instead of free-form SVG, define logos as JSON grid maps (3x3 to 9x9) that force geometric alignment. Use when user needs a logo, icon, wordmark, monogram, or brand mark. Triggers on "create logo", "design logo", "make icon", "brand identity", "logomark", "grid logo".
 ---
 
 # Systematic Logo Design
