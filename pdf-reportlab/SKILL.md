@@ -1,5 +1,5 @@
 ---
-name: reportlab-pdf
+name: pdf-reportlab
 description: Comprehensive guide to ReportLab PDF generation in Python. Covers Canvas API, Platypus layouts, tables, graphics, fonts, and images. Use when creating PDFs programmatically, building reports, generating documents with tables/charts, or working with complex page layouts.
 ---
 

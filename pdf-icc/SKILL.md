@@ -1,5 +1,5 @@
 ---
-name: icc-color-pdf
+name: pdf-icc
 description: Manage ICC profiles and color spaces in PDF files. Covers RGB-to-CMYK conversion, ICC profile embedding/extraction, PDF/X and PDF/A output intents, color space analysis, ink coverage, preflight validation, and print-ready workflows using Ghostscript, pikepdf, Pillow/pyCMS, and Little-CMS.
 ---
 
