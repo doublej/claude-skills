@@ -1,5 +1,5 @@
 ---
-name: steamvr-driver
+name: xr-steamvr-driver
 description: "OpenVR driver dev: device providers, HMD emulation, DriverPose_t, ALVR FFI"
 ---
 

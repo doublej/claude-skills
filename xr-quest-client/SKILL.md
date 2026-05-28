@@ -1,5 +1,5 @@
 ---
-name: quest-android-vr-client
+name: xr-quest-client
 description: "Native Quest VR with OpenXR: swapchains, timewarp, foveated, NDK, passthrough"
 ---
 

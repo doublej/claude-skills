@@ -1,5 +1,5 @@
 ---
-name: openxr-dev
+name: xr-openxr-dev
 description: "Runtime/layer implementation, extension authoring, Vulkan bindings, openxrs"
 ---
 
