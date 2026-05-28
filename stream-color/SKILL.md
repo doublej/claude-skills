@@ -1,5 +1,5 @@
 ---
-name: gpu-color-correction
+name: stream-color
 description: "GPU color correction for VR: shaders, color spaces, LUTs, Vulkan compute"
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: nvenc-amf-encoding
+name: stream-encode
 description: "NVENC/AMF hardware encoder tuning for low-latency H.264/HEVC/AV1 streaming"
 ---
 

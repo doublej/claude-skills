@@ -1,5 +1,5 @@
 ---
-name: realtime-audio-streaming
+name: stream-audio
 description: "Low-latency audio capture/encoding for VR: WASAPI, PipeWire, Opus, CPAL"
 ---
 

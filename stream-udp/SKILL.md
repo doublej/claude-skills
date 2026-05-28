@@ -1,5 +1,5 @@
 ---
-name: low-latency-udp-streaming
+name: stream-udp
 description: "Video-over-UDP for VR: packet sharding, FEC, adaptive bitrate, ALVR"
 ---
 

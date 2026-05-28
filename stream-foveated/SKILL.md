@@ -1,5 +1,5 @@
 ---
-name: foveated-encoding
+name: stream-foveated
 description: "VR streaming foveation: AADT, NVENC/AMF params, eye tracking, artifacts"
 ---
 

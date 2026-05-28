@@ -1,5 +1,5 @@
 ---
-name: video-decode-pipeline
+name: stream-decode
 description: "VR headset decode: MediaCodec H.264/H.265/AV1, decode-to-texture, XR2"
 ---
 
