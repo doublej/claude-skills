@@ -16,9 +16,12 @@ def check_age():
     with open(metadata_file) as f:
         metadata = json.load(f)
 
-    created_date = datetime.fromisoformat(metadata["created_date"])
+    # Freshness is measured from when the best practices were last authored,
+    # not the immutable creation date — otherwise an updated skill reads as stale.
+    anchor = metadata.get("best_practices_date", metadata["created_date"])
+    anchor_date = datetime.fromisoformat(anchor)
     today = datetime.now()
-    age_days = (today - created_date).days
+    age_days = (today - anchor_date).days
 
     # Format age
     if age_days == 0:
@@ -40,7 +43,7 @@ def check_age():
         warning = "\n\n⚠️  WARNING: This information is more than 6 weeks old. Consider updating with latest best practices."
 
     return f"""📅 Best Practices Information Age: {age_str}
-📝 Created: {metadata['created_date']}
+📝 Last authored: {anchor}
 🤖 Model Context: {metadata['model_context']}
 🧠 Knowledge Base: {metadata['knowledge_cutoff']}{warning}"""
 
