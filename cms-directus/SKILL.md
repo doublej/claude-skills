@@ -1,5 +1,5 @@
 ---
-name: directus
+name: cms-directus
 description: "Headless CMS: SDK v19 queries, filter rules, programmatic schema, extensions, self-hosted Docker, @directus/content-mcp"
 ---
 

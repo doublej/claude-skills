@@ -1,5 +1,5 @@
 ---
-name: payload-cms
+name: cms-payload
 description: Payload CMS 3.0 development — scaffold projects, generate collections/fields/globals/hooks/access, connect MCP servers to live instances. TRIGGER when user mentions Payload CMS, payload.config.ts, or asks to scaffold/generate Payload components.
 ---
 

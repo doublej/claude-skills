@@ -1,5 +1,5 @@
 ---
-name: sheet-cms
+name: cms-sheets
 description: "Bidirectional Google Sheets to JSON sync for content management"
 ---
 

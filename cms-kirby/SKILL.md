@@ -1,5 +1,5 @@
 ---
-name: kirby-cms
+name: cms-kirby
 description: "Flat-file CMS with Panel, blueprints, templates, headless API"
 ---
 
