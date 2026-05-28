@@ -1,5 +1,5 @@
 ---
-name: mcpick-plus
+name: mcp-pick
 description: "Enable, disable, inspect MCP integrations across Claude Code config layers"
 ---
 
