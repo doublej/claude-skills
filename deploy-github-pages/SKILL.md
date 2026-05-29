@@ -1,801 +1,178 @@
 ---
 name: deploy-github-pages
-description: "Generate animated docs site with SvelteKit and GitHub Actions deploy"
+description: "Generate an flt-style multi-page animated docs site (SvelteKit) and deploy it to GitHub Pages via Actions"
 allowed-tools: [Bash, Read, Write, Glob, Grep, Edit]
 ---
 
 # GitHub Pages Documentation Generator
 
-Automates creation of beautiful, animated GitHub Pages documentation sites using proven patterns from successful open-source projects.
+Generates polished, animated, **multi-page** GitHub Pages documentation sites using the proven structure of the reference site `https://doublej.github.io/flt/`. The bundled scaffold ships the exact design system, a sticky `Nav`, and an animated `Terminal` demo component, then deploys via GitHub Actions.
+
+<reference_site>
+The canonical "good" output is **flt** (`https://doublej.github.io/flt/`): sticky blurred nav, a hero with a run/install/agent toggle, an animated `Terminal` demo carousel, a features grid, command reference, and a CTA — across multiple pages.
+
+The anti-pattern is a bare single page (generic hero + features grid + footer, no nav, no `<title>`). Always produce flt-quality, not the bare template.
+</reference_site>
 
 <when_to_use>
+Use this skill to:
+- Create documentation / landing sites for GitHub repos (CLI tools, libraries, MCP servers, web apps)
+- Generate marketing sites for open-source projects
+- Set up automated GitHub Pages deployment
 
-Use this skill when you need to:
-- Create documentation sites for GitHub repositories
-- Build landing pages for open-source projects
-- Generate marketing sites for libraries, CLI tools, or web apps
-- Set up automated documentation deployment with GitHub Actions
-
-**Don't use** for:
-- Complex documentation with multiple pages (this creates single-page sites)
-- Projects requiring dark mode toggle (uses light theme only)
-- Sites needing custom domains or complex routing
+Single-page and multi-page are both supported. Default to **multi-page** (home + a features page) — it is what makes the site feel finished. Collapse to one page only for trivial projects (then delete the features page and its nav link).
 </when_to_use>
 
 <workflow_overview>
-
-This is a **low degree of freedom** skill - follow the exact proven structure and design patterns. The workflow is fully automated with minimal user intervention.
+Low degree of freedom — follow the proven flt structure. The scaffold script lays down every config/component file; the skill's real work is **filling the pages with real content** built around `Terminal` demos.
 
 ```
-ANALYZE → SCAFFOLD → DESIGN → CONTENT → ANIMATE → DEPLOY → VERIFY
+ANALYZE → SCAFFOLD → CONTENT → DEPLOY → VERIFY
 ```
 </workflow_overview>
 
 <step_1_analyze>
 
-Automatically extract all information from the project. Make intelligent defaults - don't ask questions.
-
-### 1.1 Read Project Files
+Extract everything from the project automatically. Make intelligent defaults — don't ask questions.
 
 ```bash
-# Navigate to project root (if in a subdirectory)
-cd ../..
-
-# Read key files
+cd <project-root>          # the repo root, not a subdirectory
 cat README.md
-cat package.json || cat pyproject.toml || cat Cargo.toml
+cat package.json || cat pyproject.toml || cat Cargo.toml || cat go.mod
+git remote get-url origin  # for REPO_SLUG / REPO_URL
 ```
 
-### 1.2 Extract Information
+Extract:
+- **Title** — first H1, or package name. Compose a real `<title>` like `name — short value proposition`.
+- **Description** — first paragraph / package description (one sentence). Used in `<meta description>` and the hero tagline.
+- **Wordmark** — short name for the nav (usually the bare repo/command name).
+- **Features** — the "Features" / "Why X" / "What it does" section; aim for 3 or 6 cards.
+- **Install / run commands** — code blocks with install/run. Default to git installs (`bun install -g github:owner/repo`, `go install github.com/owner/repo@latest`, `pip install git+https://…`); only use registry installs if the package is confirmed published.
+- **Usage / getting-started steps** — the real end-to-end story to dramatize in the `Terminal` demo.
+- **Project type** — CLI / library / MCP server / web app (informs which commands and demos to show).
 
-From README.md:
-- Project title (first H1 or from package.json name)
-- Description (first paragraph after title)
-- Features (look for "Features" section, bullet lists)
-- Installation command (look for code blocks with install commands)
-- Getting started steps (look for "Getting Started" or "Usage")
-
-From package.json/pyproject.toml:
-- Package name
-- Version
-- Repository URL
-- Dependencies (for tech stack showcase)
-
-### 1.3 Determine Project Type
-
-Automatically classify:
-- **CLI Tool**: Has bin field in package.json or CLI-related dependencies
-- **Library**: Has main/exports field, no bin
-- **MCP Server**: Contains "mcp" in name or dependencies
-- **Web App**: Has frontend framework dependencies
-
-### 1.4 Make Intelligent Defaults
-
-If information is missing:
-- No features in README? Extract from description or create generic ones
-- No installation command? Generate git-based installer (e.g. `bun install github:owner/repo`). Only use registry installs (npm/PyPI/crates) if the package is confirmed published there.
-- No repository URL? Use GitHub API to find it from package name
-- No description? Use package.json description
 </step_1_analyze>
 
 <step_2_scaffold>
 
-### 2.1 Create Directory Structure
+Run the scaffold script from the **project root**. It copies the templates, substitutes placeholders, and installs the deploy workflow.
 
 ```bash
-mkdir -p docs/{src/{routes,lib/{components,styles,assets,vendor/orphan-obliterator}},static,.github/workflows}
+REPO_NAME=<repo> \
+PROJECT_TITLE="<name — value prop>" \
+PROJECT_DESCRIPTION="<one-sentence description>" \
+WORDMARK=<short-name> \
+~/.claude/skills/deploy-github-pages/scripts/init-docs.sh <project-root>
+
+cd <project-root>/docs && bun install
 ```
 
-### 2.2 Vendor orphan-obliterator
+`REPO_SLUG`/`REPO_URL` are derived from the git remote; override them with env vars if there is no `origin`. The base path is set to `/<REPO_NAME>` for production automatically.
 
-Copy the built dist from the local lib into the docs vendor directory:
-
-```bash
-cp ~/Documents/development/node/orphan-obliterator/dist/{index.js,index.d.ts} docs/src/lib/vendor/orphan-obliterator/
+This produces (see `assets/scaffold/` for the source of truth):
+```
+docs/
+  package.json  svelte.config.js  vite.config.ts  tsconfig.json
+  src/
+    app.html                       # <title>, <meta>, fonts, umami, project-linking widget
+    lib/styles/global.css          # flt design system (tokens, .tg terminal colors, .compare-table)
+    lib/components/Nav.svelte       # sticky blurred nav, base-aware links, active state
+    lib/components/Terminal.svelte  # traffic-light terminal (dark | green variants)
+    routes/+layout.svelte           # imports global.css + renders <Nav/>
+    routes/+layout.ts               # prerender = true
+    routes/+page.svelte             # home (starter to fill in)
+    routes/features/+page.svelte    # features page (starter to fill in)
+  static/  .nojekyll  robots.txt  icon.svg
+.github/workflows/deploy-docs.yml   # setup-bun@v2 → build → configure-pages@v5 → deploy
 ```
 
-### 2.3 Initialize SvelteKit Project
-
-Create `docs/package.json`:
-
-```json
-{
-  "name": "{{PROJECT_NAME}}-docs",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.7",
-    "@sveltejs/kit": "^2.11.1",
-    "@sveltejs/vite-plugin-svelte": "^5.0.4",
-    "svelte": "^5.17.0",
-    "typescript": "^5.7.3",
-    "vite": "^7.0.5"
-  }
-}
-```
-
-### 2.4 Configure SvelteKit for Static Export
-
-Create `docs/svelte.config.js`:
-
-```javascript
-import adapter from '@sveltejs/adapter-static';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-  kit: {
-    adapter: adapter({
-      pages: 'build',
-      assets: 'build',
-      fallback: null,
-      precompress: false,
-      strict: true
-    }),
-    paths: {
-      base: process.env.NODE_ENV === 'production' ? '/{{REPO_NAME}}' : ''
-    }
-  }
-};
-
-export default config;
-```
-
-### 2.5 Configure Vite
-
-Create `docs/vite.config.ts`:
-
-```typescript
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  plugins: [sveltekit()]
-});
-```
-
-### 2.6 Configure TypeScript
-
-Create `docs/tsconfig.json`:
-
-```json
-{
-  "extends": "./.svelte-kit/tsconfig.json",
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "moduleResolution": "bundler"
-  }
-}
-```
-
-### 2.7 Install Dependencies
-
-```bash
-cd docs
-bun install
-```
 </step_2_scaffold>
 
-<step_3_design>
+<step_3_content>
 
-### 3.1 Design System Specification
+This is the bulk of the work. Replace the starter placeholders with real content. **Keep the section order and the `Terminal`-based demo** — that is what makes the site look good rather than generic.
 
-**Typography:**
-- Primary: Instrument Sans (400, 500, 600)
-- Monospace: DM Mono
-- Load via Google Fonts CDN
+### 3.1 Home page (`docs/src/routes/+page.svelte`)
+- **Hero**: real `<h1>` + tagline. Wire the run/install/agent toggle to real commands (drop modes that don't apply, e.g. no `agent` mode for a plain library).
+- **Animated demo**: fill `steps[]` with a real end-to-end story (one frame per step) and render each frame's command + output inside `<Terminal>`. Use `.tg-prompt` for the `$`, `.tg` / `.tg-bright` / `.tg-dim` for green output, or the default dark variant for normal shells. This is the centerpiece.
+- **Features grid**: 3 or 6 real cards with a short icon glyph, title, description.
+- **CTA**: real install command.
 
-**Colors (Light Theme):**
-```css
---bg-primary: #fafafa;
---bg-secondary: #fff;
---bg-code: #f0f0f0;
---text-primary: #1a1a1a;
---text-secondary: #404040;
---text-tertiary: #606060;
---border: #e0e0e0;
---accent: #1a1a1a;
-```
+### 3.2 Features page (`docs/src/routes/features/+page.svelte`)
+- One block per major feature, each with its own `Terminal` demo.
+- A comparison table vs. alternatives reads well — use `class="compare-table"`.
 
-**Spacing:**
-```css
---section-padding: 60px;
---container-max-width: 1200px;
---container-padding: 24px;
---grid-gap: 24px;
-```
+### 3.3 Nav (`docs/src/lib/components/Nav.svelte`)
+- Edit the `links` array to match the pages you actually create. Keep the GitHub link last and external.
+- Add more routes (e.g. a `prime`/usage page) by creating `docs/src/routes/<name>/+page.svelte` and a matching nav link.
 
-**Responsive Breakpoints:**
-- Desktop: 1000px+
-- Tablet: 700px - 999px
-- Mobile: < 700px
+### 3.4 Content rules
+- Use the `Terminal` component for **every** command demo — never inline `<pre>` for CLI output.
+- `obliterate` is already wired in the home page's `onMount`; add any new long-paragraph selectors to its `selectors` list.
+- Respect the design tokens in `global.css`; don't introduce new colors/fonts.
 
-### 3.2 Create HTML Template
+</step_3_content>
 
-Create `docs/src/app.html`:
+<step_4_deploy>
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%sveltekit.assets%/icon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <script defer src="https://umami-inky-two.vercel.app/script.js" data-website-id="YOUR_WEBSITE_ID"></script>
-  %sveltekit.head%
-</head>
-<body>
-  <div style="display: contents">%sveltekit.body%</div>
-</body>
-</html>
-```
+The workflow is already installed at `.github/workflows/deploy-docs.yml`. Commit and push, then enable Pages.
 
-### 3.3 Create Root Layout
-
-Create `docs/src/routes/+layout.svelte`:
-
-```svelte
-<script lang="ts">
-  import { onMount } from 'svelte';
-  import { obliterate } from '$lib/vendor/orphan-obliterator/index.js';
-  import '../lib/styles/global.css';
-
-  let { children } = $props();
-
-  onMount(() => {
-    const orphans = obliterate('p, li, h2, h3');
-    return () => orphans.destroy();
-  });
-</script>
-
-{@render children()}
-```
-
-Create `docs/src/routes/+layout.ts`:
-
-```typescript
-export const prerender = true;
-```
-
-### 3.4 Create Global Styles
-
-Create `docs/src/lib/styles/global.css`:
-
-```css
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-:root {
-  --bg-primary: #fafafa;
-  --bg-secondary: #fff;
-  --bg-code: #f0f0f0;
-  --text-primary: #1a1a1a;
-  --text-secondary: #404040;
-  --text-tertiary: #606060;
-  --border: #e0e0e0;
-  --accent: #1a1a1a;
-  --section-padding: 60px;
-  --container-max-width: 1200px;
-  --container-padding: 24px;
-  --grid-gap: 24px;
-}
-
-body {
-  font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  font-size: 1.1rem;
-}
-
-code, pre {
-  font-family: 'DM Mono', monospace;
-}
-
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-```
-</step_3_design>
-
-<step_4_content>
-
-Create `docs/src/routes/+page.svelte` with these sections:
-
-### 4.1 Hero Section
-
-```svelte
-<section class="hero">
-  <div class="container">
-    <h1>{{PROJECT_TITLE}}</h1>
-    <p class="description">{{PROJECT_DESCRIPTION}}</p>
-  </div>
-</section>
-
-<style>
-  .hero {
-    padding: var(--section-padding) var(--container-padding);
-    text-align: center;
-    animation: fadeSlideUp 0.5s ease-out forwards;
-  }
-
-  h1 {
-    font-size: 2.5rem;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    margin-bottom: 1rem;
-  }
-
-  .description {
-    font-size: 1.1rem;
-    color: var(--text-secondary);
-    max-width: 700px;
-    margin: 0 auto;
-  }
-</style>
-```
-
-### 4.2 Install Section
-
-```svelte
-<section class="install">
-  <div class="container">
-    <div class="install-box">
-      <code>{{INSTALL_COMMAND}}</code>
-      <button onclick={copyInstall}>Copy</button>
-    </div>
-  </div>
-</section>
-
-<script>
-  function copyInstall() {
-    navigator.clipboard.writeText('{{INSTALL_COMMAND}}');
-  }
-</script>
-```
-
-### 4.3 Features Grid
-
-```svelte
-<section class="features">
-  <div class="container">
-    <h2>Features</h2>
-    <div class="grid">
-      {#each features as feature, i}
-        <div class="feature-card" style="animation-delay: {i * 200}ms">
-          <h3>{feature.title}</h3>
-          <p>{feature.description}</p>
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
-
-<style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--grid-gap);
-  }
-
-  .feature-card {
-    background: var(--bg-secondary);
-    padding: 24px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    animation: fadeSlideUp 0.5s ease-out forwards;
-    opacity: 0;
-  }
-
-  @media (max-width: 1000px) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (max-width: 700px) {
-    .grid {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-```
-
-### 4.4 Getting Started Section
-
-```svelte
-<section class="getting-started">
-  <div class="container">
-    <h2>Getting Started</h2>
-    <div class="steps">
-      {#each steps as step, i}
-        <div class="step" style="animation-delay: {(i + 3) * 200}ms">
-          <div class="step-number">{i + 1}</div>
-          <div class="step-content">
-            <h3>{step.title}</h3>
-            <p>{step.description}</p>
-            {#if step.code}
-              <pre><code>{step.code}</code></pre>
-            {/if}
-          </div>
-        </div>
-      {/each}
-    </div>
-  </div>
-</section>
-```
-
-### 4.5 Footer
-
-```svelte
-<footer>
-  <div class="container">
-    <p>
-      <a href="{{REPO_URL}}" target="_blank">GitHub</a>
-      {#if LICENSE} • {{LICENSE}}{/if}
-    </p>
-  </div>
-</footer>
-```
-</step_4_content>
-
-<step_5_animate>
-
-### 5.1 Animation Timing Guidelines
-
-Follow animation-easing best practices:
-- Duration: 400-500ms for most elements
-- Easing: ease-out for entrance animations
-- Stagger: 200ms intervals for sequential elements
-- Distance: 20px translateY for subtle lift
-
-### 5.2 Apply Staggered Delays
-
-For grids and lists:
-```svelte
-{#each items as item, i}
-  <div style="animation-delay: {i * 200}ms">
-```
-
-For sections:
-- Hero: 0ms
-- Install: 200ms
-- Features: 400ms (then stagger cards)
-- Getting Started: 600ms
-- Footer: 1000ms
-
-### 5.3 Accessibility
-
-Respect prefers-reduced-motion (already in global.css):
-```css
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-```
-</step_5_animate>
-
-<step_6_deploy>
-
-### 6.1 Create Deployment Workflow
-
-Create `docs/.github/workflows/deploy-docs.yml`:
-
-```yaml
-name: Deploy Documentation
-
-on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
-
-      - name: Install dependencies
-        run: cd docs && bun install
-
-      - name: Build
-        run: cd docs && bun run build
-        env:
-          NODE_ENV: production
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/build
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-### 6.2 Create Static Files
-
-Create `docs/static/.nojekyll` (empty file):
 ```bash
-touch docs/static/.nojekyll
+git add docs .github/workflows/deploy-docs.yml
+git commit -m "docs: add GitHub Pages site"
+git push
 ```
 
-Create `docs/static/robots.txt`:
-```
-User-agent: *
-Allow: /
-```
+Then tell the user to enable Pages **once**:
+- Settings → Pages → Source: **GitHub Actions** → Save
+- The next push to `main` touching `docs/**` deploys (or run the workflow manually via `workflow_dispatch`).
 
-Create `docs/static/icon.svg`:
-```svg
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" fill="#1a1a1a"/>
-  <text x="50" y="70" font-family="system-ui" font-size="60" font-weight="bold" fill="white" text-anchor="middle">{{FIRST_LETTER}}</text>
-</svg>
-```
+Site goes live at `https://<owner>.github.io/<REPO_NAME>/`.
 
-### 6.3 Add Workflow to Project Root
+</step_4_deploy>
 
-Copy workflow to project root:
-```bash
-mkdir -p ../.github/workflows
-cp docs/.github/workflows/deploy-docs.yml ../.github/workflows/
-```
-</step_6_deploy>
-
-<step_7_verify>
-
-### 7.1 Build the Site
+<step_5_verify>
 
 ```bash
 cd docs
-bun run build
+NODE_ENV=production bun run build   # must succeed (adapter-static, strict)
+bun run preview                     # spot-check locally
 ```
 
-Check for errors. If build fails, debug and fix issues.
+Verify the build output (`docs/build/index.html`):
+- [ ] `<title>` and `<meta name="description">` are present and real
+- [ ] `_app/` assets resolve (relative `./_app/...` — correct under the base path)
+- [ ] Every linked page prerendered (e.g. `build/features.html` exists)
+- [ ] Nav renders; the project-linking widget + umami script tags are present
 
-### 7.2 Preview Locally
+Quality checklist:
+- [ ] Sticky nav with working active states
+- [ ] At least one animated `Terminal` demo with real commands
+- [ ] Responsive at 375 / 768 / 1440px (grid collapses, demo header stacks)
+- [ ] `prefers-reduced-motion` respected (already in `global.css`)
+- [ ] Semantic structure (`main`, `section`, `nav`, headings in order)
 
-```bash
-bun run preview
-```
+Then consider these follow-up skills: `frontend-design` (aesthetics), `mobile-web` (mobile), `usability-fundamentals` (heuristics).
 
-### 7.3 Validation Checklist
+</step_5_verify>
 
-Use this checklist from usability-fundamentals:
+## Post-deploy reminders
 
-- [ ] Clear information hierarchy (h1 > h2 > h3 > p)
-- [ ] Touch targets ≥44px on mobile (buttons, links)
-- [ ] Readable font sizes (≥16px body text)
-- [ ] Sufficient color contrast (WCAG AA minimum)
-- [ ] Keyboard navigation works (tab through all interactive elements)
-- [ ] Reduced-motion support (prefers-reduced-motion media query)
-</step_7_verify>
-- [ ] Semantic HTML structure (header, main, section, footer)
-- [ ] Responsive at 375px, 768px, 1440px viewports
-
-### 7.4 Manual Testing Steps
-
-1. Open in browser
-2. Test responsive design:
-   - Mobile: 375px width
-   - Tablet: 768px width
-   - Desktop: 1440px width
-3. Test animations (should fade and slide up)
-4. Test copy button for install command
-5. Test all links (GitHub, etc.)
-6. Test keyboard navigation (Tab key)
-7. Test with prefers-reduced-motion enabled
-
-### 7.5 Post-Generation Recommendations
-
-After generating the site, suggest these follow-up skills:
-
-**For mobile optimization:**
-```
-Run the mobile-web skill to verify mobile-specific optimizations like viewport settings, touch targets, safe areas, and performance.
-```
-
-**For usability evaluation:**
-```
-Run the usability-fundamentals skill to evaluate against Nielsen's heuristics and Laws of UX.
-```
-
-**For aesthetic review:**
-```
-Run the frontend-design skill to review aesthetic patterns and identify anti-patterns.
-```
-
-### 7.6 Setup Instructions for User
-
-Print these instructions:
-
-```
-Documentation site created successfully!
-
-Next steps:
-1. Commit and push the docs/ folder
-2. Enable GitHub Pages:
-   - Go to Settings > Pages
-   - Source: GitHub Actions
-   - Save
-3. Push to trigger deployment
-4. Site will be live at: https://{{USERNAME}}.github.io/{{REPO_NAME}}/
-
-Local development:
-  cd docs
-  bun run dev      # Start dev server
-  bun run build    # Build for production
-  bun run preview  # Preview production build
-
-Optional: Run these skills for validation:
-  - mobile-web (verify mobile optimization)
-  - usability-fundamentals (evaluate usability)
-  - frontend-design (review aesthetics)
-```
-
-## Content Extraction Patterns
-
-### From README.md
-
-**Extract project title:**
-```regex
-# (.+)
-```
-First H1 heading
-
-**Extract description:**
-First paragraph after title, usually 1-3 sentences
-
-**Extract features:**
-Look for sections titled:
-- "Features"
-- "Why [Project Name]"
-- "What it does"
-
-Parse bullet points:
-```markdown
-- **Feature name**: Description
-- Feature name - Description
-* Feature name: Description
-```
-
-**Extract installation:**
-Look for code blocks containing:
-- `bun install github:owner/repo` (preferred for unpublished packages)
-- `npm install` / `bun add` (only if published to npm)
-- `pip install` / `pip install git+https://...`
-- `cargo install` / `cargo install --git`
-
-**Default:** If no install command found, use `bun install github:${owner}/${repo}` (most projects are NOT on npm).
-
-**Extract getting started:**
-Look for sections titled:
-- "Getting Started"
-- "Quick Start"
-- "Usage"
-- "How to use"
-
-### From package.json
-
-```json
-{
-  "name": "package-name",
-  "description": "Project description",
-  "repository": {
-    "url": "https://github.com/user/repo"
-  },
-  "bin": { /* CLI tool */ },
-  "main": "index.js", /* Library */
-  "dependencies": { /* Tech stack */ }
-}
-```
-
-### Intelligent Defaults
-
-If README is minimal:
-1. Use package.json description
-2. Generate generic features based on project type
-3. Create standard installation command
-4. Generate basic getting started steps
-
-## References
-
-For detailed information, see:
-- `references/sveltekit-setup.md` - Complete SvelteKit configuration
-- `references/design-patterns.md` - Full design system specification
-- `references/content-strategy.md` - Content extraction patterns
-- `references/animation-patterns.md` - Animation timing and accessibility
-
-## Success Criteria
-
-The skill should produce:
-- Working SvelteKit site that builds successfully
-- Visually consistent output matching design system
-- Smooth fadeSlideUp animations with proper timing
-- Automated GitHub Pages deployment workflow
-- Mobile-responsive layouts (375px, 768px, 1440px)
-- Accessibility features (reduced-motion, semantic HTML)
-- All sections populated with extracted content
-- Copy button for installation command
-- Umami analytics tracking snippet in `app.html`
-- Orphan-obliterator active in root layout (no orphaned words on last lines)
+- Replace `YOUR_WEBSITE_ID` in `docs/src/app.html` with the real Umami id from `https://umami-inky-two.vercel.app`.
+- The project-linking widget (`doublej.github.io/doublej-project-linking/widget.js`) is included by default — leave it unless the user opts out.
 
 ## Troubleshooting
 
-**Build fails:**
-- Check Node.js version (≥18 required)
-- Verify all dependencies installed (`bun install`)
-- Check for syntax errors in Svelte files
+**Build fails** — check Bun/Node present; `bun install` ran; no Svelte syntax errors. `strict: true` fails the build if a linked page can't prerender, so ensure every nav link points at a real route.
 
-**Animations not working:**
-- Verify global.css is imported in +layout.svelte
-- Check browser DevTools for CSS errors
-- Test with prefers-reduced-motion disabled
+**Pages 404 / unstyled** — base path in `svelte.config.js` must equal the repo name; Pages Source must be **GitHub Actions**; check the Actions run succeeded.
 
-**GitHub Pages 404:**
-- Verify base path in svelte.config.js matches repo name
-- Check GitHub Pages settings (Source: GitHub Actions)
-- Verify workflow ran successfully (Actions tab)
+**orphan-obliterator install fails** — it's a GitHub dependency (`github:doublej/orphan-obliterator`); the repo must be reachable at build time. CI uses the default `GITHUB_TOKEN`, which can read public repos.
 
-**Deployment fails:**
-- Check workflow file is in `.github/workflows/`
-- Verify permissions in workflow (contents: read, pages: write)
-- Check GitHub Pages is enabled in repo settings
+## References
 
-## Post-Deploy Reminder
-
-After the docs site is live, remind the user:
-- Replace `YOUR_WEBSITE_ID` in `docs/src/app.html` with the actual ID from the Umami dashboard (`https://umami-inky-two.vercel.app`)
+- `references/design-patterns.md` — full design system + component patterns
+- `references/content-strategy.md` — content extraction patterns
+- `references/animation-patterns.md` — animation timing and accessibility
+- `references/sveltekit-setup.md` — SvelteKit/adapter-static configuration details
+- `assets/scaffold/` — the actual files emitted (source of truth)
