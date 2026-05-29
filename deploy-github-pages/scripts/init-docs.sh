@@ -1,194 +1,76 @@
 #!/bin/bash
-# Quick scaffold script for GitHub Pages documentation
+# Scaffold an flt-quality GitHub Pages docs site from the bundled templates.
+#
+# Usage:   init-docs.sh [PROJECT_ROOT]
+# Override any field via environment variables:
+#   REPO_NAME PROJECT_NAME WORDMARK REPO_SLUG REPO_URL PROJECT_TITLE
+#   PROJECT_DESCRIPTION FIRST_LETTER
+#
+# Copies assets/scaffold/ -> docs/, strips the .tmpl suffix, substitutes
+# {{PLACEHOLDERS}}, and installs the deploy workflow. After running, fill the
+# real content into docs/src/routes/+page.svelte and the features page.
 
-set -e
+set -euo pipefail
 
-PROJECT_ROOT=${1:-.}
-REPO_NAME=$(basename "$PROJECT_ROOT")
+SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCAFFOLD="$SKILL_DIR/assets/scaffold"
+WORKFLOW_TMPL="$SKILL_DIR/assets/deploy-docs.template.yml"
 
-echo "Initializing GitHub Pages docs for: $REPO_NAME"
+PROJECT_ROOT="${1:-.}"
+PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
 
-# Create directory structure
-mkdir -p "$PROJECT_ROOT/docs/src/routes"
-mkdir -p "$PROJECT_ROOT/docs/src/lib/styles"
-mkdir -p "$PROJECT_ROOT/docs/src/lib/components"
-mkdir -p "$PROJECT_ROOT/docs/static"
+# --- Derive defaults --------------------------------------------------------
+REPO_NAME="${REPO_NAME:-$(basename "$PROJECT_ROOT")}"
+PROJECT_NAME="${PROJECT_NAME:-$REPO_NAME}"
+WORDMARK="${WORDMARK:-$REPO_NAME}"
+
+# REPO_SLUG (owner/repo) from the git remote when available.
+if [ -z "${REPO_SLUG:-}" ]; then
+  origin="$(git -C "$PROJECT_ROOT" remote get-url origin 2>/dev/null || true)"
+  REPO_SLUG="$(printf '%s' "$origin" | sed -E 's#^.*github.com[:/]##; s#\.git$##')"
+  [ -z "$REPO_SLUG" ] && REPO_SLUG="OWNER/$REPO_NAME"
+fi
+REPO_URL="${REPO_URL:-https://github.com/$REPO_SLUG}"
+PROJECT_TITLE="${PROJECT_TITLE:-$REPO_NAME}"
+PROJECT_DESCRIPTION="${PROJECT_DESCRIPTION:-}"
+FIRST_LETTER="${FIRST_LETTER:-$(printf '%s' "$REPO_NAME" | cut -c1 | tr '[:lower:]' '[:upper:]')}"
+
+echo "Scaffolding docs for: $REPO_NAME"
+echo "  base path : /$REPO_NAME"
+echo "  repo      : $REPO_URL"
+
+# --- Copy scaffold ----------------------------------------------------------
+DOCS="$PROJECT_ROOT/docs"
+mkdir -p "$DOCS"
+cp -R "$SCAFFOLD/." "$DOCS/"
+
 mkdir -p "$PROJECT_ROOT/.github/workflows"
+cp "$WORKFLOW_TMPL" "$PROJECT_ROOT/.github/workflows/deploy-docs.yml"
 
-# Create package.json
-cat > "$PROJECT_ROOT/docs/package.json" <<EOF
-{
-  "name": "${REPO_NAME}-docs",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@sveltejs/adapter-static": "^3.0.7",
-    "@sveltejs/kit": "^2.11.1",
-    "@sveltejs/vite-plugin-svelte": "^5.0.4",
-    "svelte": "^5.17.0",
-    "typescript": "^5.7.3",
-    "vite": "^7.0.5"
-  }
-}
-EOF
-
-# Create svelte.config.js
-cat > "$PROJECT_ROOT/docs/svelte.config.js" <<EOF
-import adapter from '@sveltejs/adapter-static';
-
-/** @type {import('@sveltejs/kit').Config} */
-const config = {
-  kit: {
-    adapter: adapter({
-      pages: 'build',
-      assets: 'build',
-      fallback: null,
-      precompress: false,
-      strict: true
-    }),
-    paths: {
-      base: process.env.NODE_ENV === 'production' ? '/${REPO_NAME}' : ''
-    }
-  }
-};
-
-export default config;
-EOF
-
-# Create vite.config.ts
-cat > "$PROJECT_ROOT/docs/vite.config.ts" <<EOF
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
-
-export default defineConfig({
-  plugins: [sveltekit()]
-});
-EOF
-
-# Create tsconfig.json
-cat > "$PROJECT_ROOT/docs/tsconfig.json" <<EOF
-{
-  "extends": "./.svelte-kit/tsconfig.json",
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "strict": true,
-    "moduleResolution": "bundler"
-  }
-}
-EOF
-
-# Create .nojekyll
-touch "$PROJECT_ROOT/docs/static/.nojekyll"
-
-# Create robots.txt
-cat > "$PROJECT_ROOT/docs/static/robots.txt" <<EOF
-User-agent: *
-Allow: /
-EOF
-
-# Create app.html
-cat > "$PROJECT_ROOT/docs/src/app.html" <<EOF
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%sveltekit.assets%/icon.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  %sveltekit.head%
-</head>
-<body>
-  <div style="display: contents">%sveltekit.body%</div>
-</body>
-</html>
-EOF
-
-# Create +layout.svelte
-cat > "$PROJECT_ROOT/docs/src/routes/+layout.svelte" <<EOF
-<script lang="ts">
-  import '../lib/styles/global.css';
-  let { children } = \$props();
-</script>
-
-{@render children()}
-EOF
-
-# Create +layout.ts
-cat > "$PROJECT_ROOT/docs/src/routes/+layout.ts" <<EOF
-export const prerender = true;
-EOF
-
-# Create global.css
-cat > "$PROJECT_ROOT/docs/src/lib/styles/global.css" <<EOF
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+# --- Strip .tmpl suffix and substitute placeholders -------------------------
+subst() {
+  sed -e "s|{{REPO_NAME}}|$REPO_NAME|g" \
+      -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
+      -e "s|{{WORDMARK}}|$WORDMARK|g" \
+      -e "s|{{REPO_SLUG}}|$REPO_SLUG|g" \
+      -e "s|{{REPO_URL}}|$REPO_URL|g" \
+      -e "s|{{PROJECT_TITLE}}|$PROJECT_TITLE|g" \
+      -e "s|{{PROJECT_DESCRIPTION}}|$PROJECT_DESCRIPTION|g" \
+      -e "s|{{FIRST_LETTER}}|$FIRST_LETTER|g"
 }
 
-:root {
-  --bg-primary: #fafafa;
-  --bg-secondary: #fff;
-  --bg-code: #f0f0f0;
-  --text-primary: #1a1a1a;
-  --text-secondary: #404040;
-  --text-tertiary: #606060;
-  --border: #e0e0e0;
-  --accent: #1a1a1a;
-  --section-padding: 60px;
-  --container-max-width: 1200px;
-  --container-padding: 24px;
-  --grid-gap: 24px;
-}
+find "$DOCS" -name '*.tmpl' | while read -r tmpl; do
+  out="${tmpl%.tmpl}"
+  subst < "$tmpl" > "$out"
+  rm "$tmpl"
+done
 
-body {
-  font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  line-height: 1.6;
-  font-size: 1.1rem;
-}
-
-code, pre {
-  font-family: 'DM Mono', monospace;
-}
-
-@keyframes fadeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-EOF
-
-echo "Directory structure created"
 echo ""
-echo "Next steps:"
-echo "  cd $PROJECT_ROOT/docs"
-echo "  bun install"
-echo "  bun run dev"
+echo "Scaffold ready. Next:"
+echo "  cd $DOCS && bun install && bun run dev"
+echo ""
+echo "Then fill real content into:"
+echo "  docs/src/routes/+page.svelte          (demo steps, features, commands)"
+echo "  docs/src/routes/features/+page.svelte (feature deep-dives)"
+echo "  docs/src/lib/components/Nav.svelte     (nav links)"
+echo "  docs/src/app.html                      (replace YOUR_WEBSITE_ID with the Umami id)"

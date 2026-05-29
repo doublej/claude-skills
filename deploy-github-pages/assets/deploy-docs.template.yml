@@ -1,10 +1,10 @@
-name: Deploy Documentation
+name: Deploy docs to GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths:
-      - 'docs/**'
+    paths: [docs/**]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -12,31 +12,30 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
+      - uses: oven-sh/setup-bun@v2
 
       - name: Install dependencies
-        run: cd docs && bun install
+        working-directory: docs
+        run: bun install
 
       - name: Build
-        run: cd docs && bun run build
+        working-directory: docs
+        run: bun run build
         env:
           NODE_ENV: production
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: docs/build
 
@@ -47,6 +46,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4

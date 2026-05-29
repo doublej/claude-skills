@@ -1,0 +1,196 @@
+<!--
+  Home page starter — flt-quality structure. Replace the placeholder content
+  (steps, features, commands) with real project content extracted from the README.
+  Keep the section order and the Terminal-based demo: it is what makes the site
+  "look good" rather than generic.
+-->
+<script lang="ts">
+  import { base } from '$app/paths'
+  import { obliterate } from 'orphan-obliterator'
+  import { onMount } from 'svelte'
+  import Terminal from '$lib/components/Terminal.svelte'
+
+  type Mode = 'run' | 'install' | 'agent'
+  let mode = $state<Mode>('install')
+  let copied = $state(false)
+  let step = $state(0)
+
+  // TODO: one entry per frame of the animated demo. Tell a real end-to-end story.
+  const steps = [
+    { title: 'First command', description: 'Describe the real task a user accomplishes here.' },
+    { title: 'Second command', description: 'Build on the previous step — show progression.' },
+    { title: 'Result', description: 'Show the payoff: the output the user wanted.' },
+  ]
+
+  // TODO: real install/run commands for this project.
+  const display_map: Record<Mode, string> = {
+    run: 'bunx github:{{REPO_SLUG}}',
+    install: 'bun install -g github:{{REPO_SLUG}}',
+    agent: 'bunx github:{{REPO_SLUG}} prime',
+  }
+  const copy_map: Record<Mode, string> = {
+    run: 'bunx github:{{REPO_SLUG}}',
+    install: 'bun install -g github:{{REPO_SLUG}}',
+    agent: 'bunx github:{{REPO_SLUG}} prime',
+  }
+
+  // TODO: real features (3 or 6 reads best in the grid).
+  const features = [
+    { icon: '⇄', title: 'Feature one', description: 'What it does and why it matters.' },
+    { icon: '◇', title: 'Feature two', description: 'What it does and why it matters.' },
+    { icon: '★', title: 'Feature three', description: 'What it does and why it matters.' },
+  ]
+
+  onMount(() => {
+    const instance = obliterate({
+      selectors: ['p', '.tagline', '.description', '.feature-card p'],
+      rules: { minLastLineWords: 3, maxProtectedChars: 40 },
+    })
+    return () => instance.destroy()
+  })
+
+  function copyCommand() {
+    navigator.clipboard.writeText(copy_map[mode])
+    copied = true
+    setTimeout(() => (copied = false), 2000)
+  }
+</script>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>{{PROJECT_TITLE}}</h1>
+      <p class="tagline">{{PROJECT_DESCRIPTION}}</p>
+
+      <div class="hero-actions">
+        <div class="mode-toggle">
+          <button class:active={mode === 'run'} onclick={() => (mode = 'run')}>Run</button>
+          <button class:active={mode === 'install'} onclick={() => (mode = 'install')}>Install</button>
+          <button class:active={mode === 'agent'} onclick={() => (mode = 'agent')}>Agent</button>
+        </div>
+        <div class="command-box">
+          <code>{display_map[mode]}</code>
+          <button class="copy-btn" onclick={copyCommand}>{copied ? 'Copied' : 'Copy'}</button>
+        </div>
+      </div>
+
+      <div class="hero-links">
+        <a href="{{REPO_URL}}" target="_blank" rel="noopener noreferrer" class="hero-link">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="demo">
+    <div class="container">
+      <div class="demo-header">
+        <div class="demo-header-text">
+          <h2>{steps[step].title}</h2>
+          <p class="description">{steps[step].description}</p>
+        </div>
+        <div class="demo-nav">
+          <button class="nav-arrow" disabled={step === 0} onclick={() => step--}>&larr;</button>
+          <span class="demo-count">{step + 1} / {steps.length}</span>
+          <button class="nav-arrow" disabled={step === steps.length - 1} onclick={() => step++}>&rarr;</button>
+        </div>
+      </div>
+      <Terminal>
+        <!-- TODO: render the command + output for `steps[step]`. Use <span class="tg">…</span>
+             for green terminal text, and a `.tg-prompt` for the $ prompt. -->
+        <div><span class="tg-prompt">$</span> command for step {step + 1}</div>
+        <div>output line…</div>
+      </Terminal>
+    </div>
+  </section>
+
+  <section class="features">
+    <div class="container">
+      <h2>What it does</h2>
+      <div class="grid">
+        {#each features as feature}
+          <div class="feature-card">
+            <div class="feature-icon">{feature.icon}</div>
+            <h3>{feature.title}</h3>
+            <p>{feature.description}</p>
+          </div>
+        {/each}
+      </div>
+      <div class="features-cta">
+        <a href="{base}/features" class="features-link">See all features &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="container">
+      <h2>Ready to start?</h2>
+      <pre class="cta-install"><code>{display_map.install}</code></pre>
+      <p><a href="{{REPO_URL}}" target="_blank" rel="noopener noreferrer">GitHub</a> · MIT License</p>
+    </div>
+  </section>
+</main>
+
+<style>
+  .container {
+    max-width: var(--container-max-width);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+  }
+
+  section { padding: var(--section-padding) 0; }
+
+  .hero { text-align: center; animation: fadeSlideUp 0.5s ease-out forwards; }
+  h1 { font-size: 2.6rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .tagline { font-size: 1.15rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto 2rem; }
+
+  .hero-actions { max-width: 520px; margin: 0 auto 1.5rem; }
+  .mode-toggle { display: inline-flex; gap: 4px; background: var(--accent-subtle); padding: 4px; border-radius: 10px; margin-bottom: 12px; }
+  .mode-toggle button {
+    border: none; background: transparent; font: inherit; font-size: 0.85rem; font-weight: 500;
+    color: var(--text-secondary); padding: 6px 16px; border-radius: 7px; cursor: pointer; transition: background 0.15s, color 0.15s;
+  }
+  .mode-toggle button.active { background: var(--bg-secondary); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+  .command-box {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    background: var(--bg-code); border-radius: 10px; padding: 14px 16px;
+  }
+  .command-box code { color: var(--text-code); font-size: 0.9rem; }
+  .copy-btn {
+    border: none; background: rgba(255,255,255,0.1); color: #ddd; font: inherit; font-size: 0.8rem;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: background 0.15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,0.18); }
+
+  .hero-link { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
+  .hero-link:hover { text-decoration: underline; }
+
+  .demo-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; gap: 16px; }
+  .demo-header h2 { font-size: 1.4rem; font-weight: 600; }
+  .demo-nav { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .nav-arrow {
+    border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);
+    width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1rem;
+  }
+  .nav-arrow:disabled { opacity: 0.35; cursor: default; }
+  .demo-count { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--text-tertiary); }
+
+  .features h2, .cta h2 { font-size: 1.8rem; font-weight: 600; text-align: center; margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--grid-gap); }
+  .feature-card { background: var(--bg-secondary); padding: 24px; border: 1px solid var(--border); border-radius: 12px; }
+  .feature-icon { font-size: 1.5rem; margin-bottom: 12px; }
+  .feature-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
+  .feature-card p { font-size: 0.95rem; color: var(--text-secondary); }
+  .features-cta { text-align: center; margin-top: 2rem; }
+  .features-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+
+  .cta { text-align: center; }
+  .cta-install { display: inline-block; background: var(--bg-code); color: var(--text-code); padding: 14px 20px; border-radius: 10px; margin-bottom: 1rem; }
+  .cta a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    h1 { font-size: 2rem; }
+    .demo-header { flex-direction: column; align-items: flex-start; }
+  }
+</style>

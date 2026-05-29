@@ -1,0 +1,47 @@
+<!--
+  Features page starter. Expand each feature into its own block with a Terminal
+  demo showing the feature in action. A comparison table (.compare-table) versus
+  alternatives reads well here. Delete this page (and its Nav link) if the project
+  only warrants a single page.
+-->
+<script lang="ts">
+  import Terminal from '$lib/components/Terminal.svelte'
+
+  // TODO: real feature deep-dives.
+  const features = [
+    { title: 'Feature one', body: 'Explain the capability in a sentence or two.' },
+    { title: 'Feature two', body: 'Explain the capability in a sentence or two.' },
+  ]
+</script>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>What makes {{WORDMARK}} different</h1>
+      <p class="subtitle">The capabilities you won't find elsewhere.</p>
+    </div>
+  </section>
+
+  {#each features as feature}
+    <section class="feature">
+      <div class="container">
+        <h2>{feature.title}</h2>
+        <p>{feature.body}</p>
+        <Terminal>
+          <div><span class="tg-prompt">$</span> demo command</div>
+          <div>output…</div>
+        </Terminal>
+      </div>
+    </section>
+  {/each}
+</main>
+
+<style>
+  .container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--container-padding); }
+  section { padding: var(--section-padding) 0; }
+  .hero { text-align: center; }
+  h1 { font-size: 2.4rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
+  .feature h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.75rem; }
+  .feature p { color: var(--text-secondary); max-width: 680px; margin-bottom: 1.5rem; }
+</style>
