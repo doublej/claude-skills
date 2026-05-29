@@ -74,48 +74,65 @@ body { letter-spacing: normal; }
 
 ## Color Palette
 
-### Light Theme (Only)
+### Light Theme (the flt system)
+
+This is the canonical palette emitted by `assets/scaffold/src/lib/styles/global.css`. Dark **terminals** sit on a light page — the contrast is what makes demos pop.
 
 ```css
 :root {
   /* Backgrounds */
-  --bg-primary: #fafafa;       /* Main page background */
-  --bg-secondary: #fff;        /* Card backgrounds */
-  --bg-tertiary: #f5f5f5;      /* Subtle backgrounds */
-  --bg-code: #f0f0f0;          /* Code block backgrounds */
+  --bg-primary: #f8f8f8;       /* Main page background */
+  --bg-secondary: #fefefe;     /* Card backgrounds */
+  --bg-code: #1e1e1e;          /* Terminal / code body (dark) */
+  --bg-code-header: #262626;   /* Terminal title bar */
 
   /* Text colors */
-  --text-primary: #1a1a1a;     /* Main text */
-  --text-secondary: #404040;   /* Secondary text */
-  --text-tertiary: #606060;    /* Tertiary text */
-  --text-quaternary: #808080;  /* Subtle text */
+  --text-primary: #2a2a2a;     /* Main text */
+  --text-secondary: #555;      /* Secondary text */
+  --text-tertiary: #777;       /* Tertiary text */
+  --text-code: #d4d4d4;        /* Text on dark terminal */
 
   /* Borders */
-  --border: #e0e0e0;           /* Default borders */
-  --border-subtle: #d0d0d0;    /* Hover/focus borders */
+  --border: #e2e2e2;           /* Default borders */
 
-  /* Accent */
-  --accent: #1a1a1a;           /* Buttons, links, emphasis */
-  --accent-hover: #404040;     /* Hover state */
+  /* Accent (blue, not black) */
+  --accent: #2266cc;           /* Links, emphasis */
+  --accent-subtle: #edf2fa;    /* Toggle/pill backgrounds */
 }
+```
+
+Terminal-green helpers (for the `green` Terminal variant, GDS/TUI demos):
+```css
+.tg { color: #33ff33; }        /* default green output */
+.tg-dim { color: #1a9a1a; }    /* secondary green */
+.tg-bright { color: #66ff66; } /* emphasis green */
+.tg-prompt { color: #33ff33; } /* the $ prompt */
 ```
 
 ### Usage Guidelines
 
 **Backgrounds:**
-- Page: `var(--bg-primary)` (#fafafa)
-- Cards/panels: `var(--bg-secondary)` (#fff)
-- Code blocks: `var(--bg-code)` (#f0f0f0)
+- Page: `var(--bg-primary)` (#f8f8f8)
+- Cards/panels: `var(--bg-secondary)` (#fefefe)
+- Terminals/code: `var(--bg-code)` (#1e1e1e) — always dark
 
 **Text:**
-- Headings: `var(--text-primary)` (#1a1a1a)
-- Body text: `var(--text-secondary)` (#404040)
-- Captions/metadata: `var(--text-tertiary)` (#606060)
-- Disabled/placeholder: `var(--text-quaternary)` (#808080)
+- Headings: `var(--text-primary)` (#2a2a2a)
+- Body text: `var(--text-secondary)` (#555)
+- Captions/metadata: `var(--text-tertiary)` (#777)
+- On dark terminals: `var(--text-code)` (#d4d4d4)
 
 **Borders:**
-- Default: `1px solid var(--border)` (#e0e0e0)
-- Hover: `1px solid var(--border-subtle)` (#d0d0d0)
+- Default: `1px solid var(--border)` (#e2e2e2)
+
+**Accent:**
+- Links / emphasis: `var(--accent)` (#2266cc)
+- Pill / toggle backgrounds: `var(--accent-subtle)` (#edf2fa)
+
+> Some component snippets below use convenience tokens not in the shipped core
+> set — `--accent-hover` (≈ `#1a52a8`, a darker accent) and `--bg-tertiary`
+> (≈ `#f0f0f0`). Add them to `:root` only if a component needs them; the scaffold
+> ships the core tokens above.
 
 ## Spacing System
 
@@ -436,8 +453,8 @@ footer a:hover {
 ### Color Contrast
 
 All color combinations meet WCAG AA standards:
-- `#1a1a1a` on `#fafafa`: 14.8:1 (AAA)
-- `#404040` on `#fafafa`: 9.4:1 (AAA)
+- `#2a2a2a` on `#f8f8f8`: ~12:1 (AAA)
+- `#555` on `#f8f8f8`: ~7:1 (AAA)
 - `#606060` on `#fafafa`: 6.1:1 (AA)
 - White on `#1a1a1a`: 17.4:1 (AAA)
 

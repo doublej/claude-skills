@@ -1,103 +1,70 @@
 # GitHub Pages Documentation Generator
 
-Automates creation of beautiful, animated GitHub Pages documentation sites using SvelteKit.
+Generates polished, animated, **multi-page** GitHub Pages documentation sites with SvelteKit, modeled on the reference site `https://doublej.github.io/flt/`, and deploys them via GitHub Actions.
+
+## Reference output
+
+The canonical "good" output is **flt** (`https://doublej.github.io/flt/`): a sticky blurred nav, a hero with a run/install/agent toggle, an animated `Terminal` demo carousel, a features grid, a command reference, and a CTA — across multiple pages. The skill exists to reproduce that quality, not the bare single-page template it grew out of.
 
 ## What This Skill Does
 
-This skill generates complete documentation websites for GitHub repositories by:
+1. **Analyzes** the project (README, manifest, git remote) to extract content
+2. **Scaffolds** the full SvelteKit site from `assets/scaffold/` via `scripts/init-docs.sh`
+3. **Fills** the pages with real content built around `Terminal` demos
+4. **Deploys** via a GitHub Actions workflow (`setup-bun@v2` → build → `configure-pages@v5` → deploy)
+5. **Verifies** the production build and prerendered pages
 
-1. **Analyzing** your project (README, package.json) to extract content
-2. **Scaffolding** a SvelteKit static site with optimal configuration
-3. **Designing** with proven aesthetic patterns (Instrument Sans typography, light theme, subtle animations)
-4. **Generating** content sections (hero, features, installation, getting started)
-5. **Animating** with fadeSlideUp entrance effects and staggered delays
-6. **Deploying** via GitHub Actions to GitHub Pages
-7. **Verifying** the build and providing post-generation recommendations
+## Design System (flt)
 
-## Key Features
-
-- **Fully Automated**: Extracts all content from your existing project files
-- **Beautiful Design**: Follows proven patterns from successful open-source docs
-- **Responsive**: Mobile-first design with tested breakpoints
-- **Accessible**: Reduced-motion support, semantic HTML, keyboard navigation
-- **Fast**: SvelteKit static generation for optimal performance
-- **Consistent**: Uses exact design system (colors, typography, spacing)
-
-## Design System
-
-- **Fonts**: Instrument Sans (primary) + DM Mono (code)
-- **Colors**: Light theme (#fafafa backgrounds, #1a1a1a text)
-- **Animation**: fadeSlideUp (500ms ease-out, 200ms stagger)
-- **Layout**: Max-width 1200px, 60px section padding
-- **Responsive**: 375px (mobile), 768px (tablet), 1440px (desktop)
+- **Fonts**: Instrument Sans (UI) + DM Mono (code/terminals)
+- **Palette**: light page (`#f8f8f8`), **dark terminals** (`#1e1e1e`), blue accent (`#2266cc`)
+- **Components**: `Nav.svelte` (sticky, blurred, base-aware) + `Terminal.svelte` (traffic-light, dark/green variants)
+- **Animation**: `fadeSlideUp` (500ms ease-out), `prefers-reduced-motion` respected
+- **Orphan control**: `orphan-obliterator` as a GitHub dependency
 
 ## Output Structure
 
 ```
 docs/
+├── package.json  svelte.config.js  vite.config.ts  tsconfig.json
 ├── src/
-│   ├── app.html
-│   ├── routes/
-│   │   ├── +layout.svelte
-│   │   ├── +layout.ts
-│   │   └── +page.svelte
-│   └── lib/
-│       └── styles/
-│           └── global.css
-├── static/
-│   ├── .nojekyll
-│   ├── icon.svg
-│   └── robots.txt
-├── package.json
-├── svelte.config.js
-├── vite.config.ts
-└── tsconfig.json
+│   ├── app.html                       # <title>, <meta>, fonts, umami, project-linking widget
+│   ├── lib/
+│   │   ├── styles/global.css          # flt design system
+│   │   └── components/
+│   │       ├── Nav.svelte             # sticky blurred nav
+│   │       └── Terminal.svelte        # animated terminal demos
+│   └── routes/
+│       ├── +layout.svelte             # imports global.css + <Nav/>
+│       ├── +layout.ts                 # prerender = true
+│       ├── +page.svelte               # home
+│       └── features/+page.svelte      # features page
+└── static/  .nojekyll  icon.svg  robots.txt
 
-.github/
-└── workflows/
-    └── deploy-docs.yml
+.github/workflows/deploy-docs.yml
 ```
 
-## Technologies
+## Bundled Resources
 
-- SvelteKit 2.x with static adapter
-- Bun for package management
-- TypeScript strict mode
-- Vite 7.x build tooling
-- GitHub Actions deployment
-
-## References
-
-- `references/sveltekit-setup.md` - Complete SvelteKit configuration guide
-- `references/design-patterns.md` - Full design system specification
-- `references/content-strategy.md` - Content extraction patterns
-- `references/animation-patterns.md` - Animation timing and accessibility
-
-## Helper Scripts
-
-- `scripts/init-docs.sh` - Quick scaffold script
+- `assets/scaffold/` — the actual files emitted (source of truth)
+- `assets/deploy-docs.template.yml` — the GitHub Actions workflow
+- `scripts/init-docs.sh` — scaffold + placeholder substitution
+- `references/design-patterns.md` — full design system + component patterns
+- `references/content-strategy.md` — content extraction patterns
+- `references/animation-patterns.md` — animation timing and accessibility
+- `references/sveltekit-setup.md` — SvelteKit / adapter-static configuration
 
 ## Related Skills
 
-This skill integrates well with:
-- `mobile-web` - Verify mobile optimization after generation
-- `usability-fundamentals` - Evaluate against Nielsen's heuristics
-- `frontend-design` - Review aesthetic patterns
+- `design-frontend` — review aesthetics after generation
+- `ui-mobile` — verify mobile optimization
+- `ui-usability` — evaluate against Nielsen's heuristics
 
 ## Success Criteria
 
 Generated sites should:
-- Build successfully with `bun run build`
-- Match the proven design system exactly
-- Include smooth animations with proper timing
-- Deploy automatically via GitHub Actions
-- Be responsive at all breakpoints
-- Pass accessibility checks
-
-## Example Output
-
-See these projects for examples of the design patterns:
-- consult-user-mcp documentation
-- beads-kanban documentation
-
-Both follow the exact same design system that this skill generates.
+- Build successfully with `NODE_ENV=production bun run build` (adapter-static, strict)
+- Prerender every linked page (`build/index.html`, `build/features.html`, …)
+- Match the flt design system (dark terminals on a light page, blue accent)
+- Ship a real `<title>`/`<meta>`, a sticky nav, and at least one animated `Terminal` demo
+- Deploy automatically via GitHub Actions to `https://<owner>.github.io/<repo>/`
