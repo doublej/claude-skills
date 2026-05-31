@@ -29,7 +29,17 @@ ANALYZED_DIR = SKILL_DIR / "state" / "analyzed"
 PROMPT_FILE = SKILL_DIR / "scripts" / "prompts" / "analyzer_prompt.md"
 USAGE_LOG = SKILL_DIR / "state" / "token_usage.jsonl"
 
+# Skills can live in three places; the analyzer resolves SKILL.md across all of them.
+CLAUDE_SKILLS_DIR = Path.home() / ".claude" / "skills"
+PLUGINS_DIR = Path.home() / ".claude" / "plugins"
+
 ANALYZER_MODEL = "claude-sonnet-4-6"
+
+# A transient Sonnet/CLI failure must not consume a marker — retry up to this many
+# times across subsequent Stop events, then give up so a bad marker can't loop forever.
+MAX_ATTEMPTS = 3
+# Housekeeping: drop fully-analyzed marker files older than this so the dir stays small.
+MARKER_TTL_DAYS = 30
 
 SEVERITY_TO_PRIORITY = {"high": "1", "medium": "2", "low": "3"}
 KIND_TO_BD_TYPE = {
@@ -81,16 +91,22 @@ def slice_transcript(transcript_path: str, since_ts: str) -> str:
 
 
 def find_skill_md(skill_name: str) -> Path | None:
-    """Resolve a skill name to its SKILL.md path. Tries exact match first."""
-    direct = SKILLS_ROOT / skill_name / "SKILL.md"
-    if direct.exists():
-        return direct
-    # Handle namespaced skills like "svelte:svelte-core-bestpractices" → svelte-core-bestpractices
-    if ":" in skill_name:
-        suffix = skill_name.split(":", 1)[1]
-        cand = SKILLS_ROOT / suffix / "SKILL.md"
-        if cand.exists():
-            return cand
+    """Resolve a skill name to its SKILL.md across every install location.
+
+    Searches the claude-skills repo, the global ~/.claude/skills dir, and plugin
+    skill dirs. Namespaced names (``plugin:skill``) resolve on their suffix.
+    Returns None for things that have no SKILL.md (e.g. slash-commands), which
+    the caller skips quietly.
+    """
+    suffix = skill_name.split(":", 1)[1] if ":" in skill_name else skill_name
+    for base in (SKILLS_ROOT, CLAUDE_SKILLS_DIR):
+        for name in (skill_name, suffix):
+            cand = base / name / "SKILL.md"
+            if cand.exists():
+                return cand
+    # Plugin skills: ~/.claude/plugins/**/skills/<suffix>/SKILL.md
+    for cand in PLUGINS_DIR.glob(f"**/skills/{suffix}/SKILL.md"):
+        return cand
     return None
 
 
@@ -155,7 +171,7 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str, sessi
 
     if proc.returncode != 0:
         log(f"claude -p failed (rc={proc.returncode}): {proc.stderr[:500]}")
-        return {"findings": []}
+        return {"findings": [], "ok": False}
 
     # --output-format json emits an array of events; the final type=result object
     # carries both the model's text (result) and token usage.
@@ -163,7 +179,7 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str, sessi
         events = json.loads(proc.stdout)
     except json.JSONDecodeError:
         log(f"Could not parse claude -p envelope. Raw (first 500): {proc.stdout[:500]}")
-        return {"findings": []}
+        return {"findings": [], "ok": False}
 
     events = events if isinstance(events, list) else [events]
     result_obj = next(
@@ -172,7 +188,7 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str, sessi
     )
     if result_obj is None:
         log("No result event in claude -p output")
-        return {"findings": []}
+        return {"findings": [], "ok": False}
 
     log_token_usage(skill_name, session_id, result_obj)
 
@@ -184,15 +200,33 @@ def run_sonnet(skill_name: str, skill_md_text: str, transcript_slice: str, sessi
             raw = raw.rsplit("```", 1)[0]
     raw = raw.strip()
 
-    try:
-        result = json.loads(raw)
-    except json.JSONDecodeError:
+    result = _parse_findings(raw)
+    if result is None:
         log(f"Could not parse Sonnet findings as JSON. Raw (first 500): {raw[:500]}")
-        return {"findings": []}
+        return {"findings": [], "ok": False}
 
-    if not isinstance(result.get("findings"), list):
-        return {"findings": []}
+    result["ok"] = True
     return result
+
+
+def _parse_findings(raw: str) -> dict[str, Any] | None:
+    """Parse the model's findings JSON. Falls back to extracting the first {...}
+    object when the model wraps it in prose. Returns None if no valid object."""
+    for candidate in (raw, _first_json_object(raw)):
+        if not candidate:
+            continue
+        try:
+            obj = json.loads(candidate)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(obj.get("findings"), list):
+            return obj
+    return None
+
+
+def _first_json_object(raw: str) -> str | None:
+    start, end = raw.find("{"), raw.rfind("}")
+    return raw[start : end + 1] if start != -1 and end > start else None
 
 
 def existing_titles_for_skill(skill_name: str) -> set[str]:
@@ -286,23 +320,29 @@ def process_session(session_id: str) -> None:
             log(f"All markers already analyzed for {session_id}")
             return
 
-        log(f"Analyzing {len(unanalyzed)} marker(s) for session {session_id}")
-        skills = ", ".join(sorted({m.get("skill", "?") for m in unanalyzed}))
-        notify("Skill analysis started", f"{len(unanalyzed)} invocation(s): {skills}")
+        # Resolve up front: things with no SKILL.md (slash-commands, unknown names)
+        # are skipped quietly so the notification reflects real analysis work only.
+        resolved: list[tuple[dict[str, Any], Path]] = []
+        for marker in unanalyzed:
+            skill_md_path = find_skill_md(marker.get("skill", ""))
+            if skill_md_path is None:
+                log(f"Could not resolve SKILL.md for '{marker.get('skill', '')}' — skipping")
+                marker["analyzed"] = True
+                marker["skip_reason"] = "skill_not_found"
+            else:
+                resolved.append((marker, skill_md_path))
+
+        if resolved:
+            skills = ", ".join(sorted({m.get("skill", "?") for m, _ in resolved}))
+            log(f"Analyzing {len(resolved)} marker(s) for session {session_id}")
+            notify("Skill analysis started", f"{len(resolved)} invocation(s): {skills}")
 
         dedup_cache: dict[str, set[str]] = {}
 
-        for marker in unanalyzed:
+        for marker, skill_md_path in resolved:
             skill_name = marker.get("skill", "")
             since_ts = marker.get("ts", "")
             transcript_path = marker.get("transcript_path", "")
-
-            skill_md_path = find_skill_md(skill_name)
-            if not skill_md_path:
-                log(f"Could not resolve SKILL.md for '{skill_name}' — skipping")
-                marker["analyzed"] = True
-                marker["skip_reason"] = "skill_not_found"
-                continue
 
             skill_md_text = skill_md_path.read_text()
             slice_text = slice_transcript(transcript_path, since_ts)
@@ -313,6 +353,17 @@ def process_session(session_id: str) -> None:
                 continue
 
             result = run_sonnet(skill_name, skill_md_text, slice_text, session_id)
+            if not result.get("ok"):
+                attempts = marker.get("attempts", 0) + 1
+                marker["attempts"] = attempts
+                if attempts >= MAX_ATTEMPTS:
+                    marker["analyzed"] = True
+                    marker["skip_reason"] = "max_retries"
+                    log(f"  {skill_name}: analysis failed {attempts}x — giving up")
+                else:
+                    log(f"  {skill_name}: analysis failed (attempt {attempts}/{MAX_ATTEMPTS}) — will retry")
+                continue
+
             findings = result.get("findings", [])
             log(f"  {skill_name}: {len(findings)} finding(s)")
 
@@ -341,6 +392,23 @@ def process_session(session_id: str) -> None:
         log(f"Done with session {session_id}")
 
 
+def prune_old_markers() -> None:
+    """Delete fully-analyzed marker files (and their locks) older than the TTL.
+    Best-effort housekeeping; never raises into the analyzer."""
+    cutoff = time.time() - MARKER_TTL_DAYS * 86400
+    for mf in MARKERS_DIR.glob("*.jsonl"):
+        try:
+            if mf.stat().st_mtime >= cutoff:
+                continue
+            lines = [ln for ln in mf.read_text().splitlines() if ln.strip()]
+            if any(not json.loads(ln).get("analyzed", False) for ln in lines):
+                continue
+            mf.unlink(missing_ok=True)
+            (ANALYZED_DIR / f"{mf.stem}.lock").unlink(missing_ok=True)
+        except (OSError, json.JSONDecodeError):
+            continue
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         log("Usage: analyzer.py <payload_file>")
@@ -367,6 +435,8 @@ def main() -> int:
     except Exception as e:
         log(f"process_session failed: {e}")
         return 1
+    finally:
+        prune_old_markers()
     return 0
 
 
