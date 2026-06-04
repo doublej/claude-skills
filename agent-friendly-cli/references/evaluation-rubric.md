@@ -39,6 +39,7 @@ Each area maps to a section in `focus-areas.md` — consult it for what "complet
 - [ ] One-shot primer: commands, flags, output shapes, error codes
 - [ ] Defaults to Markdown (TTY or piped); `--json`/`--xml` opt-in; self-described output contract
 - [ ] Live "detected" env block; workflow + operational guardrails
+- [ ] _Bonus (unscored):_ shared learnings loop — `learn`/`vote` + top-voted surfaced in `prime`
 
 ### 8. Safety & writes (0-2)
 - [ ] Atomic mutate-with-rollback; validate before commit

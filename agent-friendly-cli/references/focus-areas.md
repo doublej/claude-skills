@@ -90,6 +90,7 @@ round-trips, not from formatting.
 - **Response-format directives** — Tell the agent how to present results (lead with a session line, show top 3–5 with IDs).
 - **Workflow guidance** — Encode a gated multi-phase flow (resolve → search → shortlist → compose → deliver) so the agent sequences correctly.
 - **Operational guardrails** — State rate-limit rules ("never parallelize; on BLOCKED sleep and retry smaller") directly in the primer.
+- **Self-improving learnings loop (advanced)** — Let agents `learn`/`vote` on cross-session strategies stored in a global file, and render the top-voted ones in `prime`, so the next agent inherits hard-won heuristics instead of rediscovering them. See the "Shared Learnings Loop" section in `../SKILL.md`.
 </agent_contract>
 
 <safety_and_writes>

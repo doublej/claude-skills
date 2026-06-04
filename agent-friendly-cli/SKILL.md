@@ -170,6 +170,44 @@ Same model backs `--json`:
 ```
 </self_description>
 
+<shared_learnings>
+## Shared Learnings Loop (advanced)
+
+The ten focus areas optimize a *single* agent's interaction. This pattern optimizes
+*across* agents and sessions: let agents persist hard-won strategies, vote on them,
+and surface the top-voted ones in `prime` — so the next agent starts where the last
+one left off instead of rediscovering the same heuristics (and re-paying the same
+round-trips). Worth it for CLIs many agents drive repeatedly over time; skip it for
+one-shot tools.
+
+### Commands
+
+```
+mytool learn "Tue/Wed departures ~15% cheaper on longhaul"   # record (idempotent by text hash)
+mytool vote <ID> up | mytool vote <ID> down                  # upvote / downvote
+mytool learnings [--limit N] [--fmt jsonl]                   # list top by score
+```
+
+### Design
+
+- **Storage** — a global file (`~/.config/mytool/learnings.json`), separate from the
+  query cache so it survives sessions and cache clears.
+- **Stable ID** — `L + sha1(text)[:6]`: identical learnings dedup to the same ID, so
+  `learn` is idempotent and a vote always addresses the same entry.
+- **Ranking** — net score (up − down), tie-break by upvotes, then recency.
+
+### `prime` integration (the surfacing)
+
+- Add a `LEARNINGS` entry to the commands reference so the agent knows the loop exists.
+- Render the **top N by score** as a dynamic block at the end of the primer.
+- Add a short protocol telling the agent to **apply → record → vote** each session:
+  use the surfaced learnings, record any new insight, and up/downvote ones it
+  confirmed or disproved.
+
+This turns `prime` from a static contract into a self-improving one — collective
+experience compounds, and the cost is one small JSON file.
+</shared_learnings>
+
 <input_normalization>
 Accept flexibly, emit strictly:
 - Dates: `2025-01-13`, `jan 13 2025`, `13/01/2025` → always output ISO 8601
