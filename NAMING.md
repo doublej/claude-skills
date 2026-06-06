@@ -36,9 +36,6 @@ Hub skills keep the bare family name (`pixijs`, `pdf`, `raycast`, `writer`, `pro
 | ubiquitous-language | code-glossary |
 | *(new)* | code-arch-drift ✓ already created |
 
-### `claude-md-*` — CLAUDE.md tooling (fix outlier)
-| context-cascade | claude-md-cascade |
-
 ### `prompt-*` — prompt engineering (prompt-crafter stays hub)
 | xml-prompt | prompt-xml |
 | small-model-prompt | prompt-small-model |
