@@ -20,6 +20,10 @@ python3 {SKILL_DIR}/scripts/check_age.py
 ```
 
 If >6 weeks old, warn that recommendations may be outdated and suggest requesting an updated skill.
+
+The date check is necessary but not sufficient: compare the recorded model context against the
+model running this session. A model release (e.g. a newer Opus) makes the model-ID guidance stale
+even when the date check passes — if they differ, flag the references as out of date before applying.
 </age_awareness>
 
 <workflow>

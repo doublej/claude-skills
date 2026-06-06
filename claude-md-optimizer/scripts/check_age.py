@@ -44,8 +44,13 @@ def check_age():
 
     return f"""📅 Best Practices Information Age: {age_str}
 📝 Last authored: {anchor}
-🤖 Model Context: {metadata['model_context']}
-🧠 Knowledge Base: {metadata['knowledge_cutoff']}{warning}"""
+🤖 Model context (recorded): {metadata['model_context']}
+🧠 Knowledge base: {metadata['knowledge_cutoff']}{warning}
+
+🔎 Model check: a model release makes these recommendations stale regardless of age.
+   Compare the recorded model context above against the model running this session.
+   If the latest model differs (e.g. a newer Opus), treat the references as out of
+   date and refresh the model IDs before relying on the model-specific guidance."""
 
 if __name__ == "__main__":
     print(check_age())
