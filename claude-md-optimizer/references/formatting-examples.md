@@ -6,7 +6,7 @@ scannable structure: one instruction per line, shallow sections, plain phrasing.
 
 This doc covers **structure and visual shape**. For **phrasing and content** (ALL-CAPS
 overtriggering, positive vs. negative instructions, rationale, current model IDs), see
-`best_practices_2026_05.md` in this folder.
+`best_practices.md` in this folder.
 
 Tag convention (this repo): XML-like tags are structural markers, not real XML — open/close
 pairs only, no attributes, no schema, nesting not required. Flat sections are the goal.
@@ -94,8 +94,8 @@ Fix: one instruction per line.
 ```
 
 When everything is shouted, nothing stands out. Bold, ALL-CAPS, and emoji add visual noise
-without adding information — and on Claude 4.6/4.7 pervasive CAPS/MUST/NEVER also *overtrigger*
-(see `best_practices_2026_05.md`). Reserve emphasis for genuine safety rails.
+without adding information — and on Claude 4.6+ pervasive CAPS/MUST/NEVER also *overtrigger*
+(see `best_practices.md`). Reserve emphasis for genuine safety rails.
 
 Fix: plain phrasing, one rule per line.
 

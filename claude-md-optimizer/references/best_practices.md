@@ -1,29 +1,29 @@
-# Claude Code Best Practices (May 2026)
+# Claude Code Best Practices
 
 > Anchored to Anthropic's official prompting guide for the Claude 4.x family.
 > Source: https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices
-> Update `best_practices_date` in METADATA.json when revising.
+> Currency is tracked by `best_practices_date` in METADATA.json — update it (not a date in this filename) when revising.
 
 A CLAUDE.md is a persistent system prompt. The model behaviors below are what changed
-with Claude Opus 4.7 / Sonnet 4.6 — and they directly affect how a good CLAUDE.md is written.
+with Claude 4.6/4.7 and carry forward into 4.8 — they directly affect how a good CLAUDE.md is written.
 
-## Models (May 2026)
+## Models
 
 | Model | ID | Use for |
 |-------|-----|---------|
-| Opus 4.7 | `claude-opus-4-7` | Most capable; long-horizon agentic, coding, knowledge work, vision, memory. 1M-context variant. |
+| Opus 4.8 | `claude-opus-4-8` | Most capable; long-horizon agentic, coding, knowledge work, vision, memory. 1M-context variant. |
 | Sonnet 4.6 | `claude-sonnet-4-6` | Balanced; defaults to `high` effort. Fast turnaround / cost. |
 | Haiku 4.5 | `claude-haiku-4-5-20251001` | Quick/cheap, subagents, latency-sensitive. |
 
-- Most recent family is Claude 4.X. Default new AI apps to `claude-opus-4-7`.
-- Hardcoded older names/IDs ("Opus 4.5", "Sonnet 4.5", `claude-sonnet-4-5-...`) are a red flag — flag them.
+- Most recent family is Claude 4.X; latest is Opus 4.8. Default new AI apps to `claude-opus-4-8`.
+- Hardcoded superseded names/IDs ("Opus 4.5", "Opus 4.7", "Sonnet 4.5", `claude-opus-4-7`, `claude-sonnet-4-5-...`) are a red flag — flag them.
 
-## High-impact CLAUDE.md review checklist (4.6/4.7 behavior shifts)
+## High-impact CLAUDE.md review checklist (4.6+ behavior shifts)
 
 These are the most common ways an older CLAUDE.md now mis-steers the model.
 
 ### 1. Dial back aggressive emphasis — the #1 stale pattern
-4.6/4.7 are far more responsive to the system prompt than earlier models, so prompts tuned
+4.6+ models are far more responsive to the system prompt than earlier ones, so prompts tuned
 to fix *under*-triggering now cause *over*-triggering. Replace shouty directives with normal phrasing.
 - ❌ `CRITICAL: You MUST always use this tool when...` / `NEVER do X` / `ALWAYS do Y`
 - ✅ `Use this tool when...`
@@ -39,20 +39,20 @@ Stating the motivation behind a rule lets the model generalize correctly. A one-
 ("…so the diff stays reviewable") beats a bare imperative.
 
 ### 4. State scope explicitly (literal instruction following)
-4.7 interprets prompts more literally and will not silently generalize one instruction to other items.
+4.7+ interprets prompts more literally and will not silently generalize one instruction to other items.
 If a rule should apply broadly, say so: "Apply this to every section, not just the first."
 
 ### 5. Don't fight verbosity with bans
-4.7 calibrates length to task complexity (short on lookups, long on open-ended work). To tune,
+4.7+ calibrates length to task complexity (short on lookups, long on open-ended work). To tune,
 add a positive concision instruction ("Provide concise, focused responses; skip non-essential
 context") rather than negative rules. Show a positive example of the desired concision.
 
 ### 6. Tool-use & parallelism are steerable, not forced
-- 4.7 uses tools *less* and reasons more by default. If you want more tool use, describe when/how
+- 4.7+ uses tools *less* and reasons more by default. If you want more tool use, describe when/how
   to use a specific tool (don't shout). Effort level also raises tool usage.
 - Parallel tool calls: a short rule reliably pushes success to ~100% — "If calls are independent,
   make them in parallel; if one depends on another's output, call sequentially; never guess params."
-- Subagents: 4.7 spawns *fewer* by default. Give explicit when-to-delegate guidance if you want them.
+- Subagents: 4.7+ spawns *fewer* by default. Give explicit when-to-delegate guidance if you want them.
 
 ### 7. Autonomy vs. safety — confirm before irreversible/outward actions
 Without guidance the model may take hard-to-reverse or shared-system actions. A good CLAUDE.md
@@ -121,7 +121,7 @@ Lead with the answer. Then: what changed · where (`path:line`) · checks (or "n
 
 ## Common pitfalls to flag in a CLAUDE.md
 1. Hardcoded stale model names/IDs.
-2. Pervasive ALL-CAPS / `MUST` / `NEVER` / `CRITICAL` (overtriggers 4.6/4.7).
+2. Pervasive ALL-CAPS / `MUST` / `NEVER` / `CRITICAL` (overtriggers 4.6+).
 3. Negative phrasing where a positive instruction would steer better.
 4. Rules with no rationale.
 5. Instructions assuming the model will generalize scope it wasn't given.

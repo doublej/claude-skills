@@ -1,7 +1,7 @@
 {
   "created_date": "2026-02-04",
-  "best_practices_date": "2026-05-25",
-  "best_practices_version": "2026-05",
-  "model_context": "Claude Opus 4.7, Sonnet 4.6, Haiku 4.5",
+  "best_practices_date": "2026-06-06",
+  "best_practices_version": "2026-06",
+  "model_context": "Claude Opus 4.8, Sonnet 4.6, Haiku 4.5",
   "knowledge_cutoff": "2026-01"
 }
