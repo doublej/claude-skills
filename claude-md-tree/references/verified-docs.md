@@ -1,6 +1,6 @@
 # Verified Claude Code Behavior (CLAUDE.md & rules)
 
-All claims in this skill have been verified against the official Claude Code documentation at `code.claude.com/docs/en/`. Quotes below are from the docs as of 2026-05-15.
+All claims in this skill were verified against the official Claude Code documentation at `code.claude.com/docs/en/` on **2026-05-15** (last verified). The docs change — re-verify exact wording against the live source before relying on a quote.
 
 ## CLAUDE.md load order
 
