@@ -16,14 +16,14 @@ Analyze and improve the user's global CLAUDE.md file using current best practice
 Run the age check script first and show results to the user:
 
 ```bash
-python3 scripts/check_age.py
+python3 {SKILL_DIR}/scripts/check_age.py
 ```
 
 If >6 weeks old, warn that recommendations may be outdated and suggest requesting an updated skill.
 </age_awareness>
 
 <workflow>
-1. Run `scripts/check_age.py` and show results
+1. Run `{SKILL_DIR}/scripts/check_age.py` and show results
 2. Read `~/.claude/CLAUDE.md` using the Read tool
 3. Read `references/best_practices.md` (phrasing/content) and `references/formatting-examples.md` (structure/shape)
 4. Compare current file against best practices

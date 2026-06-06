@@ -117,7 +117,7 @@ A folder does **not** get one when:
 Use the script:
 
 ```bash
-python3 scripts/audit_tree.py <repo-root>
+python3 {SKILL_DIR}/scripts/audit_tree.py <repo-root>
 ```
 
 It walks the tree, scores each candidate folder, marks which already have a `CLAUDE.md`, and prints a ranked proposal. Use it as a starting list — not a final answer. Human judgment overrides the score.
@@ -228,7 +228,7 @@ See `references/anti-patterns.md` for the full list. The biggest ones:
 
 ```bash
 # Inventory candidates
-python3 scripts/audit_tree.py <repo-root>
+python3 {SKILL_DIR}/scripts/audit_tree.py <repo-root>
 
 # Check what's loaded (in a Claude Code session)
 /memory
