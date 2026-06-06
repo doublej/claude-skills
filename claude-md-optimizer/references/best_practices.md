@@ -133,5 +133,6 @@ Lead with the answer. Then: what changed · where (`path:line`) · checks (or "n
 
 ## When to update this skill
 New model versions ship · Claude Code capabilities change materially · `best_practices_date`
-exceeds ~6 weeks. Re-fetch the source guide above. Bump VERSION and `best_practices_date` together.
-Keep this as the single source of truth — don't accumulate parallel dated files.
+exceeds ~6 weeks. Re-fetch the source guide above. Bump `version` in SKILL.md frontmatter and
+`best_practices_date` in METADATA.json together. Keep this as the single source of truth — don't
+accumulate parallel dated files.
