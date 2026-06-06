@@ -158,11 +158,11 @@ Root `CLAUDE.md` should give Claude orientation and **point to** deeper context,
 
 Required sections:
 1. **What this project is** — one short paragraph.
-2. **Architecture map** — top-level folders with one-line purposes.
+2. **Architecture map** — top-level folders with one-line purposes. Don't enumerate the files inside a folder or paste a directory tree — name the folder and its job; Claude explores the contents itself.
 3. **Vocabulary** — `<vocabulary>` block listing top canonical terms + pointer to `GLOSSARY.md` (see Vocabulary section above).
 4. **Context boundaries** — "before editing X, read `X/CLAUDE.md`".
 5. **Global invariants** — only the truly global ones.
-6. **Commands** — build, test, format, lint.
+6. **Commands** — build, test, format, lint. For a project CLI or help script, name it and say how to discover its commands (`<cli> --help`, `just`, `prime`) instead of transcribing every subcommand — the list goes stale and Claude can read the help output.
 
 See `references/examples/root-claude-md.md` for a worked example.
 
@@ -223,6 +223,7 @@ See `references/anti-patterns.md` for the full list. The biggest ones:
 6. **Forgetting compaction behavior** — putting compaction-critical invariants only in nested files.
 7. **Hand-edited generated content** — if you have generated folders, say so in the parent CLAUDE.md and link a rule.
 8. **No vocabulary layer** — tree without `GLOSSARY.md` or `<vocabulary>` block. Agents drift between synonyms (`Product`/`Wallpaper`/`Item`) within a single session. Delegate curation to the `code-glossary` skill.
+9. **Transcribing what's discoverable** — pasting every subcommand of a CLI/help script, or every file in a folder, into CLAUDE.md. It rots and Claude can read it. State that the tool/folder exists and how to learn more (`<cli> --help`, `just`, `prime`); the agent explores the rest.
 
 ## Quick reference: commands you will use
 

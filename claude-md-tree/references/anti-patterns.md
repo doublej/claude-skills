@@ -162,7 +162,42 @@ A complete CLAUDE.md tree (root + nested packets + rules) with no `GLOSSARY.md` 
 
 Fix: add a `GLOSSARY.md` at root (or per bounded context for ecosystems) and a `<vocabulary>` block in root CLAUDE.md pointing to it. Delegate the curation to the `code-glossary` skill. Then audit existing packets — any rejected synonym appearing in a CLAUDE.md is a defect.
 
-## 17. The competing-vocabulary tree
+## 17. The transcribed command list
+
+Reproducing every subcommand of a project CLI or help script inside CLAUDE.md:
+
+```md
+## CLI
+- `mytool build` — build
+- `mytool watch` — watch
+- `mytool deploy --env <e>` — deploy
+- `mytool db migrate` — run migrations
+- …20 more
+```
+
+The list goes stale the moment a command is added or renamed, and Claude can read the help output itself. State that the tool exists and how to discover its commands:
+
+```md
+- Project CLI: `mytool`. Run `mytool --help` (or `just`, `mytool prime`) for current commands.
+```
+
+Name a specific command only when it's the non-obvious one to reach for in a common task ("to add a migration use `mytool db gen --name <slug>`, not raw SQL"). Concrete build/test/lint commands in the root **Commands** section are fine; an exhaustive transcription of a discoverable CLI is not.
+
+## 18. The directory-tree dump
+
+Pasting the folder's file listing into its CLAUDE.md:
+
+```md
+## Files
+- index.ts — entry
+- parse.ts — parser
+- types.ts — types
+- …
+```
+
+Claude lists the directory itself when it needs to; a hand-maintained copy just rots as files move. Describe what the folder *is* and how its parts relate (the mental model), not a file-by-file inventory. Top-level architecture-map one-liners in the root file are orientation and stay — per-file enumeration inside a packet is noise.
+
+## 19. The competing-vocabulary tree
 
 Multiple sub-projects in an ecosystem each define `Product` to mean different things, with no context map. Agent reading both gets contradictory signals — uses whichever it saw last.
 

@@ -2,7 +2,7 @@
 name: claude-md-optimizer
 description: Review and optimize the global CLAUDE.md file with latest best practices. Use when user wants to update their CLAUDE.md, check if it follows current recommendations, or ensure configuration is aligned with latest Claude Code capabilities.
 metadata:
-  version: 1.3.0
+  version: 1.4.0
   created: 2026-02-04
   updated: 2026-06-06
   models: Claude Opus 4.8, Sonnet 4.6, Haiku 4.5

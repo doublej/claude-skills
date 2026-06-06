@@ -75,6 +75,13 @@ add comments to code you didn't change" remains valuable.
 "Never speculate about code you haven't opened; read referenced files before answering" reliably
 reduces hallucination in agentic coding.
 
+### 11. Don't transcribe what the agent can discover
+A CLAUDE.md that lists every subcommand of a CLI/help script, or every file inside a folder, costs
+tokens, rots the moment something is renamed, and duplicates what the agent finds by itself. Name
+that the tool/folder exists and how to learn more (`<cli> --help`, `just`, a `prime` command;
+directory listing for folder contents) — the agent explores from there. Keep concrete top-level
+build/test/lint commands and a top-level folder map (those orient); drop the exhaustive dumps.
+
 ## General principles (durable)
 
 - **Be clear and direct.** Treat the model as a brilliant new hire lacking your context. Golden rule:
@@ -130,6 +137,7 @@ Lead with the answer. Then: what changed · where (`path:line`) · checks (or "n
 8. "Unlimited context" claims (it's summarization + a 1M variant).
 9. Outdated consult-user tool names (`ask_confirmation` vs `ask`+type `confirm`).
 10. Auto-push / history-rewrite without an explicit ask.
+11. Exhaustive transcription of a CLI's subcommands or a folder's file list — name the tool/folder and how to discover the rest (`--help`, `prime`, directory listing); the dump rots and the agent can read it.
 
 ## When to update this skill
 New model versions ship · Claude Code capabilities change materially · `best_practices_date`
