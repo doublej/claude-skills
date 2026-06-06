@@ -263,6 +263,7 @@ Confirm the inventory + proposed file list with the user **before** writing the 
 - `references/placement-rubric.md` — decision table for where knowledge lives
 - `references/verified-docs.md` — verified Claude Code behavior with doc links
 - `references/anti-patterns.md` — failure modes catalogue (content/placement)
+- `../claude-md-optimizer/SKILL.md` — sibling skill for the **global** `~/.claude/CLAUDE.md` (phrasing/structure for current models). Use it for the user-level file; this skill handles project trees.
 - `../claude-md-optimizer/references/formatting-examples.md` — central formatting reference (structure/shape: flat sections, one instruction per line, no noisy tables / over-nesting / emphasis overload)
 - `references/examples/` — worked examples (root, billing, db, charts)
 - `scripts/audit_tree.py` — inventory script

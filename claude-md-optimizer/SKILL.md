@@ -109,3 +109,10 @@ After changes, optionally add version metadata to CLAUDE.md:
 <!-- Updated: YYYY-MM-DD | Based on Claude Opus 4.8 / Sonnet 4.6 / Haiku 4.5 -->
 ```
 </version_tracking>
+
+<scope_and_siblings>
+This skill targets the global `~/.claude/CLAUDE.md` — phrasing and structure for current models.
+Hand off when the request is broader:
+- Project-wide CLAUDE.md architecture (nested context packets, rules, monorepos) → `claude-md-tree`.
+- Auditing/scoring every CLAUDE.md in a repo against quality rubrics → `claude-md-improver` (official `claude-md-management` plugin).
+</scope_and_siblings>
