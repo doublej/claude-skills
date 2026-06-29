@@ -28,6 +28,7 @@ Deploy applications to a QNAP NAS running Caddy.
 |------|----------|------------|-------|
 | **Frontend (Static)** | `/Volumes/Container/caddy/www` | File server | [Frontend Guide](guides/frontend.md) |
 | **Node.js Apps** | `/Volumes/Container/caddy/apps` | Reverse proxy | [Node Guide](guides/node.md) |
+| **LAN reverse proxy** | `etc/sites/<name>.caddy` (config only — nothing deployed to the NAS) | Reverse proxy to a host on the LAN (e.g. a Mac) | Quick Ref |
 
 </deployment_types>
 
@@ -56,6 +57,14 @@ without sudo) using these creds, so no Finder/Keychain prompt is needed. Overrid
 the namespace with `NAS_ONENV_NS=<ns>`. The NAS is `jongserve.local` — `nas.local`
 does not resolve.
 
+**No SMB mount? Use SSH.** The mount is a convenience, not a requirement. If
+`mount-nas.sh` fails (e.g. `no SMB password in onenv`), every Caddy *config*
+operation works over `ssh nas` instead — read with
+`ssh nas 'cat /share/CACHEDEV1_DATA/Container/caddy/etc/sites/<name>.caddy'`,
+write with `ssh nas 'cat > /share/CACHEDEV1_DATA/Container/caddy/etc/sites/<name>.caddy' <<'EOF' … EOF`,
+then reload (see <caution>). Only the static-site *file* copies still need the
+mount (or `rsync` over SSH).
+
 </preflight>
 
 <caution>
@@ -69,6 +78,10 @@ does not resolve.
 - **`apply_from_mac.sh` validates before reloading** (a malformed `.caddy` in any
   site aborts the reload, leaving the live config untouched). To check by hand:
   `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile'`
+- **Reloading Caddy over SSH needs `--address localhost:2019`** — without it the
+  admin API returns `HTTP 403: client is not allowed to access from origin`:
+  `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy reload --config /etc/caddy/Caddyfile --address localhost:2019'`.
+  (`apply_from_mac.sh` already passes this — you only need it for a manual reload.)
 - **The SMB share has no Trash**, so macOS `rm`/Finder-delete fails on the mount.
   To remove a retired site, delete it NAS-side: `ssh nas 'rm -rf /share/CACHEDEV1_DATA/Container/caddy/www/<site>'`, then re-run `apply_from_mac.sh`.
 
@@ -98,6 +111,30 @@ rsync -av --delete build/ /Volumes/Container/caddy/apps/myapp.jurrejan.com/build
 
 # Deploy via SSH (starts/restarts PM2)
 ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan.com"
+```
+
+### LAN reverse proxy
+Proxy a subdomain to a host on the LAN (no files deployed to the NAS). Write the
+site block into `etc/sites/<name>.caddy` (suffix-stripped, like app proxies):
+```bash
+# Over the SMB mount...
+cat > /Volumes/Container/caddy/etc/sites/myapp.caddy <<'EOF'
+myapp.jurrejan.com {
+    import site_10mb
+    reverse_proxy <lan-ip>:<port>
+}
+EOF
+
+# ...or SSH-only (no mount needed):
+ssh nas 'cat > /share/CACHEDEV1_DATA/Container/caddy/etc/sites/myapp.caddy' <<'EOF'
+myapp.jurrejan.com {
+    import site_10mb
+    reverse_proxy <lan-ip>:<port>
+}
+EOF
+
+# Apply (regenerates imports, validates, reloads — or reload via SSH, see Caution)
+cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
 ```
 
 </quick_ref>
@@ -156,5 +193,17 @@ imported from `apps/` either — `deploy-app.sh` copies each `app.caddy` into
 - `templates/ecosystem.config.js` - PM2 config template
 - `templates/deploy-frontend.sh` - Frontend deployment script (renders config, refuses to clobber)
 - `templates/deploy-node.sh` - Node.js deployment script
+
+The `deploy-*.sh` and `*.caddy` templates carry `{{PLACEHOLDER}}` tokens
+(`{{SUBDOMAIN}}`, `{{SOURCE_DIR}}`, `{{PORT}}`, `{{APP_NAME}}`). Render them
+before running — copy the template into the project and substitute, e.g.:
+
+```bash
+sed -e 's/{{SUBDOMAIN}}/myapp/' -e 's#{{SOURCE_DIR}}#dist#' \
+  templates/deploy-frontend.sh > deploy-frontend.sh && chmod +x deploy-frontend.sh
+```
+
+Prefer rendering and running the script over re-implementing its rsync +
+Caddy-write steps inline.
 
 </templates>
