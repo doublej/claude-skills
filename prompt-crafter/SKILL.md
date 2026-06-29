@@ -9,6 +9,14 @@ Craft high-quality prompts for Claude Code across all surfaces: interactive sess
 
 Optional argument (`$ARGUMENTS`): target model — one of `opus-4-7`, `opus-4-6`, `sonnet`, `generic`. Default: `generic`.
 
+<scope>
+## When to Use
+
+Use this skill only when the **deliverable is a prompt or instruction** — writing, reviewing, or improving a prompt, CLAUDE.md, system prompt, slash command, skill description, or agent prompt.
+
+Do **not** stay in this skill when a prompt-shaped lens is merely incidental to a broader task (building an HTML artifact, codebase exploration, research, app design). If the skill loaded but the real deliverable is something else, say so and proceed with the right tool instead of applying prompt patterns to a task that doesn't need them.
+</scope>
+
 <lint_rewrite>
 ## Lint + Rewrite (model-specific)
 
@@ -53,6 +61,7 @@ Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask 
 | CLI (`-p` flag) | Single string or piped input | No follow-up, must be self-contained |
 | System prompt / API | XML-structured | Parsed programmatically, needs tags |
 | Skill SKILL.md | Frontmatter + markdown | Progressive disclosure, must trigger correctly |
+| Workflow agent (script) | XML role + CoT + constraint-bounded | Inject a shared context BRIEF into all downstream agents; set label/phase/effort opts; return raw data not prose; use a schema for structured output |
 </surfaces>
 
 <patterns>
