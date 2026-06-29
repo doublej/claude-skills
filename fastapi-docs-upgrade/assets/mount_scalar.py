@@ -7,11 +7,13 @@ re-mounted at `/swagger` (see mount_swagger.py).
 Adds:
     GET /docs  →  Scalar API reference UI
 
-Theming: pick one of default | alternate | moon | purple | solarized | bluePlanet |
-saturn | kepler | mars | deepSpace | none. Layout: modern | classic.
+Theming: pick a `Theme` enum member (DEFAULT, ALTERNATE, MOON, PURPLE, SOLARIZED,
+BLUE_PLANET, SATURN, KEPLER, MARS, DEEP_SPACE, LASERWAVE, NONE) and a `Layout` enum
+member (MODERN, CLASSIC). scalar-fastapi v1.x requires enum instances here — plain
+strings raise TypeError, and the kwarg is `theme=` (not `scalar_theme=`).
 """
 
-from scalar_fastapi import get_scalar_api_reference
+from scalar_fastapi import Layout, Theme, get_scalar_api_reference
 
 
 @app.get("/docs", include_in_schema=False)
@@ -19,8 +21,8 @@ async def scalar_html():
     return get_scalar_api_reference(
         openapi_url=app.openapi_url,
         title=app.title,
-        scalar_theme="purple",
-        layout="modern",
+        theme=Theme.PURPLE,
+        layout=Layout.MODERN,
         dark_mode=True,
         hide_models=False,
         hide_download_button=False,

@@ -34,6 +34,8 @@ It locates:
 
 Read the JSON. Identify gaps. Print a one-screen plan to the user before editing.
 
+**If the audit script can't run** (e.g. a cookiecutter template source where paths contain Jinja `{{ }}` placeholders, or imports/syntax the parser chokes on): fall back to reading the relevant files by hand — the `FastAPI(...)` app file, routers, Pydantic models, and `pyproject.toml`/`requirements.txt`. Manual discovery is acceptable; the script is a convenience, not a gate. Just make sure you've covered the same five things it locates before moving to Phase 1.
+
 ## Phase 1 — App metadata
 
 Edit the `FastAPI(...)` constructor. Add every applicable param:
