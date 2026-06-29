@@ -54,6 +54,7 @@ Extract candidate domain terms. Mechanical pass — Claude judges later.
    Grep: pattern="^(export )?(class|interface|type|struct|model) ([A-Z]\w+)" type="ts,py,rs,go,swift"
    Grep: pattern="^(CREATE TABLE|class .* Base)" type="sql,py"
    ```
+   Use the **Grep tool** as shown (with `type=`), not raw `grep --include='*.ts'` in Bash — an unquoted `--include=*.ts` gets glob-expanded by zsh and silently matches nothing.
 4. **Recent commit messages** — `git log --oneline -100` for living vocabulary.
 5. **User-facing strings** (i18n keys, UI labels) if present.
 
@@ -96,6 +97,8 @@ Skip clusters with only one term (no conflict to resolve) — they're already ca
 </phase_3_cluster>
 
 <phase_4_define>
+
+**Fast path:** if no cluster has 2+ terms (naming is already consistent, no conflicts to resolve), skip this phase entirely — draft canonical definitions from context in Phase 5 without asking the user.
 
 For each conflicting cluster, ask the user via consult-user-mcp `form`. Batch up to 10 clusters per form (mode `accordion`) — don't ask one at a time.
 
