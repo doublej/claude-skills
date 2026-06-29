@@ -72,51 +72,90 @@ def iter_project_sessions(project_dir: Path) -> Iterator[Path]:
             yield session_file
 
 
+def project_path_from_sessions(project_dir: Path) -> str:
+    """Derive the real project path from the first jsonl that carries a cwd."""
+    for sf in project_dir.glob("*.jsonl"):
+        try:
+            with open(sf) as f:
+                for line in f:
+                    try:
+                        entry = json.loads(line)
+                    except json.JSONDecodeError:
+                        continue
+                    cwd = entry.get("cwd")
+                    if cwd:
+                        return cwd
+        except OSError:
+            continue
+    return ""
+
+
 def discover_projects(
     folder: str | None = None,
     since_minutes: int | None = None,
 ) -> list[dict]:
-    """Discover projects using sessions-index.json for fast filtering.
+    """Discover projects under ~/.claude/projects/.
+
+    Uses sessions-index.json for fast filtering when present, and falls back to
+    a direct jsonl scan for directories that have no index (the index is not
+    required — its absence must never silently hide a project).
 
     Returns list of {project_dir, project_path, session_entries}.
     """
     now_ms = datetime.now().timestamp() * 1000
     cutoff_ms = (now_ms - since_minutes * 60 * 1000) if since_minutes else None
+    norm_folder = str(Path(folder).resolve()) if folder else None
     results = []
 
-    for index_file in PROJECTS_DIR.glob("*/sessions-index.json"):
-        project_dir = index_file.parent
-        # skip archive dirs
-        if "_archive" in project_dir.parts:
-            continue
-        try:
-            data = json.loads(index_file.read_text())
-        except (json.JSONDecodeError, OSError):
+    for project_dir in PROJECTS_DIR.iterdir():
+        if not project_dir.is_dir() or "_archive" in project_dir.parts:
             continue
 
-        entries = data.get("entries", [])
-        if not entries:
-            continue
+        index_file = project_dir / "sessions-index.json"
+        data = None
+        if index_file.exists():
+            try:
+                data = json.loads(index_file.read_text())
+            except (json.JSONDecodeError, OSError):
+                data = None
 
-        project_path = entries[0].get("projectPath", "")
-
-        # folder filter: projectPath must start with the given folder
-        if folder:
-            norm_folder = str(Path(folder).resolve())
-            if not project_path.startswith(norm_folder):
+        if data and data.get("entries"):
+            entries = data["entries"]
+            project_path = data.get("originalPath") or entries[0].get("projectPath", "")
+            if norm_folder and not project_path.startswith(norm_folder):
                 continue
-
-        # time filter: keep only entries modified after cutoff
-        if cutoff_ms:
-            entries = [e for e in entries if e.get("fileMtime", 0) >= cutoff_ms]
-            if not entries:
+            if cutoff_ms:
+                entries = [e for e in entries if e.get("fileMtime", 0) >= cutoff_ms]
+                if not entries:
+                    continue
+            results.append({
+                "project_dir": project_dir,
+                "project_path": project_path,
+                "session_entries": entries,
+            })
+        else:
+            # No usable index — fall back to a direct filesystem scan.
+            session_files = [
+                sf for sf in project_dir.glob("*.jsonl")
+                if not sf.name.startswith("agent-")
+            ]
+            if not session_files:
                 continue
-
-        results.append({
-            "project_dir": project_dir,
-            "project_path": project_path,
-            "session_entries": entries,
-        })
+            project_path = project_path_from_sessions(project_dir)
+            if norm_folder and not project_path.startswith(norm_folder):
+                continue
+            if cutoff_ms:
+                session_files = [
+                    sf for sf in session_files
+                    if sf.stat().st_mtime * 1000 >= cutoff_ms
+                ]
+                if not session_files:
+                    continue
+            results.append({
+                "project_dir": project_dir,
+                "project_path": project_path or str(project_dir),
+                "session_entries": None,
+            })
 
     results.sort(key=lambda r: r["project_path"])
     return results
@@ -266,8 +305,13 @@ def _parse_speak_answer(block: dict) -> str | None:
 def is_system_noise(content: str) -> bool:
     if not content:
         return True
-    prefixes = ("<local-command-stdout>", "<command-name>/", "<system-reminder>")
+    prefixes = (
+        "<local-command-stdout>", "<command-name>/", "<system-reminder>",
+        "<task-notification", "Base directory for this skill:",
+    )
     if any(content.startswith(p) for p in prefixes):
+        return True
+    if content.startswith("This session is being continued from"):
         return True
     if "Caveat: The messages below were generated" in content:
         return True
@@ -784,6 +828,42 @@ def cmd_extract(args):
     print(json.dumps(all_results if len(all_results) > 1 else all_results[0], indent=2))
 
 
+# ── Subcommand: list ─────────────────────────────────────────
+
+def cmd_list(args):
+    projects = resolve_projects(args)
+    if not projects:
+        print("Error: No projects found for scope")
+        sys.exit(1)
+
+    rows = []
+    for proj in projects:
+        for sf in iter_sessions_for_project(proj, getattr(args, "since", None)):
+            timestamps = sorted(
+                m["timestamp"] for m in extract_messages(sf) if m.get("timestamp")
+            )
+            if not timestamps:
+                continue
+            rows.append({
+                "session_id": sf.stem,
+                "project": proj["project_path"],
+                "first": timestamps[0],
+                "last": timestamps[-1],
+                "message_count": len(timestamps),
+                "source_file": str(sf),
+            })
+
+    rows.sort(key=lambda r: r["first"])
+    for r in rows:
+        first = r["first"][:16].replace("T", " ")
+        last = r["last"][:16].replace("T", " ")
+        label = f"{Path(r['project']).name}/{r['session_id'][:8]}"
+        print(f"{first}  ->  {last}  {r['message_count']:>5} msgs  {label}")
+
+    print()
+    print(json.dumps(rows, indent=2))
+
+
 # ── CLI ──────────────────────────────────────────────────────
 
 def add_scope_args(parser: argparse.ArgumentParser):
@@ -832,6 +912,10 @@ def main():
     sp_extract.add_argument("-n", "--limit", type=int, default=100, help="Message count limit")
     add_scope_args(sp_extract)
 
+    # list
+    sp_list = sub.add_parser("list", help="List sessions with first/last timestamps")
+    add_scope_args(sp_list)
+
     args = parser.parse_args()
 
     if args.command == "search":
@@ -840,6 +924,8 @@ def main():
         cmd_scan(args)
     elif args.command == "extract":
         cmd_extract(args)
+    elif args.command == "list":
+        cmd_list(args)
 
 
 if __name__ == "__main__":
