@@ -2,22 +2,29 @@
 # Run codex exec to generate an image, then copy result to CWD/tmp/
 set -euo pipefail
 
-PROMPT="${1:?Usage: generate.sh \"<image prompt>\"}"
+PROMPT="${1:?Usage: generate.sh \"<image prompt>\" [dest_dir] [input_image]}"
 DEST_DIR="${2:-$(pwd)/tmp}"
+INPUT_IMAGE="${3:-}"
 
 mkdir -p "$DEST_DIR"
 
 LAST_MSG=$(mktemp)
 trap 'rm -f "$LAST_MSG"' EXIT
 
-echo "▶ Launching Codex image generation..."
+# Generate mode (text-to-image) or edit mode (image-to-image, when an input image is given)
+CODEX_ARGS=(-s danger-full-access --skip-git-repo-check --ephemeral -o "$LAST_MSG")
+if [ -n "$INPUT_IMAGE" ]; then
+  [ -f "$INPUT_IMAGE" ] || { echo "ERROR: input image not found: $INPUT_IMAGE"; exit 1; }
+  CODEX_ARGS+=(-i "$INPUT_IMAGE")
+  INSTRUCTION="Edit the provided image with this instruction: $PROMPT"
+  echo "▶ Launching Codex image edit..."
+else
+  INSTRUCTION="Generate an image with this prompt: $PROMPT"
+  echo "▶ Launching Codex image generation..."
+fi
 
-codex exec \
-  -s danger-full-access \
-  --skip-git-repo-check \
-  --ephemeral \
-  -o "$LAST_MSG" \
-  "Generate an image with this prompt: $PROMPT
+codex exec "${CODEX_ARGS[@]}" \
+  "$INSTRUCTION
 
 After generating, print ONLY the absolute file path of the generated image on a single line prefixed with IMAGE_PATH: — nothing else after that line."
 

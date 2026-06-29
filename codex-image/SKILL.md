@@ -21,10 +21,11 @@ Output lands in `CWD/tmp/` by default.
 
 1. Run the generate script:
    ```bash
-   scripts/generate.sh "<prompt>" "<dest_dir>"
+   scripts/generate.sh "<prompt>" "<dest_dir>" "<input_image>"
    ```
    - `prompt` — the image description (required)
    - `dest_dir` — output directory (default: `$(pwd)/tmp`)
+   - `input_image` — optional. Omit for **generate** mode (text→image). Pass a path for **edit** mode (image→image): the script forwards it to Codex via `codex exec -i`.
 
 2. Script runs `codex exec` non-interactively with the image prompt.
 
@@ -33,6 +34,22 @@ Output lands in `CWD/tmp/` by default.
 4. Report the final path to the user. Use `Read` to display the image inline if desired.
 
 </workflow>
+
+<batch_usage>
+
+**Multi-image jobs must run sequentially — never in parallel.**
+
+When `codex exec` doesn't echo the `IMAGE_PATH:` line, the script falls back to picking the most-recently-modified file in `~/.codex/generated_images/`. That fallback is process-global, so two concurrent invocations can cross-wire and copy each other's output. For a batch of N images, loop one call at a time:
+
+```bash
+for prompt in "${prompts[@]}"; do
+  scripts/generate.sh "$prompt" "$dest"
+done
+```
+
+Do not background the calls or fan them out across subagents.
+
+</batch_usage>
 
 <prompt_mode>
 
@@ -110,7 +127,7 @@ Parameters accepted by gpt-image-2 (passed via prompt instructions to Codex):
 - `input_fidelity` — always high fidelity for image inputs
 
 **Edit-specific parameters** (when modifying existing images):
-- `image` — input image(s) to edit
+- `image` — input image(s) to edit. Pass via the script's third arg, which forwards it as `codex exec -i` (see workflow step 1).
 - `mask` — mask for inpainting (white = edit area)
 
 </gpt_image_2_parameters>
