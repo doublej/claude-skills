@@ -246,6 +246,7 @@ pop (as in "make it pop"), wow factor, eye-catching, jaw-dropping, breathtaking,
 - Code under a hard ceiling
 - Implement exactly requested; stop
 - Never invent new UI elements
+- Existing file? Read it first, then Edit the lines that change. Never blind-Write over a file that already exists—targeted edits over full rewrites
 - When missing info: choose simplest valid assumption and state it in 1 line
 
 This section stays cold. The manifesto is the fire. The output is the blade.
