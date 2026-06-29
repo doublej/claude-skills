@@ -71,6 +71,7 @@ Prefixes: `global:` (system-wide, requires accessibility permission on macOS), `
 
 Splits: `new_split:right|down|left|up|auto`, `goto_split:<dir>|previous|next`, `resize_split:<dir>,<px>`, `equalize_splits`, `toggle_split_zoom`
 Tabs: `new_tab`, `next_tab`, `previous_tab`, `goto_tab:N`, `move_tab:N`, `close_tab`, `toggle_tab_overview`
+  - `move_tab:N` only **reorders** a tab within its window — it cannot detach a tab to a new window. No tab-detach action exists yet (upstream issue #2630).
 Windows: `new_window`, `close_window`, `toggle_fullscreen`, `toggle_maximize`
 Quick terminal: `toggle_quick_terminal`, `toggle_visibility`
 Clipboard: `copy_to_clipboard`, `paste_from_clipboard`, `copy_url_to_clipboard`
@@ -168,6 +169,12 @@ ghostty +validate-config ~/Library/Application\ Support/com.mitchellh.ghostty/co
 
 **Show all options with docs:** `ghostty +show-config --default --docs | less`
 </common_tasks>
+
+<known_limitations>
+Ghostty has **no IPC for manipulating existing tabs/windows**. The only remote-control CLI is `ghostty +new-window` (opens a fresh window). There is no command to move, detach, reorder, or close existing tabs from outside the app.
+
+So "explode all tabs to windows" / "detach this tab" etc. have **no native or scriptable solution** today. Don't reach for Accessibility automation (System Events / cliclick) — surface the limitation instead and point at upstream issue #2630.
+</known_limitations>
 
 <references>
 - `references/api_reference.md` — extended option tables and macOS-specific notes
