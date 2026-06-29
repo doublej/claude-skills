@@ -149,7 +149,7 @@ Gather what's missing (max 2 questions):
 - **To whom?** — Recipient/audience
 - **About what?** — Core point in one sentence
 - **Desired outcome?** — What should the reader do/feel/know?
-- **Platform** — Slack, Email, WhatsApp, or Telegram
+- **Platform** — Slack, Email, WhatsApp, Telegram, or Reddit/forum
 
 ### Platform Rules
 
@@ -159,6 +159,7 @@ Gather what's missing (max 2 questions):
 | Email | Formal spectrum | Subject line matters, paragraph discipline | `references/platform-email.md` |
 | WhatsApp | Very casual | Speech-like bursts, can split messages | `references/platform-whatsapp.md` |
 | Telegram | Medium-casual | Rich formatting ok, longer messages fine | `references/platform-telegram.md` |
+| Reddit/forum | Casual-informative | Disclose ownership, no sales pitch, lead with the solution | `references/platform-reddit.md` |
 
 ### Length Discipline
 
@@ -166,6 +167,7 @@ Gather what's missing (max 2 questions):
 - Email: as short as possible while being complete
 - WhatsApp: 1-3 short bursts, never a wall of text
 - Telegram: can be longer but stay focused
+- Reddit/forum: enough to be genuinely useful, never a wall of text or a pitch
 
 ### Tone Modifiers
 
@@ -232,6 +234,16 @@ For text that isn't a blog post, platform message, or Dutch translation. The use
 - Don't add content. Only remove or rephrase.
 - Don't make it longer. Default direction is shorter.
 - If you removed more than ~30% of the words, note what you cut and why (one line)
+
+### Codebase-Wide Sweep
+
+When the task is stripping a banned pattern (em-dashes, semicolons, a slop phrase) across many files rather than rewriting one text:
+
+1. **Grep** for the pattern to map every hit and which files it touches.
+2. **Categorise** hits: rendered/user-facing copy (rewrite these) vs. code, comments, or data the pattern is legitimate in (leave these — an em-dash in a regex or a URL is not slop).
+3. **Replace in batch** — a script or scoped edits, not file-by-file freehand. Substitute the pattern's intent, don't just delete (an em-dash usually becomes a period, comma, or "to").
+4. **Run the project's checks** (build, typecheck, lint) to confirm nothing broke.
+5. **Commit** the sweep as one atomic change.
 
 ### Difficult Messages
 
