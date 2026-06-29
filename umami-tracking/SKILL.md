@@ -40,6 +40,8 @@ python3 <skill_dir>/scripts/register_website.py "<site-name>" "<domain>"
 
 If the domain is unknown, use the project/folder name as both name and domain.
 
+If the user provides a website ID directly, skip registration and proceed to Step 2 with that ID.
+
 ## Step 2: Inject Tracking
 
 ### Framework Projects (detect these first)
