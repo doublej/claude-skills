@@ -38,9 +38,9 @@ Skill examples and conventions below are validated against official just behavio
 
 ### Shell Setting
 **Rule:** Set shell **IF** any of these apply:
-- Project uses bun/SvelteKit → `set shell := ["zsh", "-euo", "pipefail"]`
+- Project uses bun/SvelteKit → `set shell := ["zsh", "-euo", "pipefail", "-c"]`
 - Project uses .env file → `set dotenv-load` (alone, no `:=`)
-- Multi-line bash recipes exist → `set shell := ["bash", "-euo", "pipefail"]`
+- Multi-line bash recipes exist → `set shell := ["bash", "-euo", "pipefail", "-c"]`
 - Otherwise → omit (use default)
 
 **Common mistake:** Declaring `set dotenv-load := false` or `set dotenv-load := true` — use bare `set dotenv-load` only.
@@ -74,6 +74,8 @@ default:
 
 **Common mistake:** Some recipes grouped, others bare → creates confusing `just --list` output
 **Check:** `just --list` should show recipes organized under group headers, NO ungrouped recipes
+
+**Exception:** `default` is the only recipe that intentionally has no group — just lists ungrouped recipes first, which is the desired position for the entry-point recipe.
 
 **Foundation reference:** [Attributes](https://just.systems/man/en/attributes.html) (groups section)
 
@@ -146,7 +148,7 @@ localhost := `hostname -I | awk '{print $1}'`
 debug := if os() == "linux" { "true" } else { "false" }
 
 serve:
-  ./serve {{localhost}} 8080
+  ./serve {{ localhost }} 8080
 ```
 
 ### Built-in functions
@@ -165,23 +167,23 @@ Common functions:
 ### Positional parameters
 ```just
 build target:
-  cd {{target}} && make
+  cd {{ target }} && make
 
 backup +FILES:
-  scp {{FILES}} me@server.com:
+  scp {{ FILES }} me@server.com:
 ```
 
 ### Optional parameters with defaults
 ```just
 serve host="localhost" port="8000":
-  python -m http.server --bind {{host}} {{port}}
+  python -m http.server --bind {{ host }} {{ port }}
 ```
 
 ### Named options (1.46.0+)
 ```just
 [arg("target", long="target")]
 build target:
-  cargo build --target {{target}}
+  cargo build --target {{ target }}
 ```
 
 Usage:
@@ -229,7 +231,7 @@ run-all: task1 task2 task3
 ### Common settings
 ```just
 # Shell for recipe lines and backticks
-set shell := ["zsh", "-euo", "pipefail"]
+set shell := ["zsh", "-euo", "pipefail", "-c"]
 
 # Windows-specific shell
 set windows-shell := ["powershell.exe", "-c"]
@@ -313,7 +315,7 @@ mod shared
 
 ### Bun / SvelteKit
 ```just
-set shell := ["zsh", "-euo", "pipefail"]
+set shell := ["zsh", "-euo", "pipefail", "-c"]
 
 # List available recipes
 default:
@@ -387,7 +389,7 @@ dev:
 
 [group('quality')]
 test *ARGS:
-    uv run pytest {{ARGS}}
+    uv run pytest {{ ARGS }}
 
 [group('quality')]
 lint:
@@ -476,53 +478,53 @@ _session := "myapp"
 tmux-dev:
     #!/usr/bin/env bash
     set -euo pipefail
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        echo "Session '{{_session}}' already running."
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        echo "Session '{{ _session }}' already running."
     else
-        tmux new-session -d -s {{_session}} -c {{justfile_directory()}}
-        tmux send-keys -t {{_session}} 'npm run dev' Enter
-        tmux split-window -h -t {{_session}} -c {{justfile_directory()}}
-        tmux send-keys -t {{_session}} 'npm run build:watch' Enter
-        tmux select-pane -t {{_session}}:0.0
-        echo "Started tmux session '{{_session}}'"
+        tmux new-session -d -s {{ _session }} -c {{ justfile_directory() }}
+        tmux send-keys -t {{ _session }} 'npm run dev' Enter
+        tmux split-window -h -t {{ _session }} -c {{ justfile_directory() }}
+        tmux send-keys -t {{ _session }} 'npm run build:watch' Enter
+        tmux select-pane -t {{ _session }}:0.0
+        echo "Started tmux session '{{ _session }}'"
         sleep 0.5
     fi
     just _attach-window
 
-# Open a terminal window attached to {{_session}} (auto-detects iTerm/Ghostty/Terminal)
+# Open a terminal window attached to {{ _session }} (auto-detects iTerm/Ghostty/Terminal)
 [private]
 _attach-window:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -n "${TMUX:-}" ]; then
-        tmux switch-client -t {{_session}}
+        tmux switch-client -t {{ _session }}
     elif [ "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
-        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{_session}}"'
+        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{ _session }}"'
     elif [ "${TERM_PROGRAM:-}" = "ghostty" ]; then
-        open -na Ghostty --args --command="tmux attach -t {{_session}}"
+        open -na Ghostty --args --command="tmux attach -t {{ _session }}"
     elif [ "${TERM_PROGRAM:-}" = "Apple_Terminal" ]; then
-        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{_session}}"'
+        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{ _session }}"'
     else
-        echo "→ Attach manually: tmux attach -t {{_session}}"
+        echo "→ Attach manually: tmux attach -t {{ _session }}"
     fi
 
 [group('develop')]
 tmux-attach:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux attach -t {{_session}}
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux attach -t {{ _session }}
     else
-        echo "No session '{{_session}}' found. Use 'just tmux-dev' to start."
+        echo "No session '{{ _session }}' found. Use 'just tmux-dev' to start."
     fi
 
 [group('develop')]
 tmux-kill:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux kill-session -t {{_session}}
-        echo "Killed session '{{_session}}'"
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux kill-session -t {{ _session }}
+        echo "Killed session '{{ _session }}'"
     else
-        echo "No session '{{_session}}' to kill."
+        echo "No session '{{ _session }}' to kill."
     fi
 
 [group('develop')]
@@ -531,10 +533,10 @@ tmux-restart: tmux-kill tmux-dev
 [group('develop')]
 tmux-logs-dev:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux capture-pane -t {{_session}}:0.0 -p -S -50
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux capture-pane -t {{ _session }}:0.0 -p -S -50
     else
-        echo "No session '{{_session}}' found."
+        echo "No session '{{ _session }}' found."
     fi
 ```
 
@@ -603,6 +605,7 @@ just <recipe>  # should only output what's needed, not debug lines
 | **Recipes lack `[group(...)]`** | `just --list` is hard to scan, recipes unorganized | Add `[group('...')]` line before EVERY recipe |
 | **Ungrouped recipes mixed with grouped** | Some recipes appear under headers, others float | Audit `just --list` output for any bare recipes |
 | **Shell setting wrong syntax** | Recipes fail in strict mode or env vars don't load | Use bare `set dotenv-load` (no `:=`), use `set shell := [...]` for custom shells |
+| **Shell setting missing `-c`** | `zsh: can't open input file: just --list` / recipe fails on exit code 127 (shell treats recipe body as a filename) | End the shell list with `"-c"`: `set shell := ["zsh", "-euo", "pipefail", "-c"]` |
 | **Info lines lack `@` prefix** | Output pollutes `just -q` and recipe chains | Add `@` to all `echo`, `echo ''`, logging lines |
 
 ---
@@ -613,7 +616,7 @@ just <recipe>  # should only output what's needed, not debug lines
 - **Suppress echo with `@` for info-only/debug lines** — NOT for commands
   - ✅ `@echo "Starting..."` then `uv run ...`
   - ❌ `echo "Starting..."` then `uv run ...` (pollutes output)
-- Use `{{variable}}` for interpolation (not `$var`)
+- Use `{{ variable }}` for interpolation (not `$var`)
 - Variadic args: `*ARGS` (zero-or-more), `+ARGS` (one-or-more)
 - Default params: `serve port="8765":` (with colon)
 - Dependencies: `build-run *ARGS: build-frontend` (colon syntax)
@@ -629,7 +632,7 @@ just <recipe>  # should only output what's needed, not debug lines
 |---------|--------|
 | Variable | `name := "value"` |
 | Private var | `_name := "value"` |
-| Interpolation | `{{name}}` |
+| Interpolation | `{{ name }}` |
 | Param with default | `recipe param="default":` |
 | Variadic (0+) | `recipe *ARGS:` |
 | Variadic (1+) | `recipe +ARGS:` |
@@ -640,13 +643,13 @@ just <recipe>  # should only output what's needed, not debug lines
 | Continue on error | `-command` |
 | Shebang recipe | `#!/usr/bin/env bash` |
 | Script recipe | `[script("python3")]` |
-| **Shell setting** | **`set shell := ["zsh", "-euo", "pipefail"]`** |
+| **Shell setting** | **`set shell := ["zsh", "-euo", "pipefail", "-c"]`** |
 | **Dotenv** | **`set dotenv-load`** |
 | Private recipe | `[private]` |
 | No cd | `[no-cd]` |
 | Confirm | `[confirm]` or `[confirm("message")]` |
 | OS conditional | `[linux]`, `[macos]`, `[windows]`, etc. |
-| Built-in | `{{justfile_directory()}}`, `{{os()}}`, etc. |
+| Built-in | `{{ justfile_directory() }}`, `{{ os() }}`, etc. |
 
 ---
 

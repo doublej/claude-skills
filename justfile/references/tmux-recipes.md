@@ -17,56 +17,56 @@ _session := "SESSION"
 tmux-dev:
     #!/usr/bin/env bash
     set -euo pipefail
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        echo "Session '{{_session}}' already running."
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        echo "Session '{{ _session }}' already running."
     else
-        tmux new-session -d -s {{_session}} -c {{justfile_directory()}}
-        tmux send-keys -t {{_session}} 'LEFT_CMD' Enter
-        tmux split-window -h -t {{_session}} -c {{justfile_directory()}}
-        tmux send-keys -t {{_session}} 'RIGHT_CMD' Enter
-        tmux select-pane -t {{_session}}:0.0
-        echo "Started tmux session '{{_session}}' with left and right panes"
+        tmux new-session -d -s {{ _session }} -c {{ justfile_directory() }}
+        tmux send-keys -t {{ _session }} 'LEFT_CMD' Enter
+        tmux split-window -h -t {{ _session }} -c {{ justfile_directory() }}
+        tmux send-keys -t {{ _session }} 'RIGHT_CMD' Enter
+        tmux select-pane -t {{ _session }}:0.0
+        echo "Started tmux session '{{ _session }}' with left and right panes"
         sleep 0.5
     fi
     just _attach-window
 
-# Open a terminal window attached to {{_session}} — auto-detects iTerm/Ghostty/Terminal
+# Open a terminal window attached to {{ _session }} — auto-detects iTerm/Ghostty/Terminal
 [private]
 _attach-window:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -n "${TMUX:-}" ]; then
         # Already inside tmux — switch instead of nesting
-        tmux switch-client -t {{_session}}
+        tmux switch-client -t {{ _session }}
     elif [ "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
-        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{_session}}"'
+        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{ _session }}"'
     elif [ "${TERM_PROGRAM:-}" = "ghostty" ]; then
-        open -na Ghostty --args --command="tmux attach -t {{_session}}"
+        open -na Ghostty --args --command="tmux attach -t {{ _session }}"
     elif [ "${TERM_PROGRAM:-}" = "Apple_Terminal" ]; then
-        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{_session}}"'
+        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{ _session }}"'
     else
-        echo "→ Attach manually: tmux attach -t {{_session}}"
+        echo "→ Attach manually: tmux attach -t {{ _session }}"
     fi
 
 # Attach to running tmux session in current shell
 [group('develop')]
 tmux-attach:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux attach -t {{_session}}
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux attach -t {{ _session }}
     else
-        echo "No session '{{_session}}' found. Use 'just tmux-dev' to start."
+        echo "No session '{{ _session }}' found. Use 'just tmux-dev' to start."
     fi
 
 # Kill tmux session
 [group('develop')]
 tmux-kill:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux kill-session -t {{_session}}
-        echo "Killed session '{{_session}}'"
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux kill-session -t {{ _session }}
+        echo "Killed session '{{ _session }}'"
     else
-        echo "No session '{{_session}}' to kill."
+        echo "No session '{{ _session }}' to kill."
     fi
 
 # Restart: kill and relaunch
@@ -77,31 +77,31 @@ tmux-restart: tmux-kill tmux-dev
 [group('develop')]
 tmux-logs-left:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux capture-pane -t {{_session}}:0.0 -p -S -50
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux capture-pane -t {{ _session }}:0.0 -p -S -50
     else
-        echo "No session '{{_session}}' found."
+        echo "No session '{{ _session }}' found."
     fi
 
 # Show recent output from right pane
 [group('develop')]
 tmux-logs-right:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        tmux capture-pane -t {{_session}}:0.1 -p -S -50
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        tmux capture-pane -t {{ _session }}:0.1 -p -S -50
     else
-        echo "No session '{{_session}}' found."
+        echo "No session '{{ _session }}' found."
     fi
 
 # Show tmux session status
 [group('develop')]
 tmux-status:
     #!/usr/bin/env bash
-    if tmux has-session -t {{_session}} 2>/dev/null; then
-        echo "Session '{{_session}}' is running"
-        tmux list-panes -t {{_session}} -F "Pane #{pane_index}: #{pane_current_command}"
+    if tmux has-session -t {{ _session }} 2>/dev/null; then
+        echo "Session '{{ _session }}' is running"
+        tmux list-panes -t {{ _session }} -F "Pane #{pane_index}: #{pane_current_command}"
     else
-        echo "No session '{{_session}}' found."
+        echo "No session '{{ _session }}' found."
     fi
 ```
 
@@ -127,14 +127,14 @@ echo "${TMUX:-not set}" # path to socket if inside tmux, else "not set"
 
 Add another `elif` arm to `_attach-window`. Examples:
 
-- WezTerm: `wezterm cli spawn -- tmux attach -t {{_session}}` (if already running) or `open -na WezTerm --args start -- tmux attach -t {{_session}}`
-- kitty: `open -na kitty --args tmux attach -t {{_session}}`
-- Alacritty: `open -na Alacritty --args -e tmux attach -t {{_session}}`
+- WezTerm: `wezterm cli spawn -- tmux attach -t {{ _session }}` (if already running) or `open -na WezTerm --args start -- tmux attach -t {{ _session }}`
+- kitty: `open -na kitty --args tmux attach -t {{ _session }}`
+- Alacritty: `open -na Alacritty --args -e tmux attach -t {{ _session }}`
 
 ## Pane addressing
 
-- `{{_session}}:0.0` — window 0, pane 0 (left)
-- `{{_session}}:0.1` — window 0, pane 1 (right)
+- `{{ _session }}:0.0` — window 0, pane 0 (left)
+- `{{ _session }}:0.1` — window 0, pane 1 (right)
 - For 3+ panes, use `split-window -v` for vertical splits
 
 ## Common pane layouts
