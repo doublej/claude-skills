@@ -7,6 +7,11 @@
 #   _consult.sh text    "<body>" [placeholder]      → echoes text on stdout, exit 0
 #   _consult.sh notify  "<body>" [sound]            → fire-and-forget, exit 0
 #
+# Exit 3 = consult unavailable: an interactive mode (confirm/pick/text) was
+# requested but there is no MCP client and /dev/tty is unreadable, so the script
+# refuses to guess a default. Callers must treat exit 3 as a hard abort, never
+# as a silent default — see preflight.sh.
+#
 # Requires: `claude` CLI or `mcp` CLI. Falls back to a textual prompt on stderr
 # if neither is available, so scripts don't hard-fail in degraded envs.
 #
@@ -15,6 +20,13 @@
 # invocations from hooks and preflight, where the MCP client is unavailable.
 
 set -euo pipefail
+
+CONSULT_UNAVAILABLE=3
+
+# /dev/tty can exist and pass `[[ -r /dev/tty ]]` yet still fail to open with
+# "Device not configured" (e.g. macOS, no controlling terminal). Probe by
+# actually opening it, which is the only reliable signal.
+tty_available() { { true </dev/tty; } 2>/dev/null; }
 
 MODE="${1:-}"
 BODY="${2:-}"
@@ -25,6 +37,13 @@ fallback_prompt() {
   # read from /dev/tty so the user can answer directly. Hooks run synchronously
   # and /dev/tty is available in an interactive Claude Code session.
   printf "\n[teams:_consult] %s\n" "$BODY" >&2
+  # Interactive modes need real input. With no MCP client and no readable
+  # /dev/tty, refuse to fabricate a default (silently picking opts[0] or an
+  # empty string previously caused destructive auto-commits). Signal the caller.
+  if [[ "$MODE" != "notify" ]] && ! tty_available; then
+    printf "[teams:_consult] consult unavailable: no MCP client and /dev/tty cannot be opened; refusing to guess a default.\n" >&2
+    exit "$CONSULT_UNAVAILABLE"
+  fi
   case "$MODE" in
     confirm)
       printf "[teams:_consult] confirm [y/N]: " >&2

@@ -48,6 +48,8 @@ The lead should call the **bash** column (terser, token-cheaper). The **slash** 
 
 The spec is portable; the lead is a thin executor.
 
+**Beads gotcha:** `bd` operations that mutate ticket state (`claim`, `assign`, `update`) auto-export to `.beads/issues.jsonl`, re-dirtying the working directory *after* preflight passed. The `PreToolUse:Agent` hook then blocks every spawn on the dirty file. Commit `.beads/issues.jsonl` once after bulk ticket assignment and before the first `Agent(...)` call, not between spawns.
+
 </lead_contract>
 
 <preset_catalog>

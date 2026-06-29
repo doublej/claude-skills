@@ -40,7 +40,12 @@ BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 DIRTY="$(git -C "$REPO_ROOT" status --porcelain)"
 if [[ -n "$DIRTY" ]]; then
   say "working directory is dirty. Choose action:"
-  choice="$("$CONSULT" pick "Dirty working directory detected. How to proceed before team spawn?" "commit|stash|abort")" || choice="abort"
+  choice="$("$CONSULT" pick "Dirty working directory detected. How to proceed before team spawn?" "commit|stash|abort")" && rc=0 || rc=$?
+  if (( rc == 3 )); then
+    say "consult unavailable (no MCP client and no readable /dev/tty)."
+    say "Refusing to auto-commit or auto-stash. Resolve the dirty working directory manually (git commit / git stash) and retry preflight."
+    exit 2
+  fi
   case "$choice" in
     commit)
       msg="$("$CONSULT" text "Commit message for pending changes" "wip: pre-team snapshot")"
@@ -63,7 +68,13 @@ fi
 # 3. Repo gate — protected branch.
 case "$BRANCH" in
   main|master|production|release/*)
-    if ! "$CONSULT" confirm "Current branch is '$BRANCH'. Spawn a team here anyway?"; then
+    "$CONSULT" confirm "Current branch is '$BRANCH'. Spawn a team here anyway?" && rc=0 || rc=$?
+    if (( rc == 3 )); then
+      say "consult unavailable (no MCP client and no readable /dev/tty); cannot confirm protected branch."
+      say "Re-run preflight from an interactive session."
+      exit 2
+    fi
+    if (( rc != 0 )); then
       say "aborted — protected branch."
       exit 2
     fi
