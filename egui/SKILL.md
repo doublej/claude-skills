@@ -18,7 +18,13 @@ egui is an **immediate-mode** GUI: you re-describe the whole UI every frame from
 Pinned to **egui / eframe 0.34.x** (latest 0.34.3, 2026-05), **MSRV Rust 1.92+**. egui versions move fast and break APIs — before writing code, confirm the project's pinned version in `Cargo.toml` and check docs.rs for that exact version. Key recent shifts:
 - **0.34**: required `App` method is now `ui(&mut self, ui, frame)`; `update(ctx, frame)` is **deprecated**. Font backend → `skrifa` + `vello_cpu` (hinting). `content_rect`/`viewport_rect` for safe areas.
 - **0.32**: `Atom` layout primitives; popups/tooltips/menus rewritten; better SVG.
-- **0.33**: `egui::Plugin` trait.
+- **0.33**: `egui::Plugin` trait; `Rounding` renamed to `CornerRadius`.
+
+**Common 0.33→0.34 renames** (old names still compile but emit deprecation warnings — except `rect_filled`, which is a hard type error):
+- `SidePanel` / `TopBottomPanel` → unified `Panel`: `Panel::left(id)` / `Panel::right(id)` / `Panel::top(id)` / `Panel::bottom(id)`.
+- `Panel::default_width` / `exact_width` (and the `_height` variants) → `Panel::default_size` / `exact_size`.
+- `ctx.style()` → `ctx.global_style()`; `ctx.set_style()` → `ctx.set_global_style()` (and `style_mut` → `global_style_mut`) — avoids confusion with `ui.style()`.
+- `Painter::rect_filled` corner-radius arg is now `CornerRadius` (`u8`-based, since 0.33's `Rounding`→`CornerRadius`), **not** `f32` — pass `CornerRadius::same(3)`, not `3.0`.
 
 If the project is on ≤0.33, use the `update(&mut self, ctx, frame)` method instead of `ui` (see references/eframe-app.md).
 </version>
