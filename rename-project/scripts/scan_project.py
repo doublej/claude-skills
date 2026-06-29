@@ -218,6 +218,68 @@ def scan_python_imports(project: Path, old_snake: str, new_snake: str) -> list[d
     }]
 
 
+def scan_all_references(project: Path, old_slug: str, old_snake: str,
+                        known_files: set[str]) -> list[dict]:
+    """Catch-all: every text file that still mentions the old name.
+
+    Covers references the structured scanners miss — string literals
+    (e.g. #[command(name = "old-slug")]), nested manifests
+    (src-tauri/Cargo.toml), framework configs (tauri.conf.json,
+    capabilities/*.json), source in any language (.svelte, .java, .rs),
+    and JSON metadata (.template-meta.json).
+    """
+    terms = {t for t in (old_slug, old_snake) if t}
+    if not terms:
+        return []
+    pattern = "|".join(re.escape(t) for t in terms)
+
+    hits: list[str] = []
+    # Prefer git grep: fast, tracked files only, respects .gitignore.
+    try:
+        result = subprocess.run(
+            ["git", "grep", "-I", "-l", "-E", pattern],
+            cwd=project, capture_output=True, text=True, timeout=30,
+        )
+        if result.returncode in (0, 1):
+            hits = [h for h in result.stdout.splitlines() if h]
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        hits = []
+
+    if not hits:
+        # Fallback: manual walk when not a git repo or git is unavailable.
+        skip_dirs = {".git", ".venv", "node_modules", "target", "dist",
+                     "build", "__pycache__"}
+        rx = re.compile(pattern)
+        for f in project.rglob("*"):
+            if not f.is_file() or skip_dirs & set(f.parts):
+                continue
+            try:
+                text = f.read_text()
+            except (OSError, UnicodeDecodeError):
+                continue
+            if rx.search(text):
+                hits.append(str(f.relative_to(project)))
+
+    # Drop files already covered by a structured action or regenerated
+    # (lock files) rather than hand-edited.
+    remaining = sorted(set(hits) - known_files)
+    if not remaining:
+        return []
+    label = f"'{old_slug}'"
+    if old_snake != old_slug:
+        label += f"/'{old_snake}'"
+    return [{
+        "type": "update_references",
+        "description": (
+            f"Review/replace {label} in {len(remaining)} other file(s) "
+            "(string literals, nested manifests, framework configs, source)"
+        ),
+        "old_slug": old_slug,
+        "old_snake": old_snake,
+        "files": remaining,
+    }]
+
+
 def scan_lock_files(project: Path) -> list[dict]:
     locks = ["uv.lock", "bun.lock", "package-lock.json", "Cargo.lock", "go.sum"]
     found = [lf for lf in locks if (project / lf).exists()]
@@ -281,8 +343,22 @@ def scan(project_path: str, new_name: str) -> dict:
     actions.extend(scan_go_mod(project, new_slug))
     actions.extend(scan_python_imports(project, old_snake, new_snake))
     actions.extend(scan_docs(project, old_slug, old_snake))
-    actions.extend(scan_lock_files(project))
-    actions.extend(scan_venv(project))
+
+    lock_actions = scan_lock_files(project)
+    venv_actions = scan_venv(project)
+
+    # Files already covered by a structured action (or regenerated, not
+    # hand-edited) are excluded from the catch-all reference pass.
+    known_files: set[str] = set()
+    for a in actions + lock_actions:
+        if isinstance(a.get("file"), str):
+            known_files.add(a["file"])
+        for f in a.get("files", []):
+            known_files.add(f)
+
+    actions.extend(scan_all_references(project, old_slug, old_snake, known_files))
+    actions.extend(lock_actions)
+    actions.extend(venv_actions)
 
     folder_action = scan_folder(project, old_slug, new_slug)
     if folder_action:
