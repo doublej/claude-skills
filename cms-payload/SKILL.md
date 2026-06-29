@@ -21,6 +21,8 @@ Payload 3.0 = Next.js app + Payload config. Key concepts:
 - **Admin Panel** — auto-generated React UI at `/admin`
 - **APIs** — auto-generated REST (`/api/{slug}`) + GraphQL + Local API
 
+**Headless / decoupled topology:** Payload can run standalone as a backend API (REST/GraphQL) consumed by any frontend framework — not only co-located inside a Next.js app (e.g. a separate SvelteKit/Astro/Nuxt frontend fetching a deployed Payload Worker). In this pattern the Local API is unavailable from the frontend; all reads go through the REST/GraphQL API via `fetch`.
+
 </architecture>
 
 <scaffolding>
@@ -273,6 +275,7 @@ export default buildConfig({
 DB adapters:
 - MongoDB: `@payloadcms/db-mongodb` → `mongooseAdapter({ url })`
 - Postgres: `@payloadcms/db-postgres` → `postgresAdapter({ pool: { connectionString } })`
+- Cloudflare D1/SQLite: `@payloadcms/db-d1-sqlite` → `sqliteD1Adapter({ binding, push, prodMigrations })` — requires a D1 binding from `@opennextjs/cloudflare` or wrangler's `getPlatformProxy`; no standard local dev DB pattern
 
 </config_ref>
 
