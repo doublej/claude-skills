@@ -164,6 +164,8 @@ props->SetFloatProperty(container, vr::Prop_UserIpdMeters_Float, 0.063f);
 
 **Essential controller properties:** All HMD basics plus `ControllerType`, `InputProfilePath`, `ControllerRoleHint` (1=left, 2=right), `RegisteredDeviceType`.
 
+**Pitfall:** SteamVR caches device properties per serial number. Changing identity props (`ModelNumber`, `ManufacturerName`, `TrackingSystemName`) while keeping the same `SerialNumber` makes SteamVR keep showing the previously-cached identity. Bump the serial or restart SteamVR cleanly when switching emulation profiles.
+
 See `references/device-properties.md` for full property reference and emulation profiles.
 
 </device_properties>
@@ -305,6 +307,7 @@ See `references/tracker-emulation.md` for the complete property set needed to em
 | Calling `SetChaperoneArea` on main thread | Crashes SteamVR on Linux -- call from a spawned thread |
 | Not cleaning up on `Cleanup()` | Release all resources, stop threads, call `VR_CLEANUP_SERVER_DRIVER_CONTEXT` last |
 | `TrackedDeviceAdded` after `Init` returns | Can add devices later, but they won't be activated until next frame |
+| Changing HMD identity props (`ModelNumber`, `ManufacturerName`, `TrackingSystemName`) with the same serial | SteamVR's per-serial property cache preserves the old name; restart SteamVR cleanly or bump the device serial to force re-registration |
 
 </pitfalls>
 
@@ -335,14 +338,15 @@ ALVR's `server_openvr` crate at `rust/alvr/repo/alvr/server_openvr/` demonstrate
 - **Direct mode (Windows):** `OvrDirectModeComponent` manages D3D11 shared textures
 - **Threading:** `driver_ready_idle` spawns event loop thread; main thread stays free for `RunFrame`
 
-Key files:
-- `cpp/alvr_server/alvr_server.cpp` -- `DriverProvider`, entry points, event loop
-- `cpp/alvr_server/TrackedDevice.{h,cpp}` -- base class with `Activate`/`Deactivate`/`GetPose`
-- `cpp/alvr_server/HMD.{h,cpp}` -- HMD with `IVRDisplayComponent`
-- `cpp/alvr_server/Controller.{h,cpp}` -- input components, skeleton, button mapping
-- `cpp/alvr_server/FakeViveTracker.{h,cpp}` -- body tracker emulation
-- `src/lib.rs` -- Rust entry, FFI setup, event dispatch
-- `src/props.rs` -- property setting, serial number generation, emulation profiles
+Key files (paths relative to the repo root; current master nests the driver under `alvr/server_openvr/`):
+- `alvr/server_openvr/cpp/alvr_server/alvr_server.cpp` -- `DriverProvider`, entry points, event loop
+- `alvr/server_openvr/cpp/alvr_server/TrackedDevice.{h,cpp}` -- base class with `Activate`/`Deactivate`/`GetPose`
+- `alvr/server_openvr/cpp/alvr_server/HMD.{h,cpp}` -- HMD with `IVRDisplayComponent`
+- `alvr/server_openvr/cpp/alvr_server/Controller.{h,cpp}` -- input components, skeleton, button mapping
+- `alvr/server_openvr/cpp/alvr_server/FakeViveTracker.{h,cpp}` -- body tracker emulation
+- `alvr/server_openvr/src/lib.rs` -- Rust entry, FFI setup, event dispatch
+- `alvr/server_openvr/src/props.rs` -- property setting, serial number generation, emulation profiles
+- `alvr/server_core/src/` -- core streaming engine (`ServerCoreEvent`, session/tracking logic) shared by the OpenVR driver
 
 </alvr_integration>
 
