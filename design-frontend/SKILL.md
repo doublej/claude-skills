@@ -9,6 +9,8 @@ Creates distinctive, production-grade frontend interfaces that avoid generic "AI
 
 <design_thinking>
 
+**FIRST, check for an existing design system.** If the project already defines one (CSS variables/token files, an established font stack, set color palette, existing motion patterns), discover those constraints first and treat working cohesively within them AS the aesthetic direction — do NOT impose new fonts, palettes, or motion over an existing system. When a project-specific design-system skill already covers this app, prefer it over this skill rather than layering a bold new direction on top. The guidance below applies to greenfield work where you set the direction.
+
 Before coding, understand context and commit to a BOLD aesthetic direction:
 
 - **Purpose**: What problem does this interface solve? Who uses it?
@@ -68,4 +70,6 @@ Match implementation complexity to the aesthetic vision:
 - **Minimalist designs**: Restraint, precision, careful attention to spacing, typography, and subtle details
 
 Elegance comes from executing the vision well.
+
+**File length**: Self-contained HTML demos (single file with inline styles/scripts for portability) are an expected exception to the global 150-line file cap. Keep them as one file and do not split unless the user asks — no need to justify the length.
 </implementation>
