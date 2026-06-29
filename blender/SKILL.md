@@ -23,6 +23,8 @@ Assistance for Blender 4.x workflows, Python scripting, asset integration, and M
 <mcp_quickstart>
 ## MCP Quick Start
 
+**Prerequisite:** `mcp__blender__*` tools only exist when the Blender MCP server (BlenderMCP add-on) is running and connected in this session. If a call returns `No such tool available: mcp__blender__...`, the server is not connected — fall back to running the equivalent `bpy` code in Blender's **Script Editor** manually (or via the Python console), using the snippets in [Python Scripting](#python-scripting--bpy) below.
+
 ```python
 # Scene inspection
 mcp__blender__get_scene_info()
