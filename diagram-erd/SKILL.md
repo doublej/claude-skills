@@ -16,6 +16,18 @@ Generate entity relationship diagrams from Python data model classes using Graph
 
 </supported_frameworks>
 
+<non_python_sources>
+
+erdantic only introspects Python classes. When the data model lives in another language (Zig structs, C headers, TypeScript interfaces, Go structs, SQL DDL, etc.) and the project has no Python models:
+
+1. Author a throwaway Pydantic mirror of the source structs/types in a scratch module (e.g. `scratch/erd_mirror.py`). Map each struct/interface to a Pydantic model and each cross-reference (foreign key, nested type, pointer) to a typed field so erdantic can draw the edges.
+2. Run erdantic against the mirror: `uv run --with erdantic python scripts/generate_erd.py scratch.erd_mirror.RootModel -o diagram.png`.
+3. Complement with a Mermaid `erDiagram` block for inline/Markdown viewing where a rendered image is not convenient.
+
+The mirror is for diagramming only — keep it out of the project's real package and delete it (or leave it under `scratch/`) once the diagram is generated. Match field names to the source so the ERD stays faithful.
+
+</non_python_sources>
+
 <quick_start>
 
 ### CLI
