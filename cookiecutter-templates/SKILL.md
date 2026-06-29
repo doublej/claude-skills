@@ -172,6 +172,7 @@ cookiecutter-my-template/
     "project_name": "My Project",
     "_copy_without_render": [
         "*.html",
+        "*.liquid",
         "**/static/**"
     ],
     "_jinja2_env_vars": {
@@ -515,7 +516,9 @@ def test_project_runs(generated_project):
 
 **Problem:** Template contains `{{ variable }}` meant for runtime.
 
-**Solution:** Use `{% raw %}...{% endraw %}` blocks.
+**Solution:** Use `{% raw %}...{% endraw %}` blocks for a few stray expressions.
+
+**Whole file types collide** (e.g. `*.liquid`, `*.hbs`, `*.handlebars` — they share Jinja's `{{ }}`/`{% %}` delimiters): don't wrap every expression. List the pattern under `_copy_without_render` in `cookiecutter.json` so those files are copied verbatim. See the Private Variables pattern in `<cookiecutter_json_patterns>`.
 
 ### 2. Directory Names with Variables
 
