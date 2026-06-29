@@ -4,6 +4,7 @@ EPC QR Code Generator
 Generates EPC (European Payments Council) QR codes for SEPA banking payments.
 """
 
+import io
 import sys
 import json
 import re
@@ -153,7 +154,7 @@ def generate_epc_qr(
     try:
         from segno import helpers
     except ImportError:
-        return "Error: segno library not installed. Run: pip install segno"
+        return "Error: segno library not installed. Run: uv pip install segno"
 
     # Sanitize inputs
     iban = iban.replace(' ', '').upper()
@@ -171,8 +172,11 @@ def generate_epc_qr(
             bic=bic,
         )
 
-        # Return ASCII art
-        return qr.terminal(compact=True)
+        # Return ASCII art. qr.terminal() writes to a stream and returns None,
+        # so capture it into a buffer instead of printing as a side effect.
+        buf = io.StringIO()
+        qr.terminal(buf, compact=True, border=1)
+        return buf.getvalue().rstrip('\n')
     except Exception as e:
         return f"Error generating QR code: {str(e)}"
 

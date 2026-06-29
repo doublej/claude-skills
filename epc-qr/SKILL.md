@@ -82,6 +82,18 @@ IBAN: [IBAN]
 
 If amount is missing: "to pay [BENEFICIARY]" (no amount shown)
 
+### PNG output (preferred for production)
+
+Terminal ASCII can be finicky to scan. For a reliably scannable image, save a
+PNG instead of (or alongside) the ASCII render. Build the same EPC QR object and
+call `qr.save('payment.png', scale=8)`:
+
+```python
+from segno import helpers
+qr = helpers.make_epc_qr(name=beneficiary, iban=iban, amount=amount, text=reference, bic=bic)
+qr.save('payment.png', scale=8)
+```
+
 </usage_workflow>
 
 <error_handling>
@@ -141,7 +153,7 @@ Execute `scripts/generate_epc_qr.py` with JSON input via stdin:
 
 **Output**: ASCII QR code to stdout OR error message to stderr
 
-**Dependency**: `segno` library (`pip install segno`)
+**Dependency**: `segno` library (`uv pip install segno`)
 
 </script_reference>
 
