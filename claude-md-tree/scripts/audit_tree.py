@@ -37,6 +37,12 @@ SKIP_DIRS = {
     "tmp", ".tmp", ".cache", ".turbo",
     ".idea", ".vscode", ".DS_Store",
     "vendor", "third_party",
+    # Git/agent worktrees — transient copies; must never receive a committed CLAUDE.md.
+    ".worktree", "worktrees",
+    # Toolchains and native build output (incl. vendored libc headers).
+    ".toolchain", "zig-out", ".zig-cache",
+    # Local databases and archives — pure noise for a context audit.
+    ".beads", "_archive",
 }
 
 # Folder-name fragments that strongly signal a context-worthy domain.

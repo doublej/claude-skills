@@ -122,6 +122,12 @@ python3 {SKILL_DIR}/scripts/audit_tree.py <repo-root>
 
 It walks the tree, scores each candidate folder, marks which already have a `CLAUDE.md`, and prints a ranked proposal. Use it as a starting list — not a final answer. Human judgment overrides the score.
 
+It skips transient and generated trees by default: git/agent worktrees (`.worktree/`, `.claude/worktrees/`), `node_modules`, build output, `.toolchain/`, `zig-out/`, `.zig-cache/`, `.beads/`, `_archive/`, and caches (full list in `SKIP_DIRS` at the top of the script). If a candidate looks like noise, check it isn't a worktree or vendored copy before scoring it.
+
+**Non-web repos:** the score heuristics are tuned for `src/`-style web/SaaS layouts. Native, embedded, mobile, Rust/Zig-workspace, or NDK repos may return **zero candidates** — that is expected, not a failure. When the script surfaces nothing, ignore the score and apply the folder criteria above by hand to the top-level directories.
+
+**Coverage vs. gaps:** to see what already has context vs. what is missing, run `find . -name CLAUDE.md` (existing coverage) and compare against `find . -type d` (all folders). If `atlas tree` is available (`which atlas`), `atlas tree view` lists folders that already have a CLAUDE.md — but it does **not** surface folders missing one, so still complement it with the `find` commands above.
+
 Typical high-value zones in a web/SaaS repo:
 
 ```
@@ -151,6 +157,14 @@ For every piece of knowledge, decide where it goes using `references/placement-r
 | Must-run commands (lint, format, signing)          | hooks in `.claude/settings.json`       |
 
 Misplacement is the most common failure mode: rules that should be path-scoped get duplicated in 6 nested CLAUDE.md files; procedures that should be skills bloat the root file.
+
+### Gate — confirm before writing (hard stop, do not skip)
+
+**Blocking.** Before writing or editing any file, present to the user:
+- the inventory (existing CLAUDE.md + scored candidates), and
+- the proposed file list (which CLAUDE.md / GLOSSARY.md / rules you will add or change).
+
+Wait for explicit approval before proceeding to Pass 3. Adding CLAUDE.md to the wrong places is the most common failure and the most expensive to undo. This gate is blocking **even inside a larger task** — do not treat confirmation as optional because you are mid-flow.
 
 ### Pass 3 — Write the root file as a map, not a manual
 
