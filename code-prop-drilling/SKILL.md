@@ -1,6 +1,6 @@
 ---
 name: code-prop-drilling
-description: "Detect/fix props passed through 2+ layers unused in React, Vue, Svelte, Python"
+description: "Detect/fix prop drilling — props/parameters threaded through 2+ unused layers in React, Vue, Svelte, Python. Use only when the user explicitly asks about prop drilling, data/state threading, or refactoring how data flows through a component tree or call chain. NOT for generic UI, styling, or layout work."
 ---
 
 # Prop Drilling Detector
@@ -8,6 +8,16 @@ description: "Detect/fix props passed through 2+ layers unused in React, Vue, Sv
 Scan component trees or call chains to find props/parameters passed through 2+ intermediate layers without being used, rank by severity, and recommend framework-appropriate fixes.
 
 Pure analysis skill — uses Glob, Grep, Read. No scripts.
+
+<scope>
+## When to use
+
+Only when the user explicitly asks about prop drilling, data/state threading, or refactoring how data flows through a component tree or call chain.
+
+## When NOT to use
+
+Do not run this skill for generic UI, styling, layout, label-wrapping, or visual-polish tasks — even if a screenshot of components is attached. Those are unrelated to prop-drilling detection. If the request is about how something *looks* rather than how data *flows*, this skill does not apply; stop and let the appropriate UI work proceed.
+</scope>
 
 <phase1>
 ## Phase 1 — Detect Framework & State Management
