@@ -54,10 +54,10 @@ else
             && rm -rf build.failed && mv build build.failed && mv build.old build \
             && '${APPS_NAS}/deploy-app.sh' '${SITE}'"
         echo -e "${YELLOW}Rolled back. Bad build kept at ${APP_NAS}/build.failed${NC}"
-        echo "Inspect logs: ssh nas \"PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 logs ${SUBDOMAIN} --lines 50\""
+        echo "Inspect logs: ssh nas \"PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 logs {{APP_NAME}} --lines 50\""
     else
         echo -e "${RED}Health check failed on first deploy (nothing to roll back to)${NC}"
-        echo "Inspect logs: ssh nas \"PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 logs ${SUBDOMAIN} --lines 50\""
+        echo "Inspect logs: ssh nas \"PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 logs {{APP_NAME}} --lines 50\""
     fi
     exit 1
 fi
