@@ -1,14 +1,19 @@
 #!/bin/bash
 
 # Deployment script for {{SUBDOMAIN}}.jurrejan.com (Node.js app)
-# Deploys to NAS Caddy via mounted volume + PM2
+# Zero-downtime: stages the new build beside the live one, swaps it in with
+# NAS-side renames, then restarts PM2. The app keeps serving the old build
+# during the whole rsync; downtime is just the PM2 restart (~1s).
 
-set -e
+set -euo pipefail
 
 # Configuration
 SUBDOMAIN="{{SUBDOMAIN}}"
-TARGET_DIR="/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com"
 SOURCE_DIR="{{SOURCE_DIR}}"
+SITE="${SUBDOMAIN}.jurrejan.com"
+APPS_MAC="/Volumes/Container/caddy/apps"
+APPS_NAS="/share/CACHEDEV1_DATA/Container/caddy/apps"
+TARGET_DIR="${APPS_MAC}/${SITE}"
 
 # Colors
 GREEN='\033[0;32m'
@@ -16,31 +21,37 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-echo -e "${YELLOW}Deploying ${SUBDOMAIN}.jurrejan.com (Node.js)...${NC}"
+echo -e "${YELLOW}Deploying ${SITE} (Node.js)...${NC}"
 
 # Check mount
-if [ ! -d "/Volumes/Container/caddy/apps" ]; then
+if [ ! -d "$APPS_MAC" ]; then
     echo -e "${RED}Error: Caddy volume not mounted${NC}"
     open "smb://jongserve.local/Container"
     echo "Please authenticate and retry."
     exit 1
 fi
 
-# Create target directory
 mkdir -p "$TARGET_DIR"
 
-# Copy build files
-echo -e "${YELLOW}Copying files...${NC}"
-rsync -av --delete \
+# Stage: copy the new build beside the live one (running app untouched)
+echo -e "${YELLOW}Staging build (app keeps running)...${NC}"
+ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.staging'"   # SMB rm is unreliable; clean NAS-side
+rsync -av \
     --exclude='.DS_Store' \
     --exclude='node_modules' \
-    "$SOURCE_DIR/" "$TARGET_DIR/build/"
+    "$SOURCE_DIR/" "${TARGET_DIR}/build.staging/"
 
-# Copy config files
+# Config files are tiny — safe to copy in place
 cp ecosystem.config.js app.caddy "$TARGET_DIR/"
 
-# Deploy on NAS
-echo -e "${YELLOW}Starting app on NAS...${NC}"
-ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh ${SUBDOMAIN}.jurrejan.com"
+# Switch: rename swap on the NAS (the running process keeps its open files
+# from the old dir until PM2 restarts it), then restart via deploy-app.sh
+echo -e "${YELLOW}Switching build and restarting app...${NC}"
+ssh nas "cd '${APPS_NAS}/${SITE}' \
+    && rm -rf build.old \
+    && { [ ! -d build ] || mv build build.old; } \
+    && mv build.staging build \
+    && '${APPS_NAS}/deploy-app.sh' '${SITE}' \
+    && rm -rf build.old"
 
-echo -e "${GREEN}Deployed to https://${SUBDOMAIN}.jurrejan.com${NC}"
+echo -e "${GREEN}Deployed to https://${SITE}${NC}"

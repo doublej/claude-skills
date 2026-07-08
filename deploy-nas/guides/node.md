@@ -87,34 +87,51 @@ SUBDOMAIN="myapp"
 mkdir -p "/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com"
 ```
 
-### 3. Copy Files
+### 3. Stage Files
 
-For SvelteKit:
+Never rsync `--delete` into the live `build/` — the running app serves a
+half-copied tree for the whole (slow, SMB) transfer. Stage beside it:
+
 ```bash
-rsync -av --delete \
+SITE="${SUBDOMAIN}.jurrejan.com"
+APPS_NAS="/share/CACHEDEV1_DATA/Container/caddy/apps"
+ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.staging'"
+
+# SvelteKit
+rsync -av \
     --exclude='.DS_Store' \
     --exclude='node_modules' \
-    build/ "/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com/build/"
-```
+    build/ "/Volumes/Container/caddy/apps/${SITE}/build.staging/"
 
-For plain Node:
-```bash
-rsync -av --delete \
+# Plain Node
+rsync -av \
     --exclude='.DS_Store' \
     --exclude='node_modules' \
-    server.js package.json "/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com/"
+    server.js package.json "/Volumes/Container/caddy/apps/${SITE}/build.staging/"
 ```
 
 ### 4. Copy Config Files
 
+Tiny files — safe to copy in place:
+
 ```bash
-cp ecosystem.config.js app.caddy "/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com/"
+cp ecosystem.config.js app.caddy "/Volumes/Container/caddy/apps/${SITE}/"
 ```
 
-### 5. Deploy via SSH
+### 5. Switch and Restart via SSH
+
+Swap the build with renames (the running process keeps its open files from
+the old dir), then restart. Downtime is just the PM2 restart (~1s), not the
+rsync. `build.old` is kept until the restart succeeds, so a failed deploy
+leaves a rollback: `ssh nas "cd ${APPS_NAS}/${SITE} && mv build.old build"`.
 
 ```bash
-ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan.com"
+ssh nas "cd '${APPS_NAS}/${SITE}' \
+    && rm -rf build.old \
+    && { [ ! -d build ] || mv build build.old; } \
+    && mv build.staging build \
+    && '${APPS_NAS}/deploy-app.sh' '${SITE}' \
+    && rm -rf build.old"
 ```
 
 This script:
@@ -147,15 +164,21 @@ ssh nas "/opt/bin/pm2 delete myapp"
 
 ## Complete Example
 
+Prefer rendering `templates/deploy-node.sh` — it implements this
+stage-then-switch flow. By hand:
+
 ```bash
 #!/bin/bash
-set -e
+set -euo pipefail
 
 SUBDOMAIN="myapp"
-TARGET_DIR="/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com"
+SITE="${SUBDOMAIN}.jurrejan.com"
+APPS_MAC="/Volumes/Container/caddy/apps"
+APPS_NAS="/share/CACHEDEV1_DATA/Container/caddy/apps"
+TARGET_DIR="${APPS_MAC}/${SITE}"
 
 # Check mount (or run scripts/mount-nas.sh for an idempotent mount)
-if [ ! -d "/Volumes/Container/caddy/apps" ]; then
+if [ ! -d "$APPS_MAC" ]; then
     open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
     echo "Mount volume and retry"
     exit 1
@@ -164,15 +187,21 @@ fi
 # Build
 bun run build
 
-# Deploy files
+# Stage (app keeps running the old build)
 mkdir -p "$TARGET_DIR"
-rsync -av --delete --exclude='.DS_Store' build/ "$TARGET_DIR/build/"
+ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.staging'"
+rsync -av --exclude='.DS_Store' build/ "$TARGET_DIR/build.staging/"
 cp ecosystem.config.js app.caddy "$TARGET_DIR/"
 
-# Start/restart on NAS
-ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh ${SUBDOMAIN}.jurrejan.com"
+# Switch + restart on NAS (downtime = PM2 restart only)
+ssh nas "cd '${APPS_NAS}/${SITE}' \
+    && rm -rf build.old \
+    && { [ ! -d build ] || mv build build.old; } \
+    && mv build.staging build \
+    && '${APPS_NAS}/deploy-app.sh' '${SITE}' \
+    && rm -rf build.old"
 
-echo "Deployed to https://${SUBDOMAIN}.jurrejan.com"
+echo "Deployed to https://${SITE}"
 ```
 
 ## Troubleshooting

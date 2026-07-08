@@ -71,10 +71,15 @@ mount (or `rsync` over SSH).
 
 ## Caution
 
-- **`rsync --delete` overwrites.** `www/` already holds live sites (e.g. `demo`,
-  `hello-world`). Never deploy under a name that exists unless you mean to replace
-  it — check `ls /Volumes/Container/caddy/www/` first. `deploy-frontend.sh` refuses
-  to clobber an existing site unless run with `--force`.
+- **Never rsync into a live directory.** Stage to `.staging-<site>` (www) or
+  `build.staging` (apps) and switch with NAS-side renames — see Quick Reference.
+  `www/` already holds live sites (e.g. `demo`, `hello-world`); never deploy
+  under a name that exists unless you mean to replace it — check
+  `ls /Volumes/Container/caddy/www/` first. `deploy-frontend.sh` refuses to
+  clobber an existing site unless run with `--force`.
+- **Delete `<site>.old` after a www swap.** A leftover copy carries a duplicate
+  `.caddy` for the same domain, which fails validation on the next apply. (The
+  staging dir is dot-prefixed precisely so the `www/*/` scan never sees it.)
 - **`apply_from_mac.sh` validates before reloading** (a malformed `.caddy` in any
   site aborts the reload, leaving the live config untouched). To check by hand:
   `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile'`
@@ -91,26 +96,42 @@ mount (or `rsync` over SSH).
 
 ## Quick Reference
 
+**Zero-downtime rule: never rsync into a live directory.** Stage everything
+beside it, then switch with NAS-side renames at the end. rsync over SMB is
+slow — writing in place leaves the site/app serving a half-copied tree for the
+whole transfer. Both `deploy-*.sh` templates implement this; the manual steps
+are in the guides.
+
 ### Static Frontend
 ```bash
-# Build and copy to www directory (refuses to clobber an existing site)
+# Stage + rename-switch + apply (refuses to clobber an existing site w/o --force)
 ./deploy-frontend.sh
 
-# ...or by hand — confirm the name is free first:
-ls /Volumes/Container/caddy/www/ | grep myapp || \
-  rsync -av --delete dist/ /Volumes/Container/caddy/www/myapp.jurrejan.com/
+# By hand: stage to a dot-dir (invisible to apply_from_mac.sh), then swap
+rsync -av dist/ /Volumes/Container/caddy/www/.staging-myapp.jurrejan.com/
+# ...write myapp.caddy into the staging dir, then (see guides/frontend.md):
+ssh nas "cd /share/CACHEDEV1_DATA/Container/caddy/www \
+  && rm -rf myapp.jurrejan.com.old \
+  && { [ ! -d myapp.jurrejan.com ] || mv myapp.jurrejan.com myapp.jurrejan.com.old; } \
+  && mv .staging-myapp.jurrejan.com myapp.jurrejan.com \
+  && rm -rf myapp.jurrejan.com.old"
 
-# Apply Caddy config
+# Apply Caddy config (graceful reload)
 cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
 ```
 
 ### Node.js App
 ```bash
-# Copy app to apps directory
-rsync -av --delete build/ /Volumes/Container/caddy/apps/myapp.jurrejan.com/build/
+# Stage the new build beside the live one (app keeps running)
+rsync -av build/ /Volumes/Container/caddy/apps/myapp.jurrejan.com/build.staging/
 
-# Deploy via SSH (starts/restarts PM2)
-ssh nas "/share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan.com"
+# Switch + restart via SSH — downtime = PM2 restart only (see guides/node.md)
+ssh nas "cd /share/CACHEDEV1_DATA/Container/caddy/apps/myapp.jurrejan.com \
+  && rm -rf build.old \
+  && { [ ! -d build ] || mv build build.old; } \
+  && mv build.staging build \
+  && /share/CACHEDEV1_DATA/Container/caddy/apps/deploy-app.sh myapp.jurrejan.com \
+  && rm -rf build.old"
 ```
 
 ### LAN reverse proxy
@@ -191,8 +212,8 @@ imported from `apps/` either — `deploy-app.sh` copies each `app.caddy` into
 - `templates/frontend-caddy.caddy` - Caddy config for static sites
 - `templates/node-caddy.caddy` - Caddy reverse proxy config for Node apps
 - `templates/ecosystem.config.js` - PM2 config template
-- `templates/deploy-frontend.sh` - Frontend deployment script (renders config, refuses to clobber)
-- `templates/deploy-node.sh` - Node.js deployment script
+- `templates/deploy-frontend.sh` - Frontend deploy: stage → rename-switch → apply (refuses to clobber w/o --force)
+- `templates/deploy-node.sh` - Node.js deploy: stage → rename-switch → PM2 restart (keeps `build.old` until restart succeeds)
 
 The `deploy-*.sh` and `*.caddy` templates carry `{{PLACEHOLDER}}` tokens
 (`{{SUBDOMAIN}}`, `{{SOURCE_DIR}}`, `{{PORT}}`, `{{APP_NAME}}`). Render them

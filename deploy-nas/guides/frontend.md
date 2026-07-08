@@ -41,19 +41,25 @@ SITE="/Volumes/Container/caddy/www/${SUBDOMAIN}.jurrejan.com"
 mkdir -p "$SITE"
 ```
 
-### 3. Copy Built Files
+### 3. Stage Built Files
+
+Never rsync into the live directory — the site serves a half-copied tree for
+the whole (slow, SMB) transfer. Stage beside it, dot-prefixed so
+`apply_from_mac.sh`'s `www/*/` scan can't import the half-staged site:
 
 ```bash
-rsync -av --delete \
+WWW_NAS="/share/CACHEDEV1_DATA/Container/caddy/www"
+ssh nas "rm -rf '${WWW_NAS}/.staging-${SUBDOMAIN}.jurrejan.com'"
+rsync -av \
     --exclude='.DS_Store' \
     --exclude='._*' \
     --exclude='.git' \
-    dist/ "/Volumes/Container/caddy/www/${SUBDOMAIN}.jurrejan.com/"
+    dist/ "/Volumes/Container/caddy/www/.staging-${SUBDOMAIN}.jurrejan.com/"
 ```
 
 ### 4. Create Caddy Config
 
-Create `${SUBDOMAIN}.caddy` **inside the site directory**:
+Create `${SUBDOMAIN}.caddy` **inside the staging directory**:
 
 ```caddy
 myapp.jurrejan.com {
@@ -67,11 +73,29 @@ The `default_site` snippet (defined in `etc/snippets/common.caddy`) includes:
 - 5MB request body limit
 - file_server directive
 
-### 5. Apply Changes
+### 5. Switch (near-atomic)
+
+Two renames on the NAS — the site is only "in between" for the rename instant.
+Delete the `.old` tree right after: its duplicate `.caddy` would fail
+validation on the next apply if it lingered.
+
+```bash
+SITE="${SUBDOMAIN}.jurrejan.com"
+ssh nas "cd '${WWW_NAS}' \
+    && rm -rf '${SITE}.old' \
+    && { [ ! -d '${SITE}' ] || mv '${SITE}' '${SITE}.old'; } \
+    && mv '.staging-${SITE}' '${SITE}' \
+    && rm -rf '${SITE}.old'"
+```
+
+### 6. Apply Changes
 
 ```bash
 cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
 ```
+
+Caddy reloads are graceful (no dropped connections). For a redeploy of an
+existing site the config is unchanged, so this step is a no-op safety check.
 
 This script:
 - Scans `www/*/` for `*.caddy` files
@@ -93,15 +117,20 @@ myapp.jurrejan.com {
 
 ## Complete Example
 
+Prefer rendering `templates/deploy-frontend.sh` — it implements this
+stage-then-switch flow. By hand:
+
 ```bash
 #!/bin/bash
-set -e
+set -euo pipefail
 
 SUBDOMAIN="myapp"
-TARGET_DIR="/Volumes/Container/caddy/www/${SUBDOMAIN}.jurrejan.com"
+SITE="${SUBDOMAIN}.jurrejan.com"
+WWW_MAC="/Volumes/Container/caddy/www"
+WWW_NAS="/share/CACHEDEV1_DATA/Container/caddy/www"
 
 # Check mount (or run scripts/mount-nas.sh for an idempotent mount)
-if [ ! -d "/Volumes/Container/caddy/www" ]; then
+if [ ! -d "$WWW_MAC" ]; then
     open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
     echo "Mount volume and retry"
     exit 1
@@ -110,15 +139,20 @@ fi
 # Build
 bun run build
 
-# Deploy
-mkdir -p "$TARGET_DIR"
-rsync -av --delete --exclude='.DS_Store' dist/ "$TARGET_DIR/"
+# Stage (live site keeps serving the old version)
+ssh nas "rm -rf '${WWW_NAS}/.staging-${SITE}'"
+rsync -av --exclude='.DS_Store' dist/ "${WWW_MAC}/.staging-${SITE}/"
+cp "${SUBDOMAIN}.caddy" "${WWW_MAC}/.staging-${SITE}/"
 
-# Copy Caddy config
-cp "${SUBDOMAIN}.caddy" "$TARGET_DIR/"
+# Switch (two renames — effectively instant)
+ssh nas "cd '${WWW_NAS}' \
+    && rm -rf '${SITE}.old' \
+    && { [ ! -d '${SITE}' ] || mv '${SITE}' '${SITE}.old'; } \
+    && mv '.staging-${SITE}' '${SITE}' \
+    && rm -rf '${SITE}.old'"
 
 # Apply
 cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
 
-echo "Deployed to https://${SUBDOMAIN}.jurrejan.com"
+echo "Deployed to https://${SITE}"
 ```
