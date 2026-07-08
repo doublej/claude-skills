@@ -80,58 +80,72 @@ bun run build
 # Or plain Node - no build needed
 ```
 
-### 2. Create App Directory
+### 2. Stage Files (over SSH — no mount needed)
+
+Never rsync `--delete` into the live `build/` — the running app would serve a
+half-copied tree for the whole transfer. Stage beside it over SSH (delta
+rsync — much faster than the SMB mount, which disables delta transfer):
 
 ```bash
 SUBDOMAIN="myapp"
-mkdir -p "/Volumes/Container/caddy/apps/${SUBDOMAIN}.jurrejan.com"
-```
-
-### 3. Stage Files
-
-Never rsync `--delete` into the live `build/` — the running app serves a
-half-copied tree for the whole (slow, SMB) transfer. Stage beside it:
-
-```bash
 SITE="${SUBDOMAIN}.jurrejan.com"
 APPS_NAS="/share/CACHEDEV1_DATA/Container/caddy/apps"
-ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.staging'"
+ssh nas "mkdir -p '${APPS_NAS}/${SITE}' && rm -rf '${APPS_NAS}/${SITE}/build.staging'"
 
 # SvelteKit
-rsync -av \
+rsync -a --delete \
     --exclude='.DS_Store' \
     --exclude='node_modules' \
-    build/ "/Volumes/Container/caddy/apps/${SITE}/build.staging/"
+    build/ "nas:${APPS_NAS}/${SITE}/build.staging/"
 
 # Plain Node
-rsync -av \
+rsync -a --delete \
     --exclude='.DS_Store' \
     --exclude='node_modules' \
-    server.js package.json "/Volumes/Container/caddy/apps/${SITE}/build.staging/"
+    server.js package.json "nas:${APPS_NAS}/${SITE}/build.staging/"
 ```
 
-### 4. Copy Config Files
+### 3. Copy Config Files
 
 Tiny files — safe to copy in place:
 
 ```bash
-cp ecosystem.config.js app.caddy "/Volumes/Container/caddy/apps/${SITE}/"
+rsync -a ecosystem.config.js app.caddy "nas:${APPS_NAS}/${SITE}/"
 ```
 
-### 5. Switch and Restart via SSH
+### 4. Switch and Restart via SSH
 
 Swap the build with renames (the running process keeps its open files from
 the old dir), then restart. Downtime is just the PM2 restart (~1s), not the
-rsync. `build.old` is kept until the restart succeeds, so a failed deploy
-leaves a rollback: `ssh nas "cd ${APPS_NAS}/${SITE} && mv build.old build"`.
+rsync. `build.old` stays until the health check passes.
 
 ```bash
 ssh nas "cd '${APPS_NAS}/${SITE}' \
     && rm -rf build.old \
     && { [ ! -d build ] || mv build build.old; } \
     && mv build.staging build \
-    && '${APPS_NAS}/deploy-app.sh' '${SITE}' \
-    && rm -rf build.old"
+    && '${APPS_NAS}/deploy-app.sh' '${SITE}'"
+```
+
+### 5. Health Check (auto-rollback)
+
+Probe the app's port (from `ecosystem.config.js`) for up to 10s; on failure,
+roll back to `build.old` and restart. Drop curl's `-f` if your app's `/`
+route legitimately returns 4xx/5xx.
+
+```bash
+PORT=3102
+if ssh nas "for i in 1 2 3 4 5 6 7 8 9 10; do \
+        curl -fsS -o /dev/null --max-time 3 'http://172.29.20.1:${PORT}' && exit 0; \
+        sleep 1; done; exit 1"; then
+    ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.old'"
+else
+    ssh nas "cd '${APPS_NAS}/${SITE}' \
+        && rm -rf build.failed && mv build build.failed && mv build.old build \
+        && '${APPS_NAS}/deploy-app.sh' '${SITE}'"
+    echo "Rolled back; bad build kept at ${APPS_NAS}/${SITE}/build.failed"
+    exit 1
+fi
 ```
 
 This script:
@@ -164,45 +178,9 @@ ssh nas "/opt/bin/pm2 delete myapp"
 
 ## Complete Example
 
-Prefer rendering `templates/deploy-node.sh` — it implements this
-stage-then-switch flow. By hand:
-
-```bash
-#!/bin/bash
-set -euo pipefail
-
-SUBDOMAIN="myapp"
-SITE="${SUBDOMAIN}.jurrejan.com"
-APPS_MAC="/Volumes/Container/caddy/apps"
-APPS_NAS="/share/CACHEDEV1_DATA/Container/caddy/apps"
-TARGET_DIR="${APPS_MAC}/${SITE}"
-
-# Check mount (or run scripts/mount-nas.sh for an idempotent mount)
-if [ ! -d "$APPS_MAC" ]; then
-    open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
-    echo "Mount volume and retry"
-    exit 1
-fi
-
-# Build
-bun run build
-
-# Stage (app keeps running the old build)
-mkdir -p "$TARGET_DIR"
-ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.staging'"
-rsync -av --exclude='.DS_Store' build/ "$TARGET_DIR/build.staging/"
-cp ecosystem.config.js app.caddy "$TARGET_DIR/"
-
-# Switch + restart on NAS (downtime = PM2 restart only)
-ssh nas "cd '${APPS_NAS}/${SITE}' \
-    && rm -rf build.old \
-    && { [ ! -d build ] || mv build build.old; } \
-    && mv build.staging build \
-    && '${APPS_NAS}/deploy-app.sh' '${SITE}' \
-    && rm -rf build.old"
-
-echo "Deployed to https://${SITE}"
-```
+Prefer rendering `templates/deploy-node.sh` — it implements this whole flow
+(stage over SSH → switch → restart → health check → auto-rollback) with no
+SMB mount needed. By hand, run steps 2–5 above in order after `bun run build`.
 
 ## Troubleshooting
 

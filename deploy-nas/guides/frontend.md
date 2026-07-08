@@ -43,29 +43,33 @@ mkdir -p "$SITE"
 
 ### 3. Stage Built Files
 
-Never rsync into the live directory — the site serves a half-copied tree for
-the whole (slow, SMB) transfer. Stage beside it, dot-prefixed so
+Never rsync into the live directory — the site would serve a half-copied tree
+for the whole transfer. Stage beside it over SSH (delta rsync — much faster
+than the SMB mount, which disables delta transfer), dot-prefixed so
 `apply_from_mac.sh`'s `www/*/` scan can't import the half-staged site:
 
 ```bash
 WWW_NAS="/share/CACHEDEV1_DATA/Container/caddy/www"
-ssh nas "rm -rf '${WWW_NAS}/.staging-${SUBDOMAIN}.jurrejan.com'"
-rsync -av \
+SITE="${SUBDOMAIN}.jurrejan.com"
+ssh nas "rm -rf '${WWW_NAS}/.staging-${SITE}'"
+rsync -a --delete \
     --exclude='.DS_Store' \
     --exclude='._*' \
     --exclude='.git' \
-    dist/ "/Volumes/Container/caddy/www/.staging-${SUBDOMAIN}.jurrejan.com/"
+    dist/ "nas:${WWW_NAS}/.staging-${SITE}/"
 ```
 
 ### 4. Create Caddy Config
 
-Create `${SUBDOMAIN}.caddy` **inside the staging directory**:
+Write `${SUBDOMAIN}.caddy` **into the staging directory** (over SSH):
 
-```caddy
-myapp.jurrejan.com {
+```bash
+ssh nas "cat > '${WWW_NAS}/.staging-${SITE}/${SUBDOMAIN}.caddy'" <<EOF
+${SITE} {
     import default_site
-    root * /var/www/myapp.jurrejan.com
+    root * /var/www/${SITE}
 }
+EOF
 ```
 
 The `default_site` snippet (defined in `etc/snippets/common.caddy`) includes:
@@ -76,19 +80,28 @@ The `default_site` snippet (defined in `etc/snippets/common.caddy`) includes:
 ### 5. Switch (near-atomic)
 
 Two renames on the NAS — the site is only "in between" for the rename instant.
-Delete the `.old` tree right after: its duplicate `.caddy` would fail
-validation on the next apply if it lingered.
+The previous release is kept as `<site>.old` with its `.caddy` stripped (a
+duplicate `.caddy` would fail validation on the next apply):
 
 ```bash
-SITE="${SUBDOMAIN}.jurrejan.com"
 ssh nas "cd '${WWW_NAS}' \
     && rm -rf '${SITE}.old' \
-    && { [ ! -d '${SITE}' ] || mv '${SITE}' '${SITE}.old'; } \
-    && mv '.staging-${SITE}' '${SITE}' \
-    && rm -rf '${SITE}.old'"
+    && { [ ! -d '${SITE}' ] || { mv '${SITE}' '${SITE}.old' && rm -f '${SITE}.old/'*.caddy; }; } \
+    && mv '.staging-${SITE}' '${SITE}'"
+```
+
+Rollback (one rename, restoring the config from the bad release):
+
+```bash
+ssh nas "cd '${WWW_NAS}' \
+    && mv '${SITE}' '${SITE}.bad' && mv '${SITE}.old' '${SITE}' \
+    && cp '${SITE}.bad/${SUBDOMAIN}.caddy' '${SITE}/'"
 ```
 
 ### 6. Apply Changes
+
+The only step that needs the SMB mount (run `scripts/mount-nas.sh` first if
+`/Volumes/Container` is absent):
 
 ```bash
 cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
@@ -126,32 +139,24 @@ set -euo pipefail
 
 SUBDOMAIN="myapp"
 SITE="${SUBDOMAIN}.jurrejan.com"
-WWW_MAC="/Volumes/Container/caddy/www"
 WWW_NAS="/share/CACHEDEV1_DATA/Container/caddy/www"
-
-# Check mount (or run scripts/mount-nas.sh for an idempotent mount)
-if [ ! -d "$WWW_MAC" ]; then
-    open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
-    echo "Mount volume and retry"
-    exit 1
-fi
 
 # Build
 bun run build
 
-# Stage (live site keeps serving the old version)
+# Stage over SSH (live site keeps serving the old version)
 ssh nas "rm -rf '${WWW_NAS}/.staging-${SITE}'"
-rsync -av --exclude='.DS_Store' dist/ "${WWW_MAC}/.staging-${SITE}/"
-cp "${SUBDOMAIN}.caddy" "${WWW_MAC}/.staging-${SITE}/"
+rsync -a --delete --exclude='.DS_Store' dist/ "nas:${WWW_NAS}/.staging-${SITE}/"
+ssh nas "cat > '${WWW_NAS}/.staging-${SITE}/${SUBDOMAIN}.caddy'" < "${SUBDOMAIN}.caddy"
 
-# Switch (two renames — effectively instant)
+# Switch (two renames — effectively instant; previous release kept as .old)
 ssh nas "cd '${WWW_NAS}' \
     && rm -rf '${SITE}.old' \
-    && { [ ! -d '${SITE}' ] || mv '${SITE}' '${SITE}.old'; } \
-    && mv '.staging-${SITE}' '${SITE}' \
-    && rm -rf '${SITE}.old'"
+    && { [ ! -d '${SITE}' ] || { mv '${SITE}' '${SITE}.old' && rm -f '${SITE}.old/'*.caddy; }; } \
+    && mv '.staging-${SITE}' '${SITE}'"
 
-# Apply
+# Apply — the only step needing the SMB mount
+[ -d /Volumes/Container/caddy/etc ] || "$HOME/.claude/skills/deploy-nas/scripts/mount-nas.sh"
 cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
 
 echo "Deployed to https://${SITE}"

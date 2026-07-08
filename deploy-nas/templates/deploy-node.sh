@@ -1,57 +1,63 @@
 #!/bin/bash
 
 # Deployment script for {{SUBDOMAIN}}.jurrejan.com (Node.js app)
-# Zero-downtime: stages the new build beside the live one, swaps it in with
-# NAS-side renames, then restarts PM2. The app keeps serving the old build
-# during the whole rsync; downtime is just the PM2 restart (~1s).
+# Zero-downtime, mount-free: stages the new build over SSH (delta rsync),
+# swaps it in with NAS-side renames, restarts PM2, then health-checks the app.
+# A failed health check rolls back to the previous build automatically.
+# Downtime is just the PM2 restart (~1s), not the transfer.
 
 set -euo pipefail
 
 # Configuration
 SUBDOMAIN="{{SUBDOMAIN}}"
 SOURCE_DIR="{{SOURCE_DIR}}"
+PORT="{{PORT}}"
 SITE="${SUBDOMAIN}.jurrejan.com"
-APPS_MAC="/Volumes/Container/caddy/apps"
 APPS_NAS="/share/CACHEDEV1_DATA/Container/caddy/apps"
-TARGET_DIR="${APPS_MAC}/${SITE}"
+APP_NAS="${APPS_NAS}/${SITE}"
 
 # Colors
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
+GREEN='\033[0;32m'; YELLOW='\033[1;33m'; RED='\033[0;31m'; NC='\033[0m'
 
 echo -e "${YELLOW}Deploying ${SITE} (Node.js)...${NC}"
 
-# Check mount
-if [ ! -d "$APPS_MAC" ]; then
-    echo -e "${RED}Error: Caddy volume not mounted${NC}"
-    open "smb://jongserve.local/Container"
-    echo "Please authenticate and retry."
-    exit 1
-fi
-
-mkdir -p "$TARGET_DIR"
-
-# Stage: copy the new build beside the live one (running app untouched)
-echo -e "${YELLOW}Staging build (app keeps running)...${NC}"
-ssh nas "rm -rf '${APPS_NAS}/${SITE}/build.staging'"   # SMB rm is unreliable; clean NAS-side
-rsync -av \
+# Stage over SSH: delta transfer, running app untouched
+echo -e "${YELLOW}Staging build over SSH (app keeps running)...${NC}"
+ssh nas "mkdir -p '${APP_NAS}' && rm -rf '${APP_NAS}/build.staging'"
+rsync -a --delete \
     --exclude='.DS_Store' \
     --exclude='node_modules' \
-    "$SOURCE_DIR/" "${TARGET_DIR}/build.staging/"
+    "$SOURCE_DIR/" "nas:${APP_NAS}/build.staging/"
+rsync -a ecosystem.config.js app.caddy "nas:${APP_NAS}/"
 
-# Config files are tiny — safe to copy in place
-cp ecosystem.config.js app.caddy "$TARGET_DIR/"
-
-# Switch: rename swap on the NAS (the running process keeps its open files
-# from the old dir until PM2 restarts it), then restart via deploy-app.sh
+# Switch: rename swap (the running process keeps its open files from the old
+# dir), then restart via deploy-app.sh. build.old stays until health check passes.
 echo -e "${YELLOW}Switching build and restarting app...${NC}"
-ssh nas "cd '${APPS_NAS}/${SITE}' \
+ssh nas "cd '${APP_NAS}' \
     && rm -rf build.old \
     && { [ ! -d build ] || mv build build.old; } \
     && mv build.staging build \
-    && '${APPS_NAS}/deploy-app.sh' '${SITE}' \
-    && rm -rf build.old"
+    && '${APPS_NAS}/deploy-app.sh' '${SITE}'"
 
-echo -e "${GREEN}Deployed to https://${SITE}${NC}"
+# Health check: up to 10s for the app to answer on its port (any 2xx/3xx).
+# If your app's / route legitimately returns 4xx/5xx, drop the -f flag.
+echo -e "${YELLOW}Health-checking http://172.29.20.1:${PORT} ...${NC}"
+if ssh nas "for i in 1 2 3 4 5 6 7 8 9 10; do \
+        curl -fsS -o /dev/null --max-time 3 'http://172.29.20.1:${PORT}' && exit 0; \
+        sleep 1; done; exit 1"; then
+    ssh nas "rm -rf '${APP_NAS}/build.old'"
+    echo -e "${GREEN}Deployed to https://${SITE}${NC}"
+else
+    if ssh nas "[ -d '${APP_NAS}/build.old' ]"; then
+        echo -e "${RED}Health check failed — rolling back to previous build${NC}"
+        ssh nas "cd '${APP_NAS}' \
+            && rm -rf build.failed && mv build build.failed && mv build.old build \
+            && '${APPS_NAS}/deploy-app.sh' '${SITE}'"
+        echo -e "${YELLOW}Rolled back. Bad build kept at ${APP_NAS}/build.failed${NC}"
+        echo "Inspect logs: ssh nas \"PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 logs ${SUBDOMAIN} --lines 50\""
+    else
+        echo -e "${RED}Health check failed on first deploy (nothing to roll back to)${NC}"
+        echo "Inspect logs: ssh nas \"PM2_HOME=/share/CACHEDEV1_DATA/pm2 /opt/bin/pm2 logs ${SUBDOMAIN} --lines 50\""
+    fi
+    exit 1
+fi
