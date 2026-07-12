@@ -1,8 +1,6 @@
 ---
 name: home-assistant
-description: "Control smart home devices, automations, dashboards, entities via ha-mcp"
-
-  DO NOT TRIGGER when the user is building their own HA integration or add-on from scratch.
+description: "Control smart home devices, automations, dashboards, entities via ha-mcp. DO NOT TRIGGER when the user is building their own HA integration or add-on from scratch."
 ---
 
 # Home Assistant Skill

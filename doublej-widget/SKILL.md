@@ -1,9 +1,6 @@
 ---
 name: doublej-widget
-description: "Set up, deploy, and embed the DoubleJ project-linking widget"
-  Set up and deploy the DoubleJ project-linking widget. Use when adding a new project
-  to the widget system, deploying widget changes, embedding the widget on a site, or
-  managing widget profiles and matching rules.
+description: "Set up, deploy, and embed the DoubleJ project-linking widget. Use when adding a new project to the widget system, deploying widget changes, embedding the widget on a site, or managing widget profiles and matching rules."
 ---
 
 # DoubleJ Project-Linking Widget
