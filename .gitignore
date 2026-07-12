@@ -8,3 +8,9 @@ __pycache__/
 # Dolt database files (added by bd init)
 .dolt/
 *.db
+
+# backups & build
+.beads/backup/
+*.darc
+node_modules/
+dist/
