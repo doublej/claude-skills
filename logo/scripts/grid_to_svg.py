@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Grid-to-SVG converter for systematic logo design.
+Grid-to-SVG converter for grid-mode logo design.
 
 Usage:
     python3 grid_to_svg.py input.json [output.svg]
@@ -19,6 +19,7 @@ JSON schema:
     }
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
@@ -175,8 +176,13 @@ def generate_svg(data: dict) -> str:
 
 
 def main() -> None:
-    if len(sys.argv) > 1 and sys.argv[1] != "-":
-        raw = Path(sys.argv[1]).read_text()
+    parser = argparse.ArgumentParser(description="Convert a JSON grid map to a logo SVG.")
+    parser.add_argument("input", nargs="?", default="-", help="input JSON file, or '-' for stdin (default)")
+    parser.add_argument("output", nargs="?", help="output SVG path; prints to stdout when omitted")
+    args = parser.parse_args()
+
+    if args.input != "-":
+        raw = Path(args.input).read_text()
     else:
         raw = sys.stdin.read()
 
@@ -189,9 +195,9 @@ def main() -> None:
 
     svg = generate_svg(data)
 
-    if len(sys.argv) > 2:
-        Path(sys.argv[2]).write_text(svg)
-        print(f"saved: {sys.argv[2]}")
+    if args.output:
+        Path(args.output).write_text(svg)
+        print(f"saved: {args.output}")
     else:
         print(svg)
 

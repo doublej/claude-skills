@@ -1,34 +1,26 @@
----
-name: logo-systematic
-description: Design logos using a constrained grid system. Instead of free-form SVG, define logos as JSON grid maps (3x3 to 9x9) that force geometric alignment. Use when user needs a logo, icon, wordmark, monogram, or brand mark. Triggers on "create logo", "design logo", "make icon", "brand identity", "logomark", "grid logo".
----
-
-# Systematic Logo Design
+# Grid Mode
 
 Constraint liberates. Think in cells, not coordinates.
 
-Free-form SVG produces random, misaligned results. This skill forces every mark onto a discrete grid — 3x3 to 9x9 cells — so every shape is intentional, every alignment is structural, every logo is geometric by default.
+Free-form SVG produces random, misaligned results. This mode forces every mark onto a discrete grid — 3x3 to 9x9 cells — so every shape is intentional, every alignment is structural, every logo is geometric by default. Logos are defined as JSON grid maps and converted to SVG by script. Shared rules (brief base, banned elements/words, color strategy, checklist) live in SKILL.md.
 
-## Pre-Flight: Logo Brief
+<brief_extension>
 
-Before ANY design work, produce this brief:
+## Brief Extension
+
+Add to the shared LOGO BRIEF:
 
 ```
-LOGO BRIEF
-Brand: [name]
-Essence: [one word — what feeling does this brand evoke?]
 Grid: [3-9, default 5]
-Type: [logomark | lettermark | combination | abstract]
-Signature Element: [the ONE thing that makes this memorable]
-Palette: [max 3 colours as hex]
-Aesthetic Thesis: [one sentence — the WHY behind your visual direction]
 ```
 
-The aesthetic thesis is your conviction. It drives every cell placement. "Modern and clean" is not a thesis. "Brutalist geometry that refuses decoration" is.
+Grid mode types: logomark | lettermark | combination | abstract (wordmarks/emblems don't fit cells).
+
+</brief_extension>
 
 <grid_system>
 
-### Grid Sizes
+## Grid Sizes
 
 | Grid | Character | Best For |
 |------|-----------|----------|
@@ -42,6 +34,8 @@ The aesthetic thesis is your conviction. It drives every cell placement. "Modern
 </grid_system>
 
 <json_schema>
+
+## JSON Schema
 
 ```json
 {
@@ -67,6 +61,8 @@ Fields:
 
 <cell_properties>
 
+## Cell Properties
+
 | Property | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `r` | yes | — | Row (0-indexed from top) |
@@ -79,6 +75,8 @@ Fields:
 </cell_properties>
 
 <shapes>
+
+## Shapes
 
 | Shape | Description |
 |-------|-------------|
@@ -94,6 +92,8 @@ Fields:
 
 <palette_rules>
 
+## Palette Rules
+
 - Maximum 3 colours + transparent
 - Use single-letter keys: `a`, `b`, `c`
 - Hex values only, no named colours
@@ -101,46 +101,19 @@ Fields:
 
 </palette_rules>
 
-<design_rules>
+<simplicity_test>
 
-### Banned Elements
-
-These signal lazy design — never place them on the grid:
-- Swooshes, swoops, curves that "suggest motion"
-- Generic globes, puzzle pieces, light bulbs
-- Handshake icons, generic people silhouettes
-- Laurel wreaths (unless actually classical)
-- Arrows pointing up/right (for "growth")
-- Infinity symbols, generic gears
-
-### Simplicity Test
+## Simplicity Test
 
 Every logo must pass: **would it still read if reduced to 3x3?** If not, simplify. A 5x5 logo that needs all 25 cells is probably overdesigned.
 
-### Banned Words
-
-Never use these in briefs or descriptions — they signal slop:
-- "Sleek", "synergy", "innovative", "cutting-edge"
-- "Elevate", "leverage", "holistic", "dynamic"
-- "Premium feel", "modern aesthetic", "clean lines"
-
-Say what you actually mean instead.
-
-</design_rules>
-
-<colour_strategy>
-
-| Approach | When | Palette |
-|----------|------|---------|
-| Monochrome | Maximum impact, serious brands | 1 colour + background |
-| Duotone | Most logos, balanced presence | 2 colours |
-| Triadic | Bold, playful, high energy | 3 colours (use sparingly) |
-
-</colour_strategy>
+</simplicity_test>
 
 <text_handling>
 
-Text is NOT grid-constrained. Forcing text into cells produces pixel art, not typography.
+## Text Handling
+
+Text is NOT grid-constrained. Forcing text into cells produces pixel art, not typography. This is the one sanctioned use of SVG `<text>` in the logo skill — it is restricted to system font stacks so it renders without external dependencies.
 
 ### Text Properties
 
@@ -168,8 +141,10 @@ Do not specify custom web fonts. Logos must render without external dependencies
 
 <workflow>
 
+## Workflow
+
 ### 1. Brief
-Establish brand essence, grid size, type, palette, and aesthetic thesis.
+Establish brand essence, grid size, type, palette, and aesthetic thesis (see SKILL.md pre-flight).
 
 ### 2. ASCII Preview
 Sketch the grid using palette letters before writing JSON. This forces spatial thinking.
@@ -193,7 +168,7 @@ Convert the ASCII preview to the JSON grid format. Every filled cell becomes an 
 ### 4. Convert
 Run the converter:
 ```bash
-python3 systematic-logo-design/scripts/grid_to_svg.py input.json output.svg
+python3 ~/.claude/skills/logo/scripts/grid_to_svg.py input.json output.svg
 ```
 
 ### 5. Variants
@@ -208,18 +183,13 @@ Optional:
 </workflow>
 
 <quality_checklist>
-Run the quality checklist before delivery.
 
-Before delivery:
-- [ ] Works at 16px (favicon) — test 3x3 reduction
-- [ ] Works at 512px (hero)
-- [ ] Readable in monochrome (swap all colours to single)
+## Grid-Mode Checklist Extensions
+
+In addition to the SKILL.md quality checklist:
+- [ ] Works at 16px — test 3x3 reduction
 - [ ] Grid cells are within bounds
 - [ ] Palette has max 3 colours
-- [ ] viewBox is correct
-- [ ] `<title>` element present
-- [ ] Colours are hex, not named
-- [ ] No external font dependencies
 - [ ] ASCII preview matches final JSON
 
 </quality_checklist>

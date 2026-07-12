@@ -3,16 +3,17 @@
 Mathematical Logo Generator
 
 Constructs logos from geometric first principles using grid systems,
-tangency, Bézier continuity, and parametric curves.
+tangency, Bézier continuity, and parametric curves. Also includes plain
+SVG primitive helpers (svg_circle, svg_rect, svg_polygon) for freeform mode.
 
 Usage:
-    python generate-logo.py [output_path]
+    python3 generate-logo.py [output_path]
 
 No external dependencies. Standard library only.
 """
 
+import argparse
 import math
-import sys
 from pathlib import Path
 
 # Bézier circle approximation constant (quarter-arc)
@@ -132,6 +133,21 @@ def _sign(v: float) -> float:
 
 # --- SVG Primitives ---
 
+def svg_circle(cx: float, cy: float, r: float, fill: str) -> str:
+    """Plain <circle> element (freeform mode; mathematical mode prefers svg_circle_path)."""
+    return f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{fill}"/>'
+
+
+def svg_rect(x: float, y: float, w: float, h: float, fill: str, rx: float = 0) -> str:
+    rx_attr = f' rx="{rx}"' if rx else ""
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{fill}"{rx_attr}/>'
+
+
+def svg_polygon(points: list[tuple[float, float]], fill: str) -> str:
+    pts = " ".join(f"{x},{y}" for x, y in points)
+    return f'<polygon points="{pts}" fill="{fill}"/>'
+
+
 def svg_circle_path(cx: float, cy: float, r: float) -> str:
     """Circle as cubic Bézier path (4 quarter-arcs), not <circle>."""
     k = KAPPA * r
@@ -229,8 +245,18 @@ def generate_logo(
 
 
 def main() -> None:
-    output = sys.argv[1] if len(sys.argv) > 1 else "logo.svg"
-    generate_logo(output_path=output)
+    parser = argparse.ArgumentParser(description="Generate a logo SVG from geometric first principles.")
+    parser.add_argument("output", nargs="?", default="logo.svg", help="output SVG path (default: logo.svg)")
+    parser.add_argument("--brand", default="Brand", help="brand name for the SVG <title>")
+    parser.add_argument("--canvas", type=int, default=1000, help="canvas size (default: 1000)")
+    parser.add_argument("--divisions", type=int, default=24, help="grid divisions (default: 24)")
+    args = parser.parse_args()
+    generate_logo(
+        output_path=args.output,
+        brand_name=args.brand,
+        canvas=args.canvas,
+        divisions=args.divisions,
+    )
 
 
 if __name__ == "__main__":

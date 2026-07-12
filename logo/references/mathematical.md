@@ -1,30 +1,22 @@
----
-name: logo-mathematical
-description: "Logos from geometric first principles: grid systems, tangency, Bezier, SVG"
----
+# Mathematical Mode
 
-# Mathematical Logo Creator
+Construct logos from mathematical first principles. Every curve has a formula. Every proportion has a reason. The grid is law — but optical corrections keep it human. Shared rules (brief base, banned elements, color strategy, typography, checklist) live in SKILL.md.
 
 <principles>
-You construct logos from mathematical first principles. Every curve has a formula. Every proportion has a reason. The grid is law — but optical corrections keep it human.
 
 **Do not over-rationalise.** The grid is a construction aid, not a post-hoc justification forced onto a finished shape.
 
 **Show, don't compute.** Produce a rough SVG fast, preview it, then refine. Never spend extended reasoning on Bézier math without showing visual progress. For complex geometry, write a generator script instead of hand-computing coordinates.
+
 </principles>
 
-<preflight>
+<brief_extensions>
 
-## Pre-Flight: Logo Brief
+## Brief Extensions
 
-Before ANY code, produce this brief:
+Add these blocks to the shared LOGO BRIEF:
 
 ```
-LOGO BRIEF
-Brand: [name]
-Essence: [one word]
-Type: [logomark | wordmark | lettermark | combination | emblem | abstract]
-
 VALUES (3-5, weights sum to 1.0)
 v1: [value] (w=0.XX) → [visual objective] → [parameter handle]
 v2: [value] (w=0.XX) → [visual objective] → [parameter handle]
@@ -46,12 +38,9 @@ Stroke: w=[value]m
 Fillet radius: r=[value]m
 Ratio system: [φ | √2 | 4:5 | none]
 Overshoot: o=[value]%
-
-Palette: primary [hex], secondary [hex], accent [hex]
-Typography: [none | see Typography Intent]
 ```
 
-</preflight>
+</brief_extensions>
 
 <values_to_parameters>
 
@@ -68,7 +57,7 @@ Map each brand value to 1-2 measurable visual metrics. This makes design decisio
 | Stroke ratio | `SR` | Stroke width / mark diameter |
 | Variance | `V` | Deviation from ideal shape (irregularity) |
 
-Common value mappings (see `references/values-mapping.md` for worked example):
+Common value mappings (see `~/.claude/skills/logo/references/values-mapping.md` for the extended table and a worked example):
 
 | Value | Direction | Parameters |
 |-------|-----------|------------|
@@ -81,6 +70,8 @@ Common value mappings (see `references/values-mapping.md` for worked example):
 </values_to_parameters>
 
 <grid_module_system>
+
+## Grid & Module System
 
 Canvas size `S` (default 1000). Grid resolution `N` (24, 32, 40, or 48).
 
@@ -98,6 +89,8 @@ Quantize everything:
 </grid_module_system>
 
 <construction_rules>
+
+## Construction Rules
 
 ### Tangent fillet (rounded corner)
 
@@ -128,19 +121,17 @@ Enforce G1 minimum at all joins. C1 where possible.
 
 ### Circle as Bézier
 
-</construction_rules>
-
-<circle_as_bezier>
-
 Quarter-arc handle constant: `k = 4(√2 - 1) / 3 ≈ 0.55228475`
 
 For quarter circle from (1,0) to (0,1): control points at `(1, k)` and `(k, 1)`.
 
-See `references/construction-formulas.md` for full derivations and edge cases.
+See `~/.claude/skills/logo/references/construction-formulas.md` for full derivations and edge cases.
 
-</circle_as_bezier>
+</construction_rules>
 
 <optical_corrections>
+
+## Optical Corrections
 
 Apply as calculable parameters, not guesswork:
 
@@ -151,6 +142,8 @@ Apply as calculable parameters, not guesswork:
 </optical_corrections>
 
 <mathematical_families>
+
+## Mathematical Families
 
 Choose based on target metrics:
 
@@ -174,6 +167,8 @@ y(θ) = r(θ) × sin(θ)
 
 <ratio_systems>
 
+## Ratio Systems
+
 Use a ratio `r` to scale key dimensions: `size_k = base × r^k`.
 
 Options: `φ ≈ 1.618`, `√2 ≈ 1.414`, `4:5 = 1.25`, or none.
@@ -182,84 +177,28 @@ Golden ratio claims of inherent beauty are not evidence-based. Use it as a const
 
 </ratio_systems>
 
-<typography>
-
-## Typography in Logos
-
-Typography is optional. Default to pure geometry unless the brand name IS the identity.
-
-### Font Intent
-
-If typography is used, justify the choice in the brief:
-
-```
-TYPOGRAPHY INTENT
-Approach: [geometric construction | adapted from typeface family]
-Why: [one sentence - what does this letterform style communicate?]
-Character: [mono-width | proportional], [geometric | humanist | grotesque]
-```
-
-If you can't articulate why, the logo probably doesn't need type.
-
-</typography>
-
 <letterforms>
 
-### Letterforms as Vector Geometry
+## Letterforms on the Module Grid
 
-**Never use `<text>` elements.** All letterforms must be `<path>` data.
+Follow SKILL.md's typography rules (no `<text>`, path geometry only), plus:
 
-1. Define a type grid: baseline, cap-height, x-height on the module grid
-2. Build each letter using `<path>` with cubic/quadratic Béziers
-3. Apply optical corrections (overshoot, stroke compensation)
-4. Kern manually — measure gaps between path bounding boxes
-5. Group the wordmark in a single `<g>`
+1. Define the type grid (baseline, cap-height, x-height) **on the module grid**
+2. Apply optical corrections (overshoot, stroke compensation) from this file
 
 </letterforms>
 
-<banned_elements>
-
-- Swooshes, swoops, generic globes, puzzle pieces, light bulbs
-- Handshake icons, generic people, laurel wreaths (unless classical)
-- Arrows pointing up/right, infinity symbols, generic gears
-- Post-hoc grid overlays that don't match construction
-
-</banned_elements>
-
 <svg_output>
 
-## SVG Output Format
+## SVG Output
 
-```svg
-<svg viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg">
-  <title>Brand Name Logo</title>
-  <!-- Construction grid reference (remove in production) -->
-  <!-- Primary shape -->
-  <!-- Secondary elements -->
-  <!-- Wordmark paths if applicable -->
-</svg>
-```
-
-- `viewBox` always (never fixed width/height). Default canvas: `0 0 1000 1000`
-- `xmlns` namespace required, `<title>` for accessibility
-- Hex colours only, no named colours
-- Clean `<g>` grouping
+Default canvas: `viewBox="0 0 1000 1000"`. Include a construction-grid reference comment during work (remove in production). All other requirements per SKILL.md.
 
 </svg_output>
 
-<color_strategy>
-
-| Approach | When | Example |
-|----------|------|---------|
-| Monochrome | Maximum versatility, serious brands | Law firm, luxury |
-| Duotone | Primary + accent, balanced | Tech, professional |
-| Triadic | Bold, playful, high energy | Consumer, entertainment |
-
-Logo must work flat. Reserve gradients for hero usage only.
-
-</color_strategy>
-
 <workflow>
+
+## Workflow
 
 **Core principle: show visuals early, refine with feedback.** Never spend more than one reasoning step computing coordinates without producing a viewable SVG.
 
@@ -277,7 +216,7 @@ Logo must work flat. Reserve gradients for hero usage only.
 
 <script_first>
 
-### Script-first construction
+## Script-First Construction
 
 For any logo with more than 2 arcs or 4 Bézier segments, write a generator script rather than hand-computing every coordinate. Benefits:
 - Grid snapping is one `round(x / half_m) * half_m` call, not pages of arithmetic
@@ -285,15 +224,17 @@ For any logo with more than 2 arcs or 4 Bézier segments, write a generator scri
 - Continuity constraints (G1/C1) are enforced programmatically
 - Optical corrections (overshoot, stroke compensation) are applied consistently
 
-Use `scripts/generate-logo.py` as a starting point or create a project-specific script.
+Use `~/.claude/skills/logo/scripts/generate-logo.py` as a starting point or create a project-specific script.
 
 </script_first>
 
 <preview>
 
+## Preview
+
 After writing an SVG, create a preview page and show it to verify the result visually. This is mandatory — never skip it.
 
-Use the template at `templates/preview.html`. It shows the logo on light, dark, and 50% gray backgrounds with size variants (64px, 32px, 16px), plus interactive controls:
+Use the template at `~/.claude/skills/logo/assets/preview.html`. It shows the logo on light, dark, and 50% gray backgrounds with size variants (64px, 32px, 16px), plus interactive controls:
 - **Grid overlay toggle** — shows the construction grid over the logo
 - **Center lines toggle** — shows horizontal/vertical center crosshairs
 - **Grid resolution selector** — switch between 24, 32, 40, 48 divisions
@@ -304,7 +245,7 @@ Use the template at `templates/preview.html`. It shows the logo on light, dark, 
 from pathlib import Path
 
 def build_preview(svg_markup, brand_name, canvas=1000, grid_n=24, output="/tmp/logo-preview.html"):
-    template = Path(__file__).parent.parent / "templates" / "preview.html"
+    template = Path.home() / ".claude" / "skills" / "logo" / "assets" / "preview.html"
     html = template.read_text()
     html = html.replace("{{SVG}}", svg_markup)
     html = html.replace("{{BRAND_NAME}}", brand_name)
@@ -325,7 +266,7 @@ sed -e "s|{{SVG}}|$SVG|g" \
     -e "s|{{CANVAS_SIZE}}|1000|g" \
     -e "s|{{GRID_N}}|24|g" \
     -e "s|{{MODULE_SIZE}}|41.7|g" \
-    templates/preview.html > /tmp/logo-preview.html
+    ~/.claude/skills/logo/assets/preview.html > /tmp/logo-preview.html
 ```
 
 Open in the browser and screenshot to verify.
@@ -359,6 +300,6 @@ Deliver:
 3. Icon variant SVG
 4. Parameter sheet (the numbers that built it)
 
-If user requests Python script, use `scripts/generate-logo.py` as base.
+If user requests a Python script, use `~/.claude/skills/logo/scripts/generate-logo.py` as base.
 
 </output>
