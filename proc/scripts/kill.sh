@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Kill processes by PID(s) with SIGTERM, fallback to SIGKILL
 # Usage: kill.sh [--force] <pid> [pid...]
 set -euo pipefail

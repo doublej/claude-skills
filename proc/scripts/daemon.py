@@ -14,10 +14,26 @@ from pathlib import Path
 from datetime import datetime
 
 INTERVAL_SECONDS = 300  # 5 minutes
-PID_FILE = Path.home() / ".claude" / "process-monitor.pid"
-LOG_FILE = Path.home() / ".claude" / "process-monitor.log"
-SNAPSHOT_FILE = Path.home() / ".claude" / "process-monitor-snapshot.json"
-TARGET_TAB_FILE = Path.home() / ".claude" / "process-monitor-target.txt"
+PID_FILE = Path.home() / ".claude" / "proc-monitor.pid"
+LOG_FILE = Path.home() / ".claude" / "proc-monitor.log"
+SNAPSHOT_FILE = Path.home() / ".claude" / "proc-monitor-snapshot.json"
+TARGET_TAB_FILE = Path.home() / ".claude" / "proc-monitor-target.txt"
+
+# Pre-rename (process-monitor.*) runtime artifacts, migrated on startup
+LEGACY_NAMES = {
+    PID_FILE: "process-monitor.pid",
+    LOG_FILE: "process-monitor.log",
+    SNAPSHOT_FILE: "process-monitor-snapshot.json",
+    TARGET_TAB_FILE: "process-monitor-target.txt",
+}
+
+
+def migrate_legacy_files():
+    """One-time migration: rename old process-monitor.* files to proc-monitor.*."""
+    for new_path, old_name in LEGACY_NAMES.items():
+        old_path = new_path.parent / old_name
+        if old_path.exists() and not new_path.exists():
+            old_path.rename(new_path)
 
 
 def parse_float(s):
@@ -263,6 +279,8 @@ if __name__ == "__main__":
     parser.add_argument("value", nargs="?", help="Tab name for 'target' command")
 
     args = parser.parse_args()
+
+    migrate_legacy_files()
 
     if args.command == "start":
         start_daemon()
