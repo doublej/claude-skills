@@ -1,13 +1,6 @@
----
-name: prompt-xml
-description: Write well-structured XML prompts for Claude following Anthropic's official best practices. Use when writing system prompts, CLAUDE.md files, skill instructions, API prompts, or any structured prompt that benefits from XML tags. Covers the 10-component framework, common tag patterns, long context structure, and chain-of-thought with XML.
----
+# XML Prompt Patterns — Deep Dive
 
-# XML Prompt Writing
-
-Write structured, high-quality prompts for Claude using XML tags.
-
-<when_to_use>
+Write structured, high-quality prompts for Claude using XML tags, following Anthropic's official best practices. The condensed tag table lives in SKILL.md (`<xml_reference>`); this reference holds the full framework, worked examples, and validation checklist.
 
 ## When to Use XML Tags
 
@@ -16,27 +9,6 @@ Write structured, high-quality prompts for Claude using XML tags.
 - Output needs to be parseable (extract specific sections)
 - Complex task requiring CoT separation (`<thinking>` / `<answer>`)
 - Long context with multiple documents
-
-</when_to_use>
-
-<quick_reference>
-
-## Quick Reference: Common Tags
-
-| Tag | Purpose | Example |
-|-----|---------|---------|
-| `<instructions>` | Task steps | Numbered steps Claude must follow |
-| `<context>` | Background info | Domain knowledge, situation |
-| `<example>` / `<examples>` | Few-shot demos | Input/output pairs |
-| `<document>` | Long content | PDFs, reports, code |
-| `<thinking>` / `<answer>` | CoT separation | Reasoning vs. final output |
-| `<constraints>` | Rules/limits | Length, format, tone |
-| `<formatting_example>` | Output template | Desired structure |
-| `<data>` | Input data | Spreadsheets, logs, user content |
-
-</quick_reference>
-
-<framework>
 
 ## The 10-Component Framework
 
@@ -120,10 +92,6 @@ Put reasoning in <thinking> tags, final report in <report> tags.
 </output_format>
 ```
 
-</framework>
-
-<best_practices>
-
 ## Core Best Practices
 
 ### 1. Be Consistent
@@ -181,10 +149,6 @@ Analyse the annual report and competitor analysis. Identify strategic advantages
 
 Queries at the end improve response quality by up to 30%.
 
-</best_practices>
-
-<cot>
-
 ## Chain of Thought with XML
 
 ### Basic CoT
@@ -207,10 +171,6 @@ Put your final answer in <answer> tags.
 
 ### Extended Thinking Mode
 When using Claude's built-in extended thinking, use `<scratchpad>` or `<thinking>` in few-shot examples — Claude generalises the pattern.
-
-</cot>
-
-<multishot>
 
 ## Multishot Prompting with XML
 
@@ -239,9 +199,7 @@ Priority: Medium
 Now analyse this feedback: {{FEEDBACK}}
 ```
 
-</multishot>
-
-<system_prompt_patterns>
+## System Prompt Patterns
 
 ### Role + Behaviour
 ```xml
@@ -271,10 +229,6 @@ Read relevant files BEFORE answering questions.
 </investigate_first>
 ```
 
-</system_prompt_patterns>
-
-<chaining>
-
 ## Prompt Chaining with XML
 
 Pass output between prompts using XML tags as handoff points:
@@ -290,9 +244,7 @@ Based on this analysis:
 Draft actionable recommendations in <recommendations> tags.
 ```
 
-</chaining>
-
-<anti_patterns>
+## Anti-Patterns
 
 | Avoid | Why | Instead |
 |-------|-----|---------|
@@ -302,10 +254,6 @@ Draft actionable recommendations in <recommendations> tags.
 | Over-nesting (>3 levels deep) | Reduces clarity | Flatten where possible |
 | HTML-like tags (`<div>`, `<span>`) | May trigger HTML parsing behaviour | Use semantic names (`<section>`, `<context>`) |
 | Tags for single-sentence content | Adds noise without benefit | Use plain text for simple content |
-
-</anti_patterns>
-
-<validation>
 
 ## Validation Checklist
 
@@ -319,5 +267,3 @@ Before finalising an XML-structured prompt:
 - [ ] Output format is specified (either via tags or explicit structure)
 - [ ] No tags nested deeper than 3 levels
 - [ ] CoT uses separate tags for reasoning vs. answer
-
-</validation>

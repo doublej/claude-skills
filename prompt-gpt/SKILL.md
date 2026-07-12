@@ -1,11 +1,11 @@
 ---
-name: prompt-gpt52
-description: "Optimize prompts for GPT-5.2: reasoning modes, compaction, tool preambles"
+name: prompt-gpt
+description: "Optimize prompts for OpenAI GPT-5.x models (GPT-5.1 and GPT-5.2): reasoning modes, tool calling, preambles, compaction, metaprompting, and 5.1→5.2 migration. Use when writing, improving, or debugging prompts targeting GPT-5.1 or GPT-5.2, tuning reasoning_effort, or diagnosing inconsistent outputs. For Claude-targeted prompts use prompt-crafter instead. Triggers: 'gpt-5', 'gpt-5.1', 'gpt-5.2', 'optimize my gpt prompt', 'openai prompt', 'gpt system prompt'."
 ---
 
-# GPT-5.2 Prompt Optimization
+# GPT-5.x Prompt Optimization (GPT-5.1 / GPT-5.2)
 
-Refine and optimize prompts for OpenAI's GPT-5.2 model—the flagship for professional knowledge work and long-running agents.
+Refine and optimize prompts for OpenAI's GPT-5.x models. GPT-5.2 is the flagship for professional knowledge work and long-running agents; GPT-5.1 remains in use for existing deployments. Guidance below targets GPT-5.2 by default — GPT-5.1 deviations are collected in the `<gpt51_differences>` section.
 
 <key_differences>
 ## Key Differences from GPT-5.1
@@ -25,17 +25,17 @@ Refine and optimize prompts for OpenAI's GPT-5.2 model—the flagship for profes
 | Mode | Latency | Use Case |
 |------|---------|----------|
 | `none` | Lowest | Simple queries, low-latency chat, basic tool calls |
-| `minimal` | Very low | Fast responses where slight reasoning helps |
+| `minimal` | Very low | Fast responses where slight reasoning helps (5.2 only) |
 | `low` | Low | Easy inputs, straightforward tasks |
 | `medium` | Medium | Most workflows, balanced quality/speed |
 | `high` | High | Complex reasoning, difficult problems |
-| `xhigh` | Highest | **NEW** - Maximum reasoning depth, research tasks |
+| `xhigh` | Highest | Maximum reasoning depth, research tasks (5.2 only) |
 
-GPT-5.2 auto-calibrates to prompt difficulty. Default is `none`—explicitly set higher for complex tasks.
+GPT-5.x auto-calibrates to prompt difficulty. Default is `none`—explicitly set higher for complex tasks.
 </key_differences>
 
 <compaction>
-## Compaction for Long Workflows
+## Compaction for Long Workflows (GPT-5.2 only)
 
 GPT-5.2 introduces server-side compaction for extended agent sessions:
 
@@ -82,7 +82,7 @@ If a directive is ambiguous, proceed with the change rather than asking clarifyi
 
 ### 2. Output Formatting
 
-GPT-5.2 follows formatting with less verbosity than predecessors:
+GPT-5.2 follows formatting with less verbosity than predecessors (GPT-5.1 also follows formatting instructions precisely — be explicit either way):
 
 ```
 Respond in plain text styled in Markdown:
@@ -109,6 +109,18 @@ IMPORTANT: Do not stop working until the task is fully complete. If you encounte
 3. Only ask for clarification if genuinely blocked
 4. Never assume the task is "too complex" - break it down and continue
 ```
+
+### 5. Tone & Personality
+
+Define agent persona explicitly:
+
+```
+Communication style:
+- Warmth and brevity adapt to conversation state
+- Never use filler phrases: "Got it", "Sure thing", "Of course"
+- Be direct and action-oriented
+- Match formality to user's tone
+```
 </prompt_optimization>
 
 <tool_calling>
@@ -130,7 +142,7 @@ I'll search the codebase for authentication handlers to understand the current i
 
 ### Parallel Tool Calls
 
-GPT-5.2 excels at parallel execution:
+Both models execute parallel tool calls efficiently; GPT-5.2 excels at it:
 
 ```
 Tool usage rules:
@@ -159,7 +171,7 @@ Combine functionality with behavioral hints:
 
 ### apply_patch Tool
 
-GPT-5.2 has native `apply_patch` support with improved accuracy:
+GPT-5.x has native `apply_patch` support (accuracy improved in 5.2):
 
 ```
 For code modifications, use the apply_patch tool with unified diff format. This reduces edit failures compared to freeform suggestions.
@@ -202,10 +214,18 @@ When calling tools, always prefix with a brief explanation of:
 2. Why it's necessary
 3. What you expect to find
 ```
+
+### Immediacy Principle
+
+```
+Always explain what you're doing BEFORE starting the action. This improves perceived responsiveness.
+```
 </user_communication>
 
 <metaprompting>
 ## Metaprompting: Diagnosing Failures
+
+When prompts produce inconsistent results, use two-phase metaprompting:
 
 ### Phase 1: Diagnosis
 
@@ -233,10 +253,27 @@ Based on the diagnosis, propose surgical revisions that:
 
 Show the revised prompt with inline comments explaining each change.
 ```
+
+Iterate: Run queries after revisions, observe regressions, repeat until failures are triaged.
 </metaprompting>
 
+<gpt51_differences>
+## Targeting GPT-5.1: What Changes
+
+When the prompt targets GPT-5.1 instead of 5.2, apply these deltas:
+
+- **No preambles feature, no compaction API, no reasoning summaries** — skip the `<compaction>` section and the "Preambles" guidance; instead rely on the Immediacy Principle and explicit cadence rules.
+- **Reasoning modes**: only `none`/`low`/`medium`/`high` (`minimal` and `xhigh` do not exist). GPT-5.1 auto-calibrates to prompt difficulty; use `none` for latency-critical paths.
+- **Context limits**: 200K context / 64K output — budget prompts and expected outputs accordingly.
+- **apply_patch**: native support; reduces edit failures by ~35% compared to freeform suggestions.
+- **Plan cadence**: update plan status after ~8 tool calls (5.2 guidance: after each completed milestone).
+- **Communication cadence**: send 1-2 sentence updates every few tool calls when meaningful changes occur; at minimum every 6 execution steps or 8 tool calls. Begin with quick plans, highlight discoveries, state concrete outcomes.
+- **Tool description hint**: phrase repeat-call permission as "CAN be called multiple times to narrow results" (5.2 phrasing emphasizes parallel calls instead).
+- **Anti-patterns specific to 5.1**: vague formatting requirements, missing tool call guidance, and assuming the model remembers previous conversation context — keep prompts self-contained with a defined output format.
+</gpt51_differences>
+
 <migration>
-## Migration from GPT-5.1
+## Migration from GPT-5.1 to GPT-5.2
 
 1. **Keep prompt identical** - Test model change first
 2. **Pin reasoning_effort** - Match prior latency profile (both default to `none`)
@@ -252,9 +289,11 @@ Show the revised prompt with inline comments explaining each change.
 
 - Over-prompting reasoning when `none`/`minimal` suffices
 - Contradictory instructions without priority
-- Missing tool preamble guidance
-- Assuming context survives compaction verbatim
+- Missing tool preamble guidance (5.2)
+- Assuming context survives compaction verbatim (5.2)
 - Setting `xhigh` for simple tasks (wasteful)
+- Vague formatting requirements
+- Assuming the model remembers previous conversation context
 
 ### Prefer
 
@@ -262,7 +301,8 @@ Show the revised prompt with inline comments explaining each change.
 - Concrete examples for edge cases
 - Clear tool usage rules (MUST vs CAN)
 - Persistence reminders for low reasoning modes
-- Preamble guidance for agentic flows
+- Preamble guidance for agentic flows (5.2)
+- Defined output format; self-contained prompts
 </anti_patterns>
 
 <template>
@@ -286,7 +326,7 @@ You are [ROLE]. Your purpose is [PURPOSE].
 # Tool Usage
 - MUST call [TOOL] before [ACTION]
 - CAN use [TOOL] for [USE CASE]
-- Before each tool call, explain your intent briefly
+- Before each tool call, explain your intent briefly (5.2)
 - Parallelize tool calls when possible
 
 # Communication Style
@@ -303,12 +343,14 @@ Complete all tasks fully. Do not terminate early. If blocked, try alternatives b
 # Error Handling
 When encountering [SITUATION], respond by [ACTION].
 ```
+</template>
 
-## Sources
-
+<sources>
 - [GPT-5.2 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-2_prompting_guide) - OpenAI Cookbook
 - [GPT-5.2 Model Docs](https://platform.openai.com/docs/models/gpt-5.2) - OpenAI Platform
 - [GPT-5.1 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5-1_prompting_guide) - OpenAI Cookbook
+- [GPT-5 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5_prompting_guide) - OpenAI Cookbook
+- [Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering) - OpenAI API Docs
+- [Best Practices](https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api) - OpenAI Help Center
 - [Simon Willison's GPT-5.2 Overview](https://simonwillison.net/2025/Dec/11/gpt-52/) - Technical Summary
-
-</template>
+</sources>

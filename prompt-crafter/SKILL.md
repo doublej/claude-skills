@@ -1,13 +1,13 @@
 ---
 name: prompt-crafter
-description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design"
+description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design, XML-structured prompts for Claude (10-component framework, tag patterns). Use when the deliverable is a prompt, CLAUDE.md, system prompt, slash command, or skill instruction. Triggers on 'write a prompt', 'improve this prompt', 'lint my prompt', 'XML prompt', 'system prompt', 'CLAUDE.md rules'."
 ---
 
 # Prompt Crafter
 
 Craft high-quality prompts for Claude Code across all surfaces: interactive sessions, CLAUDE.md files, system prompts, slash commands, and CLI automation.
 
-Optional argument (`$ARGUMENTS`): target model — one of `opus-4-7`, `opus-4-6`, `sonnet`, `generic`. Default: `generic`.
+Optional argument (`$ARGUMENTS`): target model — one of `opus-4-8`, `opus-4-7`, `sonnet`, `generic`. Default: `generic`.
 
 <scope>
 ## When to Use
@@ -23,14 +23,14 @@ Do **not** stay in this skill when a prompt-shaped lens is merely incidental to 
 When the user asks to **improve, review, or lint a prompt**, select the template by target model.
 
 Model resolution order:
-1. `$ARGUMENTS` if provided (e.g. `/prompt-crafter opus-4-7`)
+1. `$ARGUMENTS` if provided (e.g. `/prompt-crafter opus-4-8`)
 2. Stated in conversation
 3. Default: `generic`
 
 | `$ARGUMENTS` / stated model | Template to load |
 |-----------------------------|-----------------|
+| `opus-4-8` | `references/lint-opus-4-8.md` |
 | `opus-4-7` | `references/lint-opus-4-7.md` |
-| `opus-4-6` | `references/lint-opus.md` |
 | `sonnet` | `references/lint-sonnet.md` |
 | `generic` / unspecified | `references/lint-generic.md` |
 
@@ -263,16 +263,20 @@ Use the standard error response format from src/api/errors.ts.
 | Tag | Use for |
 |-----|---------|
 | `<task>` | The specific thing to do |
+| `<instructions>` | Task steps Claude must follow |
 | `<context>` | Background information |
 | `<data>` | Input data (separate from instructions) |
+| `<document>` | Long content (PDFs, reports, code) |
 | `<examples>` | Few-shot demonstrations |
 | `<constraints>` | Boundaries and limits |
 | `<thinking>` / `<answer>` | CoT separation |
 | `<output_format>` | Desired response structure |
+| `<formatting_example>` | Output template / desired structure |
 | `<role>` | Identity / expertise |
 | `<rules>` | Hard requirements |
 
 Always reference tags in instructions: "Using the data in `<data>` tags, ..."
+Deep dive (10-component framework, long-context structure, chaining, validation checklist): `references/xml-patterns.md`
 </xml_reference>
 
 <slash_command>
@@ -340,8 +344,8 @@ Before finalising any prompt, check:
 
 ## References
 
-- For deep XML tag patterns: use the `xml-prompt` skill
+- For deep XML tag patterns: `references/xml-patterns.md`
 - For CLAUDE.md optimisation: use the `claude-md-optimizer` skill
 - For CLAUDE.md/AGENT.md formatting (good vs bad examples): `../claude-md-optimizer/references/formatting-examples.md`
-- For CLI automation patterns: use the `claude-skill` skill
+- For CLI automation patterns: use the `claude-headless` skill
 - Extended patterns and examples: `references/patterns.md`
