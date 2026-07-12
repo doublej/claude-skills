@@ -107,7 +107,7 @@ transform = ImageCms.buildTransform(srgb, target, "RGB", "RGB")
 converted = ImageCms.applyTransform(img, transform)
 ```
 
-For print workflows (CMYK, PDF/X), use the **pdf-icc** skill.
+For print workflows (CMYK, PDF/X), use the **pdf** skill (Color branch).
 
 ## Gotchas
 
