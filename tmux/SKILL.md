@@ -1,12 +1,18 @@
 ---
 name: tmux
-description: "Remote-control sessions: send keystrokes, scrape pane output for CLIs"
+description: "Remote-control tmux sessions: send keystrokes, scrape pane
+  output, and drive interactive CLIs (REPLs, debuggers, servers) reliably.
+  Use when running or debugging an interactive terminal program, keeping a
+  long-lived process observable, or asked to 'use tmux', 'open a session',
+  'monitor a pane', or debug with lldb/gdb."
 license: Vibecoded
 ---
 
 # tmux Skill
 
 Use tmux as a programmable terminal multiplexer for interactive work. Works on Linux and macOS with stock tmux; avoid custom config by using a private socket.
+
+Shared driver discipline (send vs run, capture-after-settle, explicit pane targeting — with the it2/tmux/cmux command table): see `references/terminal-driver-core.md`.
 
 <quickstart>
 
@@ -49,7 +55,7 @@ When iTerm2 is available (macOS), **always open tmux sessions in a visible iTerm
 ./scripts/tmux-init.sh --name claude-py  # splits pane next to agent, attaches tmux
 ```
 
-This uses the iTerm2 skill's `split-and-run` + `find-self` to split next to the agent (not a random pane). Use `--no-split` to skip the iTerm2 integration.
+This uses the `it2` CLI to split next to the calling session (`it2 vsplit -s "$ITERM_SESSION_ID"`), then attaches tmux in the new pane via `it2 run`. Use `--no-split` to skip; the script also falls back to no-split automatically when `it2` or `$ITERM_SESSION_ID` is unavailable.
 
 **Fallback** (non-iTerm2 or remote): print a monitor command for the user to copy-paste:
 
@@ -174,7 +180,7 @@ tmux -S "$SOCKET" new -d -s "$SESSION" -n shell
 | `--no-split` | Skip iTerm2 pane splitting |
 | `--direction h\|v` | Split direction (default: v) |
 
-Cross-skill: discovers iTerm2 at `~/.claude/skills/iterm2/scripts/`. Falls back to `--no-split` mode if not found.
+Cross-skill: uses the `it2` CLI (see the iterm2 skill). Falls back to `--no-split` mode when `it2` or `$ITERM_SESSION_ID` is unavailable.
 
 </helpers>
 
@@ -218,36 +224,7 @@ Cross-skill: discovers iTerm2 at `~/.claude/skills/iterm2/scripts/`. Falls back 
 
 <windows_hosts>
 
-When using tmux sessions to work with Windows machines over SSH:
-
-### SCP path gotcha
-
-`scp` to Windows absolute paths **always fails** — the `C:` colon is parsed as a host separator:
-
-```bash
-# BROKEN — all of these fail:
-scp file.txt user@host:"C:/Projects/foo/file.txt"
-scp file.txt user@host:"C:\\Projects\\foo\\file.txt"
-
-# WORKS — scp to home dir, then move via SSH:
-scp file.txt user@host:file.txt
-ssh user@host "move file.txt C:\\Projects\\foo\\file.txt"
-```
-
-### Writing file content directly
-
-For small files, skip scp entirely and write via SSH stdin:
-
-```bash
-ssh user@host "cmd /c \"copy con C:\\Projects\\foo\\file.txt\"" < local-file.txt
-# Or use PowerShell:
-cat local-file.txt | ssh user@host "powershell -c \"[IO.File]::WriteAllText('C:\\Projects\\foo\\file.txt', \$input)\""
-```
-
-### Windows path rules in SSH commands
-
-- Use **backslashes** inside `cmd /c` commands: `C:\\Projects\\foo`
-- Use **forward slashes** inside PowerShell: `C:/Projects/foo`
-- Always double-escape backslashes in bash strings
+When using tmux sessions to work with Windows machines over SSH: `scp` to `C:\...` paths always fails (colon parsed as host separator), small files are best written via SSH stdin, and quoting rules differ between `cmd /c` (backslashes) and PowerShell (forward slashes).
+Full recipes: `references/remote-windows-hosts.md` (installed: `~/.claude/skills/tmux/references/remote-windows-hosts.md`)
 
 </windows_hosts>

@@ -1,14 +1,17 @@
 ---
 name: iterm2
-description: "Manage via it2 CLI: tabs, panes, send text, profiles, arrangements"
-  Manage iTerm2 via it2 CLI - create/close tabs, split panes, send text, read output,
-  manage profiles, arrangements, and appearance. Use when organizing terminal workspace,
-  automating iTerm2 layouts, or controlling terminal sessions.
+description: "Manage iTerm2 via it2 CLI - create/close tabs, split panes,
+  send text, read output, manage profiles, arrangements, and appearance.
+  Use when organizing terminal workspace, automating iTerm2 layouts, or
+  controlling terminal sessions. Triggers on 'iterm2', 'it2', 'split a
+  pane', 'open a pane next to this session'."
 ---
 
 # iTerm2 Terminal Management
 
 Control iTerm2 via the `it2` CLI.
+
+Shared driver discipline (send vs run, capture-after-settle, explicit pane targeting — with the it2/tmux/cmux command table): see `~/.claude/skills/tmux/references/terminal-driver-core.md`.
 
 <prerequisites>
 - iTerm2 with Python API enabled (Settings > General > Magic > Enable Python API)
@@ -198,36 +201,6 @@ it2 window arrange save "my-project"
 <remote_windows>
 ## Remote Windows Hosts (SSH/SCP)
 
-When working with Windows machines over SSH:
-
-### SCP path gotcha
-
-`scp` to Windows absolute paths **always fails** — the `C:` colon is parsed as a host separator:
-
-```bash
-# BROKEN — all of these fail:
-scp file.txt user@host:"C:/Projects/foo/file.txt"
-scp file.txt user@host:"C:\\Projects\\foo\\file.txt"
-
-# WORKS — scp to home dir, then move via SSH:
-scp file.txt user@host:file.txt
-ssh user@host "move file.txt C:\\Projects\\foo\\file.txt"
-```
-
-### Writing file content directly
-
-For small files, skip scp entirely and write via SSH stdin:
-
-```bash
-ssh user@host "cmd /c \"copy con C:\\Projects\\foo\\file.txt\"" < local-file.txt
-# Or use PowerShell:
-cat local-file.txt | ssh user@host "powershell -c \"[IO.File]::WriteAllText('C:\\Projects\\foo\\file.txt', \$input)\""
-```
-
-### Windows path rules in SSH commands
-
-- Use **backslashes** inside `cmd /c` commands: `C:\\Projects\\foo`
-- Use **forward slashes** inside PowerShell: `C:/Projects/foo`
-- Always double-escape backslashes in bash strings
-
+Working with Windows machines over SSH has path gotchas: `scp` to `C:\...` paths always fails (colon parsed as host separator), small files are best written via SSH stdin, and quoting rules differ between `cmd /c` (backslashes) and PowerShell (forward slashes).
+Full recipes: `~/.claude/skills/tmux/references/remote-windows-hosts.md`
 </remote_windows>

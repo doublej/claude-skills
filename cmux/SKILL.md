@@ -16,6 +16,8 @@ agents. This skill drives cmux via its CLI and **enforces one workspace
 per project**. Every helper does find-or-create — no blind duplicates,
 no tab graveyards across a long session.
 
+Shared driver discipline (send vs run, capture-after-settle, explicit pane targeting — with the it2/tmux/cmux command table): see `~/.claude/skills/tmux/references/terminal-driver-core.md`.
+
 <prerequisites>
 - cmux installed (`brew install cmux` or from the app bundle).
 - `CMUX_SOCKET_PATH` exported (cmux does this automatically in every

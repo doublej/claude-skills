@@ -59,20 +59,20 @@ monitor_cmd="tmux -S $socket attach -t $name"
 target="${name}:0.0"
 iterm2_sid=""
 
-# Try to split iTerm2 pane for visibility
+# Try to split a visible iTerm2 pane via the it2 CLI.
+# Falls back silently to no-split when it2 or $ITERM_SESSION_ID is unavailable.
 if [[ "$no_split" != true ]]; then
-  iterm2_skill_dir="${HOME}/.claude/skills/iterm2/scripts"
-  iterm2_python="${iterm2_skill_dir}/.venv/bin/python3"
-  iterm2_script="${iterm2_skill_dir}/iterm2_run.py"
-
-  if [[ -x "$iterm2_python" && -f "$iterm2_script" ]]; then
-    split_result=$("$iterm2_python" "$iterm2_script" split-and-run \
-      --direction "$direction" \
-      --title "$name" \
-      "$monitor_cmd" \
-      --wait 2 2>/dev/null) || split_result=""
-    if [[ -n "$split_result" ]]; then
-      iterm2_sid=$(echo "$split_result" | python3 -c "import json,sys; print(json.load(sys.stdin).get('session_id',''))" 2>/dev/null) || iterm2_sid=""
+  if command -v it2 >/dev/null 2>&1 && [[ -n "${ITERM_SESSION_ID:-}" ]]; then
+    if [[ "$direction" == "h" ]]; then
+      split_verb="split"
+    else
+      split_verb="vsplit"
+    fi
+    # it2 split/vsplit prints the new pane's session ID — capture it
+    iterm2_sid=$(it2 "$split_verb" -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}') || iterm2_sid=""
+    if [[ -n "$iterm2_sid" ]]; then
+      # Attach tmux in the new pane (it2 run appends the newline)
+      it2 run -s "$iterm2_sid" "$monitor_cmd" >/dev/null 2>&1 || true
     fi
   fi
 fi
