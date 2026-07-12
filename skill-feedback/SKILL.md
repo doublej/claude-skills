@@ -1,6 +1,6 @@
 ---
 name: skill-feedback
-description: "Report feedback on a skill via spawned session. args: "<skillname> <feedback>""
+description: 'Report feedback on a skill via spawned session. args: "<skillname> <feedback>"'
 arguments: "<skillname> <feedback>"
 ---
 

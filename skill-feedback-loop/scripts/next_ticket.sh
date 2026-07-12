@@ -10,7 +10,8 @@
 
 set -euo pipefail
 
-SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# pwd -P resolves the ~/.claude/skills/skill-feedback-loop symlink to the repo dir
+SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd -P)"
 SKILLS_ROOT="$(dirname "$SKILL_DIR")"
 
 cd "$SKILLS_ROOT"
