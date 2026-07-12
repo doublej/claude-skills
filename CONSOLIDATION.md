@@ -1,6 +1,14 @@
 # Skill consolidation plan
 
-Date: 2026-07-12 · Status: **PROPOSED — nothing executed yet**
+Date: 2026-07-12 · Status: **EXECUTED 2026-07-12** (all phases; ~15 commits).
+Deviations from plan: `git/` deleted rather than flattened (duplicated existing git
+slash-skills); legacy `install-codex-skills-interactive.sh` deleted (superseded by
+`install-skill.sh --codex`); `skill-description-audit.md` + `xml-prompt-writing-evaluation.md`
+deleted (stale snapshots, in git history); proc merge unified enumeration in Python as
+planned; hook paths in `~/.claude/settings.json` repointed to `skill-feedback-loop`.
+Left for a human call: `~/.claude/skills/google-sheets-sync` (bundles a hand-rolled TS
+implementation that repo `cms-sheets` lacks — predecessor, don't delete blindly);
+never-tracked dirs `aeo-geo/`, `build-macos-apps/`, `drunk-claude/` (add to git or ignore).
 Follow-up to NAMING.md (57 renames, executed 2026-05-28). This pass is about
 **deleting superseded skills, merging overlapping ones, and standardizing
 scripts + descriptions**. Evidence gathered by 7 parallel analysis agents over
