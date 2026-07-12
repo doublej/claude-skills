@@ -1,6 +1,6 @@
 ---
-name: claude-skill
-description: "Non-interactive automation mode for hands-off task execution without approvals"
+name: claude-headless
+description: "Run Claude Code in headless mode (claude -p) for non-interactive automation: permission modes, allowedTools, output formats (json/stream-json), session resume, MCP config. Use when scripting Claude Code CLI for hands-off execution without approval prompts. Not about authoring skills — that is skill-creator. Triggers on 'headless', 'claude -p', 'non-interactive claude', 'automate claude code', 'run claude in CI'."
 ---
 
 # Claude Code Headless Mode

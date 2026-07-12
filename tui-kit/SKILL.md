@@ -1,6 +1,6 @@
 ---
 name: tui-kit
-description: "Node.js terminal apps: colors, menus, inputs, progress, screen buffers"
+description: "Node.js terminal-kit library API reference: colors, menus, input fields, progress bars, tables, screen buffers. Use when writing or debugging code that uses the terminal-kit npm package; for cross-library TUI design taste (ratatui/Textual/Ink/Bubble Tea, layout, theming, nerd fonts) use tui-monospace. Triggers on 'terminal-kit', 'termkit', or building a Node.js terminal UI with this library."
 ---
 
 # Terminal-Kit

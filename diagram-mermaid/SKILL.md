@@ -1,6 +1,6 @@
 ---
 name: diagram-mermaid
-description: "Create and render diagrams: flowcharts, sequence, ER, gantt, mindmaps"
+description: "Create and render Mermaid diagrams: flowcharts, sequence, ER, gantt, mindmaps. Output is rendered/previewed Mermaid (browser preview, mermaid.live, kroki, PNG/SVG export); for text/terminal/monospace, README-embeddable output use diagram-ascii. Use when the user wants a diagram they can view rendered, Mermaid syntax, or a .mmd file. Triggers on 'mermaid', 'render a diagram', 'flowchart', 'sequence diagram', 'gantt', 'mindmap'."
 ---
 
 # Mermaid Graphs

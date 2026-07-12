@@ -1,6 +1,13 @@
 ---
 name: design-frontend
-description: "Distinctive, polished web UIs that avoid generic AI aesthetics"
+description: >
+  Distinctive, polished web UIs that avoid generic AI aesthetics — builds
+  production-grade frontends with bold typography, cohesive color, and
+  purposeful motion. Use for any web UI/frontend design or restyling work;
+  default choice; for an opinionated creative-director persona with
+  interrogation ritual use design-director. Triggers on "design this page,"
+  "make it look good," "not so generic," "frontend design," "landing page,"
+  "polish this UI."
 ---
 
 # Frontend Design

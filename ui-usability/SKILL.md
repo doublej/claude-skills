@@ -1,6 +1,6 @@
 ---
 name: ui-usability
-description: "Nielsen heuristics, Laws of UX, Norman principles for UI review and design"
+description: "Nielsen heuristics, Laws of UX, and Norman principles for reviewing and designing usable interfaces — the canonical UI review home (heuristics, forms, flows, labels, validation, error recovery). Use to evaluate or design any interface, form, or user flow; for pure typography/spacing/type-token work use ui-readable. Triggers on 'usability review', 'UX audit', 'heuristic evaluation', 'is this form usable', 'review this flow', 'why do users get stuck'."
 ---
 
 # Usability Fundamentals: Design-Aware UX Principles
@@ -171,6 +171,8 @@ Use this checklist when reviewing any interface:
 - [ ] Is validation inline and helpful, not punitive?
 - [ ] Are required fields marked appropriately?
 - [ ] Do inputs have appropriate types (email, tel, etc.)?
+- [ ] Are labels, inputs, helper text, and errors kept close together (errors next to the field they concern)?
+- [ ] Is the primary action obvious and labeled specifically (a verb like "Create account", not "Submit")?
 
 ### Feedback & Status
 - [ ] Do users know when the system is working?

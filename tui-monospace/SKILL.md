@@ -1,12 +1,14 @@
 ---
 name: tui-monospace
 description: >
-  Ship terminal interfaces that earn the medium. Layout, theming, keybinds,
-  focus, capability detection for ratatui, Textual, Ink, Bubble Tea, iocraft,
-  OpenTUI, vaxis. Nerd font icons, powerline glyphs, PUA range safety, NF v2/v3
-  version contracts. Triggers on "TUI", "terminal app", "interactive CLI",
-  "fzf-style", "lazygit-style", "make this terminal app feel good", "nerd font",
-  "powerline", "status bar", "file tree icons".
+  Ship terminal interfaces that earn the medium — cross-library TUI design
+  taste: layout, theming, keybinds, focus, capability detection for ratatui,
+  Textual, Ink, Bubble Tea, iocraft, OpenTUI, vaxis. Nerd font icons,
+  powerline glyphs, PUA range safety, NF v2/v3 version contracts. For the
+  Node.js terminal-kit library API reference use tui-kit. Triggers on "TUI",
+  "terminal app", "interactive CLI", "fzf-style", "lazygit-style", "make
+  this terminal app feel good", "nerd font", "powerline", "status bar",
+  "file tree icons".
 ---
 
 # Monospace Conviction

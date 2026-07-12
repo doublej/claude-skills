@@ -1,6 +1,6 @@
 ---
 name: diagram-ascii
-description: Generate ASCII art text banners, architectural diagrams, flowcharts, and decorative visuals using figlet and pure-text techniques. Use when user asks for ASCII art, text banners, architecture diagrams, flowcharts, system diagrams, network topology, sequence diagrams, tree structures, terminal art, or box-drawing.
+description: Generate ASCII art text banners, architectural diagrams, flowcharts, and decorative visuals using figlet and pure-text techniques. Output is text/terminal/monospace, README-embeddable; for rendered/previewed Mermaid diagrams use diagram-mermaid. Use when user asks for ASCII art, text banners, plain-text architecture diagrams, flowcharts, system diagrams, network topology, sequence diagrams, tree structures, terminal art, or box-drawing.
 ---
 
 # ASCII Art
