@@ -1,7 +1,6 @@
 ---
 name: pixijs
-description: "Sprites, animations, performance analysis, in-browser debug (unified)"
-  Replaces pixijs-dev, pixijs-perf, pixi-debug.
+description: "Build, optimize, and debug PixiJS apps. Development (sprites, textures, animations, containers, filters, PixiJS API), performance review (bottlenecks, memory leaks, rendering inefficiencies, draw calls), and in-browser debugging of running apps via Claude-in-Chrome. Replaces pixijs-dev, pixijs-perf, pixijs-debug."
 ---
 
 # PixiJS Development Skill
@@ -315,7 +314,7 @@ See [troubleshooting.md](references/troubleshooting.md) for details.
 Use a subagent (Task tool) to run debug commands. This keeps the main conversation context clean and avoids polluting it with verbose scene graphs or benchmark data.
 
 ```
-Task(subagent_type="general-purpose", prompt="Use /pixi-debug to get stats from the PixiJS app at localhost:3000")
+Task(subagent_type="general-purpose", prompt="Use the pixijs skill's debug branch (references/debug-scripts.md) to get stats from the PixiJS app at localhost:3000")
 ```
 
 The subagent will:

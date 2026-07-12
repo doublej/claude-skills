@@ -1,7 +1,6 @@
 ---
 name: pdf
-description: "ReportLab generation, ICC color profiles, Ghostscript processing (unified)"
-  Replaces reportlab-pdf, icc-color-pdf, ghostscript.
+description: "Generate and process PDFs. ReportLab 4.x (Canvas API, Platypus layouts, tables, charts, fonts, images, reports, complex page layouts); ICC color (profiles, RGB-to-CMYK conversion, profile embedding/extraction, PDF/X and PDF/A output intents, color space analysis, ink coverage, preflight validation, pikepdf, Pillow/pyCMS, Little-CMS); Ghostscript CLI (PDF/PostScript manipulation, format conversion PDF/PS/EPS/images, merge, split, compress, rasterization, OCR, extracting images, batch document operations). Replaces pdf-reportlab, pdf-icc, ghostscript."
 ---
 
 # PDF Skill
