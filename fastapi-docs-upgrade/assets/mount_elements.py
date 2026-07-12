@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 
 
 @app.get("/elements", include_in_schema=False)
-async def elements_html():
+async def elements_html() -> HTMLResponse:
     return HTMLResponse(
         f"""<!doctype html>
 <html>

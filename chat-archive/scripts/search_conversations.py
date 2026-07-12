@@ -19,7 +19,7 @@ def get_db(db_path: str) -> sqlite3.Connection:
     return conn
 
 
-def show_stats(conn: sqlite3.Connection):
+def show_stats(conn: sqlite3.Connection) -> None:
     total_convs = conn.execute("SELECT COUNT(*) FROM conversations").fetchone()[0]
     total_msgs = conn.execute("SELECT COUNT(*) FROM messages").fetchone()[0]
     platforms = conn.execute(
@@ -39,7 +39,7 @@ def _truncate(text: str | None, limit: int) -> str:
 
 
 def show_conversation(conn: sqlite3.Connection, conv_id: str,
-                      max_msgs: int, trunc: int, around: int | None):
+                      max_msgs: int, trunc: int, around: int | None) -> None:
     conv = conn.execute(
         "SELECT * FROM conversations WHERE id = ?", (conv_id,)
     ).fetchone()
@@ -110,7 +110,7 @@ def _recency_factor(created_at: str | None) -> float:
 
 def search(conn: sqlite3.Connection, query: str, platform: str | None,
            after: str | None, before: str | None, title: str | None,
-           limit: int, group: bool):
+           limit: int, group: bool) -> None:
     sql = """
         SELECT
             c.id, c.platform, c.title, c.created_at, c.message_count,
@@ -183,7 +183,7 @@ def search(conn: sqlite3.Connection, query: str, platform: str | None,
     print(json.dumps({"query": query, "count": len(sorted_groups), "results": sorted_groups}))
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Search conversation archive")
     parser.add_argument("query", nargs="?", help="Search query (FTS5 syntax)")
     parser.add_argument("--platform", choices=["chatgpt", "claude"])

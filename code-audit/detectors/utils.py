@@ -1,3 +1,6 @@
+from collections.abc import Iterator
+from pathlib import Path
+
 # Supported source file extensions for multi-language detection
 SOURCE_EXTENSIONS = {
     '.py', '.js', '.ts', '.jsx', '.tsx',
@@ -14,9 +17,8 @@ SKIP_DIRS = {
 }
 
 
-def iter_source_files(source_dir):
+def iter_source_files(source_dir: str) -> Iterator[Path]:
     """Yield source files from source_dir matching supported extensions."""
-    from pathlib import Path
     for filepath in Path(source_dir).rglob('*'):
         if any(part in SKIP_DIRS for part in filepath.parts):
             continue

@@ -72,12 +72,12 @@ Asset files are NOT loaded into context, but used within output Claude produces.
 """
 
 
-def title_case_skill_name(skill_name):
+def title_case_skill_name(skill_name: str) -> str:
     """Convert hyphenated skill name to Title Case for display."""
     return ' '.join(word.capitalize() for word in skill_name.split('-'))
 
 
-def init_skill(skill_name, path, create_examples=True):
+def init_skill(skill_name: str, path: str, create_examples: bool = True) -> Path | None:
     """Initialize a new skill directory with template SKILL.md."""
     skill_dir = Path(path).resolve() / skill_name
 
@@ -145,7 +145,7 @@ def init_skill(skill_name, path, create_examples=True):
     return skill_dir
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Initialize a new skill directory with a template SKILL.md.",
         epilog=(

@@ -181,7 +181,7 @@ def generate_epc_qr(
         return f"Error generating QR code: {str(e)}"
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     try:
         # Read input from stdin

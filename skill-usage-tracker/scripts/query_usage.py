@@ -128,7 +128,7 @@ def export_data(conn: sqlite3.Connection, output_path: Path) -> None:
     print(f"Exported {count} records to {output_path}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Query skill usage data")
     parser.add_argument("--top", type=int, metavar="N", help="Show top N skills")
     parser.add_argument("--recent", type=int, metavar="DAYS", help="Show usage from last N days")

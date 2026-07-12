@@ -25,13 +25,14 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from typing import Any
 
 BASE_URL = "https://api.spotify.com/v1"
 TOKEN_URL = "https://accounts.spotify.com/api/token"
 TOKEN_PATH = os.path.expanduser("~/.spotify-tokens.json")
 
 
-def load_tokens():
+def load_tokens() -> dict[str, Any]:
     if not os.path.exists(TOKEN_PATH):
         print(f"Error: {TOKEN_PATH} not found. Run spotify-auth.py first.")
         sys.exit(1)
@@ -39,13 +40,13 @@ def load_tokens():
         return json.load(f)
 
 
-def save_tokens(data):
+def save_tokens(data: dict[str, Any]) -> None:
     with open(TOKEN_PATH, "w") as f:
         json.dump(data, f, indent=2)
     os.chmod(TOKEN_PATH, 0o600)
 
 
-def refresh_access_token(tokens):
+def refresh_access_token(tokens: dict[str, Any]) -> dict[str, Any]:
     data = urllib.parse.urlencode({
         "grant_type": "refresh_token",
         "refresh_token": tokens["refresh_token"],
@@ -65,7 +66,13 @@ def refresh_access_token(tokens):
     return tokens
 
 
-def api(method, path, body=None, params=None, tokens=None):
+def api(
+    method: str,
+    path: str,
+    body: dict[str, Any] | None = None,
+    params: dict[str, Any] | None = None,
+    tokens: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     if tokens is None:
         tokens = load_tokens()
 
@@ -93,7 +100,7 @@ def api(method, path, body=None, params=None, tokens=None):
         sys.exit(1)
 
 
-def now_playing():
+def now_playing() -> None:
     data = api("GET", "/me/player/currently-playing")
     if not data or not data.get("item"):
         return print("Nothing playing")
@@ -113,7 +120,7 @@ def now_playing():
     }, indent=2))
 
 
-def play(uri=None):
+def play(uri: str | None = None) -> None:
     body = {"uris": [uri]} if uri and uri.startswith("spotify:track:") else None
     if uri and not body:
         body = {"context_uri": uri}
@@ -121,7 +128,7 @@ def play(uri=None):
     print("Playback started")
 
 
-def search(search_type, query, limit=10):
+def search(search_type: str, query: str, limit: int = 10) -> None:
     data = api("GET", "/search", params={
         "q": query, "type": search_type, "limit": limit,
     })
@@ -139,7 +146,7 @@ def search(search_type, query, limit=10):
     print(json.dumps(results, indent=2))
 
 
-def playlists(limit=20):
+def playlists(limit: int = 20) -> None:
     data = api("GET", "/me/playlists", params={"limit": limit})
     items = data.get("items", [])
     results = [{"name": p["name"], "id": p["id"], "tracks": p["tracks"]["total"],
@@ -147,7 +154,7 @@ def playlists(limit=20):
     print(json.dumps(results, indent=2))
 
 
-def playlist_tracks(playlist_id, limit=50):
+def playlist_tracks(playlist_id: str, limit: int = 50) -> None:
     data = api("GET", f"/playlists/{playlist_id}/tracks", params={"limit": limit})
     items = data.get("items", [])
     results = [{"name": t["track"]["name"], "uri": t["track"]["uri"],
@@ -156,7 +163,7 @@ def playlist_tracks(playlist_id, limit=50):
     print(json.dumps(results, indent=2))
 
 
-def create_playlist(name, description="", public=False):
+def create_playlist(name: str, description: str = "", public: bool = False) -> None:
     data = api("GET", "/me")
     user_id = data["id"]
     result = api("POST", f"/users/{user_id}/playlists", body={
@@ -166,12 +173,12 @@ def create_playlist(name, description="", public=False):
                        "url": result["external_urls"]["spotify"]}, indent=2))
 
 
-def add_tracks(playlist_id, uris):
+def add_tracks(playlist_id: str, uris: list[str]) -> None:
     api("POST", f"/playlists/{playlist_id}/tracks", body={"uris": uris})
     print(f"Added {len(uris)} tracks to playlist")
 
 
-def devices():
+def devices() -> None:
     data = api("GET", "/me/player/devices")
     results = [{"name": d["name"], "id": d["id"], "type": d["type"],
                 "active": d["is_active"], "volume": d.get("volume_percent")}
@@ -179,7 +186,7 @@ def devices():
     print(json.dumps(results, indent=2))
 
 
-def queue(limit=10):
+def queue(limit: int = 10) -> None:
     data = api("GET", "/me/player/queue")
     items = data.get("queue", [])[:limit]
     current = data.get("currently_playing")
@@ -197,7 +204,7 @@ def queue(limit=10):
     print(json.dumps(result, indent=2))
 
 
-def main():
+def main() -> None:
     args = sys.argv[1:]
     if not args:
         print(__doc__)
@@ -206,7 +213,7 @@ def main():
     cmd = args[0]
     rest = args[1:]
 
-    def get_flag(name, default=None):
+    def get_flag(name: str, default: str | None = None) -> str | None:
         if name in rest:
             idx = rest.index(name)
             return rest[idx + 1] if idx + 1 < len(rest) else default

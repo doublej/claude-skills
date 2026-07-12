@@ -5,9 +5,9 @@ Run: python3 preview.py
 """
 import math, re
 
-def rgb(r,g,b): return f'\033[38;2;{r};{g};{b}m'
-def fg(n):      return f'\033[38;5;{n}m'
-def bg(n):      return f'\033[48;5;{n}m'
+def rgb(r: int, g: int, b: int) -> str: return f'\033[38;2;{r};{g};{b}m'
+def fg(n: int) -> str:  return f'\033[38;5;{n}m'
+def bg(n: int) -> str:  return f'\033[48;5;{n}m'
 N='\033[0m'; B='\033[1m'
 
 HC_L=''; HC_R=''; PL=''  # U+E0B6, U+E0B4, U+E0B0
@@ -18,7 +18,7 @@ pad = lambda s,w: s+' '*max(0,w-vis(s))
 # ── arc: quarter-circle with ▀▄ boundary anti-aliasing ──────────────────────
 # key formula: pixel_x=col/2, pixel_y=row (not row*2 — that breaks aspect ratio)
 # physical: 2R cols × R rows × 2 units/row = square → circle looks round
-def make_arc(R=9):
+def make_arc(R: int = 9) -> list[str]:
     rows=[]
     for dy in range(R):
         row=''
@@ -26,7 +26,7 @@ def make_arc(R=9):
             x=px/2.0; yt=float(dy); yb=dy+0.5
             dt=math.sqrt(x*x+yt*yt); db=math.sqrt(x*x+yb*yb)
             it=dt<R-.05; ib=db<R-.05
-            def c(d):
+            def c(d: float) -> tuple[int,int,int]:
                 t=min(d,R)/R
                 return int(30+t*60),int(80+t*100),int(220-t*90)
             if it and ib: r,g2,b=c((yt+yb)/2); row+=rgb(r,g2,b)+'█'+N
@@ -37,13 +37,13 @@ def make_arc(R=9):
     return rows  # 18w × 9h
 
 # ── gem: diamond with per-pixel radial diffuse + specular lighting ───────────
-def make_gem(SZ=9):
+def make_gem(SZ: int = 9) -> list[str]:
     W=SZ+1; rows=[]
     for dy in range(W):
         row=''
         for px in range(W*2):
-            def ind(px,py): return abs(px-SZ)+abs(py-SZ)<=SZ
-            def col(px,py):
+            def ind(px: int, py: int) -> bool: return abs(px-SZ)+abs(py-SZ)<=SZ
+            def col(px: int, py: int) -> tuple[int,int,int]:
                 cx=(px-SZ)/float(SZ); cy=(py-SZ)/float(SZ)
                 r2=math.sqrt(cx*cx+cy*cy)
                 nx=cx/r2 if r2>.01 else 0; ny=cy/r2 if r2>.01 else 0
@@ -66,7 +66,7 @@ def make_gem(SZ=9):
     return rows  # 20w × 10h
 
 # ── sparklines: ▁▂▃▄▅▆▇█ eighths, 4 channels ────────────────────────────────
-def make_sparks(W=54):
+def make_sparks(W: int = 54) -> list[str]:
     bars='▁▂▃▄▅▆▇█'
     chs=[
         ('cpu',lambda x:math.sin(x*3.7)*.5+math.sin(x*11)*.3+.4,  60,200,80),
@@ -84,7 +84,7 @@ def make_sparks(W=54):
     return rows
 
 # ── braille: 8-dot density gradient, U+2800 range ───────────────────────────
-def make_braille(W=58):
+def make_braille(W: int = 58) -> list[str]:
     masks=[0x00,0x01,0x09,0x19,0x59,0xD9,0xFB,0xFF]
     pals=[((20,80,200),(60,200,140)),((180,50,90),(80,90,230))]
     rows=[]
@@ -98,7 +98,7 @@ def make_braille(W=58):
     return rows
 
 # ── shading: ░▒▓█ + truecolor gradient ──────────────────────────────────────
-def make_shading(W=58):
+def make_shading(W: int = 58) -> str:
     sh='░▒▓█'
     row=''
     for i in range(W):
@@ -108,7 +108,7 @@ def make_shading(W=58):
 
 # ─────────────────────────────────────────────────────────────────────────────
 
-def main():
+def main() -> None:
     AR=make_arc(9); GE=make_gem(9)
     SP=make_sparks(54); BR=make_braille(58); SH=make_shading(58)
 

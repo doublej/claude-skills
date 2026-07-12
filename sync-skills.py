@@ -194,7 +194,7 @@ def get_sync_status(skills: list[Skill], codex_dir: Path) -> SyncStatus:
     )
 
 
-def print_status_table(skills: list[Skill], filter_mode: Optional[str] = None):
+def print_status_table(skills: list[Skill], filter_mode: Optional[str] = None) -> None:
     """Print formatted table of skills with sync status."""
     # Filter skills
     filtered = skills
@@ -247,7 +247,7 @@ def print_status_table(skills: list[Skill], filter_mode: Optional[str] = None):
     print()
 
 
-def print_summary(status: SyncStatus):
+def print_summary(status: SyncStatus) -> None:
     """Print summary statistics."""
     print(f"\n{Colors.BOLD}Sync Status Summary{Colors.RESET}")
     print("=" * 40)
@@ -291,18 +291,18 @@ def confirm_action(prompt: str) -> bool:
     return response in ('y', 'yes')
 
 
-def cmd_list(args, skills: list[Skill]):
+def cmd_list(args: argparse.Namespace, skills: list[Skill]) -> None:
     """List all skills with their sync status."""
     print_status_table(skills, args.filter if hasattr(args, 'filter') else None)
 
 
-def cmd_status(_args, skills: list[Skill], codex_dir: Path):
+def cmd_status(_args: argparse.Namespace, skills: list[Skill], codex_dir: Path) -> None:
     """Show summary statistics."""
     status = get_sync_status(skills, codex_dir)
     print_summary(status)
 
 
-def cmd_sync(args, skills: list[Skill], codex_dir: Path):
+def cmd_sync(args: argparse.Namespace, skills: list[Skill], codex_dir: Path) -> int:
     """Sync skills to Codex."""
     # Filter skills to sync
     if args.skill:
@@ -347,7 +347,7 @@ def cmd_sync(args, skills: list[Skill], codex_dir: Path):
     return 0
 
 
-def cmd_fix(args, codex_dir: Path):
+def cmd_fix(args: argparse.Namespace, codex_dir: Path) -> int:
     """Fix broken symlinks in Codex."""
     broken = []
     for link in codex_dir.iterdir():
@@ -378,7 +378,7 @@ def cmd_fix(args, codex_dir: Path):
     return 0
 
 
-def cmd_validate(_args, skills: list[Skill]):
+def cmd_validate(_args: argparse.Namespace, skills: list[Skill]) -> int:
     """Validate all skills for Codex compatibility."""
     issues = []
 
@@ -402,7 +402,7 @@ def cmd_validate(_args, skills: list[Skill]):
     return 0
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Sync Claude Code skills to Codex CLI"
     )

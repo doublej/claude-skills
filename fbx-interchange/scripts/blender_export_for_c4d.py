@@ -17,7 +17,7 @@ def export_fbx_for_c4d(
     selected_only: bool = False,
     include_animation: bool = True,
     apply_modifiers: bool = True,
-):
+) -> str:
     """
     Export FBX with Cinema 4D compatible settings.
 
@@ -105,7 +105,7 @@ def export_fbx_for_c4d(
     return filepath
 
 
-def main():
+def main() -> None:
     """Main entry point when running as script."""
     import sys
 

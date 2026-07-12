@@ -199,7 +199,7 @@ def scan(target_path: str, threshold: int) -> dict:
     }
 
 
-def print_human(result: dict):
+def print_human(result: dict) -> None:
     if "error" in result:
         print(f"Error: {result['error']}", file=sys.stderr)
         sys.exit(1)
@@ -223,7 +223,7 @@ def print_human(result: dict):
     print()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Scan files for modularization candidates."
     )

@@ -28,6 +28,7 @@ import secrets
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any
 
 try:
     import yaml
@@ -93,7 +94,7 @@ def resolve_preset(name: str) -> Path:
     return presets[chosen]
 
 
-def validate(preset: dict, name: str) -> None:
+def validate(preset: dict[str, Any], name: str) -> None:
     errs: list[str] = []
     if preset.get("name") != name:
         errs.append(f"preset.name '{preset.get('name')}' != filename '{name}'")
@@ -146,7 +147,7 @@ def run_snapshot(team_name: str) -> str:
     return tag or f"teams/{team_name}-snapshot"
 
 
-def build_team_name(preset: dict, user_name: str | None) -> str:
+def build_team_name(preset: dict[str, Any], user_name: str | None) -> str:
     if user_name:
         return user_name
     prefix = preset.get("default_team_name_prefix") or preset.get("name") or "team"
@@ -155,7 +156,7 @@ def build_team_name(preset: dict, user_name: str | None) -> str:
     return f"{prefix}-{date}-{suffix}"
 
 
-def assemble_member(m: dict, team_name: str) -> dict:
+def assemble_member(m: dict[str, Any], team_name: str) -> dict[str, Any]:
     spawn_prompt = (m.get("spawn_prompt") or "").replace("{team_name}", team_name).strip()
     additional_tools = m.get("tools") or []
     agent_args = {

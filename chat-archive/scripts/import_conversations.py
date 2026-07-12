@@ -8,6 +8,7 @@ import sqlite3
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 
 def init_db(db_path: str) -> sqlite3.Connection:
@@ -63,7 +64,7 @@ def file_hash(path: str) -> str:
     return h.hexdigest()
 
 
-def detect_platform(data) -> str:
+def detect_platform(data: Any) -> str:
     if not isinstance(data, list) or len(data) == 0:
         raise ValueError("Expected a JSON array of conversations")
     sample = data[0]
@@ -74,7 +75,7 @@ def detect_platform(data) -> str:
     raise ValueError("Cannot detect platform — use --platform flag")
 
 
-def ts_to_iso(ts) -> str | None:
+def ts_to_iso(ts: Any) -> str | None:
     if ts is None:
         return None
     if isinstance(ts, (int, float)):
@@ -174,7 +175,7 @@ def import_claude(conv: dict, conn: sqlite3.Connection) -> int:
     return len(messages)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Import conversations into SQLite FTS5")
     parser.add_argument("file", help="Path to export JSON file")
     parser.add_argument("--platform", choices=["auto", "chatgpt", "claude"], default="auto")

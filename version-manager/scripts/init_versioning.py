@@ -60,13 +60,13 @@ def get_current_version(project_root: Path, project_type: str) -> str:
         return "1.0.0"
 
 
-def create_version_file(project_root: Path, version: str):
+def create_version_file(project_root: Path, version: str) -> None:
     """Create VERSION file."""
     (project_root / "VERSION").write_text(f"{version}\n")
     print(f"✓ Created VERSION file with version {version}")
 
 
-def create_changelog(project_root: Path, version: str):
+def create_changelog(project_root: Path, version: str) -> None:
     """Create CHANGELOG.md if it doesn't exist."""
     changelog_path = project_root / "CHANGELOG.md"
     if changelog_path.exists():
@@ -90,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     print(f"✓ Created CHANGELOG.md")
 
 
-def create_releases_json(project_root: Path, version: str):
+def create_releases_json(project_root: Path, version: str) -> None:
     """Create releases.json for advanced pattern."""
     releases_path = project_root / "releases.json"
     if releases_path.exists():
@@ -121,7 +121,7 @@ def create_releases_json(project_root: Path, version: str):
     print(f"✓ Created releases.json")
 
 
-def add_claude_md_section(project_root: Path, pattern: str, version: str, project_type: str):
+def add_claude_md_section(project_root: Path, pattern: str, version: str, project_type: str) -> None:
     """Add versioning section to CLAUDE.md."""
     claude_md = project_root / "CLAUDE.md"
 
@@ -179,7 +179,7 @@ Use conventional commit format:
         print("✓ Created CLAUDE.md with versioning section")
 
 
-def install_git_hooks(project_root: Path):
+def install_git_hooks(project_root: Path) -> None:
     """Install git hooks."""
     hooks_dir = project_root / ".git" / "hooks"
     if not hooks_dir.exists():
@@ -202,7 +202,7 @@ def install_git_hooks(project_root: Path):
             print(f"✓ Installed {hook_file.name} hook")
 
 
-def create_git_tag(project_root: Path, version: str):
+def create_git_tag(project_root: Path, version: str) -> None:
     """Create initial git tag."""
     try:
         # Check if tag already exists
@@ -230,7 +230,7 @@ def create_git_tag(project_root: Path, version: str):
         print("⚠ git not found, skipping tag creation")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Initialize versioning in a project")
     parser.add_argument(
         "--pattern",

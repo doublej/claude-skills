@@ -146,7 +146,7 @@ def check_working_directory_clean(project_root: Path) -> Optional[bool]:
         return None
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Validate version consistency")
     parser.add_argument(
         "--staged",

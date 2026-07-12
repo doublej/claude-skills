@@ -12,6 +12,7 @@ import signal
 import sys
 from pathlib import Path
 from datetime import datetime
+from typing import Any
 
 INTERVAL_SECONDS = 300  # 5 minutes
 PID_FILE = Path.home() / ".claude" / "proc-monitor.pid"
@@ -28,7 +29,7 @@ LEGACY_NAMES = {
 }
 
 
-def migrate_legacy_files():
+def migrate_legacy_files() -> None:
     """One-time migration: rename old process-monitor.* files to proc-monitor.*."""
     for new_path, old_name in LEGACY_NAMES.items():
         old_path = new_path.parent / old_name
@@ -36,12 +37,12 @@ def migrate_legacy_files():
             old_path.rename(new_path)
 
 
-def parse_float(s):
+def parse_float(s: str) -> float:
     """Parse float handling locale (comma vs dot decimal separator)."""
     return float(s.replace(",", "."))
 
 
-def get_top_processes(limit=10):
+def get_top_processes(limit: int = 10) -> list[dict[str, Any]]:
     """Get top processes by CPU and memory usage."""
     result = subprocess.run(
         ["ps", "-Acro", "pid,pcpu,pmem,comm"],
@@ -62,7 +63,7 @@ def get_top_processes(limit=10):
     return processes
 
 
-def get_system_stats():
+def get_system_stats() -> dict[str, Any]:
     """Get overall system resource usage."""
     # CPU usage via top (snapshot)
     top_result = subprocess.run(
@@ -107,7 +108,7 @@ def get_system_stats():
     }
 
 
-def save_snapshot():
+def save_snapshot() -> dict[str, Any]:
     """Save current resource snapshot to file."""
     snapshot = {
         "system": get_system_stats(),
@@ -120,7 +121,7 @@ def save_snapshot():
     return snapshot
 
 
-def send_reminder():
+def send_reminder() -> None:
     """Send reminder to specific iTerm tab by name."""
     message = f"[Auto-reminder] Check system resources - {datetime.now().strftime('%H:%M')}"
 
@@ -152,13 +153,13 @@ def send_reminder():
         log(f"AppleScript error: {result.stderr}")
 
 
-def log(msg):
+def log(msg: str) -> None:
     """Log message to file."""
     with open(LOG_FILE, "a") as f:
         f.write(f"{datetime.now().isoformat()} - {msg}\n")
 
 
-def cleanup(signum=None, frame=None):
+def cleanup(signum: int | None = None, frame: Any = None) -> None:
     """Cleanup on exit."""
     if PID_FILE.exists():
         PID_FILE.unlink()
@@ -166,7 +167,7 @@ def cleanup(signum=None, frame=None):
     sys.exit(0)
 
 
-def is_running():
+def is_running() -> bool:
     """Check if daemon is already running."""
     if not PID_FILE.exists():
         return False
@@ -180,7 +181,7 @@ def is_running():
         return False
 
 
-def start_daemon():
+def start_daemon() -> None:
     """Start the daemon in background."""
     if is_running():
         print("Daemon already running")
@@ -215,7 +216,7 @@ def start_daemon():
         time.sleep(INTERVAL_SECONDS)
 
 
-def stop_daemon():
+def stop_daemon() -> None:
     """Stop the running daemon."""
     if not PID_FILE.exists():
         print("Daemon not running")
@@ -230,7 +231,7 @@ def stop_daemon():
         PID_FILE.unlink()
 
 
-def status():
+def status() -> None:
     """Check daemon status."""
     if is_running():
         pid = int(PID_FILE.read_text().strip())
@@ -239,13 +240,13 @@ def status():
         print("Daemon not running")
 
 
-def set_target(tab_name):
+def set_target(tab_name: str) -> None:
     """Set target tab name for reminders."""
     TARGET_TAB_FILE.write_text(tab_name)
     print(f"Target tab set to: {tab_name}")
 
 
-def list_tabs():
+def list_tabs() -> None:
     """List all iTerm tab/session names."""
     script = '''
     tell application "iTerm"

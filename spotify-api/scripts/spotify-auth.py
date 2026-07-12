@@ -10,6 +10,7 @@ import secrets
 import sys
 import urllib.parse
 import urllib.request
+from typing import Any
 
 TOKEN_PATH = os.path.expanduser("~/.spotify-tokens.json")
 REDIRECT_PORT = 8888
@@ -28,14 +29,14 @@ SCOPES = " ".join([
 ])
 
 
-def generate_pkce():
+def generate_pkce() -> tuple[str, str]:
     verifier = secrets.token_urlsafe(64)[:128]
     digest = hashlib.sha256(verifier.encode()).digest()
     challenge = base64.urlsafe_b64encode(digest).rstrip(b"=").decode()
     return verifier, challenge
 
 
-def build_auth_url(client_id, challenge, state):
+def build_auth_url(client_id: str, challenge: str, state: str) -> str:
     params = urllib.parse.urlencode({
         "client_id": client_id,
         "response_type": "code",
@@ -48,7 +49,7 @@ def build_auth_url(client_id, challenge, state):
     return f"{AUTH_URL}?{params}"
 
 
-def exchange_code(client_id, code, verifier):
+def exchange_code(client_id: str, code: str, verifier: str) -> dict[str, Any]:
     data = urllib.parse.urlencode({
         "grant_type": "authorization_code",
         "code": code,
@@ -63,7 +64,7 @@ def exchange_code(client_id, code, verifier):
         return json.loads(resp.read())
 
 
-def save_tokens(client_id, tokens):
+def save_tokens(client_id: str, tokens: dict[str, Any]) -> None:
     payload = {
         "client_id": client_id,
         "access_token": tokens["access_token"],
@@ -77,7 +78,7 @@ def save_tokens(client_id, tokens):
     print(f"Tokens saved to {TOKEN_PATH}")
 
 
-def main():
+def main() -> None:
     client_id = os.environ.get("SPOTIFY_CLIENT_ID", "").strip()
     if not client_id:
         print("Error: set SPOTIFY_CLIENT_ID environment variable")
@@ -94,7 +95,7 @@ def main():
     auth_code = None
 
     class Handler(http.server.BaseHTTPRequestHandler):
-        def do_GET(self):
+        def do_GET(self) -> None:
             nonlocal auth_code
             params = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
             if params.get("state", [None])[0] != state:
@@ -108,7 +109,7 @@ def main():
             self.end_headers()
             self.wfile.write(b"<h1>Done! Close this tab.</h1>")
 
-        def log_message(self, format, *args):  # noqa: A002
+        def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
             pass
 
     server = http.server.HTTPServer(("localhost", REDIRECT_PORT), Handler)

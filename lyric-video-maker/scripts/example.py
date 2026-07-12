@@ -5,7 +5,7 @@ Example helper script for lyric-video-maker
 Replace with actual implementation or delete if not needed.
 """
 
-def main():
+def main() -> None:
     print("This is an example script for lyric-video-maker")
 
 if __name__ == "__main__":

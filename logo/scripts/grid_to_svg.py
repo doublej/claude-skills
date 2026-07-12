@@ -23,6 +23,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Any
 
 SHAPES = {"rect", "circle", "triangle-up", "triangle-down", "triangle-left", "triangle-right", "diamond"}
 CELL_SIZE = 100
@@ -30,7 +31,7 @@ CELL_GAP = 4
 MAX_COLOURS = 4  # 3 + transparent
 
 
-def validate_grid(data: dict) -> list[str]:
+def validate_grid(data: dict[str, Any]) -> list[str]:
     errors = []
     grid = data.get("grid", 5)
     if not 3 <= grid <= 9:
@@ -55,7 +56,7 @@ def validate_grid(data: dict) -> list[str]:
     return errors
 
 
-def cell_to_svg(cell: dict, palette: dict) -> str:
+def cell_to_svg(cell: dict[str, Any], palette: dict[str, str]) -> str:
     r, c = cell.get("r", 0), cell.get("c", 0)
     w, h = cell.get("w", 1), cell.get("h", 1)
     shape = cell.get("shape", "rect")
@@ -90,7 +91,7 @@ def cell_to_svg(cell: dict, palette: dict) -> str:
     return f'<polygon points="{pts}" fill="{fill}"/>'
 
 
-def text_to_svg(text: dict, grid: int, palette: dict) -> str:
+def text_to_svg(text: dict[str, Any], grid: int, palette: dict[str, str]) -> str:
     content = text.get("content", "")
     if not content:
         return ""
@@ -133,7 +134,7 @@ def text_to_svg(text: dict, grid: int, palette: dict) -> str:
     )
 
 
-def generate_svg(data: dict) -> str:
+def generate_svg(data: dict[str, Any]) -> str:
     brand = data.get("brand", "Logo")
     grid = data.get("grid", 5)
     palette = data.get("palette", {})

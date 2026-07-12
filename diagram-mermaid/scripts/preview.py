@@ -35,7 +35,7 @@ def kroki_url(code: str, fmt: str = "svg") -> str:
     return f"https://kroki.io/mermaid/{fmt}/{encoded}"
 
 
-def local_html(code: str, output_path: str = None) -> str:
+def local_html(code: str, output_path: str | None = None) -> str:
     """Generate local HTML file with embedded diagram."""
     html = f'''<!DOCTYPE html>
 <html><head>
@@ -56,7 +56,7 @@ def local_html(code: str, output_path: str = None) -> str:
         return f.name
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Preview Mermaid diagram in browser")
     parser.add_argument("input", nargs="?", default="-", help="Input .mmd file or - for stdin")
     parser.add_argument("-m", "--method", default="live",

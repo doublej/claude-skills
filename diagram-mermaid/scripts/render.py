@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 
-def check_mmdc():
+def check_mmdc() -> str | list[str] | None:
     """Check if mmdc is available."""
     if shutil.which("mmdc"):
         return "mmdc"
@@ -19,7 +19,7 @@ def check_mmdc():
 
 
 def render(input_file: str, output_file: str, theme: str = "default",
-           bg_color: str = "white", width: int = 800, height: int = 600):
+           bg_color: str = "white", width: int = 800, height: int = 600) -> None:
     """Render a .mmd file to image."""
     mmdc = check_mmdc()
     if not mmdc:
@@ -37,7 +37,7 @@ def render(input_file: str, output_file: str, theme: str = "default",
     print(f"Rendered: {output_file}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Render Mermaid diagram to image")
     parser.add_argument("input", help="Input .mmd file")
     parser.add_argument("-o", "--output", help="Output file (svg/png/pdf)")

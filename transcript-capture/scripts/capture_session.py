@@ -75,7 +75,7 @@ def format_for_video(entries: list[dict], max_chars: int = 80) -> list[str]:
     return lines
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Capture Claude session transcript")
     parser.add_argument("--session", help="Specific .jsonl file path")
     parser.add_argument("--project-path", help="Project path (defaults to cwd)")

@@ -161,7 +161,7 @@ def discover_projects(
     return results
 
 
-def resolve_projects(args) -> list[dict]:
+def resolve_projects(args: argparse.Namespace) -> list[dict]:
     """Resolve project scope from CLI args into a list of project dicts."""
     if args.all_projects:
         return discover_projects(
@@ -503,7 +503,7 @@ def _infer_activity(preview: str, msg_type: str) -> str | None:
 
 # ── Subcommand: search ───────────────────────────────────────
 
-def cmd_search(args):
+def cmd_search(args: argparse.Namespace) -> None:
     query = " ".join(args.query)
     projects = resolve_projects(args)
     if not projects:
@@ -671,7 +671,7 @@ def cmd_search(args):
 
 # ── Subcommand: scan ─────────────────────────────────────────
 
-def cmd_scan(args):
+def cmd_scan(args: argparse.Namespace) -> None:
     projects = resolve_projects(args)
     if not projects:
         print("Error: No projects found for scope")
@@ -744,7 +744,7 @@ def cmd_scan(args):
 
 # ── Subcommand: extract ──────────────────────────────────────
 
-def cmd_extract(args):
+def cmd_extract(args: argparse.Namespace) -> None:
     projects = resolve_projects(args)
     if not projects:
         print("Error: No projects found for scope")
@@ -830,7 +830,7 @@ def cmd_extract(args):
 
 # ── Subcommand: list ─────────────────────────────────────────
 
-def cmd_list(args):
+def cmd_list(args: argparse.Namespace) -> None:
     projects = resolve_projects(args)
     if not projects:
         print("Error: No projects found for scope")
@@ -866,7 +866,7 @@ def cmd_list(args):
 
 # ── CLI ──────────────────────────────────────────────────────
 
-def add_scope_args(parser: argparse.ArgumentParser):
+def add_scope_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "-p", "--project", type=str, default=os.getcwd(),
         help="Project directory (default: cwd)",
@@ -889,7 +889,7 @@ def add_scope_args(parser: argparse.ArgumentParser):
     )
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Claude Code Session History Tool",
     )

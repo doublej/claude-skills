@@ -27,7 +27,7 @@ def truncate(text: str, max_len: int) -> str:
     return text[:max_len - 1] + '…'
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Scan SKILL.md files and display a compact table overview."
     )

@@ -5,7 +5,7 @@ Example helper script for hiphop-culture
 Replace with actual implementation or delete if not needed.
 """
 
-def main():
+def main() -> None:
     print("This is an example script for hiphop-culture")
 
 if __name__ == "__main__":

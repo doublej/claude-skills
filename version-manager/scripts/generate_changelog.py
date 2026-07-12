@@ -7,7 +7,6 @@ import subprocess
 import sys
 from datetime import date
 from pathlib import Path
-from typing import Dict, List
 import re
 
 
@@ -78,7 +77,7 @@ def generate_from_releases_json(project_root: Path) -> str:
     return "\n".join(lines)
 
 
-def parse_conventional_commit(message: str) -> Dict:
+def parse_conventional_commit(message: str) -> dict | None:
     """Parse conventional commit message."""
     # Pattern: type(scope): description
     pattern = r'^(feat|fix|docs|style|refactor|perf|test|chore|build|ci|revert)(\(([^)]+)\))?: (.+)$'
@@ -102,7 +101,7 @@ def parse_conventional_commit(message: str) -> Dict:
     }
 
 
-def generate_from_commits(project_root: Path, since: str = None) -> str:
+def generate_from_commits(project_root: Path, since: str | None = None) -> str:
     """Generate changelog from conventional commits."""
     # Get git log
     cmd = ["git", "log", "--pretty=format:%s"]
@@ -186,7 +185,7 @@ def generate_from_commits(project_root: Path, since: str = None) -> str:
     return "\n".join(lines)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Generate CHANGELOG.md")
     parser.add_argument(
         "--from-releases",

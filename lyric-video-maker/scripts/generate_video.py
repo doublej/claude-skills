@@ -275,7 +275,7 @@ if (LYRICS.length > 0) {{
 """
 
 
-def generate(data: dict, out_path: Path):
+def generate(data: dict, out_path: Path) -> None:
     bpm = data.get("bpm", 99)
     lyrics = data.get("lyrics", [])
     overlays = data.get("overlays", [])
@@ -305,7 +305,7 @@ def generate(data: dict, out_path: Path):
     print(f"Generated: {out_path}")
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("input", nargs="?", help="Input JSON file")
     parser.add_argument("--out", default="lyric_video.html")

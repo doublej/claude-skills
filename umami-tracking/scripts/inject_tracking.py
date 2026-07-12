@@ -50,7 +50,7 @@ def inject_auto(project_dir: Path, snippet: str) -> int:
     return count
 
 
-def main():
+def main() -> None:
     args = [a for a in sys.argv[1:] if a != "--auto"]
     auto_mode = "--auto" in sys.argv
 

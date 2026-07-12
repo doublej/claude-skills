@@ -11,6 +11,8 @@ import json
 import os
 import re
 import sys
+from collections.abc import Iterator
+from typing import Any
 
 BLUEPRINTS = ("CLAUDE.md", "ARCHITECTURE.md", "SPEC.md")
 SRC_EXT = (".py", ".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".go", ".rs", ".swift")
@@ -19,7 +21,7 @@ SKIP_DIRS = {".git", "node_modules", "venv", ".venv", "__pycache__", "dist", "bu
 ARCH_BLOCK = re.compile(r"```arch\s*\n(.*?)```", re.DOTALL)
 
 
-def find_blueprint(root, explicit):
+def find_blueprint(root: str, explicit: str | None) -> str | None:
     """Return the blueprint file path, or None."""
     if explicit:
         return explicit if os.path.isfile(explicit) else None
@@ -30,7 +32,7 @@ def find_blueprint(root, explicit):
     return None
 
 
-def parse_rules(text):
+def parse_rules(text: str) -> tuple[dict[str, list[str]], list[tuple[str, str]], list[tuple[str, str]]] | None:
     """Parse an arch block into (layers, allows, forbids)."""
     m = ARCH_BLOCK.search(text)
     if not m:
@@ -51,7 +53,7 @@ def parse_rules(text):
     return layers, allows, forbids
 
 
-def collect_files(root):
+def collect_files(root: str) -> Iterator[str]:
     """Yield source file paths relative to root."""
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
@@ -60,7 +62,7 @@ def collect_files(root):
                 yield os.path.relpath(os.path.join(dirpath, f), root)
 
 
-def layer_of(relpath, layers):
+def layer_of(relpath: str, layers: dict[str, list[str]]) -> str | None:
     """First layer whose globs match relpath, else None."""
     norm = relpath.replace(os.sep, "/")
     for name, globs in layers.items():
@@ -77,7 +79,7 @@ GO_IMPORT = re.compile(r"""["`]([^"`\s]+)["`]""")
 RS_USE = re.compile(r"^\s*use\s+(crate|super|self)((?:::\w+)+)", re.M)
 
 
-def extract_imports(relpath, text):
+def extract_imports(relpath: str, text: str) -> list[str]:
     """Return raw import specifiers found in the file."""
     if relpath.endswith(".py"):
         return [a or b for a, b in PY_IMPORT.findall(text)]
@@ -90,7 +92,7 @@ def extract_imports(relpath, text):
     return []
 
 
-def _go_imports(text):
+def _go_imports(text: str) -> list[str]:
     block = re.search(r"import\s*\((.*?)\)", text, re.DOTALL)
     body = block.group(1) if block else text
     return GO_IMPORT.findall(body)
@@ -98,14 +100,14 @@ def _go_imports(text):
 
 # --- import resolution to repo files ----------------------------------------
 
-def resolve(spec, relpath, fileset, root):
+def resolve(spec: str, relpath: str, fileset: set[str], root: str) -> str | None:
     """Resolve an import spec to a repo-relative file path, or None (external)."""
     if spec.startswith((".", "crate", "super", "self")) or "/" in spec or "\\" in spec:
         return _resolve_path_like(spec, relpath, fileset)
     return _resolve_dotted(spec, fileset)
 
 
-def _candidates(base):
+def _candidates(base: str) -> Iterator[str]:
     yield base + ".py"
     for ext in (".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".go", ".rs", ".swift"):
         yield base + ext
@@ -115,7 +117,7 @@ def _candidates(base):
     yield base + "/mod.rs"
 
 
-def _match(base, fileset):
+def _match(base: str, fileset: set[str]) -> str | None:
     norm = base.replace(os.sep, "/").lstrip("/")
     for cand in _candidates(norm):
         if cand in fileset:
@@ -123,7 +125,7 @@ def _match(base, fileset):
     return None
 
 
-def _resolve_path_like(spec, relpath, fileset):
+def _resolve_path_like(spec: str, relpath: str, fileset: set[str]) -> str | None:
     srcdir = os.path.dirname(relpath)
     if spec.startswith(("crate", "super", "self")):  # Rust
         parts = spec.split("::")[1:]
@@ -135,7 +137,7 @@ def _resolve_path_like(spec, relpath, fileset):
     return _match(spec, fileset)  # Go-style module/path or explicit path
 
 
-def _resolve_dotted(spec, fileset):
+def _resolve_dotted(spec: str, fileset: set[str]) -> str | None:
     """Python dotted module: a.b.c -> a/b/c.{py,/__init__.py}, by longest suffix."""
     parts = spec.split(".")
     while parts:
@@ -148,7 +150,14 @@ def _resolve_dotted(spec, fileset):
 
 # --- rule evaluation ---------------------------------------------------------
 
-def edge_violation(src_layer, tgt_rel, tgt_layer, layers, allows, forbids):
+def edge_violation(
+    src_layer: str | None,
+    tgt_rel: str,
+    tgt_layer: str | None,
+    layers: dict[str, list[str]],
+    allows: list[tuple[str, str]],
+    forbids: list[tuple[str, str]],
+) -> tuple[str, str] | None:
     """Return (severity, rule) if the edge violates rules, else None."""
     tgt_norm = tgt_rel.replace(os.sep, "/")
     for left, right in forbids:
@@ -162,7 +171,7 @@ def edge_violation(src_layer, tgt_rel, tgt_layer, layers, allows, forbids):
     return None
 
 
-def _side_matches(token, layer, path, layers):
+def _side_matches(token: str, layer: str | None, path: str | None, layers: dict[str, list[str]]) -> bool:
     if token == "*":
         return True
     if token == layer:
@@ -172,7 +181,10 @@ def _side_matches(token, layer, path, layers):
     return False
 
 
-def check(root, rules):
+def check(
+    root: str,
+    rules: tuple[dict[str, list[str]], list[tuple[str, str]], list[tuple[str, str]]],
+) -> list[dict[str, Any]]:
     layers, allows, forbids = rules
     files = list(collect_files(root))
     fileset = set(f.replace(os.sep, "/") for f in files)
@@ -195,7 +207,7 @@ def check(root, rules):
     return violations
 
 
-def report(violations, as_json):
+def report(violations: list[dict[str, Any]], as_json: bool) -> None:
     if as_json:
         print(json.dumps({"violations": violations, "count": len(violations)}, indent=2))
         return
@@ -208,7 +220,7 @@ def report(violations, as_json):
         print(f"  {v['severity']:<9} {v['src']} [{sl}] -> {v['target']} [{tl}]  ({v['rule']})")
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser(description="Architecture-drift checker (deterministic).")
     ap.add_argument("--root", default=".", help="repo root to scan")
     ap.add_argument("--rules", help="blueprint file (default: auto-detect CLAUDE.md/ARCHITECTURE.md/SPEC.md)")

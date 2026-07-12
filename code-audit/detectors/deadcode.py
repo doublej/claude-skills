@@ -1,4 +1,7 @@
 import re
+from pathlib import Path
+from typing import Any
+
 from .utils import iter_source_files
 
 # Multi-language definition patterns
@@ -24,7 +27,7 @@ COMMENTED_CODE_PATTERNS = [
 ]
 
 
-def find_orphaned_definitions(repomap_data):
+def find_orphaned_definitions(repomap_data: dict[str, Any]) -> list[dict[str, Any]]:
     findings = []
     for filepath, data in repomap_data.items():
         if data.get('rank', 0.0) != 0.0 or not data['definitions']:
@@ -47,7 +50,7 @@ def find_orphaned_definitions(repomap_data):
     return findings
 
 
-def find_commented_code(source_dir):
+def find_commented_code(source_dir: str | Path) -> list[dict[str, Any]]:
     findings = []
     for filepath in iter_source_files(source_dir):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
@@ -65,7 +68,7 @@ def find_commented_code(source_dir):
     return findings
 
 
-def find_unused_imports(source_dir):
+def find_unused_imports(source_dir: str | Path) -> list[dict[str, Any]]:
     """Find imports where the imported name appears only once (the import line itself)."""
     findings = []
     for filepath in iter_source_files(source_dir):
@@ -99,7 +102,7 @@ def find_unused_imports(source_dir):
     return findings
 
 
-def detect(repomap_data, source_dir):
+def detect(repomap_data: dict[str, Any], source_dir: str | Path) -> list[dict[str, Any]]:
     findings = find_orphaned_definitions(repomap_data)
     findings.extend(find_commented_code(source_dir))
     findings.extend(find_unused_imports(source_dir))

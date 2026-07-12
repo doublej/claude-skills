@@ -24,10 +24,11 @@ import sys
 import json
 import urllib.request
 import urllib.error
+from typing import Any
 
 BASE_URL = "https://api.porkbun.com/api/json/v3"
 
-def get_credentials():
+def get_credentials() -> tuple[str, str]:
     api_key = os.environ.get("PORKBUN_API_KEY")
     secret_key = os.environ.get("PORKBUN_SECRET_KEY")
     if not api_key or not secret_key:
@@ -35,7 +36,7 @@ def get_credentials():
         sys.exit(1)
     return api_key, secret_key
 
-def api_request(endpoint, data=None, auth=True):
+def api_request(endpoint: str, data: dict[str, Any] | None = None, auth: bool = True) -> dict[str, Any]:
     url = f"{BASE_URL}{endpoint}"
     payload = data or {}
     if auth:
@@ -60,14 +61,14 @@ def api_request(endpoint, data=None, auth=True):
         except:
             return {"status": "ERROR", "message": error_body}
 
-def cmd_ping():
+def cmd_ping() -> None:
     result = api_request("/ping")
     if result.get("status") == "SUCCESS":
         print(f"OK - Your IP: {result.get('yourIp', 'unknown')}")
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_domains():
+def cmd_domains() -> None:
     result = api_request("/domain/listAll")
     if result.get("status") == "SUCCESS":
         domains = result.get("domains", [])
@@ -80,7 +81,7 @@ def cmd_domains():
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_check(domain):
+def cmd_check(domain: str) -> None:
     result = api_request(f"/domain/checkDomain/{domain}")
     if result.get("status") == "SUCCESS":
         if result.get("avail") == "yes":
@@ -93,7 +94,7 @@ def cmd_check(domain):
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_dns_list(domain):
+def cmd_dns_list(domain: str) -> None:
     result = api_request(f"/dns/retrieve/{domain}")
     if result.get("status") == "SUCCESS":
         records = result.get("records", [])
@@ -110,7 +111,7 @@ def cmd_dns_list(domain):
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_dns_add(domain, rtype, content, name=None, ttl=None):
+def cmd_dns_add(domain: str, rtype: str, content: str, name: str | None = None, ttl: str | None = None) -> None:
     data = {"type": rtype.upper(), "content": content}
     if name:
         data["name"] = name
@@ -122,14 +123,14 @@ def cmd_dns_add(domain, rtype, content, name=None, ttl=None):
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_dns_delete(domain, record_id):
+def cmd_dns_delete(domain: str, record_id: str) -> None:
     result = api_request(f"/dns/delete/{domain}/{record_id}")
     if result.get("status") == "SUCCESS":
         print("Record deleted")
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_ns_get(domain):
+def cmd_ns_get(domain: str) -> None:
     result = api_request(f"/domain/getNs/{domain}")
     if result.get("status") == "SUCCESS":
         ns = result.get("ns", [])
@@ -138,14 +139,14 @@ def cmd_ns_get(domain):
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_ns_set(domain, nameservers):
+def cmd_ns_set(domain: str, nameservers: list[str]) -> None:
     result = api_request(f"/domain/updateNs/{domain}", {"ns": nameservers})
     if result.get("status") == "SUCCESS":
         print("Nameservers updated")
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_ssl(domain):
+def cmd_ssl(domain: str) -> None:
     result = api_request(f"/ssl/retrieve/{domain}")
     if result.get("status") == "SUCCESS":
         print("=== Certificate Chain ===")
@@ -155,7 +156,7 @@ def cmd_ssl(domain):
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_pricing():
+def cmd_pricing() -> None:
     result = api_request("/pricing/get", auth=False)
     if result.get("status") == "SUCCESS":
         pricing = result.get("pricing", {})
@@ -170,7 +171,7 @@ def cmd_pricing():
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_forward_list(domain):
+def cmd_forward_list(domain: str) -> None:
     result = api_request(f"/domain/getUrlForwarding/{domain}")
     if result.get("status") == "SUCCESS":
         forwards = result.get("forwards", [])
@@ -186,7 +187,7 @@ def cmd_forward_list(domain):
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_forward_add(domain, location, ftype, subdomain=None, includepath=False, wildcard=False):
+def cmd_forward_add(domain: str, location: str, ftype: str, subdomain: str | None = None, includepath: bool = False, wildcard: bool = False) -> None:
     data = {
         "location": location,
         "type": ftype,
@@ -201,14 +202,14 @@ def cmd_forward_add(domain, location, ftype, subdomain=None, includepath=False, 
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def cmd_forward_delete(domain, forward_id):
+def cmd_forward_delete(domain: str, forward_id: str) -> None:
     result = api_request(f"/domain/deleteUrlForward/{domain}/{forward_id}")
     if result.get("status") == "SUCCESS":
         print("URL forward deleted")
     else:
         print(f"Error: {result.get('message', 'Unknown error')}")
 
-def main():
+def main() -> None:
     args = sys.argv[1:]
     if not args:
         print(__doc__)

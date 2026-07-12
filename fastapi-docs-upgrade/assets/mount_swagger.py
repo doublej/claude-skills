@@ -5,6 +5,8 @@ to free up the /docs path, then mount Swagger UI here with the same parameter di
 you would have passed via `swagger_ui_parameters=...`.
 """
 
+from typing import Any
+
 from fastapi.openapi.docs import get_swagger_ui_html, get_swagger_ui_oauth2_redirect_html
 
 
@@ -21,7 +23,7 @@ SWAGGER_UI_PARAMETERS = {
 
 
 @app.get("/swagger", include_in_schema=False)
-async def swagger_html():
+async def swagger_html() -> Any:
     return get_swagger_ui_html(
         openapi_url=app.openapi_url,
         title=f"{app.title} — Swagger UI",
@@ -31,5 +33,5 @@ async def swagger_html():
 
 
 @app.get("/swagger/oauth2-redirect", include_in_schema=False)
-async def swagger_oauth_redirect():
+async def swagger_oauth_redirect() -> Any:
     return get_swagger_ui_oauth2_redirect_html()

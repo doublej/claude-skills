@@ -6,10 +6,10 @@ import json
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List
+from typing import Any
 
 
-def load_sync_config(project_root: Path) -> Dict:
+def load_sync_config(project_root: Path) -> dict[str, Any]:
     """Load version sync configuration."""
     config_path = project_root / ".version-sync.json"
 
@@ -69,7 +69,7 @@ def get_source_version(project_root: Path, source: str) -> str:
     return ""
 
 
-def sync_target(project_root: Path, target: Dict, version: str, dry_run: bool = False) -> bool:
+def sync_target(project_root: Path, target: dict[str, Any], version: str, dry_run: bool = False) -> bool:
     """Sync version to a target file."""
     file_path = project_root / target["file"]
 
@@ -111,7 +111,7 @@ def sync_target(project_root: Path, target: Dict, version: str, dry_run: bool = 
         return True
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Sync version across multiple files")
     parser.add_argument(
         "--dry-run",

@@ -1,4 +1,6 @@
 import re
+from typing import Any
+
 from .utils import iter_source_files
 
 # Language-aware definition patterns
@@ -18,7 +20,7 @@ DEPRECATED_PATTERNS = [
 ]
 
 
-def extract_identifiers(repomap_data):
+def extract_identifiers(repomap_data: dict[str, Any]) -> dict[str, list[str]]:
     identifiers = {}
     for filepath, data in repomap_data.items():
         identifiers[filepath] = []
@@ -32,16 +34,16 @@ def extract_identifiers(repomap_data):
     return identifiers
 
 
-def to_snake_case(name):
+def to_snake_case(name: str) -> str:
     return re.sub('([A-Z]+)', r'_\1', name).lower().lstrip('_')
 
 
-def to_camel_case(name):
+def to_camel_case(name: str) -> str:
     parts = name.split('_')
     return ''.join(word.capitalize() for word in parts)
 
 
-def find_naming_inconsistencies(identifiers):
+def find_naming_inconsistencies(identifiers: dict[str, list[str]]) -> list[dict[str, Any]]:
     findings = []
     all_names = {}
 
@@ -76,7 +78,7 @@ def find_naming_inconsistencies(identifiers):
     return findings
 
 
-def check_deprecated_markers(source_dir):
+def check_deprecated_markers(source_dir: str) -> list[dict[str, Any]]:
     findings = []
     for filepath in iter_source_files(source_dir):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
@@ -94,7 +96,7 @@ def check_deprecated_markers(source_dir):
     return findings
 
 
-def detect(repomap_data, source_dir):
+def detect(repomap_data: dict[str, Any], source_dir: str) -> list[dict[str, Any]]:
     identifiers = extract_identifiers(repomap_data)
     findings = find_naming_inconsistencies(identifiers)
     findings.extend(check_deprecated_markers(source_dir))

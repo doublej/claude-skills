@@ -76,13 +76,13 @@ def get_current_version(project_root: Path) -> str:
     return "0.0.0"
 
 
-def update_version_file(file_path: Path, new_version: str):
+def update_version_file(file_path: Path, new_version: str) -> None:
     """Update VERSION file."""
     file_path.write_text(f"{new_version}\n")
     print(f"✓ Updated {file_path.name}")
 
 
-def update_package_json(file_path: Path, new_version: str):
+def update_package_json(file_path: Path, new_version: str) -> None:
     """Update package.json version."""
     with open(file_path) as f:
         data = json.load(f)
@@ -96,7 +96,7 @@ def update_package_json(file_path: Path, new_version: str):
     print(f"✓ Updated {file_path.name}")
 
 
-def update_pyproject_toml(file_path: Path, new_version: str):
+def update_pyproject_toml(file_path: Path, new_version: str) -> None:
     """Update pyproject.toml version."""
     content = file_path.read_text()
     lines = content.split("\n")
@@ -114,7 +114,7 @@ def update_pyproject_toml(file_path: Path, new_version: str):
     print(f"✓ Updated {file_path.name}")
 
 
-def update_cargo_toml(file_path: Path, new_version: str):
+def update_cargo_toml(file_path: Path, new_version: str) -> None:
     """Update Cargo.toml version."""
     content = file_path.read_text()
     lines = content.split("\n")
@@ -133,7 +133,7 @@ def update_cargo_toml(file_path: Path, new_version: str):
     print(f"✓ Updated {file_path.name}")
 
 
-def update_releases_json(file_path: Path, new_version: str):
+def update_releases_json(file_path: Path, new_version: str) -> None:
     """Update releases.json - add new version entry at the top."""
     with open(file_path) as f:
         data = json.load(f)
@@ -161,7 +161,7 @@ def update_releases_json(file_path: Path, new_version: str):
     print(f"✓ Updated {file_path.name} (added new release entry)")
 
 
-def update_changelog(project_root: Path, new_version: str):
+def update_changelog(project_root: Path, new_version: str) -> None:
     """Add new version entry to CHANGELOG.md."""
     changelog_path = project_root / "CHANGELOG.md"
     if not changelog_path.exists():
@@ -193,7 +193,7 @@ def update_changelog(project_root: Path, new_version: str):
     print(f"✓ Updated CHANGELOG.md")
 
 
-def create_git_tag(project_root: Path, version: str):
+def create_git_tag(project_root: Path, version: str) -> bool:
     """Create git tag for new version."""
     try:
         subprocess.run(
@@ -229,7 +229,7 @@ def run_validation(project_root: Path) -> bool:
         return False
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Bump version with validation")
     parser.add_argument(
         "--major",

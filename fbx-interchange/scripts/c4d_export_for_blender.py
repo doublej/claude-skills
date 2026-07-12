@@ -10,13 +10,14 @@ Exports scene or selection with optimal settings for Blender import.
 import c4d
 from c4d import documents, gui
 import os
+from typing import Any
 
 
 # FBX exporter plugin ID
 FBX_EXPORTER_ID = 1026370
 
 
-def configure_fbx_settings(fbx_export):
+def configure_fbx_settings(fbx_export: Any) -> Any:
     """Configure FBX export settings for Blender compatibility."""
     # FBX version - 7.4 binary is most compatible
     fbx_export[c4d.FBXEXPORT_FBX_VERSION] = c4d.FBX_EXPORTVERSION_NATIVE
@@ -48,7 +49,7 @@ def configure_fbx_settings(fbx_export):
     return fbx_export
 
 
-def export_fbx_for_blender(filepath, selected_only=False):
+def export_fbx_for_blender(filepath: str, selected_only: bool = False) -> bool:
     """
     Export FBX with Blender-compatible settings.
 
@@ -122,7 +123,7 @@ def export_fbx_for_blender(filepath, selected_only=False):
     return result
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     doc = documents.GetActiveDocument()
     if not doc:

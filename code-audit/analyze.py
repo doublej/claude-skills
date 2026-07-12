@@ -3,6 +3,7 @@ import subprocess
 import sys
 import re
 from pathlib import Path
+from types import ModuleType
 import argparse
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -14,7 +15,7 @@ SKILL_DIR = Path(__file__).parent
 MAPPER_SCRIPT = SKILL_DIR.parent / "code-map" / "scripts" / "repomap.sh"
 
 
-def get_repomap_cmd():
+def get_repomap_cmd() -> list[str]:
     if MAPPER_SCRIPT.exists():
         return ["bash", str(MAPPER_SCRIPT)]
 
@@ -27,7 +28,7 @@ def get_repomap_cmd():
     sys.exit(1)
 
 
-def run_repomap(target_dir, map_tokens):
+def run_repomap(target_dir: str, map_tokens: int) -> dict[str, dict]:
     cmd = get_repomap_cmd()
     result = subprocess.run(
         cmd + [target_dir, "--root", target_dir, "--map-tokens", str(map_tokens)],
@@ -46,7 +47,7 @@ def run_repomap(target_dir, map_tokens):
     return parse_repomap_output(result.stdout)
 
 
-def parse_repomap_output(output):
+def parse_repomap_output(output: str) -> dict[str, dict]:
     data = {}
     current_file = None
     file_pattern = re.compile(r'^(.+?):\s*$')
@@ -78,11 +79,11 @@ def parse_repomap_output(output):
     return data
 
 
-def load_detectors():
+def load_detectors() -> list[ModuleType]:
     return [deprecated, conventions, deadcode, duplicates]
 
 
-def run_analysis(repomap_data, source_dir):
+def run_analysis(repomap_data: dict[str, dict], source_dir: str) -> dict[str, list[dict]]:
     results = {}
     detector_modules = load_detectors()
 
@@ -94,7 +95,7 @@ def run_analysis(repomap_data, source_dir):
     return results
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Analyze repository for code quality issues')
     parser.add_argument('repository', help='Path to repository to analyze')
     parser.add_argument('--output', default='repomap-analysis.md', help='Output report file')

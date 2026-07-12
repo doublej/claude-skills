@@ -1,5 +1,8 @@
 import re
 from collections import defaultdict
+from pathlib import Path
+from typing import Any
+
 from .utils import iter_source_files
 
 # Multi-language function definition with params
@@ -10,12 +13,12 @@ INDENTED_FUNC = re.compile(r'(?:def|function)\s+(\w+)\s*\([^)]*\):[^\n]*\n((?:  
 BRACED_FUNC = re.compile(r'(?:func|fn|function)\s+(\w+)\s*\([^)]*\)\s*(?:[^{]*)\{([^}]+)\}')
 
 
-def normalize_params(params):
+def normalize_params(params: str) -> str:
     parts = [p.strip().split('=')[0].split(':')[0].strip() for p in params.split(',')]
     return ', '.join(p for p in parts if p)
 
 
-def normalize_body(body):
+def normalize_body(body: str) -> str:
     body = re.sub(r'(?:#|//).*', '', body)  # strip comments
     body = re.sub(r'\s+', ' ', body)
     body = re.sub(r'["\'].*?["\']', 'STR', body)
@@ -23,7 +26,7 @@ def normalize_body(body):
     return body.strip()
 
 
-def extract_signatures(repomap_data):
+def extract_signatures(repomap_data: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     signatures = defaultdict(list)
     for filepath, data in repomap_data.items():
         for definition in data['definitions']:
@@ -41,7 +44,7 @@ def extract_signatures(repomap_data):
     return signatures
 
 
-def find_duplicate_signatures(signatures):
+def find_duplicate_signatures(signatures: dict[str, list[dict[str, Any]]]) -> list[dict[str, Any]]:
     findings = []
     for locations in signatures.values():
         if len(locations) < 2:
@@ -61,7 +64,7 @@ def find_duplicate_signatures(signatures):
     return findings
 
 
-def find_similar_functions(source_dir):
+def find_similar_functions(source_dir: str | Path) -> list[dict[str, Any]]:
     findings = []
     function_bodies = defaultdict(list)
 
@@ -98,7 +101,7 @@ def find_similar_functions(source_dir):
     return findings
 
 
-def detect(repomap_data, source_dir):
+def detect(repomap_data: dict[str, Any], source_dir: str | Path) -> list[dict[str, Any]]:
     signatures = extract_signatures(repomap_data)
     findings = find_duplicate_signatures(signatures)
     findings.extend(find_similar_functions(source_dir))

@@ -25,6 +25,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 # Folders we never recurse into.
 SKIP_DIRS = {
@@ -118,7 +119,7 @@ class FolderAudit:
     children_with_packet: int = 0
     verdict: str = ""
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "rel": self.rel,
             "score": self.score,

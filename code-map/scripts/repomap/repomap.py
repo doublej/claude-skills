@@ -84,22 +84,22 @@ def find_src_files(
     return src_files
 
 
-def tool_output(*messages):
+def tool_output(*messages: str) -> None:
     """Print informational messages."""
     print(*messages, file=sys.stdout)
 
 
-def tool_warning(message):
+def tool_warning(message: str) -> None:
     """Print warning messages."""
     print(f"Warning: {message}", file=sys.stderr)
 
 
-def tool_error(message):
+def tool_error(message: str) -> None:
     """Print error messages."""
     print(f"Error: {message}", file=sys.stderr)
 
 
-def main():
+def main() -> None:
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
         description="Generate a repository map showing important code structures.",

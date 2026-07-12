@@ -15,6 +15,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 SNAPSHOT_FILE = Path.home() / ".claude" / "proc-monitor-snapshot.json"
 LEGACY_SNAPSHOT_FILE = Path.home() / ".claude" / "process-monitor-snapshot.json"
@@ -36,18 +37,18 @@ CLAUDE_EXCLUDE = re.compile(r"Claude\.app")
 SELF_EXCLUDE = re.compile(r"scan\.py|grep")
 
 
-def migrate_legacy_snapshot():
+def migrate_legacy_snapshot() -> None:
     """One-time migration: rename old process-monitor-* snapshot to proc-monitor-*."""
     if LEGACY_SNAPSHOT_FILE.exists() and not SNAPSHOT_FILE.exists():
         LEGACY_SNAPSHOT_FILE.rename(SNAPSHOT_FILE)
 
 
-def parse_float(s):
+def parse_float(s: str) -> float:
     """Parse float handling locale (comma vs dot decimal separator)."""
     return float(s.replace(",", "."))
 
 
-def list_processes():
+def list_processes() -> list[dict[str, Any]]:
     """Return all processes as dicts: pid, cpu, mem, cmd."""
     result = subprocess.run(["ps", "aux"], capture_output=True, text=True)
     procs = []
@@ -63,7 +64,7 @@ def list_processes():
     return procs
 
 
-def match_category(category, procs=None):
+def match_category(category: str, procs: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     """Return processes matching a category (claude|mcp|dev)."""
     if procs is None:
         procs = list_processes()
@@ -74,7 +75,7 @@ def match_category(category, procs=None):
     return matched
 
 
-def port_pids(port):
+def port_pids(port: int) -> list[int]:
     """Return PIDs listening on a TCP port."""
     result = subprocess.run(
         ["lsof", f"-iTCP:{port}", "-sTCP:LISTEN", "-P", "-n", "-t"],
@@ -83,7 +84,7 @@ def port_pids(port):
     return sorted({int(pid) for pid in result.stdout.split() if pid.isdigit()})
 
 
-def port_listeners():
+def port_listeners() -> list[dict[str, Any]]:
     """Return listeners on common dev ports: port, pid, name."""
     listeners = []
     seen = set()
@@ -104,9 +105,9 @@ def port_listeners():
     return listeners
 
 
-def resource_hogs(procs, limit=10):
+def resource_hogs(procs: list[dict[str, Any]], limit: int = 10) -> list[dict[str, Any]]:
     """Top processes by CPU."""
-    def cpu_key(p):
+    def cpu_key(p: dict[str, Any]) -> float:
         try:
             return parse_float(p["cpu"])
         except ValueError:
@@ -114,7 +115,7 @@ def resource_hogs(procs, limit=10):
     return sorted(procs, key=cpu_key, reverse=True)[:limit]
 
 
-def get_system_snapshot():
+def get_system_snapshot() -> dict[str, Any]:
     """Live system snapshot: overall CPU + top processes (by CPU)."""
     ps_result = subprocess.run(
         ["ps", "-Acro", "pid,pcpu,pmem,comm"],
@@ -158,7 +159,7 @@ def get_system_snapshot():
     }
 
 
-def get_cached_snapshot():
+def get_cached_snapshot() -> dict[str, Any]:
     """Read the daemon's latest snapshot and normalize to live-snapshot shape."""
     with open(SNAPSHOT_FILE) as f:
         snapshot = json.load(f)
@@ -174,14 +175,14 @@ def get_cached_snapshot():
     }
 
 
-def system_alerts(snapshot):
+def system_alerts(snapshot: dict[str, Any]) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     """Resource hogs from a system snapshot: >50% CPU or >10% memory."""
     cpu_hogs = [p for p in snapshot["top_processes"] if p["cpu"] > 50]
     mem_hogs = [p for p in snapshot["top_processes"] if p["mem"] > 10]
     return cpu_hogs, mem_hogs
 
 
-def print_proc_section(title, procs):
+def print_proc_section(title: str, procs: list[dict[str, Any]]) -> None:
     print(f"=== {title} ===")
     if procs:
         for p in procs:
@@ -191,7 +192,7 @@ def print_proc_section(title, procs):
     print()
 
 
-def print_system_section(snapshot):
+def print_system_section(snapshot: dict[str, Any]) -> None:
     print(f"=== System @ {snapshot['timestamp'][:19]} ===")
     cpu = snapshot["cpu"]
     print(f"  CPU: {cpu['total_used']}% used ({cpu['user']}% user, {cpu['system']}% sys)")
@@ -210,7 +211,7 @@ def print_system_section(snapshot):
     print()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Scan macOS for Claude/MCP/dev-server processes and resource usage"
     )

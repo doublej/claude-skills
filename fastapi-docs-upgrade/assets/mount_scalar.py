@@ -13,11 +13,13 @@ member (MODERN, CLASSIC). scalar-fastapi v1.x requires enum instances here — p
 strings raise TypeError, and the kwarg is `theme=` (not `scalar_theme=`).
 """
 
+from typing import Any
+
 from scalar_fastapi import Layout, Theme, get_scalar_api_reference
 
 
 @app.get("/docs", include_in_schema=False)
-async def scalar_html():
+async def scalar_html() -> Any:
     return get_scalar_api_reference(
         openapi_url=app.openapi_url,
         title=app.title,

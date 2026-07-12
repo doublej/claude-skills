@@ -4,9 +4,10 @@ import argparse
 import importlib
 import sys
 from pathlib import Path
+from typing import Any
 
 
-def import_model(dotted_path: str):
+def import_model(dotted_path: str) -> Any:
     """Import a model class from dotted path like 'mymodule.submodule.MyModel'."""
     module_path, _, class_name = dotted_path.rpartition(".")
     module = importlib.import_module(module_path)
@@ -19,7 +20,7 @@ def generate_erd(
     graph_attr: dict | None = None,
     node_attr: dict | None = None,
     edge_attr: dict | None = None,
-):
+) -> Any:
     """Generate ERD diagram for a model class."""
     import erdantic as erd
 
@@ -34,7 +35,7 @@ def generate_erd(
     return diagram
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Generate ERD from Python models")
     parser.add_argument("model", help="Dotted path to model class (e.g., myapp.models.User)")
     parser.add_argument("-o", "--output", default="diagram.png", help="Output file path")

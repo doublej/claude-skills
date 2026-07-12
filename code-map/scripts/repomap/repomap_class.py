@@ -6,7 +6,7 @@ import os
 import sys
 from pathlib import Path
 from collections import namedtuple, defaultdict
-from typing import List, Dict, Set, Optional, Tuple, Callable, Any
+from typing import Callable, Any
 import shutil
 import sqlite3
 from utils import Tag
@@ -48,17 +48,17 @@ class RepoMap:
     def __init__(
         self,
         map_tokens: int = 1024,
-        root: str = None,
+        root: str | None = None,
         token_counter_func: Callable[[str], int] = count_tokens,
-        file_reader_func: Callable[[str], Optional[str]] = read_text,
-        output_handler_funcs: Dict[str, Callable] = None,
-        repo_content_prefix: Optional[str] = None,
+        file_reader_func: Callable[[str], str | None] = read_text,
+        output_handler_funcs: dict[str, Callable] | None = None,
+        repo_content_prefix: str | None = None,
         verbose: bool = False,
-        max_context_window: Optional[int] = None,
+        max_context_window: int | None = None,
         map_mul_no_files: int = 8,
         refresh: str = "auto",
         exclude_unranked: bool = False
-    ):
+    ) -> None:
         """Initialize RepoMap instance."""
         self.map_tokens = map_tokens
         self.max_map_tokens = map_tokens
@@ -90,7 +90,7 @@ class RepoMap:
         # Load persistent tags cache
         self.load_tags_cache()
     
-    def load_tags_cache(self):
+    def load_tags_cache(self) -> None:
         """Load the persistent tags cache."""
         cache_dir = self.root / TAGS_CACHE_DIRNAME
         try:
@@ -99,11 +99,11 @@ class RepoMap:
             self.output_handlers['warning'](f"Failed to load tags cache: {e}")
             self.TAGS_CACHE = {}
     
-    def save_tags_cache(self):
+    def save_tags_cache(self) -> None:
         """Save the tags cache (no-op as diskcache handles persistence)."""
         pass
     
-    def tags_cache_error(self):
+    def tags_cache_error(self) -> None:
         """Handle tags cache errors."""
         try:
             cache_dir = self.root / TAGS_CACHE_DIRNAME
@@ -149,7 +149,7 @@ class RepoMap:
         except ValueError:
             return fname
     
-    def get_mtime(self, fname: str) -> Optional[float]:
+    def get_mtime(self, fname: str) -> float | None:
         """Get file modification time."""
         try:
             return os.path.getmtime(fname)
@@ -157,7 +157,7 @@ class RepoMap:
             self.output_handlers['warning'](f"File not found: {fname}")
             return None
     
-    def get_tags(self, fname: str, rel_fname: str) -> List[Tag]:
+    def get_tags(self, fname: str, rel_fname: str) -> list[Tag]:
         """Get tags for a file, using cache when possible."""
         file_mtime = self.get_mtime(fname)
         if file_mtime is None:
@@ -180,7 +180,7 @@ class RepoMap:
         
         return tags
     
-    def get_tags_raw(self, fname: str, rel_fname: str) -> List[Tag]:
+    def get_tags_raw(self, fname: str, rel_fname: str) -> list[Tag]:
         """Parse file to extract tags using Tree-sitter."""
         try:
             from grep_ast import filename_to_lang
@@ -257,7 +257,14 @@ class RepoMap:
             self.output_handlers['error'](f"Error parsing {fname}: {e}")
             return []
     
-    def _get_tags_from_script_block(self, fname, rel_fname, code, get_language, get_parser):
+    def _get_tags_from_script_block(
+        self,
+        fname: str,
+        rel_fname: str,
+        code: str,
+        get_language: Callable[[str], Any],
+        get_parser: Callable[[str], Any],
+    ) -> list[Tag]:
         """Extract <script> content from Svelte/Vue files and parse as TypeScript."""
         import re
         pattern = re.compile(r'<script[^>]*>(.*?)</script>', re.DOTALL)
@@ -312,7 +319,13 @@ class RepoMap:
         return all_tags
 
     @staticmethod
-    def _pagerank(G, alpha=0.85, max_iter=100, tol=1e-6, personalization=None):
+    def _pagerank(
+        G: Any,
+        alpha: float = 0.85,
+        max_iter: int = 100,
+        tol: float = 1e-6,
+        personalization: dict[str, float] | None = None,
+    ) -> dict[str, float]:
         """Pure-Python PageRank (no scipy/numpy needed)."""
         nodes = list(G.nodes())
         if not nodes:
@@ -361,11 +374,11 @@ class RepoMap:
 
     def get_ranked_tags(
         self,
-        focus_fnames: List[str],
-        context_fnames: List[str],
-        mentioned_fnames: Optional[Set[str]] = None,
-        mentioned_idents: Optional[Set[str]] = None
-    ) -> List[Tuple[float, Tag]]:
+        focus_fnames: list[str],
+        context_fnames: list[str],
+        mentioned_fnames: set[str] | None = None,
+        mentioned_idents: set[str] | None = None
+    ) -> list[tuple[float, Tag]]:
         """Get ranked tags using PageRank algorithm."""
         if mentioned_fnames is None:
             mentioned_fnames = set()
@@ -458,7 +471,7 @@ class RepoMap:
         self.ranked_file_count = len(ranked_files)
         return ranked_tags
     
-    def render_tree(self, abs_fname: str, rel_fname: str, lois: List[int]) -> str:
+    def render_tree(self, abs_fname: str, rel_fname: str, lois: list[int]) -> str:
         """Render a code snippet with specific lines of interest."""
         code = self.read_text_func_internal(abs_fname)
         if not code:
@@ -486,7 +499,7 @@ class RepoMap:
             
             return "\n".join(result_lines)
     
-    def to_tree(self, tags: List[Tuple[float, Tag]], focus_rel_fnames: Set[str]) -> str:
+    def to_tree(self, tags: list[tuple[float, Tag]], focus_rel_fnames: set[str]) -> str:
         """Convert ranked tags to formatted tree output."""
         if not tags:
             return ""
@@ -533,13 +546,13 @@ class RepoMap:
     
     def get_ranked_tags_map(
         self,
-        focus_fnames: List[str],
-        context_fnames: List[str],
+        focus_fnames: list[str],
+        context_fnames: list[str],
         max_map_tokens: int,
-        mentioned_fnames: Optional[Set[str]] = None,
-        mentioned_idents: Optional[Set[str]] = None,
+        mentioned_fnames: set[str] | None = None,
+        mentioned_idents: set[str] | None = None,
         force_refresh: bool = False
-    ) -> Optional[str]:
+    ) -> str | None:
         """Get the ranked tags map with caching."""
         cache_key = (
             tuple(sorted(focus_fnames)),
@@ -562,12 +575,12 @@ class RepoMap:
     
     def get_ranked_tags_map_uncached(
         self,
-        focus_fnames: List[str],
-        context_fnames: List[str],
+        focus_fnames: list[str],
+        context_fnames: list[str],
         max_map_tokens: int,
-        mentioned_fnames: Optional[Set[str]] = None,
-        mentioned_idents: Optional[Set[str]] = None
-    ) -> Optional[str]:
+        mentioned_fnames: set[str] | None = None,
+        mentioned_idents: set[str] | None = None
+    ) -> str | None:
         """Generate the ranked tags map without caching."""
         ranked_tags = self.get_ranked_tags(
             focus_fnames, context_fnames, mentioned_fnames, mentioned_idents
@@ -584,7 +597,7 @@ class RepoMap:
         # Binary search to find the right number of tags
         focus_rel_fnames = set(self.get_rel_fname(f) for f in focus_fnames)
         
-        def try_tags(num_tags: int) -> Tuple[Optional[str], int]:
+        def try_tags(num_tags: int) -> tuple[str | None, int]:
             if num_tags <= 0:
                 return None, 0
             
@@ -615,12 +628,12 @@ class RepoMap:
     
     def get_repo_map(
         self,
-        focus_files: List[str] = None,
-        context_files: List[str] = None,
-        mentioned_fnames: Optional[Set[str]] = None,
-        mentioned_idents: Optional[Set[str]] = None,
+        focus_files: list[str] | None = None,
+        context_files: list[str] | None = None,
+        mentioned_fnames: set[str] | None = None,
+        mentioned_idents: set[str] | None = None,
         force_refresh: bool = False
-    ) -> Optional[str]:
+    ) -> str | None:
         """Generate the repository map."""
         if focus_files is None:
             focus_files = []

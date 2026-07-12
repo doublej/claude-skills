@@ -5,7 +5,7 @@ import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
-def check_age():
+def check_age() -> str:
     """Check age and warn if information is stale."""
     skill_dir = Path(__file__).parent.parent
     metadata_file = skill_dir / "METADATA.json"

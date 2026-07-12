@@ -5,7 +5,6 @@ Utility functions for RepoMap.
 import os
 import sys
 from pathlib import Path
-from typing import Optional, List
 from collections import namedtuple
 
 try:
@@ -32,7 +31,7 @@ def count_tokens(text: str, model_name: str = "gpt-4") -> int:
     return len(encoding.encode(text))
 
 
-def read_text(filename: str, encoding: str = "utf-8", silent: bool = False) -> Optional[str]:
+def read_text(filename: str, encoding: str = "utf-8", silent: bool = False) -> str | None:
     """Read text from file with error handling."""
     try:
         return Path(filename).read_text(encoding=encoding, errors='ignore')

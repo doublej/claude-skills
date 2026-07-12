@@ -13,6 +13,7 @@ import argparse
 import os
 import re
 import sys
+from collections.abc import Iterator
 from pathlib import Path
 
 import tiktoken
@@ -22,7 +23,7 @@ NAME_RE = re.compile(r"^name:\s*(.+)$", re.MULTILINE)
 DESC_RE = re.compile(r"^description:\s*(.+?)(?=\n[a-z_-]+:|\Z)", re.MULTILINE | re.DOTALL)
 
 
-def parse_skill(path):
+def parse_skill(path: Path) -> tuple[str, str] | None:
     try:
         text = path.read_text(errors="ignore")
     except OSError:
@@ -37,13 +38,13 @@ def parse_skill(path):
     return name.group(1).strip().strip("\"'"), desc.group(1).strip().strip("\"'")
 
 
-def scan(base):
+def scan(base: Path) -> Iterator[Path]:
     for dirpath, _, files in os.walk(base, followlinks=True):
         if "SKILL.md" in files:
             yield Path(dirpath) / "SKILL.md"
 
 
-def collect(roots, enc):
+def collect(roots: list[Path], enc: tiktoken.Encoding) -> list[tuple[str, int, int, Path]]:
     seen = set()
     entries = []
     for root in roots:
@@ -64,7 +65,7 @@ def collect(roots, enc):
     return entries
 
 
-def main():
+def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("-b", "--budget", type=int, default=5000)
     ap.add_argument(

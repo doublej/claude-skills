@@ -134,7 +134,7 @@ def generate_statistics(conn: sqlite3.Connection) -> None:
     print("=" * 60)
 
 
-def main():
+def main() -> None:
     db_path = find_db_path()
     conn = sqlite3.connect(str(db_path))
 

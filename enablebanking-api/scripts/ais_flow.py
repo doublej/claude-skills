@@ -22,7 +22,7 @@ ASPSP_NAME = os.environ.get("ASPSP_NAME", "ING")
 ASPSP_COUNTRY = os.environ.get("ASPSP_COUNTRY", "NL")
 
 
-def main():
+def main() -> None:
     cfg = json.load(open("config.json"))
     jwt = make_jwt(cfg["applicationId"], cfg["keyPath"])
     h = {"Authorization": f"Bearer {jwt}"}

@@ -4,10 +4,12 @@ Customizes the generated spec: branding (x-logo for ReDoc/Scalar), tag ordering,
 externalDocs, vendor extensions. Cached so it only runs once per process.
 """
 
+from typing import Any
+
 from fastapi.openapi.utils import get_openapi
 
 
-def custom_openapi():
+def custom_openapi() -> dict[str, Any]:
     if app.openapi_schema:
         return app.openapi_schema
 

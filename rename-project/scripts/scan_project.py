@@ -375,7 +375,7 @@ def scan(project_path: str, new_name: str) -> dict:
     }
 
 
-def print_human(result: dict):
+def print_human(result: dict) -> None:
     if "error" in result:
         print(f"Error: {result['error']}", file=sys.stderr)
         sys.exit(1)
@@ -396,7 +396,7 @@ def print_human(result: dict):
     print()
 
 
-def main():
+def main() -> None:
     if len(sys.argv) < 3:
         print("Usage: scan_project.py <project-path> <new-name> [--json]", file=sys.stderr)
         sys.exit(1)

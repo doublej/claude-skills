@@ -11,7 +11,7 @@ TYPE_NAMES = {
 TYPE_ORDER = list(TYPE_NAMES.keys())
 
 
-def group_by_type(findings):
+def group_by_type(findings: dict[str, list[dict]]) -> dict[str, list[dict]]:
     grouped = defaultdict(list)
     for detector_findings in findings.values():
         for finding in detector_findings:
@@ -19,12 +19,12 @@ def group_by_type(findings):
     return grouped
 
 
-def format_finding(finding):
+def format_finding(finding: dict) -> str:
     file_ref = f"`{finding['file']}:{finding['line']}`" if finding['line'] > 0 else f"`{finding['file']}`"
     return f"- {file_ref} - {finding['message']}"
 
 
-def generate_summary(grouped_findings):
+def generate_summary(grouped_findings: dict[str, list[dict]]) -> str:
     total = sum(len(f) for f in grouped_findings.values())
 
     lines = [
@@ -38,7 +38,7 @@ def generate_summary(grouped_findings):
     return '\n'.join(lines)
 
 
-def generate_section(type_key, findings):
+def generate_section(type_key: str, findings: list[dict]) -> str:
     if not findings:
         return ""
 
@@ -54,7 +54,7 @@ def generate_section(type_key, findings):
     return '\n'.join(lines)
 
 
-def generate_report(findings, output_path, repo_path):
+def generate_report(findings: dict[str, list[dict]], output_path: str, repo_path: str) -> None:
     grouped = group_by_type(findings)
 
     report_lines = [

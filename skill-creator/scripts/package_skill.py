@@ -17,7 +17,7 @@ from pathlib import Path
 from quick_validate import validate_skill
 
 
-def package_skill(skill_path, output_dir=None):
+def package_skill(skill_path: str | Path, output_dir: str | None = None) -> Path | None:
     """Package a skill folder into a .skill file."""
     skill_path = Path(skill_path).resolve()
 
@@ -69,7 +69,7 @@ def package_skill(skill_path, output_dir=None):
         return None
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Package a skill folder into a distributable .skill file.",
         epilog=(

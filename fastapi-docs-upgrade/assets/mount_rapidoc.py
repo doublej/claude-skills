@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 
 
 @app.get("/rapidoc", include_in_schema=False)
-async def rapidoc_html():
+async def rapidoc_html() -> HTMLResponse:
     return HTMLResponse(
         f"""<!doctype html>
 <html>

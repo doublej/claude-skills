@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 
 
-def inject_message(message: str, app_name: str = "Terminal"):
+def inject_message(message: str, app_name: str = "Terminal") -> bool:
     """
     Inject message into the active terminal using AppleScript.
     Works with Terminal.app, iTerm2, Warp, or other terminal emulators.
@@ -39,7 +39,7 @@ def inject_message(message: str, app_name: str = "Terminal"):
     return True
 
 
-def inject_to_claude_code():
+def inject_to_claude_code() -> bool:
     """
     Inject the auto-reminder message to Claude Code.
     Tries to find the correct terminal app.

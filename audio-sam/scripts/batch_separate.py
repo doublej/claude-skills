@@ -18,6 +18,7 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+from typing import Any
 
 QUALITY_PRESETS = {
     "fast": {"num_candidates": 1, "predict_spans": False},
@@ -34,7 +35,7 @@ EXPORT_FORMATS = {
 
 
 class ResumeTracker:
-    def __init__(self, output_dir: Path):
+    def __init__(self, output_dir: Path) -> None:
         self.done_path = output_dir / ".done"
         self.done: set[str] = set()
         if self.done_path.exists():
@@ -43,7 +44,7 @@ class ResumeTracker:
     def is_done(self, key: str) -> bool:
         return key in self.done
 
-    def mark_done(self, key: str):
+    def mark_done(self, key: str) -> None:
         self.done.add(key)
         self.done_path.write_text("\n".join(sorted(self.done)))
 
@@ -53,7 +54,7 @@ def load_manifest(csv_path: str) -> list[dict]:
         return list(csv.DictReader(f))
 
 
-def ffmpeg_convert(input_path: str, output_path: str, **kwargs):
+def ffmpeg_convert(input_path: str, output_path: str, **kwargs: Any) -> None:
     cmd = ["ffmpeg", "-y", "-i", input_path]
     if "sample_rate" in kwargs:
         cmd += ["-ar", str(kwargs["sample_rate"])]
@@ -67,7 +68,7 @@ def ffmpeg_convert(input_path: str, output_path: str, **kwargs):
     subprocess.run(cmd, check=True, capture_output=True)
 
 
-def separate_file(input_path, prompt, predictor, preset_params):
+def separate_file(input_path: str, prompt: str, predictor: Any, preset_params: dict[str, Any]) -> Any:
     import torchaudio
 
     waveform, sr = torchaudio.load(input_path)
@@ -83,7 +84,7 @@ def separate_file(input_path, prompt, predictor, preset_params):
     return separated.cpu()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Batch audio separation with SAM Audio")
     parser.add_argument("manifest", help="CSV manifest file")
     parser.add_argument("--output-dir", "-o", required=True, help="Output directory")

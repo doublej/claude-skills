@@ -25,7 +25,7 @@ KAPPA = 4 * (math.sqrt(2) - 1) / 3  # ≈ 0.55228475
 class Grid:
     """Module grid for quantized logo construction."""
 
-    def __init__(self, canvas: int = 1000, divisions: int = 24):
+    def __init__(self, canvas: int = 1000, divisions: int = 24) -> None:
         self.S = canvas
         self.N = divisions
         self.m = canvas / divisions
@@ -197,7 +197,7 @@ def points_to_path(pts: list[tuple[float, float]], close: bool = True) -> str:
 
 # --- Logo Generator ---
 
-def generate_elements(grid: Grid, colors: dict) -> list[str]:
+def generate_elements(grid: Grid, colors: dict[str, str]) -> list[str]:
     """
     Customise this function for your logo.
 

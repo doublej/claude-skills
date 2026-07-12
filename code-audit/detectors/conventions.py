@@ -1,5 +1,6 @@
 import re
 from collections import Counter
+from pathlib import Path
 from .utils import iter_source_files
 
 # Comment-style languages for quote checking
@@ -21,7 +22,7 @@ FUNC_DEF_PATTERN = re.compile(
 )
 
 
-def check_import_order(filepath):
+def check_import_order(filepath: Path) -> list[dict]:
     """Check Python import ordering (stdlib before third-party before local)."""
     if filepath.suffix != '.py':
         return []
@@ -68,7 +69,7 @@ def check_import_order(filepath):
     return findings
 
 
-def check_quote_style(filepath):
+def check_quote_style(filepath: Path) -> list[dict]:
     """Check for mixed quote styles in files that commonly use them."""
     if filepath.suffix not in QUOTE_LANGS:
         return []
@@ -94,7 +95,7 @@ def check_quote_style(filepath):
     return findings
 
 
-def check_naming_conventions(repomap_data):
+def check_naming_conventions(repomap_data: dict[str, dict]) -> list[dict]:
     """Check for mixed naming conventions across all languages."""
     findings = []
     styles = Counter()
@@ -124,7 +125,7 @@ def check_naming_conventions(repomap_data):
     return findings
 
 
-def detect(repomap_data, source_dir):
+def detect(repomap_data: dict[str, dict], source_dir: str) -> list[dict]:
     findings = check_naming_conventions(repomap_data)
     for filepath in iter_source_files(source_dir):
         findings.extend(check_import_order(filepath))
