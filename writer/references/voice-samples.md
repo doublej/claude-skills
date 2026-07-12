@@ -28,6 +28,18 @@ Empty sections are ignored — the skill defaults to direct and natural.
 [paste another]
 ```
 
+### Email — upward / executive
+
+```
+[paste a real email to a boss, exec, or decision-maker]
+```
+
+### Email — difficult messages
+
+```
+[paste a real rejection, escalation, or "no" email]
+```
+
 ### WhatsApp
 
 ```

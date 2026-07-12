@@ -1,6 +1,6 @@
 ---
 name: writer
-description: "Draft/rewrite text: blog posts, Slack/Email/WhatsApp messages, Dutch rewrites"
+description: "Draft/rewrite text: blog posts, Slack/Email/WhatsApp messages, Dutch rewrites. Includes a mandatory watermark-strip filter for messages. Triggers on \"write an email\", \"draft an email\", \"reply to this email\", \"write a blog post\", \"rewrite this\", \"in het Nederlands\", or pasted text the user wants rewritten."
 ---
 
 # Writer
@@ -141,7 +141,8 @@ If not, suggest: `bun run _management/promotion-vault/scripts/promote.ts {projec
 2. Read `references/voice-samples.md` for voice profile
 3. Apply platform rules (see `references/platform-{name}.md`)
 4. Check against `references/banned-words.md`
-5. Output in code block, ready to copy
+5. Run the draft through the post-write filter (see Post-Write Filter below)
+6. Output in code block, ready to copy
 
 ### Guided Mode
 
@@ -179,6 +180,31 @@ Gather what's missing (max 2 questions):
 | formal | Full sentences, proper structure, no contractions |
 | casual | Contractions, shorter sentences, conversational |
 
+### Post-Write Filter (mandatory)
+
+Every email/message draft goes through the clean script before output. Always run it — even on drafts you wrote yourself, since em-dashes sneak in:
+
+```bash
+echo "$DRAFT" | python3 ~/.claude/skills/writer/scripts/clean.py
+```
+
+Use the cleaned stdout as the output. What it removes:
+- Em-dashes: ` —` → `,` and bare `—` → `, ` (matches the user's raycast clean-watermark exactly)
+- Zero-width chars, NBSP, all U+2000–U+200A spaces, line/paragraph separators, BiDi controls
+- Non-printable control bytes
+- RTF residue (`\rtf1`, `\fonttbl`, `\par`, etc.) and HTML font/style/class/span/div/p/meta tags with inline `font-family:`, `color:`, `background:` declarations
+- GUIDs (8-4-4-4-12 hex)
+- Trailing whitespace, runs of 3+ blank lines, double spaces
+- NFKC-normalizes the whole thing first
+
+What it does NOT remove (use the writing pass, not the filter): slop phrases, slop words, bad rhythm. The filter strips mechanical tells; the writing pass strips lexical tells. Both required.
+
+After output, mention what the filter removed if it removed anything (one line, e.g. "Filter: 2 em-dashes, 1 zero-width" — the script prints this summary to stderr). If it removed nothing, say nothing.
+
+### Difficult Messages
+
+For rejections, bad news, complaints, escalations — apply the Difficult Messages rules in rewrite mode (lead with the decision, one sentence of context, one "sorry" max, concrete next step).
+
 ### Input Handling
 
 **Rough notes / bullet points:** Construct a coherent message. Fill gaps with reasonable assumptions.
@@ -211,6 +237,7 @@ No commentary after output unless asked.
 ### Message Self-Check
 
 Before outputting, verify:
+- Ran the draft through `~/.claude/skills/writer/scripts/clean.py` (no em-dashes survived — spot-check)
 - Zero banned words/phrases from `references/banned-words.md`
 - Length matches platform norms
 - Tone matches the relationship (don't write "Hi Sarah," to someone the user calls "S")

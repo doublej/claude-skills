@@ -78,15 +78,25 @@ Replace with plain language or delete entirely.
 ## Dead Phrases — Email
 
 - "I hope this email finds you well"
+- "I hope you're having a great week"
+- "I'm reaching out to..."
 - "Please do not hesitate to reach out"
+- "Don't hesitate to..."
 - "At your earliest convenience"
+- "Looking forward to hearing from you"
+- "Thank you for your time and consideration"
 - "As per my last email"
 - "Just wanted to check in"
 - "Just wanted to follow up"
 - "Just wanted to reach out"
+- "Following up on..." (as opener)
+- "Touching base"
 - "Per our conversation"
 - "Kindly" (just say "please")
-- "Regards" / "Warm regards" / "Kind regards"
+- "Regards" / "Warm regards" / "Kind regards" / "Best regards"
+- "Sincerely yours" / "Yours truly"
+
+Sign-offs to use instead: "Cheers," / "Thanks," / "Best," — match the register.
 
 ## Dead Phrases — Messaging
 
