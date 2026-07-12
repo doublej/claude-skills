@@ -1,6 +1,6 @@
 ---
 name: code-map
-description: "Importance-ranked repo maps via Tree-sitter parsing and PageRank"
+description: "Importance-ranked repo maps via Tree-sitter parsing and PageRank. Use to get a structural overview of a large or unfamiliar codebase, find load-bearing files before refactoring, or feed structural context to code-audit/code-optimize. Triggers on 'map this codebase', 'repo map', 'which files matter most', 'structural overview'."
 ---
 
 # Codebase Mapper
@@ -99,8 +99,8 @@ Files sorted by PageRank score (0–100 scale, highest first). Each entry shows 
 ## Full Codebase Audit (with related skills)
 
 1. **Map** — Generate structural overview with this skill
-2. **Detect** — Run repomap-analyzer for automated quality findings (deprecated patterns, dead code, duplicates)
-3. **Analyse** — Run dev-refactor for deeper multi-dimensional analysis and task generation
+2. **Detect** — Run code-audit for automated quality findings (deprecated patterns, dead code, duplicates)
+3. **Analyse** — Run code-optimize for deeper multi-dimensional analysis and task generation
 
 </workflows>
 
@@ -116,7 +116,7 @@ Results are cached in `.repomap.tags.cache.v1/` in the working directory. Use `-
 
 | Skill | Relationship |
 |-------|-------------|
-| **repomap-analyzer** | Uses this skill's repomap output to detect code quality issues |
-| **dev-refactor** | Uses this skill for structural mapping in Step 2 of its workflow |
+| **code-audit** | Uses this skill's repomap output to detect code quality issues |
+| **code-optimize** | Uses this skill for optional structural context before scanning |
 
 </related_skills>

@@ -1,6 +1,6 @@
 ---
 name: code-modularize
-description: Intelligently split oversized files into focused, single-responsibility modules. Use when files exceed ~150 lines, have mixed responsibilities, or need structural cleanup.
+description: Intelligently split oversized files into focused, single-responsibility modules. Use when files exceed ~150 lines, have mixed responsibilities, or need structural cleanup. Triggers on 'split this file', 'break up this file', 'modularize', 'this file is too big'.
 ---
 
 # Modularize
@@ -11,14 +11,14 @@ Split oversized files into focused modules by analyzing responsibility boundarie
 
 <scripts>
 
-All scripts are in `~/.claude/skills/modularize/scripts/`.
+All scripts are in `~/.claude/skills/code-modularize/scripts/`.
 
 ### Scan
 
 ```bash
-python3 ~/.claude/skills/modularize/scripts/scan_files.py /path/to/file_or_dir              # human summary
-python3 ~/.claude/skills/modularize/scripts/scan_files.py /path/to/file_or_dir --json        # structured JSON
-python3 ~/.claude/skills/modularize/scripts/scan_files.py /path/to/dir --threshold 200       # custom threshold
+python3 ~/.claude/skills/code-modularize/scripts/scan_files.py /path/to/file_or_dir              # human summary
+python3 ~/.claude/skills/code-modularize/scripts/scan_files.py /path/to/file_or_dir --json        # structured JSON
+python3 ~/.claude/skills/code-modularize/scripts/scan_files.py /path/to/dir --threshold 200       # custom threshold
 ```
 
 Detects: files over threshold, function/class boundaries, symbol lengths, imports, and consumer relationships.
@@ -32,7 +32,7 @@ Detects: files over threshold, function/class boundaries, symbol lengths, import
 Run the scan script to find candidates:
 
 ```bash
-python3 ~/.claude/skills/modularize/scripts/scan_files.py <target-path> --json
+python3 ~/.claude/skills/code-modularize/scripts/scan_files.py <target-path> --json
 ```
 
 Parse the JSON output. If scanning a single file, pass the file path directly. If scanning a directory, all files over threshold are returned. Default threshold: 150 lines.

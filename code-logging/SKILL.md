@@ -261,7 +261,7 @@ logging-audit complete:
 <related_skills>
 | Skill | Relationship |
 |-------|-------------|
-| `code-taxonomy` | Same audit→batch→apply pattern, naming instead of logs |
-| `dev-refactor` | Can consume this skill's report as a finding source |
-| `codebase-mapper` | Optional — PageRank to prioritise high-importance files first |
+| `code-glossary` | Same audit→batch→apply pattern, naming instead of logs |
+| `code-optimize` | Can consume this skill's report as a finding source (owns the `logging` dimension) |
+| `code-map` | Optional — PageRank to prioritise high-importance files first |
 </related_skills>

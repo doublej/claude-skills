@@ -7,6 +7,7 @@ Usage:
     python3 scan_codebase.py /path/to/project --threshold 50  # custom LOC threshold
 """
 
+import argparse
 import json
 import re
 import subprocess
@@ -570,25 +571,22 @@ def print_human(result: dict):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: scan_codebase.py <path> [--threshold N] [--json]", file=sys.stderr)
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Scan a codebase for simplification opportunities."
+    )
+    parser.add_argument("path", help="File or directory to scan")
+    parser.add_argument(
+        "--threshold", type=int, default=DEFAULT_THRESHOLD,
+        help=f"Only include files over N lines (default: {DEFAULT_THRESHOLD})",
+    )
+    parser.add_argument(
+        "--json", action="store_true", help="Emit structured JSON output"
+    )
+    args = parser.parse_args()
 
-    target = sys.argv[1]
-    threshold = DEFAULT_THRESHOLD
-    use_json = "--json" in sys.argv
+    result = scan(args.path, args.threshold)
 
-    for i, arg in enumerate(sys.argv):
-        if arg == "--threshold" and i + 1 < len(sys.argv):
-            try:
-                threshold = int(sys.argv[i + 1])
-            except ValueError:
-                print(f"Error: --threshold requires an integer, got '{sys.argv[i + 1]}'", file=sys.stderr)
-                sys.exit(1)
-
-    result = scan(target, threshold)
-
-    if use_json:
+    if args.json:
         print(json.dumps(result, indent=2))
     else:
         print_human(result)

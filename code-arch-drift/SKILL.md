@@ -101,5 +101,5 @@ checker, `npx @rickheere/archtest` is a good standalone alternative — see
 
 - **code-map** — importance-ranked repo map to discover what the layers *should* be before writing rules.
 - **code-audit** — call-graph quality audit (dead code, dupes); complements boundary checks.
-- **code-refactor** — once drift is found, generate the refactor tasks to fix it.
+- **code-optimize** — once drift is found, generate the refactor tasks to fix it (owns the `arch` dimension).
 - **claude-md-tree** — where the `## Architecture` blueprint lives in a multi-package tree.

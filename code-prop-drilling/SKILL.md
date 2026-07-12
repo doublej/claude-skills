@@ -50,7 +50,7 @@ Check `package.json` and imports:
 | `contextvars` | Python context variables |
 | `fastapi`, `Depends` | FastAPI dependency injection |
 
-If `codebase-mapper` is installed, load its output for structural context. Otherwise proceed with direct scanning.
+If `code-map` is installed, load its output for structural context. Otherwise proceed with direct scanning.
 </phase1>
 
 <phase2>
@@ -247,6 +247,6 @@ Each item: files to modify, estimated scope (small/medium/large).
 
 | Skill | Relationship |
 |-------|-------------|
-| `codebase-mapper` | Optional — provides structural context for faster scanning |
-| `modularize` | Post-fix — split components that grew from drilling workarounds |
-| `dev-refactor` | Can consume findings in broader audit |
+| `code-map` | Optional — provides structural context for faster scanning |
+| `code-modularize` | Post-fix — split components that grew from drilling workarounds |
+| `code-optimize` | Can consume findings in broader audit |

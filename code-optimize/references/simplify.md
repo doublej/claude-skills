@@ -1,11 +1,8 @@
----
-name: code-simplify
-description: "Simplify entire codebase for clarity using parallel agents, preserving behavior"
----
+# Simplify — Behavior-Preserving Simplification Dimension
 
-# Codebase Simplify
-
-Simplify an entire codebase using parallel agents. Read-only analysis phases, then batched edits with atomic commits and quality gates. All functionality is preserved.
+Simplify a codebase using parallel agents. Read-only analysis phases, then
+batched edits with atomic commits and quality gates. All functionality is
+preserved.
 
 <pipeline>
 
@@ -18,6 +15,10 @@ Phase 5: EXECUTE    sonnet general-purpose (×N) → apply simplifications
 Phase 6: VERIFY     lead (sonnet)            → run checks, commit atomically
 ```
 
+When run under the code-optimize dispatcher, Phase 1's branch/clean-tree setup
+and the final commit conventions are handled by the dispatcher's shared
+contract; scope selection and Phases 2-5 run as written here.
+
 </pipeline>
 
 <phase_1_scope>
@@ -27,10 +28,10 @@ Phase 6: VERIFY     lead (sonnet)            → run checks, commit atomically
 3. Run the scan script for a file inventory:
 
 ```bash
-python3 {SKILL_DIR}/scripts/scan_codebase.py <project-root> --json
+python3 ~/.claude/skills/code-optimize/scripts/scan_codebase.py <project-root> --json
 ```
 
-4. **(Optional)** If the codebase-mapper skill is installed, generate a codebase map for structural context:
+4. **(Optional)** If the code-map skill is installed, generate a codebase map for structural context:
 
 ```bash
 MAPPER_SCRIPT="${HOME}/.claude/skills/code-map/scripts/repomap.sh"
@@ -67,7 +68,7 @@ This prevents accidentally simplifying an entire monorepo when the user only wan
 
 7. **Require clean working tree** before any edits. Run `git status --porcelain` — if output is non-empty, ask the user to commit or stash changes first. This ensures rollback in Phase 6 cannot destroy pre-existing work.
 
-8. Create a git branch before any edits:
+8. Create a git branch before any edits (skip if the dispatcher already created the `optimize/` branch):
 ```bash
 git checkout -b simplify/$(date +%Y%m%d-%H%M%S)
 ```
@@ -121,8 +122,8 @@ model: opus
 Each analyser prompt — load the reference file first:
 
 ```
-Read {SKILL_DIR}/references/simplification-patterns.md for language-specific patterns.
-Read {SKILL_DIR}/references/agent-prompts.md for the analyser template, then follow it.
+Read ~/.claude/skills/code-optimize/references/simplify-patterns.md for language-specific patterns.
+Read ~/.claude/skills/code-optimize/references/simplify-agent-prompts.md for the analyser template, then follow it.
 
 Language: {language}
 Project standards: {standards_from_claude_md}
@@ -172,7 +173,7 @@ model: sonnet
 Each executor prompt:
 
 ```
-Read {SKILL_DIR}/references/agent-prompts.md for the executor template, then follow it.
+Read ~/.claude/skills/code-optimize/references/simplify-agent-prompts.md for the executor template, then follow it.
 
 Apply these simplifications to the codebase. Each change MUST preserve exact functionality.
 
@@ -203,7 +204,7 @@ After each batch of executors completes:
 
 2. If checks fail: iterate up to 3 fix cycles. If still failing, **revert the batch** back to the last commit (safe because we required a clean tree in Phase 1 and commit after each successful batch):
 ```bash
-# Reset all changes back to last commit on the simplify branch
+# Reset all changes back to last commit on the branch
 git checkout HEAD -- .
 # Remove any new untracked files created during the batch
 git clean -fd
@@ -214,6 +215,7 @@ git clean -fd
 git add <files_in_batch>
 git commit -m "simplify: {batch_summary}"
 ```
+   (Under the dispatcher, use `optimize(simplify): {batch_summary}`.)
 
 4. Repeat for next batch.
 
@@ -247,10 +249,3 @@ These rules apply to ALL simplification proposals and edits:
    - Make code harder to debug or extend
 
 </refinement_rules>
-
-<reference_files>
-
-- [Simplification Patterns](references/simplification-patterns.md) — language-specific transformation patterns
-- [Agent Prompts](references/agent-prompts.md) — parameterised prompt templates for scanner, analyser, executor
-
-</reference_files>

@@ -9,9 +9,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 from detectors import deprecated, conventions, deadcode, duplicates
 from report_generator import generate_report
 
-# Resolve codebase-mapper's bundled repomap relative to this skill
+# Resolve code-map's bundled repomap relative to this skill
 SKILL_DIR = Path(__file__).parent
-MAPPER_SCRIPT = SKILL_DIR.parent / "codebase-mapper" / "scripts" / "repomap.sh"
+MAPPER_SCRIPT = SKILL_DIR.parent / "code-map" / "scripts" / "repomap.sh"
 
 
 def get_repomap_cmd():
@@ -22,8 +22,8 @@ def get_repomap_cmd():
     if result.returncode == 0:
         return ["repomap"]
 
-    print(f"Error: codebase-mapper not found at {MAPPER_SCRIPT}", file=sys.stderr)
-    print("Install the codebase-mapper skill alongside repomap-analyzer.", file=sys.stderr)
+    print(f"Error: code-map not found at {MAPPER_SCRIPT}", file=sys.stderr)
+    print("Install the code-map skill alongside code-audit.", file=sys.stderr)
     sys.exit(1)
 
 

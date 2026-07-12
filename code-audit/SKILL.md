@@ -1,17 +1,17 @@
 ---
 name: code-audit
-description: "Audit code quality via call graph: dead code, duplicates, naming issues"
+description: "Audit code quality via code-map's PageRank call graph: dead code, duplicate methods, deprecated patterns, naming inconsistencies. Use when auditing codebase health or hunting dead/duplicate code; owns the smells dimension for code-optimize. Triggers on 'code audit', 'find dead code', 'duplicate code', 'code smells'."
 ---
 
 <intro>
 
-Automated code quality analysis powered by codebase-mapper's PageRank call graph. Detects deprecated patterns, naming inconsistencies, dead code, and duplicate methods.
+Automated code quality analysis powered by code-map's PageRank call graph. Detects deprecated patterns, naming inconsistencies, dead code, and duplicate methods.
 
 </intro>
 
 <prerequisites>
 
-Requires the **codebase-mapper** skill installed alongside this skill (uses its bundled repomap).
+Requires the **code-map** skill installed alongside this skill (uses its bundled repomap).
 
 </prerequisites>
 
@@ -88,7 +88,7 @@ Findings are sorted by severity (critical > high > medium > low), then by file a
 
 1. Run structural map first: `bash code-map/scripts/repomap.sh . --root . --exclude-unranked`
 2. Run analysis: `python3 {SKILL_DIR}/analyze.py .`
-3. Use findings as input for dev-refactor to generate actionable tasks
+3. Use findings as input for code-optimize to generate actionable tasks
 
 </workflows>
 
@@ -96,7 +96,7 @@ Findings are sorted by severity (critical > high > medium > low), then by file a
 
 | Skill | Relationship |
 |-------|-------------|
-| **codebase-mapper** | Provides the repomap engine (required dependency) |
-| **dev-refactor** | Consumes analysis output to generate refactoring tasks |
+| **code-map** | Provides the repomap engine (required dependency) |
+| **code-optimize** | Consumes analysis output to generate refactoring tasks (owns the `smells` dimension) |
 
 </related_skills>

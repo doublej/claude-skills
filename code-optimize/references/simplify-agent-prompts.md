@@ -48,7 +48,7 @@ Language: {language}
 Project standards (from CLAUDE.md): {standards}
 
 Read the simplification patterns reference at:
-{skill_dir}/references/simplification-patterns.md
+~/.claude/skills/code-optimize/references/simplify-patterns.md
 
 Findings to analyse:
 {findings_subset}
