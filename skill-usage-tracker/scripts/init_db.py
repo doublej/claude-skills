@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Initialize the skill usage tracking database."""
 
+import argparse
 import sqlite3
-import sys
 from pathlib import Path
 
 
@@ -40,7 +40,12 @@ def init_database(db_path: Path) -> None:
 
 
 if __name__ == "__main__":
-    db_path = Path.home() / ".claude" / "skill-usage.db"
-    if len(sys.argv) > 1:
-        db_path = Path(sys.argv[1])
-    init_database(db_path)
+    parser = argparse.ArgumentParser(
+        description="Initialize the skill usage tracking database."
+    )
+    parser.add_argument(
+        'db_path', nargs='?', default=str(Path.home() / ".claude" / "skill-usage.db"),
+        help="Path to the SQLite database (default: ~/.claude/skill-usage.db)"
+    )
+    args = parser.parse_args()
+    init_database(Path(args.db_path))

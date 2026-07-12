@@ -11,6 +11,7 @@ Examples:
     init_skill.py md-only-skill --path . --no-examples
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -145,28 +146,34 @@ def init_skill(skill_name, path, create_examples=True):
 
 
 def main():
-    args = sys.argv[1:]
-    create_examples = True
-    if '--no-examples' in args:
-        create_examples = False
-        args.remove('--no-examples')
+    parser = argparse.ArgumentParser(
+        description="Initialize a new skill directory with a template SKILL.md.",
+        epilog=(
+            "Examples:\n"
+            "  init_skill.py my-new-skill --path .\n"
+            "  init_skill.py api-helper --path skills/\n"
+            "  init_skill.py md-only-skill --path . --no-examples"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument(
+        'skill_name',
+        help="Skill name: hyphen-case, lowercase letters/digits/hyphens, max 40 chars"
+    )
+    parser.add_argument(
+        '--path', required=True,
+        help="Directory to create the skill folder in"
+    )
+    parser.add_argument(
+        '--no-examples', action='store_true',
+        help="Skip creating example scripts/, references/, and assets/ files"
+    )
+    args = parser.parse_args()
 
-    if len(args) < 3 or args[1] != '--path':
-        print("Usage: init_skill.py <skill-name> --path <path> [--no-examples]")
-        print("\nSkill name: hyphen-case, lowercase letters/digits/hyphens, max 40 chars")
-        print("\nExamples:")
-        print("  init_skill.py my-new-skill --path .")
-        print("  init_skill.py api-helper --path skills/")
-        print("  init_skill.py md-only-skill --path . --no-examples")
-        sys.exit(1)
+    print(f"Initializing skill: {args.skill_name}")
+    print(f"Location: {args.path}\n")
 
-    skill_name = args[0]
-    path = args[2]
-
-    print(f"Initializing skill: {skill_name}")
-    print(f"Location: {path}\n")
-
-    result = init_skill(skill_name, path, create_examples=create_examples)
+    result = init_skill(args.skill_name, args.path, create_examples=not args.no_examples)
     sys.exit(0 if result else 1)
 
 

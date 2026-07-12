@@ -71,6 +71,17 @@ skill-name/
 
 </anatomy_of_skill>
 
+<script_conventions>
+
+### Script Conventions (house style)
+
+- Python: `#!/usr/bin/env python3` shebang, **argparse** for all CLI parsing (never hand-rolled `sys.argv`), positional root path where applicable, and a `--json` flag emitting `json.dumps` for machine-readable output.
+- Bash: `#!/usr/bin/env bash` shebang (not `#!/bin/bash`) with `set -euo pipefail` directly after it.
+- SKILL.md invokes scripts by **installed absolute path** (`~/.claude/skills/<name>/scripts/...`), never cwd-relative paths.
+- Machine output is plain JSON — no emoji, no ad-hoc sentinel lines.
+
+</script_conventions>
+
 <progressive_disclosure>
 
 ### Progressive Disclosure

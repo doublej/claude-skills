@@ -104,7 +104,9 @@ export SKILL_STATS_ENABLED=0
 
 ### Hook Registration
 
-The hooks are registered in `.claude/settings.json`:
+The hooks are split across two settings files:
+
+**Global `~/.claude/settings.json`** — the PostToolUse tracking hook (fires in every project):
 
 ```json
 {
@@ -115,17 +117,26 @@ The hooks are registered in `.claude/settings.json`:
         "hooks": [
           {
             "type": "command",
-            "command": "python3 skill-usage-tracker/hooks/track_usage.py"
+            "command": "python3 /Users/jurrejan/Documents/development/_management/claude-skills/skill-usage-tracker/hooks/track_usage.py"
           }
         ]
       }
-    ],
+    ]
+  }
+}
+```
+
+**Repo `.claude/settings.json`** — only the SessionStart welcome hook:
+
+```json
+{
+  "hooks": {
     "SessionStart": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 skill-usage-tracker/hooks/welcome_stats.py"
+            "command": "python3 /Users/jurrejan/Documents/development/_management/claude-skills/skill-usage-tracker/hooks/welcome_stats.py"
           }
         ]
       }

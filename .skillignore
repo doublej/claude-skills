@@ -1,0 +1,17 @@
+# Directories install-skill.sh must never install as skills.
+# One directory name per line; lines starting with # are comments.
+
+# Repo infrastructure (reserved names, may not exist yet)
+hooks
+scripts
+
+# Tooling / state directories
+.beads
+.claude
+.codex
+.history-analysis
+.repomap.tags.cache.v1
+.session-search
+
+# Data-only directory (scraped PixiJS doc JSON, not a skill)
+pixi_data

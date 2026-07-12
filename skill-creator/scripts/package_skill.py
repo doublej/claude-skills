@@ -10,6 +10,7 @@ Example:
     python package_skill.py ../my-skill ./dist
 """
 
+import argparse
 import sys
 import zipfile
 from pathlib import Path
@@ -69,22 +70,28 @@ def package_skill(skill_path, output_dir=None):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python package_skill.py <path/to/skill-folder> [output-directory]")
-        print("\nExample:")
-        print("  python package_skill.py ../my-skill")
-        print("  python package_skill.py ../my-skill ./dist")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="Package a skill folder into a distributable .skill file.",
+        epilog=(
+            "Examples:\n"
+            "  python package_skill.py ../my-skill\n"
+            "  python package_skill.py ../my-skill ./dist"
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument('skill_path', help="Path to the skill folder to package")
+    parser.add_argument(
+        'output_dir', nargs='?', default=None,
+        help="Directory to write the .skill file to (default: current directory)"
+    )
+    args = parser.parse_args()
 
-    skill_path = sys.argv[1]
-    output_dir = sys.argv[2] if len(sys.argv) > 2 else None
-
-    print(f"Packaging skill: {skill_path}")
-    if output_dir:
-        print(f"Output directory: {output_dir}")
+    print(f"Packaging skill: {args.skill_path}")
+    if args.output_dir:
+        print(f"Output directory: {args.output_dir}")
     print()
 
-    result = package_skill(skill_path, output_dir)
+    result = package_skill(args.skill_path, args.output_dir)
     sys.exit(0 if result else 1)
 
 

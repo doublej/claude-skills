@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Install skills to Claude Code and/or Codex CLI as symlinks
 # Usage: ./install-skill.sh <skill-name>           Install to Claude (default)
@@ -11,11 +11,12 @@
 #        ./install-skill.sh --budget               Check aggregate token budget
 #        ./install-skill.sh --list                 List available skills
 
-set -e
+set -euo pipefail
 
 CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
 CODEX_SKILLS_DIR="$HOME/.codex/skills"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SKILLIGNORE_FILE="$SCRIPT_DIR/.skillignore"
 
 CODEX_MODE=false
 BOTH_MODE=false
@@ -25,6 +26,24 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
+
+# Returns 0 if the dir name is listed in .skillignore (one name per line, # comments)
+is_ignored() {
+    local skill_name="$1"
+    [ -f "$SKILLIGNORE_FILE" ] || return 1
+    local line
+    while IFS= read -r line; do
+        # Strip trailing whitespace; skip blanks and comments
+        line="${line%"${line##*[![:space:]]}"}"
+        case "$line" in
+            ''|'#'*) continue ;;
+        esac
+        if [ "$line" == "$skill_name" ]; then
+            return 0
+        fi
+    done < "$SKILLIGNORE_FILE"
+    return 1
+}
 
 validate_description() {
     local skill_path="$1"
@@ -63,6 +82,11 @@ install_to_target() {
 install_skill() {
     local skill_name="$1"
     local source="$SCRIPT_DIR/$skill_name"
+
+    if is_ignored "$skill_name"; then
+        echo -e "${YELLOW}⚠${NC} $skill_name is listed in .skillignore — skipping"
+        return 1
+    fi
 
     if [ ! -d "$source" ]; then
         echo -e "${RED}Error: Skill folder '$skill_name' not found${NC}"
@@ -106,7 +130,7 @@ validate_all() {
     for dir in "$SCRIPT_DIR"/*/; do
         if [ -f "$dir/SKILL.md" ]; then
             name=$(basename "$dir")
-            validate_description "$dir" "$name" || ((warnings++))
+            validate_description "$dir" "$name" || warnings=$((warnings + 1))
         fi
     done
     if [ "$warnings" -eq 0 ]; then
@@ -127,13 +151,13 @@ get_target_message() {
 }
 
 # Dispatch --budget before the generic flag parser (passes remaining args through)
-if [ "$1" == "--budget" ]; then
+if [ "${1:-}" == "--budget" ]; then
     shift
     exec python3 "$SCRIPT_DIR/validate-context-budget.py" "$@"
 fi
 
 # Parse flags
-while [[ "$1" == --* ]]; do
+while [[ "${1:-}" == --* ]]; do
     case "$1" in
         --codex)
             CODEX_MODE=true
@@ -165,7 +189,7 @@ fi
 
 # Handle validate-only mode
 if $VALIDATE_MODE; then
-    if [ "$1" == "--all" ]; then
+    if [ "${1:-}" == "--all" ]; then
         validate_all
         exit 0
     else
@@ -174,14 +198,17 @@ if $VALIDATE_MODE; then
     fi
 fi
 
-case "$1" in
+case "${1:-}" in
     --all)
         echo -e "${YELLOW}Installing all skills to $(get_target_message)...${NC}"
         count=0
         for dir in "$SCRIPT_DIR"/*/; do
             if [ -f "$dir/SKILL.md" ]; then
                 name=$(basename "$dir")
-                install_skill "$name" && ((count++)) || true
+                if is_ignored "$name"; then
+                    continue
+                fi
+                install_skill "$name" && count=$((count + 1)) || true
             fi
         done
         echo -e "${GREEN}Installed $count skills${NC}"

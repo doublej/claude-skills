@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Scan SKILL.md files and display a compact table overview."""
 
-import sys
+import argparse
 import re
 from pathlib import Path
 
@@ -28,7 +28,16 @@ def truncate(text: str, max_len: int) -> str:
 
 
 def main():
-    search_path = Path(sys.argv[1]) if len(sys.argv) > 1 else Path('.')
+    parser = argparse.ArgumentParser(
+        description="Scan SKILL.md files and display a compact table overview."
+    )
+    parser.add_argument(
+        'path', nargs='?', default='.',
+        help="Directory containing skill folders (default: current directory)"
+    )
+    args = parser.parse_args()
+
+    search_path = Path(args.path)
     skills = []
 
     for skill_file in sorted(search_path.glob('*/SKILL.md')):
