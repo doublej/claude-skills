@@ -8,7 +8,7 @@ description: >
 
 Spawns named **teammate** agents (not disposable subagents) from preset blueprints. Safety-first: dirty working directories block, snapshots tag HEAD before spawn, worktrees isolate writers, every decision routes through `consult-user-mcp`.
 
-For raw primitives (SendMessage, plan approval, modes) see `../swarm/SKILL.md`. This skill sits on top: it adds presets, safety gates, merge orchestration, and a bundle of opinionated role definitions.
+For raw primitives (SendMessage, plan approval, modes) see `references/primitives.md`. This skill sits on top: it adds presets, safety gates, merge orchestration, and a bundle of opinionated role definitions.
 
 <decision_flow>
 
@@ -118,7 +118,7 @@ On name collision, user override wins. Users can ship their own presets without 
 - `references/token-efficiency.md` — model/tools/prompt tactics, measured deltas, worktree-override experiment log.
 - `references/hooks.md` — hook payloads (TeammateIdle, TaskCreated, TaskCompleted, PreToolUse:Agent), exit-code contract.
 - `references/preset-authoring.md` — YAML schema and how to add your own preset.
-- `../swarm/SKILL.md` — underlying primitives (SendMessage, modes, plan-approval, isolation).
+- `references/primitives.md` — underlying primitives (TeamCreate + env flag, SendMessage, modes, isolation).
 
 </cross_references>
 

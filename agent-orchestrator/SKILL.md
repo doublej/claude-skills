@@ -1,19 +1,22 @@
 ---
 name: agent-orchestrator
-description: "Multi-agent workflows: subagents, worktrees, fan-out, pipelines"
+description: "Orchestrate disposable subagents and task DAGs within one session: fan-out, pipeline, supervisor, debate, worktree-isolated parallel edits. Distinguishing cue: subagents and task DAGs within one session — for named persistent teammates use the teams skill. Triggers on 'fan out subagents', 'parallel research agents', 'task pipeline', 'orchestrate subagents', 'agent DAG'."
 ---
 
 Orchestrate multi-agent work using the tools below. Pick the simplest pattern that fits.
 
+**Scope:** disposable subagents + task DAGs within one session. For named persistent teammates that message each other (TeamCreate, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), use the **teams** skill instead — spawning "teammates" without that flow silently gives you subagents.
+
 <decision>
-## Decision: Subagents vs Agent Teams
+## Decision: which pattern
 
 | Need | Use |
 |------|-----|
 | Parallel research / analysis (no shared files) | Subagents with `run_in_background: true` |
-| Parallel implementation (shared repo) | Agent Teams with worktree isolation |
+| Parallel implementation (shared repo) | Subagents with `isolation: "worktree"` |
 | Sequential pipeline (stage → stage) | Tasks with `depends_on` |
 | Single focused task delegation | One subagent (foreground) |
+| Named persistent teammates / inter-agent messaging | **teams** skill (not this one) |
 </decision>
 
 <core_tools>
@@ -36,7 +39,6 @@ Agent(
 - Subagents do NOT inherit conversation history — include all context in `prompt`
 - Launch independent agents in a **single message** with multiple Agent calls
 - Background agents cannot ask questions — they fail silently on AskUserQuestion
-- `name` makes the agent addressable via `SendMessage(to: "researcher")`
 - `isolation: "worktree"` gives each agent its own repo copy (auto-cleaned if no changes)
 
 ### SendMessage — Talk to a running agent
@@ -49,7 +51,7 @@ SendMessage(
 ```
 
 - Resume a stopped agent by sending to its ID
-- Teammates can message each other directly
+- Agents messaging *each other* requires teammate mode — see the teams skill
 
 ### TaskCreate — Create a tracked task
 
@@ -58,7 +60,7 @@ TaskCreate(
   subject: "Implement auth",           # required
   description: "Add JWT login...",     # optional
   depends_on: ["task-001"],            # optional — blocked until these complete
-  assigned_to: "backend-dev"           # optional — teammate name
+  assigned_to: "backend-dev"           # optional — agent name
 )
 # Returns: task_id
 ```
@@ -233,13 +235,6 @@ You are a senior code reviewer. Analyze code changes and report issues by severi
 <lifecycle_hooks>
 Configure in `settings.json` under `hooks`:
 
-### TeammateIdle — Quality gate before agent stops
-
-```json
-{"event": "TeammateIdle", "command": "npm test || exit 2"}
-```
-Exit 2 = send stderr as feedback, agent continues working.
-
 ### TaskCompleted — Gate before task closes
 
 ```json
@@ -258,18 +253,14 @@ Override git worktree behavior for SVN/Perforce/Mercurial.
 3. **Use `sonnet` for workers** — save tokens, reserve `opus` for synthesis/decisions
 4. **Grant minimal tools** — restrict via `tools` in agent definitions
 5. **Avoid file conflicts** — use worktree isolation when agents edit the same repo
-6. **3-5 teammates max** — token cost scales linearly per agent
+6. **3-5 parallel agents max** — token cost scales linearly per agent
 7. **5-6 tasks per agent** — keeps workload balanced
-8. **Don't broadcast often** — sends to ALL teammates, scales cost
-9. **Background for independence** — foreground when you need the result next
-10. **Tasks persist across compaction** — use them as coordination memory
+8. **Background for independence** — foreground when you need the result next
+9. **Tasks persist across compaction** — use them as coordination memory
 </best_practices>
 
 <limitations>
-- No session resume with in-process teammates
-- No nested teams (teammates can't spawn teams)
-- Lead is fixed — can't transfer leadership
-- One team per session
+- Subagents don't persist — one task, one summary back, then gone (persistent roles → teams skill)
 - Background agents can't ask questions
 - Worktree changes only tracked via git
 </limitations>

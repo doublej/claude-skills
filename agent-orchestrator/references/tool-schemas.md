@@ -2,6 +2,8 @@
 
 Exact parameter schemas for all orchestration tools. Grep for tool name to find its schema.
 
+Note: team-scoped entries (`TeamCreate`, `TeamDelete`, the `team_name` param, `TeammateIdle`) require teammate mode — `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` plus `TeamCreate` before spawning. That workflow belongs to the **teams** skill; they are listed here only for schema completeness.
+
 ## Agent
 
 | Param | Type | Required | Description |
