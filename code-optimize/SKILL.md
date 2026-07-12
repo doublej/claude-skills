@@ -1,5 +1,6 @@
 ---
 name: code-optimize
+argument-hint: "[dimensions…] [path] — structure | claude-md | smells | simplify | modularize | logging | arch | glossary | docs · none = all"
 description: "Throw-at-a-codebase optimizer: one entry point that fans out over selectable dimensions (structure, claude-md, smells, simplify, modularize, logging, arch, glossary, docs), each following scan → plan → fix → verify → atomic commit. Replaces full-optimize, code-refactor, and code-simplify. Use this dispatcher for whole-codebase cleanup; invoke a dimension skill (code-audit, code-logging, …) directly only when the user wants exactly one dimension. Triggers on '/code-optimize', 'optimize this codebase', 'full optimize', 'clean up everything', 'refactor the codebase', 'simplify the codebase'."
 ---
 
