@@ -1,8 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Show statistics for skills
 # Usage: ./skill-stats.sh [skill-name]   Stats for one skill
 #        ./skill-stats.sh                Stats for all skills
+
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
@@ -43,7 +45,7 @@ skill_stats() {
     printf "%-28s %4s files  %5s lines  %2s scripts  %s\n" "$skill" "$files" "$md_lines" "$scripts" "$refs"
 }
 
-if [ -n "$1" ]; then
+if [ -n "${1:-}" ]; then
     # Single skill
     skill_stats "$1" || echo "Skill '$1' not found"
 else
@@ -71,7 +73,7 @@ else
             total_files=$((total_files + files))
             total_lines=$((total_lines + lines))
             total_scripts=$((total_scripts + scripts))
-            ((count++))
+            count=$((count + 1))
         fi
     done
 
