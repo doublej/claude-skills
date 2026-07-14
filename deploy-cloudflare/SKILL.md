@@ -15,6 +15,7 @@ Default Cloudflare account: `jurrejan@gmail.com` (Account ID: `e26bfba81a629fb8b
 Other available accounts:
 - `Jrs@haist.one` — `ed64021ce50096c7eb065bb773a34be8`
 - `Jurrejan@poolsuite.net` — `015478e13d7ca9d81172aafcf5f199b6`
+- `Pimpelmees` — `7f1d3bdeb7fc43d512543aa335a15f55`
 </accounts>
 
 <workflow>

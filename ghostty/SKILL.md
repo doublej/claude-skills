@@ -157,6 +157,23 @@ cursor-style-blink = true
 ```
 </window_appearance>
 
+<links>
+```
+link-url = true          # detect http(s) URLs and make them clickable (cmd/ctrl+click)
+link-previews = true     # macOS: hover-preview the target URL — true|false|osc8
+```
+
+- `link-url` — auto-detect plain `http://` / `https://` URLs in output and make them clickable. Default `true`.
+- `link-previews` — whether to show the URL preview popover on hover. `true` (all links), `false` (none), or `osc8` (only links created via the OSC 8 escape sequence). macOS only.
+- `link` — the custom regex matcher (`link = <regex>,<action>`) for turning arbitrary patterns into clickable links. **Currently not settable:** Ghostty's own docs mark it "TODO: This can't currently be set!" — do not hand the user a `link = …` config line expecting it to work.
+
+**Custom schemes (until `link` lands):** emit an OSC 8 hyperlink directly from your program instead of relying on config-side matching:
+```bash
+printf '\e]8;;myapp://open/123\e\\clickable text\e]8;;\e\\'
+```
+With `link-previews = osc8`, only these explicitly-emitted links get a hover preview.
+</links>
+
 <common_tasks>
 **Add/edit config:** find file (check macOS path first), edit, reload with `cmd+shift+,`. For font/theme changes, usually need new window.
 
