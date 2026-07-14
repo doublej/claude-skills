@@ -10,11 +10,16 @@ Craft high-quality prompts for Claude Code across all surfaces: interactive sess
 Optional argument (`$ARGUMENTS`): target model — one of `opus-4-8`, `opus-4-7`, `sonnet`, `generic`. Default: `generic`.
 
 <scope>
-## When to Use
+## Step 0 — Scope check (do this first, before anything else)
 
-Use this skill only when the **deliverable is a prompt or instruction** — writing, reviewing, or improving a prompt, CLAUDE.md, system prompt, slash command, skill description, or agent prompt.
+Before applying any prompt pattern, confirm the **deliverable is a prompt or instruction** — writing, reviewing, or improving a prompt, CLAUDE.md, system prompt, slash command, skill description, or agent prompt.
 
-Do **not** stay in this skill when a prompt-shaped lens is merely incidental to a broader task (building an HTML artifact, codebase exploration, research, app design). If the skill loaded but the real deliverable is something else, say so and proceed with the right tool instead of applying prompt patterns to a task that doesn't need them.
+**If it is not** (the skill co-loaded incidentally alongside a broader task — an HTML artifact, codebase audit, research, app design, a feature build):
+
+1. State the mismatch in one line: "This loaded, but the real deliverable is X, not a prompt."
+2. **Exit skill mode.** Stop applying prompt patterns and handle the task with the right tool as a normal engineering task. Do not produce a prompt-shaped artifact (design brief, instruction doc) as a consolation deliverable just because the skill is open.
+
+Only exception: if the user *intentionally* invoked `/prompt-crafter` for a fuzzy/large task and an implementation brief is genuinely what they want, you may produce it — but say so explicitly and confirm that's the intent rather than defaulting to it.
 </scope>
 
 <lint_rewrite>
