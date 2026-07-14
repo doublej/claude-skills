@@ -37,10 +37,21 @@ and `simplify`, load the named reference from this skill.
 1. Parse `$ARGUMENTS` for dimension names (whitespace-separated, matching the
    registry's first column). Unknown names → list valid dimensions and ask once
    via consult-user-mcp `pick`.
-2. No arguments → **all dimensions**, minus `docs` when the audit-docs skill is
-   not installed and `claude-md`/`glossary` when the repo is a throwaway
-   (no CLAUDE.md and user did not ask for one).
+2. No arguments → **all dimensions**. The **only** conditions that drop a
+   dimension from the default set are:
+   - `docs` — when the audit-docs skill is not installed.
+   - `claude-md` / `glossary` — when the repo is a throwaway: no CLAUDE.md **and**
+     the user did not ask for one.
 3. Resolve target root from `$ARGUMENTS` path (if given) or cwd.
+
+**No other reason — including token budget, time, or "seems low-value" — justifies
+silently dropping a dimension.** If you want to skip one for a reason not listed
+above, surface it to the user and ask for confirmation via consult-user-mcp
+`confirm` first; do not just announce the skip in your final message and proceed.
+
+**`docs` skip is hard, not a fallback.** After the audit-docs presence check, if
+the skill directory is absent, log `docs: skipped — audit-docs not installed` and
+move on. Do **not** improvise a substitute docs agent — the dimension is off.
 
 </dimension_selection>
 
