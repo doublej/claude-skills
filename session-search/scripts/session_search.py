@@ -613,7 +613,18 @@ def cmd_search(args: argparse.Namespace) -> None:
             serialisable.append(sr)
 
         with open(output_dir / "search_index.json", "w") as f:
-            json.dump({"query": query, "projects": serialisable}, f, indent=2)
+            json.dump(
+                {
+                    "query": query,
+                    "total_matches": total_matches,
+                    "total_windows": total_windows,
+                    "total_context_messages": total_ctx,
+                    "project_count": len(all_results),
+                    "projects": serialisable,
+                },
+                f,
+                indent=2,
+            )
 
         # Collect all context messages
         all_ctx = []

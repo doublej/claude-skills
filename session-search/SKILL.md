@@ -48,6 +48,7 @@ Determine what the user wants based on their request:
 - Ask via `ask_multiple_choice`:
   - "Search for a specific phrase"
   - "Summarise recent activity"
+- If the user cancels or does not respond, default to the **ANALYSE flow** on the current project.
 
 ---
 
@@ -91,6 +92,8 @@ Show the summary box and timeline from stdout. The summary box is printed **firs
 
 Then proactively surface the top matches by reading `search_index.json` — each `projects[*].matches[]` entry has `{timestamp, type, session_id, preview}`. Show the top ~10 (timestamp, role, preview) so the user sees content, not just window boundaries.
 
+**Filter self-referential matches first.** A match whose `preview` starts with `"Base directory for this skill:"` — or whose `session_id` is the *current* session (this skill's own SKILL.md text, indexed as a message when it loaded) — is a false positive, not real history. Exclude these before surfacing the top matches; if they are the only hits, say so rather than presenting them as results.
+
 ### Step 3: Offer review options
 
 - "Show window N" — read `.session-search/context_messages.json`, filter by window timestamps, display chronological conversation
@@ -132,7 +135,10 @@ Report extraction stats.
 
 - **Direct synthesis (default for ≤ ~300 messages):** the extracted messages already fit in context. Read `.session-search/user_messages.json` directly and synthesise the summary inline — skip the Haiku worker chain entirely. Supplement freely from `bd list` (open tickets) and recent `git log`. This is faster and richer than the multi-agent flow for small corpora.
 - **INVESTIGATE path (unfinished-work / status queries):** read the extracted messages inline, then cross-reference ground truth from git: `git status`, unpushed commits (`git log @{u}..`), uncommitted diffs, and the last `TodoWrite` state visible in the transcript. Produce per-session `{goal, accomplishments, unfinished, next_steps}` records. Do not run the message-categoriser pipeline — it answers "what was discussed", not "what is left".
+  - **"This session" / "current session" scopes to one session_id, not a time window.** `--since` merges every session touched in that window on a project — for a multi-session project that pulls in unrelated sessions. When the user means the active session, filter `user_messages.json` by the current `session_id` (it is the session-directory name in the scratchpad path) rather than relying on `--since`: `python3 -c "import json;print([m for m in json.load(open('.session-search/user_messages.json')) if m['session_id']=='<id>'])"`.
 - **Multi-agent pipeline (large corpora, > ~300–500 messages):** when the message volume risks context overflow, fan out to the Haiku workers below.
+
+**Override:** the path above is a size-based *default*. If the user explicitly asks for the multi-agent pipeline (mentions "haiku agents", "workers", "full pipeline"), run it regardless of corpus size — the Haiku path stays valid for small corpora when the user chose it deliberately. Honour the request instead of contradicting an earlier size-based decision.
 
 **Multi-agent pipeline — launch two Haiku subagents in parallel** using Task tool with `model: haiku`:
 
@@ -159,6 +165,8 @@ Write `.session-search/resolved_context.json`:
 `[{uuid, timestamp, original, inferred_context, clarified_prompt}]`
 
 ### Step 4: Synthesise
+
+**Waiting for worker output:** poll for the file, don't fixed-sleep. Use `until [ -f .session-search/<output_file> ]; do sleep 3; done` rather than a `sleep N; ls` guess — this returns as soon as the worker finishes and never over-waits.
 
 Launch one Haiku subagent:
 
@@ -201,11 +209,11 @@ All output goes to `.session-search/` (configurable via `-o`):
 
 | File | Subcommand | Content |
 |------|------------|---------|
-| `search_index.json` | search | Match metadata, window definitions, per-project |
+| `search_index.json` | search | Top-level `{query, total_matches, total_windows, total_context_messages, project_count, projects[]}`. `total_matches` is an int (0 when none) — read it directly, no need to parse the stdout box |
 | `context_messages.json` | search | Full messages within all time windows. Each entry: `{timestamp, type, content, session_id, project}` — message body is in `content` (not `text`/`preview`) |
 | `timeline.txt` | search | ASCII timeline visualisation |
 | `message_index.json` | extract | Message references (uuid, source file/line) |
-| `user_messages.json` | extract | Full user message content |
+| `user_messages.json` | extract | Flat JSON list of user messages, each `{type, uuid, timestamp, content, session_id}` — message body is in `content` (not `text`); no `project` field (single-project per file) |
 | `categorized_messages.json` | analyse | Haiku-categorised messages |
 | `resolved_context.json` | analyse | Haiku-resolved context |
 | `timeline_summary.md` | analyse | Final analysis report |
