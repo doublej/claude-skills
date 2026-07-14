@@ -57,13 +57,21 @@ Present the action plan to the user as a numbered table:
 
 Get explicit confirmation before proceeding. If user wants to skip actions, note which ones.
 
+**The table gate is mandatory even in Auto/headless mode.** Present the numbered table and ask exactly once before Phase 3 starts. Messages the user queued *during* the scan (e.g. "when done, clean up the repo") are not approval of the plan — they were written before the plan existed. Do not treat in-flight queued messages as the go-ahead; surface the table first, then proceed on an explicit confirmation.
+
 ### Phase 3 — Execute
 
 Run actions in this exact order. Each step must succeed before the next.
 
-**Pre-flight checks:**
-- `git status` — must be clean (no uncommitted changes)
-- `gh auth status` — must be authenticated (needed for GitHub rename)
+**Pre-flight checks (mandatory — run before any action, do not skip):**
+
+```bash
+git -C <project-path> status -s        # must print nothing — abort if it lists anything
+gh auth status                         # must be authenticated
+```
+
+- **`git status` is non-negotiable.** If the working tree is dirty, stop and tell the user to commit or stash first — never run a text-replace or `mv` against uncommitted changes.
+- `gh auth status` is required only when a `rename_github_repo` action is in the plan. If the GitHub repo was already renamed externally (so that action is absent), this check may be skipped — but `git status` still cannot.
 
 **Execution order:**
 
@@ -86,6 +94,12 @@ Run actions in this exact order. Each step must succeed before the next.
 6. **Update docs** — search-replace old slug and old snake case name in README.md, CLAUDE.md, and other docs listed by the scan.
 
 7. **Update other references** — for each file in the `update_references` action, replace old slug/snake references. These are string literals, nested manifests, framework configs, and non-Python source the structured scanners don't parse. Review each hit — some may be false positives (see Phase 1.5 collision check).
+
+   Use a `while read` loop, not `for f in $files` — the latter word-splits wrong in zsh and passes every filename to `sed` as one argument (fails with "No such file or directory"). `-I` skips binary files:
+   ```bash
+   git grep -lI 'OLD' | while IFS= read -r f; do sed -i '' 's/OLD/NEW/g' "$f"; done
+   ```
+   (On Linux/GNU sed use `sed -i` without the `''` argument.)
 
 8. **Recreate venv** (if flagged by scan)
    ```bash
@@ -129,7 +143,7 @@ Run actions in this exact order. Each step must succeed before the next.
 - **GitHub rename is first in execution** — it's the most likely to fail (permissions, name conflicts). If it fails, nothing else has changed yet.
 - **No automatic rollback** — ordered execution makes partial states safe. Manual fix is simpler and more predictable than rollback logic.
 - **Always confirm** before executing. Show the full action plan first.
-- **Clean git required** — refuse to proceed if there are uncommitted changes.
+- **Clean git required** — the `git status -s` pre-flight is a hard gate; refuse to proceed if the working tree is dirty.
 - Never skip the scan phase — it catches edge cases the workflow alone would miss.
 
 </safety>
