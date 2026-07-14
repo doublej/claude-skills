@@ -160,6 +160,7 @@ Gather what's missing (max 2 questions):
 | Email | Formal spectrum | Subject line matters, paragraph discipline | `references/platform-email.md` |
 | WhatsApp | Very casual | Speech-like bursts, can split messages | `references/platform-whatsapp.md` |
 | Telegram | Medium-casual | Rich formatting ok, longer messages fine | `references/platform-telegram.md` |
+| Discord | Casual-informative | Community-aware, server context matters, no corporate polish | `references/platform-discord.md` |
 | Reddit/forum | Casual-informative | Disclose ownership, no sales pitch, lead with the solution | `references/platform-reddit.md` |
 
 ### Length Discipline
@@ -168,6 +169,7 @@ Gather what's missing (max 2 questions):
 - Email: as short as possible while being complete
 - WhatsApp: 1-3 short bursts, never a wall of text
 - Telegram: can be longer but stay focused
+- Discord: short and conversational; a few lines, split into messages if it runs long
 - Reddit/forum: enough to be genuinely useful, never a wall of text or a pitch
 
 ### Tone Modifiers
@@ -199,7 +201,7 @@ Use the cleaned stdout as the output. What it removes:
 
 What it does NOT remove (use the writing pass, not the filter): slop phrases, slop words, bad rhythm. The filter strips mechanical tells; the writing pass strips lexical tells. Both required.
 
-After output, mention what the filter removed if it removed anything (one line, e.g. "Filter: 2 em-dashes, 1 zero-width" — the script prints this summary to stderr). If it removed nothing, say nothing.
+After output, mention what the filter removed if it removed anything. The script prints a one-line summary to **stderr** in the form `clean.py: <total> chars, <n> spaced em-dash, <n> bare em-dash, <n> zero-width, <n> control, …` (only the categories that fired appear; when a run strips just whitespace it may read `clean.py: 1 chars`). Relay that summary. If nothing was removed it prints `clean.py: nothing removed` — in that case say nothing.
 
 ### Difficult Messages
 
