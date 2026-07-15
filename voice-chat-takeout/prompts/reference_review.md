@@ -1,10 +1,10 @@
 # Brief template — REFERENCE REVIEW (shape: review)
 
-> Vocabulary is shared with `reminders-bridge`. Canonical table:
-> `~/Documents/development/python/reminders-bridge/README.md` → "Voice
-> exchange mailboxes" → "Vocabulary". Three roles: **user** (the human),
+> Vocabulary is the bridge's. Canonical, live source: run **`rbridge
+> prime`** (its Vocabulary section). Three roles: **user** (the human),
 > **project agent** (you, the Claude Code session composing this brief),
-> **voice agent** (the agent on the phone that reads the brief).
+> **voice agent** (the agent on the phone that reads the brief). The primer
+> wins over anything restated here.
 
 Use this template when the conversation is a **corpus review**, not a
 decision walk: the user wants to go over many items — a set of files, a
