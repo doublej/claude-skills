@@ -71,6 +71,15 @@ ask specific follow-ups.
 ## Tone
 
 - Plain words. No markdown formatting — no `**`, no `#`, no bullets.
+- **Write for the ear.** Short sentences, one idea each, front-load the
+  point — a listener can't re-read. Dial the jargon down a notch: prefer
+  the everyday word, and when a technical term is genuinely clearest, say
+  it once and gloss it in passing.
+- **Steer the voice agent's own speech.** It only reads the brief, so add
+  one plain line near the top telling it how to talk, e.g.: "Talk like a
+  sharp colleague thinking out loud, not a technical doc — plain everyday
+  words, short sentences, and unpack any technical term the moment you use
+  it." (See `rbridge prime` → *Brief templates*.)
 - Use specific names from the conversation: file names spelled aloud
   ("the resolver dot ts file"), slug names ("bosdieren collage"),
   numbers, percentages. The voice agent needs proper nouns to ground

@@ -142,6 +142,13 @@ drainable.
 
 ## Hard rules
 
+- **Write for the ear.** The framing, KNOWN briefing, and questions are all
+  spoken and heard — short sentences, one idea each, jargon dialed down a
+  notch. A question a listener can't hold in one breath is too long; split
+  it. Put one plain line in the framing steering the voice agent to *speak*
+  plainly too: "Ask these like a sharp colleague talking, not reading a
+  spec — plain everyday words, and unpack any technical term the moment you
+  use it." See `rbridge prime` → *Brief templates*.
 - **Ask GAPS, arm with KNOWN.** Never ask what you could look up; never
   assume what only the user knows. Every question carries its relevant
   known facts.

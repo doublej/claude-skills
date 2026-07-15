@@ -162,6 +162,12 @@ rubber-stamps.
 
 ## Hard rules
 
+- **Write for the ear.** Item bodies are spoken and heard, not read — short
+  sentences, one idea each, jargon dialed down a notch (prefer the everyday
+  word; gloss a technical term the once you must use it). Add one plain line
+  near the top steering the voice agent to talk the same way: "Talk like a
+  sharp colleague thinking out loud, not a technical doc." See `rbridge
+  prime` → *Brief templates*.
 - **Carry, don't point.** Every item the user might raise has its facts in
   the brief. "See the file" is not an option — the voice agent can't.
 - **No invented detail and no bluffing.** Every claim about an item traces
