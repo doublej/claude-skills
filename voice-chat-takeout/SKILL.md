@@ -1,6 +1,6 @@
 ---
 name: voice-chat-takeout
-description: Package the current conversation into a voice-ready brief for the voice agent (Claude Voice in practice), which is detached from this system and only ever sees the brief. The project agent picks the slug, kind, and shape from context — user types `/voice-chat-takeout` with no args by default. Two return-channel kinds: CLAUDE_VOICE (TTS-friendly prose, clipboard, one-way) and REMINDERS (brief lands in an Apple Reminders mailbox the project agent reads back via `rbridge mailbox read`). Two brief shapes: decision-walk (converge on a few decisions, 250–500 words) and reference-review (carry a whole corpus of files/items/findings so the voice agent can discuss them all, scales with item count). Triggers on `/voice-chat-takeout`, "voice takeout", "hand off to voice", "walk and talk this", "brief the voice agent on all these".
+description: Package the current conversation into a voice-ready brief for the voice agent (Claude Voice in practice), which is detached from this system and only ever sees the brief. The project agent picks the slug, kind, and shape from context — user types `/voice-chat-takeout` with no args by default. Two return-channel kinds: CLAUDE_VOICE (TTS-friendly prose, clipboard, one-way) and REMINDERS (brief lands in an Apple Reminders mailbox the project agent reads back via `rbridge mailbox read`). Two brief shapes: decision-walk (converge on a few decisions, 250–500 words) and reference-review (carry a whole corpus of files/items/findings so the voice agent can discuss them all, scales with item count). Use this skill when you compose the brief yourself from the current session; use `/voice-deep-takeout` instead only when the user wants a paste-into-voice brief driven by its own scripted research pass with a fill-in return template. Triggers on `/voice-chat-takeout`, "voice takeout", "hand off to voice", "walk and talk this", "brief the voice agent on all these".
 ---
 
 # voice-chat-takeout
@@ -258,6 +258,16 @@ pre-flight). Kind and slug can be settled while composing; shape cannot.
    shell-form paths are fine here (the one exception to "spell paths
    out").
 
+   **The voice agent only ever sees the brief, never these
+   instructions** — so the brief must tell it, in one plain sentence
+   right before the fenced block, that the block is a silent map for its
+   own reference and must not be read aloud (e.g. "The tree below is for
+   your orientation only — don't narrate it; use it to place any file or
+   directory the user names."). The same applies to the reference-shape
+   item map: prefix it with a one-line note that it's an index to jump
+   around, not a script to read start to finish. Without this, a
+   literal-minded voice agent narrates the directory listing.
+
    **Quality bar**: the brief is the only context the voice agent gets
    (the detachment rule). If it reads like an agenda summary ("we are
    working on X, there are some open questions, walk through them") you
@@ -285,8 +295,9 @@ pre-flight). Kind and slug can be settled while composing; shape cannot.
    load-bearing, go back to step 1 and look it up. Two minutes of
    re-reading beats a brief that collapses on the user's first probe.
 
-3. **Save the brief** under `~/.claude/voice-takeouts/<YYYYMMDD-HHMM>-<slug-or-conv>.md`
-   (create dir if missing). Always save, regardless of kind.
+3. **Save the brief** under `~/.claude/voice-takeouts/<YYYYMMDD-HHMM>-<slug>.md`
+   (create dir if missing). Always save, regardless of kind — you always
+   generate a slug (see *Slug grammar*), so there is no no-slug fallback.
 
 4. **Activate the channel**:
 
@@ -359,6 +370,14 @@ To disable the default-list mirror set `RBRIDGE_MAILBOX_MIRROR=false`.
   produce at least a one-paragraph brief.
 - **Slug collision**: re-using a slug refreshes the header + brief
   reminders but keeps prior user responses intact. Idempotent.
+- **`pbcopy` unavailable / fails** (headless or SSH session, CLAUDE_VOICE
+  kind): the clipboard copy silently no-ops. The brief is already on disk,
+  so give the user the file path and tell them to open and copy it
+  manually — do not claim it's on the clipboard.
+- **Reference brief too large for the voice app** (CLAUDE_VOICE +
+  reference shape): an uncapped corpus brief can exceed a voice app's
+  paste/input limit. Prefer `--kind=REMINDERS` for reference reviews (one
+  reminder per item), or warn the user the paste may be truncated.
 
 ## Examples
 
@@ -368,7 +387,7 @@ CLAUDE_VOICE (default, no return channel):
 /voice-chat-takeout
 ```
 
-Result: brief in `~/.claude/voice-takeouts/20260515-2130-current-thread.md`,
+Result: brief in `~/.claude/voice-takeouts/20260515-2130-wallgen-shipping-decision.md`,
 clipboard primed for paste into the voice agent (typically the Claude
 Voice mobile app).
 
