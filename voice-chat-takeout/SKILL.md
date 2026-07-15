@@ -48,7 +48,8 @@ Surface terms:
 - **header reminder** / **brief reminder** / **mirror reminder** —
   daemon-owned reminders the bridge manages.
 - **response**, **response kind** (`decision` / `note` / `question` /
-  `done` / `free`) — what the user adds to the exchange list.
+  `deferred` / `done` / `free`) — what the user adds to the exchange list.
+  `deferred` = talked through but explicitly punted; re-raise next session.
 - **writeback contract** — the trailing section of the REMINDERS brief
   that names the list + prefixes.
 - **drain** — you read responses via `rbridge mailbox read`.
@@ -57,7 +58,7 @@ Surface terms:
 
 ## Flavors
 
-- `--kind=CLAUDE_VOICE` (default) — prose brief written for TTS. Saved to
+- `--kind=CLAUDE_VOICE` — prose brief written for TTS. Saved to
   `~/.claude/voice-takeouts/<ts>-<slug-or-conv>.md` and copied to clipboard
   with `pbcopy`. No return channel; the user speaks freely. (Kind name is
   historical; the brief is for any voice agent.)
@@ -156,6 +157,11 @@ Tell the user the slug you picked in your reply ("opened mailbox
 close` + re-open if they hate it.
 
 ## What you do
+
+**Step 0 — pick the shape first** (see *Shape* above): decision vs
+reference. Do this before anything else — it changes how step 1 behaves
+(a reference sweep makes context-gathering the bulk of the work, not a
+pre-flight). Kind and slug can be settled while composing; shape cannot.
 
 1. **Gather missing context first.** The conversation is the *starting
    point* of the brief — not the source of truth. Before composing,
@@ -287,7 +293,7 @@ close` + re-open if they hate it.
    - CLAUDE_VOICE: `pbcopy < <brief-path>`. Report the file path.
    - REMINDERS: pipe the brief into the bridge CLI:
      ```bash
-     rbridge mailbox open --slug <slug> --kind REMINDERS --brief - <<< "$(cat <brief-path>)"
+     rbridge mailbox open --slug <slug> --kind REMINDERS --brief - < <brief-path>
      ```
      Capture stdout — it gives you the exact `rbridge mailbox read …`
      command for later. Include that block verbatim in your reply.
