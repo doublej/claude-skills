@@ -53,7 +53,8 @@ That tells the voice agent nothing concrete. Every follow-up will be
 Strong:
 
 > The user and I locked the wallgen catalog plan in three phases. Phase
-> two introduces a resolver function plus a committed catalog file, with
+> two introduces a resolver function plus a generated catalog file in
+> git, with
 > a tiny per-design source of truth — design and eligibility files only,
 > no asset moves yet. The thing chewing at the user is that bosdieren
 > and bosdieren collage are collapsing into one canonical design with
