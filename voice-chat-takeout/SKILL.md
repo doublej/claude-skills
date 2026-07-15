@@ -1,6 +1,6 @@
 ---
 name: voice-chat-takeout
-description: Package the current conversation into a voice-ready brief for the voice agent (Claude Voice in practice), which is detached from this system and only ever sees the brief. The project agent picks the slug, kind, and shape from context — user types `/voice-chat-takeout` with no args by default. Two return-channel kinds: CLAUDE_VOICE (TTS-friendly prose, clipboard, one-way) and REMINDERS (brief lands in an Apple Reminders mailbox the project agent reads back via `rbridge mailbox read`). Two brief shapes: decision-walk (converge on a few decisions, 250–500 words) and reference-review (carry a whole corpus of files/items/findings so the voice agent can discuss them all, scales with item count). Use this skill when you compose the brief yourself from the current session; use `/voice-deep-takeout` instead only when the user wants a paste-into-voice brief driven by its own scripted research pass with a fill-in return template. Triggers on `/voice-chat-takeout`, "voice takeout", "hand off to voice", "walk and talk this", "brief the voice agent on all these".
+description: Package a conversation — or a researched subject — into a voice-ready brief for the voice agent (Claude Voice in practice), which is detached from this system and only ever sees the brief. The project agent picks the slug, kind, and shape from context. Two return-channel kinds: CLAUDE_VOICE (TTS-friendly prose, clipboard, one-way) and REMINDERS (brief lands in an Apple Reminders mailbox the project agent reads back via `rbridge mailbox read`; supports on-demand file navigation). Three brief shapes: decision-walk (converge on a few decisions), reference-review (carry a whole corpus so the voice agent can discuss every item), and interview (no prior conversation — research a subject, then have the voice agent interview the user and drain structured answers). Step 0 is `rbridge prime`, the live authoring playbook. Use this skill when you compose the brief yourself; use `/voice-deep-takeout` instead only for its own scripted research pass with a fill-in return template. Triggers on `/voice-chat-takeout`, "voice takeout", "hand off to voice", "walk and talk this", "brief the voice agent on all these", "voice-chat-takeout for <subject>", "interview me about", "have voice ask me about".
 ---
 
 # voice-chat-takeout
@@ -12,11 +12,10 @@ and *Shape* below.
 
 ## The rule that governs everything: the voice agent is detached
 
-The voice agent has no file access, no shell, no tools, no memory of this
-session, and no way to pull more context once the call starts. The brief
-you hand it (plus, in REMINDERS mode, the writeback list) is the **entire
-universe** it can reason from. If a fact is not in the brief, it does not
-exist for the voice agent.
+The voice agent has no memory of this session and, by default, no view of
+this machine. The brief you hand it is the **entire universe** it can
+reason from. If a fact is not in the brief, it does not exist for the
+voice agent.
 
 So a brief can never *point at* the system — "see the resolver module",
 "the 28 files we discussed", "check the ticket". The voice agent cannot
@@ -25,10 +24,46 @@ about has to be **carried into the brief** as actual content. This is the
 single thing that makes a brief work or fail, and it drives both the
 context-gathering (step 1) and the choice of shape.
 
+**The one relaxation — file navigation (REMINDERS only).** A REMINDERS
+mailbox can serve on-demand `fetch:` / `grep:` / `tree:` requests against
+the repo root, so the voice agent (or the user) *can* pull a file, search
+hit, or listing that was not in the brief — the escape hatch from
+detachment. But a request round-trips on the ~5s poll interval and needs
+the requester to have list access, so: carry what the user will
+**definitely** raise; lean on nav only for the long tail and for large
+corpora you can't fully inline. Never rely on it for the core. See
+*File navigation* below and `rbridge prime`.
+
+## Speech is lossy for identifiers — keep them out of the spoken channel
+
+Voice corrupts machine identifiers **both** ways: text-to-speech turns
+`_rb_voice_x`, `src/foo/bar.py`, `open_mailbox` into unfollowable noise;
+speech-to-text silently destroys them (never emits underscores; drops
+dots/dashes/casing; splits `snake_case`; mangles domain nouns like
+bosdieren, pimpelmees, wallgen). A dictated path is effectively gone.
+
+The rule: **the spoken channel carries meaning; the written channel (this
+brief, and any reminder text) carries exact identifiers — never let one
+cross into the other via transcription.** In practice:
+
+- In spoken prose, never write a raw identifier — spell it as words ("the
+  mailbox module", "the claude-em-dee files"). Covers filenames, paths,
+  slugs, list names, function names, env vars.
+- Give every file/item the user might pull a **speakable handle** (a number
+  + plain name) paired with its exact path in the brief's non-spoken map:
+  "File 3, the mailbox module" ↔ `src/reminders_bridge/mailbox.py`. That map
+  is what lets the voice agent turn "pull up the mailbox one" into an exact
+  `fetch:` path. Your job is upstream: ship the map.
+
+Full detail in `rbridge prime` (*Speech is lossy*).
+
 ## Vocabulary (must match the bridge)
 
-Canonical table: `~/Documents/development/python/reminders-bridge/README.md`
-→ "Voice exchange mailboxes" → "Vocabulary". Use the same terms here.
+Canonical, live source: **`rbridge prime`** (its Vocabulary section, backed
+by the bridge's `GLOSSARY.md` + `docs/REFERENCE.md`). Run it — it ships in
+the wheel and updates with the bridge, so it never drifts. The terms below
+are a local convenience copy; if they disagree with `rbridge prime`, the
+primer wins.
 
 Three roles:
 - **user** — the human. Third-person in the brief; never addressed directly.
@@ -44,7 +79,10 @@ Surface terms:
 - **slug** — `[a-z0-9][a-z0-9-]{0,47}` kebab-case label. Topic-first.
 - **voice exchange** / **mailbox** — the open conversation, identified by
   slug. Backed by Reminders list + state file + brief on disk.
-- **exchange list** — `Voice: <slug>` (independent of the `Beads: ` namespace).
+- **exchange list** — the Reminders list `_rb_voice_<slug>` (prefix
+  overridable via `RBRIDGE_VOICE_LIST_PREFIX`; independent of the beads
+  `_rb_beads_` lists). `Voice: ` / `Beads: Voice: ` are legacy prefixes the
+  daemon migrates away — never author against them.
 - **header reminder** / **brief reminder** / **mirror reminder** —
   daemon-owned reminders the bridge manages.
 - **response**, **response kind** (`decision` / `note` / `question` /
@@ -89,6 +127,15 @@ matter how long you make it. Pick shape first, then kind.
   detached voice agent can discuss any item without opening it. No global
   length cap; it scales with item count. Template:
   `prompts/reference_review.md`.
+- `--shape=interview` — **interview / inbound**. There is *no prior
+  conversation*: the user invokes the skill **for a subject**
+  (`/voice-chat-takeout for <subject>`) and wants the voice agent to
+  *interview them* and get structured answers back. The brief is a
+  **numbered question script**, not a recap — minimum KNOWN context so the
+  voice agent can follow up, then the questions, each bound to a response
+  kind so answers drain cleanly. **Forces `--kind=REMINDERS`** (an
+  interview is worthless without answers back) and is **research-first**
+  (see step 1). Template: `prompts/interview.md`.
 
 **You pick the shape from the conversation.** The tell: is the user trying
 to *decide a few things* (decision) or *go through a list* (reference)? If
@@ -110,8 +157,16 @@ back to you.
 /voice-chat-takeout --kind=REMINDERS      # force the writeback flavor
 /voice-chat-takeout --shape=decision      # force the decision-walk shape
 /voice-chat-takeout --shape=reference     # force the corpus / reference-review shape
+/voice-chat-takeout --shape=interview     # force the interview / inbound shape
+/voice-chat-takeout for <subject>         # interview shape, research-first (no prior conversation)
 /voice-chat-takeout --mailbox=<slug>      # user-supplied slug (rare)
 ```
+
+**`for <subject>` means interview.** When the user invokes the skill *for
+a subject* rather than about the current conversation, that is the
+interview shape: there is nothing to recap, so you **research the subject
+first** (step 1 becomes an active fan-out) and compose a question script.
+It always uses `--kind=REMINDERS`.
 
 **You pick the slug.** Default behavior: read the conversation, distill
 the topic into a kebab-case label, use it. The user almost never types
@@ -158,10 +213,20 @@ close` + re-open if they hate it.
 
 ## What you do
 
-**Step 0 — pick the shape first** (see *Shape* above): decision vs
-reference. Do this before anything else — it changes how step 1 behaves
-(a reference sweep makes context-gathering the bulk of the work, not a
-pre-flight). Kind and slug can be settled while composing; shape cannot.
+**Step 0a — run `rbridge prime` and follow it.** The primer is the live,
+single-source playbook for authoring (it ships in the bridge wheel, so it
+never goes stale) and carries the full mechanics: context-gathering
+categories, POV, quality bar, slug grammar, location header, speech-is-lossy,
+file-nav, kick-start, plus a "Detected (live)" block with your real `cwd`
+and any open exchanges. The steps below are a local summary keyed to *this
+skill's* framing (kind/shape selection, template routing); where they and
+the primer disagree, **the primer wins.**
+
+**Step 0b — pick the shape first** (see *Shape* above): decision,
+reference, or interview. Do this before anything else — it changes how step
+1 behaves (a reference sweep makes context-gathering the bulk of the work;
+an interview makes it active research). Kind and slug can be settled while
+composing; shape cannot. `for <subject>` ⇒ interview.
 
 1. **Gather missing context first.** The conversation is the *starting
    point* of the brief — not the source of truth. Before composing,
@@ -225,6 +290,16 @@ pre-flight). Kind and slug can be settled while composing; shape cannot.
    claim to verify), then assemble. A 28-file audit is 28 concurrent
    reads, not a serial slog and not guesswork. See `reference_review.md`.
 
+   **Interview shape makes this step active research.** With no prior
+   conversation (`for <subject>`), there is nothing to back up — you must
+   *build* the context from scratch. Fan out: cheap subagents gather
+   (`Read` the relevant files, `git log`, `grep`, `bd list`), one stronger
+   agent synthesizes into **KNOWN** (facts you can hand the voice agent so
+   it can follow up) vs **GAPS** (what only the user can answer — these
+   become the numbered questions). The split *is* the interview design:
+   don't ask what you could look up, don't assume what only they know. See
+   `interview.md`.
+
 2. **Pick the shape, then compose the brief** from the conversation +
    your gathered context. Shape (decision vs reference) is chosen as
    described under *Shape* above. Use the matching prompt template:
@@ -232,6 +307,7 @@ pre-flight). Kind and slug can be settled while composing; shape cannot.
    - decision shape, REMINDERS → `prompts/reminders.md`
    - reference shape (either kind) → `prompts/reference_review.md`
      (it tells you where the REMINDERS writeback block goes)
+   - interview shape (always REMINDERS) → `prompts/interview.md`
 
    Each template defines audience, tone, structure, and the writeback
    contract. Read it once, then write the brief in your own words — do
@@ -302,14 +378,34 @@ pre-flight). Kind and slug can be settled while composing; shape cannot.
 4. **Activate the channel**:
 
    - CLAUDE_VOICE: `pbcopy < <brief-path>`. Report the file path.
-   - REMINDERS: pipe the brief into the bridge CLI:
+   - REMINDERS: pipe the brief into the bridge CLI. **Pass `--cwd "$PWD"`
+     (the repo root)** — without a real root, file-navigation is silently
+     disabled (`rbridge doctor` shows `nav=off root=—`):
      ```bash
-     rbridge mailbox open --slug <slug> --kind REMINDERS --brief - < <brief-path>
+     rbridge mailbox open --slug <slug> --kind REMINDERS --brief - --cwd "$PWD" < <brief-path>
      ```
-     Capture stdout — it gives you the exact `rbridge mailbox read …`
-     command for later. Include that block verbatim in your reply.
+     Capture stdout — it echoes the exact `rbridge mailbox read …` and
+     `close` commands for later. Include that block verbatim in your reply.
 
-5. **Tell the user** what you produced. Keep it terse:
+5. **Kick-start the voice agent.** Hand the user a short, paste-ready
+   first message that boots the voice conversation without a cold start.
+   Surface it as a fenced block in your reply — **do not `pbcopy` it** (that
+   would clobber the CLAUDE_VOICE brief on the clipboard). Shape:
+   - Written in the **user's** voice — "I" = the user, "you" = the voice
+     agent. It is their opening turn, composed for them (not the brief's
+     third-person POV).
+   - 2–4 sentences: name the voice agent's role for this exchange, the topic
+     in one breath, where the full brief lives, and one concrete opener so
+     the voice agent *leads*. End by giving it the floor.
+   - This is a **written** (pasted) channel, so exact identifiers are fine —
+     the *Speech is lossy* rule does **not** apply to a pasted kick-start.
+   - **STT fallback**: if the user will *speak* the kick-start rather than
+     paste it, also offer an identifier-free spoken version ("I'm doing a
+     voice interview about `<plain subject>` — open my reminders, find the
+     interview brief, and walk me through the questions"), since speech
+     destroys slugs and paths.
+
+6. **Tell the user** what you produced. Keep it terse:
    - File path of the saved brief.
    - For REMINDERS: list name + `read` command (from `rbridge` stdout).
    - For CLAUDE_VOICE: confirmation that the brief is on the clipboard.
@@ -323,15 +419,29 @@ to check in mid-conversation), run:
 rbridge mailbox read --slug <slug>
 ```
 
-You'll get JSON with the user's responses. Each entry has:
+You'll get JSON: `{slug, list_name, brief_path, kind, created_at,
+source_cwd, has_done, responses[]}`. Each response entry has:
 - `kind`: `decision` | `note` | `question` | `deferred` | `done` | `free`
 - `title`: cleaned response text
 - `body`: any extended text in the reminder body
+- `completed`: whether the reminder was checked off
+
+Header / brief / nav reminders are filtered out automatically.
 
 `deferred` is for things the user explicitly punted on during the call
 ("talked about it, no decision yet, revisit later"). Treat them as
 open questions you should re-raise next session, not as resolved
 items.
+
+**Interview shape — map answers back to questions.** The question script
+numbered each question (Q1, Q2, …) and bound it to a response kind. On
+drain, match each response back onto its question number so you know what
+was answered. On a **partial** return (not every question answered), either
+proceed on the committed answers — **labeling the assumptions you're making
+for the unanswered ones** — or re-brief just the gaps as a fresh, shorter
+question script. Never silently drop an unanswered question. (Drain timing
+is the user's call — you documented the `read` command; they re-trigger you
+when they're done, or you check in.)
 
 Process them, then close:
 
@@ -341,6 +451,35 @@ rbridge mailbox close --slug <slug>
 
 (Or instruct the user to add a `done` reminder — the daemon auto-closes on
 the next cycle, around 5 seconds.)
+
+`rbridge mailbox refresh --slug <slug>` re-ups the header/brief reminders
+without changing the brief on disk.
+
+## File navigation (REMINDERS — the detachment escape hatch)
+
+A REMINDERS exchange list serves file requests against the mailbox's repo
+root (`source_cwd`, set by `--cwd` at open time). The voice agent or the
+user adds an **unchecked** reminder whose **title** is one of:
+
+- `fetch: <relative/path>` — file contents (append ` page 2`, … past the
+  byte cap). Rewritten to `file: <path>`.
+- `grep: <term>` — case-insensitive search across the tree → `results:`.
+- `tree: <subdir>` — directory listing (subdir optional) → `listing:`.
+
+The daemon executes it next cycle (~5s), writes the result into the
+reminder body, and flips the title verb→noun (the loop guard). A blocked
+request (escapes root, binary, not found) becomes `blocked: <arg>`.
+
+Two things this changes for *you* (authoring):
+- **You must pass `--cwd`** (step 4) or nav is silently off. `rbridge
+  doctor` shows `nav=on root=<path>` vs `nav=off root=—` per mailbox.
+- **`fetch:` needs an exact path**, and a spoken path never survives
+  transcription. So build the speakable-handle → exact-path map (*Speech is
+  lossy*) — that map is what lets the voice agent form a valid `fetch:`.
+  The voice agent's own directive (`!_rb_readme` / `docs/AGENT.md`) tells it
+  *how* to use nav; your job is upstream — ship the map.
+
+Disable globally with `RBRIDGE_VOICE_NAV=0`.
 
 ## Discoverability and silent breadcrumbs
 
@@ -397,7 +536,7 @@ REMINDERS (writeback):
 /voice-chat-takeout --mailbox=wallgen-shipping-decision
 ```
 
-Result: brief saved to disk, list `Voice: wallgen-shipping-decision`
+Result: brief saved to disk, list `_rb_voice_wallgen-shipping-decision`
 created in Reminders with two reminders (header + brief), mirror reminder
 dropped in the default list, and the read command echoed for later.
 
@@ -413,3 +552,18 @@ facts for the flagged ones), default to `--kind=REMINDERS` so each
 per-file decision lands as its own reminder, and echo the `read` command.
 The brief is long on purpose — it carries every file the user might raise
 because the voice agent cannot open any of them.
+
+INTERVIEW / INBOUND (no prior conversation, research-first):
+
+```
+/voice-chat-takeout for the caching layer rewrite
+```
+
+Result: no conversation to recap, so I research first — fan out subagents
+to read the caching code, `git log` the module, `grep` call sites — then
+split into KNOWN (facts for the voice agent) vs GAPS (what only the user
+decides). I compose an `interview.md`-shaped numbered question script, each
+question bound to a response kind (e.g. "Q3 … answer as Decision: Q3
+redis|sqlite|memory"), force `--kind=REMINDERS`, open the mailbox with
+`--cwd "$PWD"`, and hand back a paste-ready kick-start. On drain I map each
+answer to its question number.
