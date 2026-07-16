@@ -1,16 +1,18 @@
 export const meta = {
   name: 'visual-direction-fanout',
-  description: 'Isolated per-domain design deciders from a shared context packet, coherence synthesis, then build',
+  description: 'Isolated per-domain design deciders from a shared context packet, coherence synthesis, then a filled direction board',
   phases: [
-    { title: 'Decide', detail: '7 isolated fable deciders, medium effort, packet-only context' },
+    { title: 'Decide', detail: '7 isolated deciders, medium effort, packet-only context' },
     { title: 'Synthesize', detail: 'convergence check + reconciled token system' },
-    { title: 'Build', detail: 'one agent builds the deliverable from packet + tokens only' },
+    { title: 'Board', detail: 'fill the prebuilt SVG direction board from the tokens' },
   ],
 }
 
 // Placeholders — substitute before launching. Packet text must not contain backticks or ${.
 const PACKET = `__PACKET__`
-const OUT_PATH = '__OUT_PATH__'
+const MODEL = '__MODEL__'
+const SVG_OUT = '__SVG_OUT__'
+const BOARD_TEMPLATE = '/Users/jurrejan/.claude/skills/visual-direction/assets/direction-board.svg'
 
 const CALIBRATION = `Calibration: AI-generated design currently clusters around three default looks: (1) warm cream background (~#F4F1EA) with a high-contrast serif display and terracotta accent; (2) near-black background with a single acid-green or vermilion accent; (3) broadsheet-style hairline rules, zero border-radius, dense newspaper columns. These are defaults, not choices. Do not land on one of them unless the packet genuinely demands it.`
 
@@ -137,13 +139,13 @@ const DOMAINS = [
 ]
 
 phase('Decide')
-log('Fanning out 7 isolated deciders (fable, medium effort)...')
+log(`Fanning out 7 isolated deciders (${MODEL}, medium effort)...`)
 const results = await parallel(DOMAINS.map(d => () =>
   agent(`${PREAMBLE}\n\n${d.task}`, {
     label: `decide:${d.key}`,
     phase: 'Decide',
     schema: d.schema,
-    model: 'fable',
+    model: MODEL,
     effort: 'medium',
   }).then(r => ({ key: d.key, decision: r }))
 ))
@@ -180,35 +182,39 @@ ${JSON.stringify(decisions, null, 2)}`, {
   label: 'synthesize',
   phase: 'Synthesize',
   schema: SYNTH_SCHEMA,
-  model: 'fable',
+  model: MODEL,
   effort: 'high',
 })
 
-phase('Build')
-log('Synthesis done — building deliverable from packet + reconciled tokens only...')
-const buildReport = await agent(`You are the build engineer in a compartmentalized design process. You see ONLY: (a) the context packet, (b) the reconciled design token system. Implement the page as ONE self-contained HTML file at exactly this path: ${OUT_PATH}
+phase('Board')
+log('Synthesis done — filling the prebuilt direction board from the tokens...')
+const boardReport = await agent(`You are the board agent in a compartmentalized design process. The visual direction is already decided; your ONLY job is to fill a prebuilt SVG direction-board template with it. Do not design anything.
 
-Rules:
-- Follow the token system exactly — derive every color, face, spacing, and motion decision from it. The signature element must be fully implemented, not stubbed.
-- Single file, inline CSS/JS. Google Fonts <link> tags are the only permitted external resource.
-- Use the copy tokens verbatim for headline/subhead/CTA; write any remaining copy in the specified voice.
-- Quality floor, unannounced: responsive to mobile, visible keyboard focus, prefers-reduced-motion respected.
-- Watch CSS selector specificity — avoid section/element rules canceling each other's spacing.
+1. Read the template at: ${BOARD_TEMPLATE}
+2. Follow the FILL RULES comment at the top of the template exactly: replace every {{PLACEHOLDER}} from the token system below, split long text across the numbered line slots within the stated character budgets, set unused line slots to an empty string, delete unused swatch groups, and take the board colors ({{C_BG}}, {{C_INK}}, {{C_ACCENT}}) from the palette roles. Escape any &, < or > in text content as XML entities. Never delete or alter the credits line.
+3. Write the filled SVG to exactly: ${SVG_OUT} using the Write tool. It must be valid XML.
 
-Write the file with the Write tool, then return a short JSON-ish summary: what the signature element does, any token you could not honor and why.
-
-CONTEXT PACKET:
+CONTEXT PACKET (for the SUBJECT slot and phrasing):
 ${PACKET}
 
-RECONCILED TOKEN SYSTEM:
-${JSON.stringify(synthesis ? synthesis.tokens : decisions, null, 2)}
+CONVERGENCE:
+${JSON.stringify(synthesis ? synthesis.convergence : {}, null, 2)}
 
-BUILD NOTES:
-${synthesis && synthesis.build_notes ? synthesis.build_notes : 'none'}`, {
-  label: 'build:page',
-  phase: 'Build',
-  model: 'fable',
-  effort: 'high',
+RECONCILED TOKEN SYSTEM:
+${JSON.stringify(synthesis ? synthesis.tokens : decisions, null, 2)}`, {
+  label: 'board:fill',
+  phase: 'Board',
+  schema: {
+    type: 'object',
+    required: ['summary'],
+    properties: {
+      summary: { type: 'string' },
+      swatches_used: { type: 'number' },
+      omissions: { type: 'array', items: { type: 'string' } },
+    },
+  },
+  model: MODEL,
+  effort: 'medium',
 })
 
 return {
@@ -217,6 +223,6 @@ return {
   conflicts: synthesis ? synthesis.conflicts : null,
   overrides: synthesis ? synthesis.overrides : null,
   tokens: synthesis ? synthesis.tokens : null,
-  buildReport,
-  outputPath: OUT_PATH,
+  boardReport,
+  svgPath: SVG_OUT,
 }
