@@ -2,6 +2,7 @@ export const meta = {
   name: 'visual-direction-fanout',
   description: 'Isolated per-domain design deciders from a shared context packet, coherence synthesis, then a filled direction board',
   phases: [
+    { title: 'Validate', detail: 'gate the packet: brand context only, no deliverable brief, no pre-named aesthetics' },
     { title: 'Decide', detail: '8 isolated deciders, medium effort, packet-only context' },
     { title: 'Synthesize', detail: 'convergence check + reconciled token system' },
     { title: 'Board', detail: 'demonstrate every decision on the prebuilt SVG direction board' },
@@ -16,10 +17,44 @@ const BOARD_TEMPLATE = '/Users/jurrejan/.claude/skills/visual-direction/assets/d
 
 const CALIBRATION = `Calibration: AI-generated design currently clusters around three default looks: (1) warm cream background (~#F4F1EA) with a high-contrast serif display and terracotta accent; (2) near-black background with a single acid-green or vermilion accent; (3) broadsheet-style hairline rules, zero border-radius, dense newspaper columns. These are defaults, not choices. Do not land on one of them unless the packet genuinely demands it.`
 
+phase('Validate')
+const validation = await agent(`You are the input gate of a compartmentalized visual-direction process. Eight isolated deciders will each derive one design domain from ONLY the packet below. The process produces a medium-agnostic brand/visual direction — NOT a specific deliverable. Validate the packet against these rules:
+
+1. BRAND CONTEXT ONLY. The packet should contain: a concrete subject and its facts, the audience, available real content, and hard constraints (e.g. accessibility, trademark, existing name). That is all a direction needs.
+2. NO DELIVERABLE BRIEF. Any framing of a target artifact — a page job, "announcement page", "HTML mockup", a deck, an app screen, conversion goals, section lists — biases every decider toward that medium. Flag it for removal.
+3. NO PRE-NAMED AESTHETICS. Direction words, tone adjectives, style references, or existing-styling descriptions invalidate the experiment. Flag them for removal.
+4. ENOUGH SUBSTANCE. After removals there must still be a concrete subject with its own world (materials, instruments, vernacular) and a named audience. If not, the run cannot produce a grounded direction.
+
+PACKET:
+${PACKET}
+
+Return verdict "pass" if the packet is usable (after stripping rule-2/3 violations, if any). Return verdict "fail" only if rule 4 cannot be met. In cleaned_packet return the packet with every flagged passage removed and NOTHING added — no rewording, no invented facts; preserve the original text of everything you keep. On fail, leave cleaned_packet empty.`, {
+  label: 'validate:packet',
+  phase: 'Validate',
+  schema: {
+    type: 'object',
+    required: ['verdict', 'issues', 'cleaned_packet'],
+    properties: {
+      verdict: { type: 'string', enum: ['pass', 'fail'] },
+      issues: { type: 'array', items: { type: 'object', required: ['rule', 'excerpt', 'why'], properties: { rule: { type: 'string', enum: ['deliverable_brief', 'pre_named_aesthetics', 'insufficient_substance'] }, excerpt: { type: 'string' }, why: { type: 'string' } } } },
+      cleaned_packet: { type: 'string' },
+    },
+  },
+  model: MODEL,
+  effort: 'medium',
+})
+
+if (!validation || validation.verdict === 'fail') {
+  log('Packet failed validation — aborting before the fan-out.')
+  return { aborted: true, validation }
+}
+if (validation.issues.length) log(`Validator stripped ${validation.issues.length} passage(s): ${validation.issues.map(i => i.rule).join(', ')}`)
+const CLEAN_PACKET = validation.cleaned_packet.trim() || PACKET
+
 const PREAMBLE = `You are ONE isolated decision-maker in a compartmentalized design process. You see ONLY the context packet below — no conversation history, no other designers' outputs, no existing site or brand assets. Do not hedge or offer options: commit to one decision. Derive everything from the subject's own world (its materials, instruments, vernacular). A decision that would fit any similar product is a failure.
 
 CONTEXT PACKET:
-${PACKET}
+${CLEAN_PACKET}
 
 ${CALIBRATION}
 
@@ -44,7 +79,7 @@ const DOMAINS = [
   },
   {
     key: 'color',
-    task: `YOUR SOLE DECISION: color. Define a palette of 4–6 named hex values with roles (background, surface, ink, accent...), say whether the page is light or dark, and state the dominance/accent strategy (dominant colors with sharp accents beat timid even distribution).`,
+    task: `YOUR SOLE DECISION: color. Define a palette of 4–6 named hex values with roles (background, surface, ink, accent...), say whether the world is light or dark by default, and state the dominance/accent strategy (dominant colors with sharp accents beat timid even distribution).`,
     schema: {
       type: 'object',
       required: ['direction_word', 'mode', 'palette', 'accent_strategy', 'rationale'],
@@ -59,7 +94,7 @@ const DOMAINS = [
   },
   {
     key: 'signature',
-    task: `YOUR SOLE DECISION: the signature element — the ONE thing this page will be remembered by. A visual hook that embodies the subject (could be an interactive moment, a data visualization, a typographic device, an animation). Describe what it is, where it lives, how it behaves, and a short implementation sketch (plain HTML/CSS/JS level).`,
+    task: `YOUR SOLE DECISION: the signature element — the ONE thing this brand will be remembered by. A visual hook that embodies the subject (could be an interactive moment, a data visualization, a typographic device, an animation) and survives translation across media. Describe what it is, where it lives, how it behaves, and a short implementation sketch concrete enough to build in its most likely medium.`,
     schema: {
       type: 'object',
       required: ['direction_word', 'element', 'placement', 'behavior', 'implementation_sketch', 'rationale'],
@@ -75,7 +110,7 @@ const DOMAINS = [
   },
   {
     key: 'layout',
-    task: `YOUR SOLE DECISION: layout and structure. One layout concept for the page (hero through footer), an ASCII wireframe, the grid approach, and any structural devices (numbering, eyebrows, dividers, labels) — each device must encode something true about the content, not decorate. List devices you considered and rejected as decoration.`,
+    task: `YOUR SOLE DECISION: layout and structure. One compositional concept for a representative surface of your choosing (pick whatever medium best expresses the subject), an ASCII wireframe of that surface, the grid approach, and any structural devices (numbering, eyebrows, dividers, labels) — each device must encode something true about the content, not decorate. List devices you considered and rejected as decoration.`,
     schema: {
       type: 'object',
       required: ['direction_word', 'concept', 'wireframe', 'grid', 'structural_devices', 'rationale'],
@@ -92,7 +127,7 @@ const DOMAINS = [
   },
   {
     key: 'motion',
-    task: `YOUR SOLE DECISION: motion. Decide where animation serves this subject: page-load orchestration, scroll reveals, hover micro-interactions, ambient atmosphere — or deliberate stillness. One orchestrated moment usually beats scattered effects. Specify each moment (trigger, effect, rough duration) and how prefers-reduced-motion is respected.`,
+    task: `YOUR SOLE DECISION: motion. Decide where animation serves this subject: entrance orchestration, reveal moments, micro-interactions, ambient atmosphere — or deliberate stillness. One orchestrated moment usually beats scattered effects. Specify each moment (trigger, effect, rough duration) and how reduced-motion preferences are respected.`,
     schema: {
       type: 'object',
       required: ['direction_word', 'moments', 'restraint_note', 'reduced_motion', 'rationale'],
@@ -107,7 +142,7 @@ const DOMAINS = [
   },
   {
     key: 'texture',
-    task: `YOUR SOLE DECISION: background, texture, and atmosphere. Decide how the page gets depth instead of flat solid fills — or argue for disciplined flatness. Options include gradient meshes, noise/grain, geometric pattern, layered transparency, shadow strategy, decorative borders. Choose only what the subject earns. Never fabricate fake data displays: if a device imitates real measurement or content, it must be real or be cut.`,
+    task: `YOUR SOLE DECISION: background, texture, and atmosphere. Decide how the direction's surfaces get depth instead of flat solid fills — or argue for disciplined flatness. Options include gradient meshes, noise/grain, geometric pattern, layered transparency, shadow strategy, decorative borders. Choose only what the subject earns. Never fabricate fake data displays: if a device imitates real measurement or content, it must be real or be cut.`,
     schema: {
       type: 'object',
       required: ['direction_word', 'background_treatment', 'depth_devices', 'rationale'],
@@ -192,7 +227,7 @@ const synthesis = await agent(`You are the synthesis judge in a compartmentalize
 4. TOKENS: emit the final reconciled token system (color, type, layout, motion, shape, signature, copy) — concrete enough that a builder who has seen nothing else can implement it exactly. Include build_notes for anything tricky.
 
 CONTEXT PACKET:
-${PACKET}
+${CLEAN_PACKET}
 
 THE EIGHT ISOLATED DECISIONS:
 ${JSON.stringify(decisions, null, 2)}`, {
@@ -215,7 +250,7 @@ const boardReport = await agent(`You are the board agent in a compartmentalized 
 4. Write the filled SVG to exactly: ${SVG_OUT} using the Write tool. It must be valid XML.
 
 CONTEXT PACKET (for the SUBJECT slot, specimens, and phrasing):
-${PACKET}
+${CLEAN_PACKET}
 
 CONVERGENCE:
 ${JSON.stringify(synthesis ? synthesis.convergence : {}, null, 2)}
@@ -239,6 +274,7 @@ ${JSON.stringify(synthesis ? synthesis.tokens : decisions, null, 2)}`, {
 })
 
 return {
+  validation: { verdict: validation.verdict, issues: validation.issues },
   missing,
   convergence: synthesis ? synthesis.convergence : null,
   conflicts: synthesis ? synthesis.conflicts : null,

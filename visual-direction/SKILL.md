@@ -25,7 +25,12 @@ board. The convergence verdict doubles as a diagnostic: a sharp packet
 forces agreement; a vague one exposes ambiguity in the brief.
 
 <architecture>
-- 8 deciders (chosen model, medium effort), each sees ONLY the context packet
+- 1 input gate (chosen model, medium effort): validates the packet before the
+  fan-out — brand context only (subject facts, audience, real content,
+  constraints). It strips deliverable-brief passages (page jobs, mockup specs,
+  conversion goals) and pre-named aesthetics from the packet the deciders see,
+  and aborts the run if no concrete subject + audience survives.
+- 8 deciders (chosen model, medium effort), each sees ONLY the cleaned context packet
   and its single domain: typography · color · signature/visual hook ·
   layout+structure · motion · texture/background · shape/form language · copy.
   Each also reports a
@@ -59,14 +64,16 @@ forces agreement; a vague one exposes ambiguity in the brief.
      text) needing manual SVG repair. If the user still picks haiku, proceed,
      but note in the report that the direction is lower-fidelity and expect
      to hand-fix the board.
-2. **Write the context packet.** Product facts, audience, page/product job,
-   available real content, constraints — nothing else. Rules:
+2. **Write the context packet.** Product facts, audience, available real
+   content, constraints — nothing else. Rules:
    - NO aesthetic direction, tone words, or references to existing styling.
      The deciders must infer direction; pre-naming it invalidates the experiment
      and biases the output. If the user wants continuity with an existing
      design system, this is the wrong skill — use design-frontend.
-   - Name one concrete subject, its audience, and the single job the design
-     must do.
+   - NO deliverable or page job. The direction is medium-agnostic; naming a
+     target page/deck/app biases every decider toward that medium. If a
+     specific deliverable exists, apply the tokens to it afterwards.
+   - Name one concrete subject and its audience.
    - Include only content that is real; mark everything else as to-be-decided.
    - Be aware the packet's framing steers convergence: strong positioning
      language ("measured, not marketed") collapses the direction space. That
@@ -80,7 +87,11 @@ forces agreement; a vague one exposes ambiguity in the brief.
    args interpolation has silently arrived as `undefined` before; hardcoding
    via placeholders is the reliable path.
 4. **Launch.** `Workflow({scriptPath: <filled copy>})`. Runs in background;
-   10 agents, roughly 330k tokens and 10 minutes.
+   11 agents, roughly 340k tokens and 10 minutes. The gate runs first: if the
+   result is `{aborted: true, validation}`, report the validator's issues to
+   the user, fix the packet together, and re-launch — do not bypass the gate.
+   A pass with stripped passages is normal; mention what was stripped in the
+   final report.
 5. **Install the direction's fonts, then render.** The board sets its
    specimens in the real faces — they must exist locally or fontconfig
    silently substitutes. The board report lists the families/weights used;
@@ -110,6 +121,9 @@ forces agreement; a vague one exposes ambiguity in the brief.
 </workflow>
 
 <failure_modes>
+- The gate returning `fail` means the packet is a deliverable briefing or too
+  thin to ground a direction — it is user input that needs fixing, not a bug.
+  Relay the flagged excerpts and rewrite the packet with the user.
 - Deciders receiving an empty/undefined packet refuse to fabricate and return
   explicit pipeline-fault responses. If any decision reads "no context / blocked",
   the packet substitution failed — fix the filled script and resume with
