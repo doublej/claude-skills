@@ -45,11 +45,20 @@ forces agreement; a vague one exposes ambiguity in the brief.
 
 <workflow>
 1. **Ask which model.** Via consult-user `ask` (type `pick`): options
-   `fable (recommended)`, `opus (recommended)`, `sonnet`, `haiku`, with
-   "Other" free text allowed for any model string. Strip any
-   " (recommended)" suffix before use. One model powers all 10 agents;
-   effort tiers (medium/high) stay the same regardless of model. If the
-   ask is cancelled or AFK, default to `fable`.
+   `fable (recommended)`, `opus (recommended)`, `sonnet`,
+   `haiku (not sufficient — see warning)`, with "Other" free text allowed
+   for any model string. Strip any parenthetical suffix before use. One
+   model powers all 10 agents; effort tiers (medium/high) stay the same
+   regardless of model. If the ask is cancelled or AFK, default to `fable`.
+   - **Haiku warning** (observed 2026-07-16, same packet as a fable run):
+     haiku deciders converge on a theme adjective, not a thesis — no shared
+     direction phrase, so the convergence diagnostic loses its meaning; the
+     copy decider fabricated unverified metrics as hero content; the palette
+     landed adjacent to the AI-default look the calibration explicitly bans;
+     and the board agent made fill errors (invisible swatch labels, truncated
+     text) needing manual SVG repair. If the user still picks haiku, proceed,
+     but note in the report that the direction is lower-fidelity and expect
+     to hand-fix the board.
 2. **Write the context packet.** Product facts, audience, page/product job,
    available real content, constraints — nothing else. Rules:
    - NO aesthetic direction, tone words, or references to existing styling.
