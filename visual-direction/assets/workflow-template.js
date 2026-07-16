@@ -4,7 +4,7 @@ export const meta = {
   phases: [
     { title: 'Decide', detail: '8 isolated deciders, medium effort, packet-only context' },
     { title: 'Synthesize', detail: 'convergence check + reconciled token system' },
-    { title: 'Board', detail: 'fill the prebuilt SVG direction board from the tokens' },
+    { title: 'Board', detail: 'demonstrate every decision on the prebuilt SVG direction board' },
   ],
 }
 
@@ -205,13 +205,16 @@ ${JSON.stringify(decisions, null, 2)}`, {
 
 phase('Board')
 log('Synthesis done — filling the prebuilt direction board from the tokens...')
-const boardReport = await agent(`You are the board agent in a compartmentalized design process. The visual direction is already decided; your ONLY job is to fill a prebuilt SVG direction-board template with it. Do not design anything.
+const boardReport = await agent(`You are the board agent in a compartmentalized design process. The visual direction is already decided; your job is to make a prebuilt SVG direction-board DEMONSTRATE every decision — the reader must SEE each decision working, not read a description of it. You invent no new direction; every mark derives from the tokens.
 
 1. Read the template at: ${BOARD_TEMPLATE}
-2. Follow the FILL RULES comment at the top of the template exactly: replace every {{PLACEHOLDER}} from the token system below, split long text across the numbered line slots within the stated character budgets, set unused line slots to an empty string, delete unused swatch groups, and take the board colors ({{C_BG}}, {{C_INK}}, {{C_ACCENT}}) from the palette roles. Escape any &, < or > in text content as XML entities. Never delete or alter the credits line.
-3. Write the filled SVG to exactly: ${SVG_OUT} using the Write tool. It must be valid XML.
+2. Follow the FILL RULES comment at the top of the template exactly. Two kinds of work:
+   - SUBSTITUTION: replace every {{PLACEHOLDER}} from the token system below — including the real font family names ({{FONT_DISPLAY}}/{{FONT_BODY}}/{{FONT_MONO}}, they will be installed before rendering), corner radii ({{R_SM}}/{{R_MD}}/{{R_PILL}}) from the shape tokens, and type specimens written in the subject's vernacular. Split long text across numbered line slots within the stated budgets; unused slots become empty strings; delete unused swatch groups.
+   - DRAWING SLOTS: replace each <!--SLOT:NAME--> comment with an SVG fragment that shows the decision — the texture applied to the board's own background, the signature element sketched as it would look, the layout wireframed with the signature and CTA marked in accent, the motion moments plotted on the provided 0-1200ms timeline, the shape language rendered as labeled radius samples and drawn motifs. Respect each slot's stated bounds and the fragment rules (palette colors only, stroke 1-2, labels <= 13px).
+3. Escape any &, < or > in text content as XML entities. Never delete or alter the credits line.
+4. Write the filled SVG to exactly: ${SVG_OUT} using the Write tool. It must be valid XML.
 
-CONTEXT PACKET (for the SUBJECT slot and phrasing):
+CONTEXT PACKET (for the SUBJECT slot, specimens, and phrasing):
 ${PACKET}
 
 CONVERGENCE:
@@ -223,15 +226,16 @@ ${JSON.stringify(synthesis ? synthesis.tokens : decisions, null, 2)}`, {
   phase: 'Board',
   schema: {
     type: 'object',
-    required: ['summary'],
+    required: ['summary', 'fonts'],
     properties: {
       summary: { type: 'string' },
+      fonts: { type: 'array', items: { type: 'object', required: ['family', 'weights'], properties: { family: { type: 'string' }, weights: { type: 'string' } } }, description: 'Google Fonts families used in the SVG, with comma-separated weights, so the caller can install them before rendering' },
       swatches_used: { type: 'number' },
       omissions: { type: 'array', items: { type: 'string' } },
     },
   },
   model: MODEL,
-  effort: 'medium',
+  effort: 'high',
 })
 
 return {

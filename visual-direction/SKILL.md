@@ -33,10 +33,14 @@ forces agreement; a vague one exposes ambiguity in the brief.
 - 1 synthesis judge (chosen model, high effort): compares direction_words,
   resolves cross-domain conflicts with minimal overrides, emits the reconciled
   token system — the primary output.
-- 1 board agent (chosen model, medium effort): fills the prebuilt SVG
-  direction-board template (`assets/direction-board.svg`) with the tokens.
-  It substitutes placeholders only — it designs nothing and must keep the
-  small credits line (github.com/doublej) at the bottom.
+- 1 board agent (chosen model, high effort): makes the prebuilt SVG
+  direction-board template (`assets/direction-board.svg`) DEMONSTRATE every
+  decision — type specimens set in the real faces, texture applied to the
+  board's own background, the signature element sketched, the layout
+  wireframed, motion plotted on a timeline, shape rendered as radius samples
+  and motifs. It substitutes placeholders and fills bounded drawing slots;
+  it invents no direction of its own and must keep the small credits line
+  (github.com/doublej) at the bottom.
 </architecture>
 
 <workflow>
@@ -68,14 +72,25 @@ forces agreement; a vague one exposes ambiguity in the brief.
    via placeholders is the reliable path.
 4. **Launch.** `Workflow({scriptPath: <filled copy>})`. Runs in background;
    10 agents, roughly 330k tokens and 10 minutes.
-5. **Render the board image.** Always — the image is the standing artifact:
+5. **Install the direction's fonts, then render.** The board sets its
+   specimens in the real faces — they must exist locally or fontconfig
+   silently substitutes. The board report lists the families/weights used;
+   install them first:
+   ```bash
+   ~/.claude/skills/visual-direction/scripts/fetch_google_fonts.sh \
+     "Display Family:500,700" "Body Family:400,600" "Mono Family:400"
+   ```
+   The script prints an `fc-match` line per family — verify each resolves to
+   the requested family (not a fallback) before rendering:
    ```bash
    rsvg-convert --zoom 2 -o <scratchpad>/direction-board.png <svg_out>
    ```
    (Fallback if rsvg-convert is missing: `magick <svg_out> <png>`.) View the
-   PNG once to check nothing overflows; if a line overflows, shorten that
-   text in the filled SVG directly and re-render. Also write the reconciled
-   token system to `<scratchpad>/direction-tokens.json`.
+   PNG and check: nothing overflows, the specimens are visibly NOT the chrome
+   Helvetica, texture/wireframe/motion/shape slots are actually drawn. Fix
+   the filled SVG directly and re-render for small issues; an empty drawing
+   slot means the board agent skipped a demonstration — re-run it. Also write
+   the reconciled token system to `<scratchpad>/direction-tokens.json`.
 6. **Report.** Lead with the convergence verdict (the per-domain
    direction_words and whether the packet forced agreement), then conflicts
    and overrides the judge made. Send the board PNG (SendUserFile, display

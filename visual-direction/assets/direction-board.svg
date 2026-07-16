@@ -1,122 +1,169 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2000" viewBox="0 0 1600 2000">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="2450" viewBox="0 0 1600 2450">
   <!--
-    visual-direction board template.
+    visual-direction board template — SHOW the decisions, don't describe them.
     FILL RULES (board agent — follow exactly):
+
+    TEXT + COLOR SUBSTITUTION
     - Replace every {{PLACEHOLDER}} with content derived from the reconciled tokens.
-    - SVG does not wrap text: long content is split across the numbered _L1/_L2/... line
-      slots. Fill lines in order; set unused line slots to an empty string.
-      Budgets: 19px body lines ~62 chars, 46px headline lines ~30 chars,
-      direction word ~18 chars, verdict line ~85 chars,
-      motion/texture/shape column lines ~40 chars.
-    - Palette: 6 swatch groups (id="swatch-1".."swatch-6"). Delete whole <g> groups
-      beyond the palette size (minimum 4 remain).
+    - SVG does not wrap text: long content is split across the numbered _L1/_L2 line
+      slots. Fill in order; set unused line slots to an empty string.
+      Budgets: 17px column lines ~68 chars, caption lines ~76 chars, 46px headline
+      lines ~30 chars, direction word ~18 chars, verdict line ~85 chars.
     - {{C_BG}} {{C_INK}} {{C_ACCENT}} come from palette roles background / ink / accent.
       The board renders in the direction's own palette.
+    - {{FONT_DISPLAY}} / {{FONT_BODY}} / {{FONT_MONO}} are exact font family names from
+      the type tokens (e.g. "Chakra Petch"). They will be installed before rendering —
+      use the real names so the specimens genuinely demonstrate the faces. If the
+      tokens define no mono/utility face, set {{FONT_MONO}} to "Menlo".
+    - {{SPECIMEN_DISPLAY}}: a display-face sample in the subject's own vernacular
+      (~40 chars). {{SPECIMEN_BODY}}: one body-face sentence, real copy tone (~110 chars).
+    - {{R_SM}} {{R_MD}} {{R_PILL}} are corner radii in px from the shape tokens
+      (small element, panel, CTA/pill). Sharp-corner directions use 0.
+    - Palette: 6 swatch groups (id="swatch-1".."swatch-6"). Delete whole groups
+      beyond the palette size (minimum 4 remain).
     - The CTA chip rect may be widened (and its centered text x moved) to fit the label.
-    - Do not restyle, move, or add elements. Only substitute text and colors and delete
-      unused optional groups. The credits line at the bottom stays untouched.
+
+    DRAWING SLOTS — each XML comment of the form SLOT:NAME (below in the markup) is
+    replaced entirely by an SVG fragment you draw. This is where decisions are
+    DEMONSTRATED:
+    - SLOT:TEXTURE_DEFS (inside <defs>) + SLOT:TEXTURE_LAYER (over the bg rect):
+      apply the texture/background treatment to THIS BOARD — grain, hairlines,
+      gradients, patterns, whatever was decided. Full canvas allowed. Keep text
+      readable (typical overlay opacity <= 0.08 unless the direction demands more).
+      If the decision is disciplined flatness, leave both slots empty — that too shows.
+    - SLOT:SIGNATURE_SKETCH bounds x 120-750, y 1300-1490: schematic sketch of the
+      signature element — what it looks like, not a diagram about it.
+    - SLOT:LAYOUT_WIREFRAME bounds x 850-1480, y 1300-1490: the page wireframe drawn
+      to scale — grid columns, hero, sections, where the signature element and CTA sit
+      (mark them in {{C_ACCENT}}).
+    - SLOT:MOTION_MARKS bounds x 120-750, y 1625-1705: plot the choreography on the
+      provided 0-1200ms timeline — a marker per moment above its trigger time, plus
+      an easing curve if one is decided.
+    - SLOT:SHAPE_SAMPLES bounds x 850-1480, y 1615-1795: render the form language —
+      the radius scale as labeled rects, containment style, and 1-2 motifs drawn.
+    Fragment rules: only rect/line/path/circle/polyline/polygon/text; palette colors
+    only; stroke-width 1-2; labels <= 13px in {{FONT_MONO}} or the chrome face; stay
+    inside the stated bounds; schematic, not illustrative.
+
+    - Do not restyle, move, or add anything outside the slots. The credits line at
+      the bottom stays untouched.
   -->
-  <rect width="1600" height="2000" fill="{{C_BG}}"/>
+  <defs>
+    <!--SLOT:TEXTURE_DEFS-->
+  </defs>
+  <rect width="1600" height="2450" fill="{{C_BG}}"/>
+  <!--SLOT:TEXTURE_LAYER-->
 
   <!-- header -->
   <text x="100" y="140" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" letter-spacing="5" fill="{{C_ACCENT}}">VISUAL DIRECTION — {{SUBJECT}}</text>
-  <text x="100" y="270" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="112" font-weight="700" fill="{{C_INK}}">{{DIRECTION_WORD}}</text>
-  <text x="100" y="330" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" fill="{{C_INK}}" fill-opacity="0.65">Convergence: {{VERDICT_LINE}}</text>
-  <line x1="100" y1="380" x2="1500" y2="380" stroke="{{C_INK}}" stroke-opacity="0.15"/>
+  <text x="100" y="280" font-family="{{FONT_DISPLAY}}, Helvetica Neue, Arial, sans-serif" font-size="112" font-weight="700" fill="{{C_INK}}">{{DIRECTION_WORD}}</text>
+  <text x="100" y="340" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" fill="{{C_INK}}" fill-opacity="0.65">Convergence: {{VERDICT_LINE}}</text>
+  <line x1="100" y1="390" x2="1500" y2="390" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
   <!-- palette -->
-  <text x="100" y="430" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">PALETTE</text>
+  <text x="100" y="440" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">PALETTE</text>
   <g id="swatch-1">
-    <rect x="100" y="460" width="220" height="130" fill="{{SW1_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
-    <text x="100" y="616" font-family="Menlo, SF Mono, monospace" font-size="17" fill="{{C_INK}}">{{SW1_HEX}}</text>
-    <text x="100" y="642" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW1_NAME}}</text>
-    <text x="100" y="664" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{SW1_ROLE}}</text>
+    <rect x="100" y="470" width="220" height="130" rx="{{R_SM}}" fill="{{SW1_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
+    <text x="100" y="626" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="17" fill="{{C_INK}}">{{SW1_HEX}}</text>
+    <text x="100" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW1_NAME}}</text>
+    <text x="100" y="674" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.55">{{SW1_ROLE}}</text>
   </g>
   <g id="swatch-2">
-    <rect x="336" y="460" width="220" height="130" fill="{{SW2_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
-    <text x="336" y="616" font-family="Menlo, SF Mono, monospace" font-size="17" fill="{{C_INK}}">{{SW2_HEX}}</text>
-    <text x="336" y="642" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW2_NAME}}</text>
-    <text x="336" y="664" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{SW2_ROLE}}</text>
+    <rect x="336" y="470" width="220" height="130" rx="{{R_SM}}" fill="{{SW2_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
+    <text x="336" y="626" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="17" fill="{{C_INK}}">{{SW2_HEX}}</text>
+    <text x="336" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW2_NAME}}</text>
+    <text x="336" y="674" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.55">{{SW2_ROLE}}</text>
   </g>
   <g id="swatch-3">
-    <rect x="572" y="460" width="220" height="130" fill="{{SW3_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
-    <text x="572" y="616" font-family="Menlo, SF Mono, monospace" font-size="17" fill="{{C_INK}}">{{SW3_HEX}}</text>
-    <text x="572" y="642" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW3_NAME}}</text>
-    <text x="572" y="664" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{SW3_ROLE}}</text>
+    <rect x="572" y="470" width="220" height="130" rx="{{R_SM}}" fill="{{SW3_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
+    <text x="572" y="626" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="17" fill="{{C_INK}}">{{SW3_HEX}}</text>
+    <text x="572" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW3_NAME}}</text>
+    <text x="572" y="674" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.55">{{SW3_ROLE}}</text>
   </g>
   <g id="swatch-4">
-    <rect x="808" y="460" width="220" height="130" fill="{{SW4_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
-    <text x="808" y="616" font-family="Menlo, SF Mono, monospace" font-size="17" fill="{{C_INK}}">{{SW4_HEX}}</text>
-    <text x="808" y="642" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW4_NAME}}</text>
-    <text x="808" y="664" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{SW4_ROLE}}</text>
+    <rect x="808" y="470" width="220" height="130" rx="{{R_SM}}" fill="{{SW4_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
+    <text x="808" y="626" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="17" fill="{{C_INK}}">{{SW4_HEX}}</text>
+    <text x="808" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW4_NAME}}</text>
+    <text x="808" y="674" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.55">{{SW4_ROLE}}</text>
   </g>
   <g id="swatch-5">
-    <rect x="1044" y="460" width="220" height="130" fill="{{SW5_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
-    <text x="1044" y="616" font-family="Menlo, SF Mono, monospace" font-size="17" fill="{{C_INK}}">{{SW5_HEX}}</text>
-    <text x="1044" y="642" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW5_NAME}}</text>
-    <text x="1044" y="664" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{SW5_ROLE}}</text>
+    <rect x="1044" y="470" width="220" height="130" rx="{{R_SM}}" fill="{{SW5_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
+    <text x="1044" y="626" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="17" fill="{{C_INK}}">{{SW5_HEX}}</text>
+    <text x="1044" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW5_NAME}}</text>
+    <text x="1044" y="674" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.55">{{SW5_ROLE}}</text>
   </g>
   <g id="swatch-6">
-    <rect x="1280" y="460" width="220" height="130" fill="{{SW6_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
-    <text x="1280" y="616" font-family="Menlo, SF Mono, monospace" font-size="17" fill="{{C_INK}}">{{SW6_HEX}}</text>
-    <text x="1280" y="642" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW6_NAME}}</text>
-    <text x="1280" y="664" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{SW6_ROLE}}</text>
+    <rect x="1280" y="470" width="220" height="130" rx="{{R_SM}}" fill="{{SW6_HEX}}" stroke="{{C_INK}}" stroke-opacity="0.12"/>
+    <text x="1280" y="626" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="17" fill="{{C_INK}}">{{SW6_HEX}}</text>
+    <text x="1280" y="652" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.8">{{SW6_NAME}}</text>
+    <text x="1280" y="674" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.55">{{SW6_ROLE}}</text>
   </g>
-  <line x1="100" y1="710" x2="1500" y2="710" stroke="{{C_INK}}" stroke-opacity="0.15"/>
+  <line x1="100" y1="720" x2="1500" y2="720" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
-  <!-- typography -->
-  <text x="100" y="756" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">TYPOGRAPHY</text>
-  <text x="100" y="830" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="76" font-weight="700" fill="{{C_INK}}">{{TYPE_DISPLAY}}</text>
-  <text x="100" y="862" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" fill="{{C_INK}}" fill-opacity="0.6">Display · {{DISPLAY_WEIGHTS}}</text>
-  <text x="100" y="925" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="40" fill="{{C_INK}}">{{TYPE_BODY}}</text>
-  <text x="100" y="955" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" fill="{{C_INK}}" fill-opacity="0.6">Body · {{BODY_WEIGHTS}}</text>
-  <text x="100" y="995" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.75">{{TYPE_SCALE_NOTE}}</text>
-  <line x1="100" y1="1040" x2="1500" y2="1040" stroke="{{C_INK}}" stroke-opacity="0.15"/>
+  <!-- typography: specimens set in the actual faces -->
+  <text x="100" y="766" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">TYPOGRAPHY</text>
+  <text x="100" y="845" font-family="{{FONT_DISPLAY}}, Helvetica Neue, Arial, sans-serif" font-size="76" font-weight="700" fill="{{C_INK}}">{{TYPE_DISPLAY}}</text>
+  <text x="100" y="877" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.6">Display · {{DISPLAY_WEIGHTS}}</text>
+  <text x="100" y="940" font-family="{{FONT_DISPLAY}}, Helvetica Neue, Arial, sans-serif" font-size="40" font-weight="500" fill="{{C_INK}}" fill-opacity="0.9">{{SPECIMEN_DISPLAY}}</text>
+  <text x="100" y="1000" font-family="{{FONT_BODY}}, Helvetica Neue, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SPECIMEN_BODY}}</text>
+  <text x="100" y="1030" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="15" fill="{{C_INK}}" fill-opacity="0.6">Body · {{TYPE_BODY}} · {{BODY_WEIGHTS}}</text>
+  <text x="100" y="1068" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="15" fill="{{C_INK}}" fill-opacity="0.7">{{TYPE_SCALE_NOTE}}</text>
+  <line x1="100" y1="1110" x2="1500" y2="1110" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
-  <!-- signature + layout -->
-  <text x="100" y="1086" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">SIGNATURE ELEMENT</text>
-  <text x="100" y="1130" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="{{C_INK}}">{{SIGNATURE_TITLE}}</text>
-  <text x="100" y="1172" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SIGNATURE_L1}}</text>
-  <text x="100" y="1202" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SIGNATURE_L2}}</text>
-  <text x="100" y="1232" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SIGNATURE_L3}}</text>
-  <text x="100" y="1262" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SIGNATURE_L4}}</text>
+  <!-- signature (sketched) + layout (wireframed) -->
+  <text x="100" y="1156" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">SIGNATURE ELEMENT</text>
+  <text x="100" y="1198" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="{{C_INK}}">{{SIGNATURE_TITLE}}</text>
+  <text x="100" y="1234" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.85">{{SIGNATURE_L1}}</text>
+  <text x="100" y="1262" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.85">{{SIGNATURE_L2}}</text>
+  <rect x="100" y="1285" width="670" height="220" rx="{{R_MD}}" fill="none" stroke="{{C_INK}}" stroke-opacity="0.18"/>
+  <!--SLOT:SIGNATURE_SKETCH-->
 
-  <text x="850" y="1086" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">LAYOUT</text>
-  <text x="850" y="1130" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="30" font-weight="700" fill="{{C_INK}}">{{LAYOUT_GRID}}</text>
-  <text x="850" y="1172" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{LAYOUT_L1}}</text>
-  <text x="850" y="1202" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{LAYOUT_L2}}</text>
-  <text x="850" y="1232" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{LAYOUT_L3}}</text>
-  <text x="850" y="1272" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" fill="{{C_INK}}" fill-opacity="0.6">Devices: {{LAYOUT_DEVICES}}</text>
-  <line x1="100" y1="1330" x2="1500" y2="1330" stroke="{{C_INK}}" stroke-opacity="0.15"/>
+  <text x="850" y="1156" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">LAYOUT</text>
+  <text x="850" y="1198" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" fill="{{C_INK}}">{{LAYOUT_GRID}}</text>
+  <text x="850" y="1234" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.85">{{LAYOUT_L1}}</text>
+  <text x="850" y="1262" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.85">{{LAYOUT_L2}}</text>
+  <rect x="850" y="1285" width="650" height="220" rx="{{R_MD}}" fill="none" stroke="{{C_INK}}" stroke-opacity="0.18"/>
+  <!--SLOT:LAYOUT_WIREFRAME-->
+  <line x1="100" y1="1555" x2="1500" y2="1555" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
-  <!-- motion + texture + shape -->
-  <text x="100" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">MOTION</text>
-  <text x="100" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{MOTION_L1}}</text>
-  <text x="100" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{MOTION_L2}}</text>
-  <text x="100" y="1474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{MOTION_L3}}</text>
+  <!-- motion (plotted) + shape (rendered) -->
+  <text x="100" y="1601" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">MOTION</text>
+  <!--SLOT:MOTION_MARKS-->
+  <line x1="120" y1="1720" x2="750" y2="1720" stroke="{{C_INK}}" stroke-opacity="0.35"/>
+  <line x1="120" y1="1714" x2="120" y2="1726" stroke="{{C_INK}}" stroke-opacity="0.35"/>
+  <line x1="278" y1="1714" x2="278" y2="1726" stroke="{{C_INK}}" stroke-opacity="0.35"/>
+  <line x1="435" y1="1714" x2="435" y2="1726" stroke="{{C_INK}}" stroke-opacity="0.35"/>
+  <line x1="593" y1="1714" x2="593" y2="1726" stroke="{{C_INK}}" stroke-opacity="0.35"/>
+  <line x1="750" y1="1714" x2="750" y2="1726" stroke="{{C_INK}}" stroke-opacity="0.35"/>
+  <text x="120" y="1748" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="12" fill="{{C_INK}}" fill-opacity="0.55">0</text>
+  <text x="278" y="1748" text-anchor="middle" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="12" fill="{{C_INK}}" fill-opacity="0.55">300</text>
+  <text x="435" y="1748" text-anchor="middle" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="12" fill="{{C_INK}}" fill-opacity="0.55">600</text>
+  <text x="593" y="1748" text-anchor="middle" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="12" fill="{{C_INK}}" fill-opacity="0.55">900</text>
+  <text x="750" y="1748" text-anchor="end" font-family="{{FONT_MONO}}, Menlo, monospace" font-size="12" fill="{{C_INK}}" fill-opacity="0.55">1200 ms</text>
+  <text x="100" y="1832" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" fill="{{C_INK}}" fill-opacity="0.7">{{MOTION_CAPTION}}</text>
 
-  <text x="575" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">TEXTURE</text>
-  <text x="575" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L1}}</text>
-  <text x="575" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L2}}</text>
-  <text x="575" y="1474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L3}}</text>
+  <text x="850" y="1601" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">SHAPE</text>
+  <!--SLOT:SHAPE_SAMPLES-->
+  <text x="850" y="1832" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" fill="{{C_INK}}" fill-opacity="0.7">{{SHAPE_CAPTION}}</text>
+  <line x1="100" y1="1870" x2="1500" y2="1870" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
-  <text x="1050" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">SHAPE</text>
-  <text x="1050" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SHAPE_L1}}</text>
-  <text x="1050" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SHAPE_L2}}</text>
-  <text x="1050" y="1474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SHAPE_L3}}</text>
-  <line x1="100" y1="1510" x2="1500" y2="1510" stroke="{{C_INK}}" stroke-opacity="0.15"/>
+  <!-- texture: demonstrated on this board's own background -->
+  <text x="100" y="1916" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">TEXTURE</text>
+  <text x="100" y="1950" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_LINE}}</text>
+  <text x="100" y="1976" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="13" fill="{{C_INK}}" fill-opacity="0.5">applied to this board's background</text>
+  <line x1="100" y1="2010" x2="1500" y2="2010" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
-  <!-- voice & copy -->
-  <text x="100" y="1556" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">VOICE &amp; COPY</text>
-  <text x="100" y="1626" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="46" font-weight="700" fill="{{C_INK}}">{{HEADLINE_L1}}</text>
-  <text x="100" y="1682" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="46" font-weight="700" fill="{{C_INK}}">{{HEADLINE_L2}}</text>
-  <text x="100" y="1732" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="22" fill="{{C_INK}}" fill-opacity="0.8">{{SUBHEAD}}</text>
-  <rect x="100" y="1770" width="380" height="56" rx="28" fill="{{C_ACCENT}}"/>
-  <text x="290" y="1806" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="20" font-weight="600" fill="{{C_BG}}">{{CTA}}</text>
-  <text x="100" y="1874" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.65">Voice: {{VOICE_LINE}}</text>
+  <!-- voice & copy: set in the direction's own type -->
+  <text x="100" y="2056" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">VOICE &amp; COPY</text>
+  <text x="100" y="2126" font-family="{{FONT_DISPLAY}}, Helvetica Neue, Arial, sans-serif" font-size="46" font-weight="700" fill="{{C_INK}}">{{HEADLINE_L1}}</text>
+  <text x="100" y="2182" font-family="{{FONT_DISPLAY}}, Helvetica Neue, Arial, sans-serif" font-size="46" font-weight="700" fill="{{C_INK}}">{{HEADLINE_L2}}</text>
+  <text x="100" y="2232" font-family="{{FONT_BODY}}, Helvetica Neue, Arial, sans-serif" font-size="21" fill="{{C_INK}}" fill-opacity="0.8">{{SUBHEAD}}</text>
+  <rect x="100" y="2268" width="380" height="56" rx="{{R_PILL}}" fill="{{C_ACCENT}}"/>
+  <text x="290" y="2304" text-anchor="middle" font-family="{{FONT_BODY}}, Helvetica Neue, Arial, sans-serif" font-size="20" font-weight="600" fill="{{C_BG}}">{{CTA}}</text>
+  <text x="100" y="2360" font-family="{{FONT_BODY}}, Helvetica Neue, Arial, sans-serif" font-size="17" fill="{{C_INK}}" fill-opacity="0.65">Voice: {{VOICE_LINE}}</text>
 
   <!-- footer -->
-  <line x1="100" y1="1920" x2="1500" y2="1920" stroke="{{C_INK}}" stroke-opacity="0.15"/>
-  <text x="100" y="1958" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{DOMINANT_DIRECTION}}</text>
-  <text x="1500" y="1958" text-anchor="end" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="{{C_INK}}" fill-opacity="0.45">made with visual-direction · github.com/doublej</text>
+  <line x1="100" y1="2384" x2="1500" y2="2384" stroke="{{C_INK}}" stroke-opacity="0.15"/>
+  <text x="100" y="2420" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="14" fill="{{C_INK}}" fill-opacity="0.55">{{DOMINANT_DIRECTION}}</text>
+  <text x="1500" y="2420" text-anchor="end" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="12" fill="{{C_INK}}" fill-opacity="0.45">made with visual-direction · github.com/doublej</text>
 </svg>
