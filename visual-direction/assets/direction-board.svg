@@ -6,7 +6,8 @@
     - SVG does not wrap text: long content is split across the numbered _L1/_L2/... line
       slots. Fill lines in order; set unused line slots to an empty string.
       Budgets: 19px body lines ~62 chars, 46px headline lines ~30 chars,
-      direction word ~18 chars, verdict line ~85 chars.
+      direction word ~18 chars, verdict line ~85 chars,
+      motion/texture/shape column lines ~40 chars.
     - Palette: 6 swatch groups (id="swatch-1".."swatch-6"). Delete whole <g> groups
       beyond the palette size (minimum 4 remain).
     - {{C_BG}} {{C_INK}} {{C_ACCENT}} come from palette roles background / ink / accent.
@@ -88,14 +89,21 @@
   <text x="850" y="1272" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" fill="{{C_INK}}" fill-opacity="0.6">Devices: {{LAYOUT_DEVICES}}</text>
   <line x1="100" y1="1330" x2="1500" y2="1330" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
-  <!-- motion + texture -->
+  <!-- motion + texture + shape -->
   <text x="100" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">MOTION</text>
   <text x="100" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{MOTION_L1}}</text>
   <text x="100" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{MOTION_L2}}</text>
+  <text x="100" y="1474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{MOTION_L3}}</text>
 
-  <text x="850" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">TEXTURE</text>
-  <text x="850" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L1}}</text>
-  <text x="850" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L2}}</text>
+  <text x="575" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">TEXTURE</text>
+  <text x="575" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L1}}</text>
+  <text x="575" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L2}}</text>
+  <text x="575" y="1474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{TEXTURE_L3}}</text>
+
+  <text x="1050" y="1376" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="16" letter-spacing="4" fill="{{C_ACCENT}}">SHAPE</text>
+  <text x="1050" y="1414" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SHAPE_L1}}</text>
+  <text x="1050" y="1444" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SHAPE_L2}}</text>
+  <text x="1050" y="1474" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="19" fill="{{C_INK}}" fill-opacity="0.85">{{SHAPE_L3}}</text>
   <line x1="100" y1="1510" x2="1500" y2="1510" stroke="{{C_INK}}" stroke-opacity="0.15"/>
 
   <!-- voice & copy -->

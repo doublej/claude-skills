@@ -2,7 +2,7 @@ export const meta = {
   name: 'visual-direction-fanout',
   description: 'Isolated per-domain design deciders from a shared context packet, coherence synthesis, then a filled direction board',
   phases: [
-    { title: 'Decide', detail: '7 isolated deciders, medium effort, packet-only context' },
+    { title: 'Decide', detail: '8 isolated deciders, medium effort, packet-only context' },
     { title: 'Synthesize', detail: 'convergence check + reconciled token system' },
     { title: 'Board', detail: 'fill the prebuilt SVG direction board from the tokens' },
   ],
@@ -120,6 +120,23 @@ const DOMAINS = [
     },
   },
   {
+    key: 'shape',
+    task: `YOUR SOLE DECISION: shape and form language. Define the geometry the design speaks in: corner treatment (a radius scale in px, or the case for sharp or mixed corners), containment strategy (how content is boxed, ruled, chipped, or left open), iconography style (outline vs filled, stroke weight, drawing grid), and 1–3 recurring shape motifs drawn from the subject's own world. Every motif must encode something true about the subject — a generic blob, orb, or abstract swoosh is a failure.`,
+    schema: {
+      type: 'object',
+      required: ['direction_word', 'corner_treatment', 'radius_scale', 'containment', 'iconography', 'motifs', 'rationale'],
+      properties: {
+        direction_word: { type: 'string' },
+        corner_treatment: { type: 'string' },
+        radius_scale: { type: 'array', items: { type: 'object', required: ['token', 'px', 'use'], properties: { token: { type: 'string' }, px: { type: 'string' }, use: { type: 'string' } } } },
+        containment: { type: 'string' },
+        iconography: { type: 'string' },
+        motifs: { type: 'array', minItems: 1, maxItems: 3, items: { type: 'object', required: ['motif', 'encodes'], properties: { motif: { type: 'string' }, encodes: { type: 'string' } } } },
+        rationale: { type: 'string' },
+      },
+    },
+  },
+  {
     key: 'copy',
     task: `YOUR SOLE DECISION: the words. Voice/register for this audience, the headline, a subhead, the primary CTA label, and 3–6 microcopy rules (naming, tense, tone). Write from the user's side of the screen; specific beats clever; active voice; an action keeps its name through the whole flow.`,
     schema: {
@@ -139,7 +156,7 @@ const DOMAINS = [
 ]
 
 phase('Decide')
-log(`Fanning out 7 isolated deciders (${MODEL}, medium effort)...`)
+log(`Fanning out 8 isolated deciders (${MODEL}, medium effort)...`)
 const results = await parallel(DOMAINS.map(d => () =>
   agent(`${PREAMBLE}\n\n${d.task}`, {
     label: `decide:${d.key}`,
@@ -163,21 +180,21 @@ const SYNTH_SCHEMA = {
     convergence: { type: 'object', required: ['direction_words', 'verdict', 'dominant_direction'], properties: { direction_words: { type: 'object' }, verdict: { type: 'string' }, dominant_direction: { type: 'string' } } },
     conflicts: { type: 'array', items: { type: 'object', required: ['between', 'issue', 'resolution'], properties: { between: { type: 'string' }, issue: { type: 'string' }, resolution: { type: 'string' } } } },
     overrides: { type: 'array', items: { type: 'object', required: ['domain', 'changed', 'why'], properties: { domain: { type: 'string' }, changed: { type: 'string' }, why: { type: 'string' } } } },
-    tokens: { type: 'object', required: ['color', 'type', 'layout', 'motion', 'signature', 'copy'], properties: { color: { type: 'object' }, type: { type: 'object' }, layout: { type: 'object' }, motion: { type: 'object' }, signature: { type: 'object' }, copy: { type: 'object' } } },
+    tokens: { type: 'object', required: ['color', 'type', 'layout', 'motion', 'shape', 'signature', 'copy'], properties: { color: { type: 'object' }, type: { type: 'object' }, layout: { type: 'object' }, motion: { type: 'object' }, shape: { type: 'object' }, signature: { type: 'object' }, copy: { type: 'object' } } },
     build_notes: { type: 'string' },
   },
 }
-const synthesis = await agent(`You are the synthesis judge in a compartmentalized design process. Seven deciders each saw ONLY the context packet and decided one domain in isolation. Your job:
+const synthesis = await agent(`You are the synthesis judge in a compartmentalized design process. Eight deciders each saw ONLY the context packet and decided one domain in isolation. Your job:
 
 1. CONVERGENCE: compare their direction_word values. Report each (keyed by domain), a verdict on how strongly the packet forced convergence, and the dominant direction.
-2. CONFLICTS: find cross-domain clashes (palette vs texture atmosphere, motion vs tone, signature vs layout placement, copy register vs visual register). Resolve each — say which decider wins and why.
+2. CONFLICTS: find cross-domain clashes (palette vs texture atmosphere, motion vs tone, signature vs layout placement, shape geometry vs layout devices, copy register vs visual register). Resolve each — say which decider wins and why.
 3. OVERRIDES: change as little as possible. Every override must name the domain, what changed, and why coherence demanded it.
-4. TOKENS: emit the final reconciled token system (color, type, layout, motion, signature, copy) — concrete enough that a builder who has seen nothing else can implement it exactly. Include build_notes for anything tricky.
+4. TOKENS: emit the final reconciled token system (color, type, layout, motion, shape, signature, copy) — concrete enough that a builder who has seen nothing else can implement it exactly. Include build_notes for anything tricky.
 
 CONTEXT PACKET:
 ${PACKET}
 
-THE SEVEN ISOLATED DECISIONS:
+THE EIGHT ISOLATED DECISIONS:
 ${JSON.stringify(decisions, null, 2)}`, {
   label: 'synthesize',
   phase: 'Synthesize',

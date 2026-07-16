@@ -1,9 +1,9 @@
 ---
 name: visual-direction
 description: >
-  Compartmentalized visual-direction fan-out: 7 isolated subagents each decide
+  Compartmentalized visual-direction fan-out: 8 isolated subagents each decide
   ONE design domain (typography, color, signature element, layout, motion,
-  texture, copy) from an identical context packet with zero shared context,
+  texture, shape, copy) from an identical context packet with zero shared context,
   then a synthesis judge measures direction convergence, resolves conflicts,
   and emits a reconciled token system — a medium-agnostic brand/visual
   direction usable for any deliverable. Always renders the direction as an
@@ -25,9 +25,10 @@ board. The convergence verdict doubles as a diagnostic: a sharp packet
 forces agreement; a vague one exposes ambiguity in the brief.
 
 <architecture>
-- 7 deciders (chosen model, medium effort), each sees ONLY the context packet
+- 8 deciders (chosen model, medium effort), each sees ONLY the context packet
   and its single domain: typography · color · signature/visual hook ·
-  layout+structure · motion · texture/background · copy. Each also reports a
+  layout+structure · motion · texture/background · shape/form language · copy.
+  Each also reports a
   `direction_word` — the aesthetic direction it infers from the packet alone.
 - 1 synthesis judge (chosen model, high effort): compares direction_words,
   resolves cross-domain conflicts with minimal overrides, emits the reconciled
@@ -42,7 +43,7 @@ forces agreement; a vague one exposes ambiguity in the brief.
 1. **Ask which model.** Via consult-user `ask` (type `pick`): options
    `fable (recommended)`, `opus (recommended)`, `sonnet`, `haiku`, with
    "Other" free text allowed for any model string. Strip any
-   " (recommended)" suffix before use. One model powers all 9 agents;
+   " (recommended)" suffix before use. One model powers all 10 agents;
    effort tiers (medium/high) stay the same regardless of model. If the
    ask is cancelled or AFK, default to `fable`.
 2. **Write the context packet.** Product facts, audience, page/product job,
@@ -66,7 +67,7 @@ forces agreement; a vague one exposes ambiguity in the brief.
    args interpolation has silently arrived as `undefined` before; hardcoding
    via placeholders is the reliable path.
 4. **Launch.** `Workflow({scriptPath: <filled copy>})`. Runs in background;
-   9 agents, roughly 300k tokens and 10 minutes.
+   10 agents, roughly 330k tokens and 10 minutes.
 5. **Render the board image.** Always — the image is the standing artifact:
    ```bash
    rsvg-convert --zoom 2 -o <scratchpad>/direction-board.png <svg_out>
