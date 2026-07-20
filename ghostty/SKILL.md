@@ -188,47 +188,54 @@ ghostty +validate-config ~/Library/Application\ Support/com.mitchellh.ghostty/co
 </common_tasks>
 
 <automation_macos>
-## Automating Ghostty on macOS (1.3+) — NEVER launch the binary
+## Automating Ghostty on macOS (1.3+)
 
-**Critical:** `ghostty` on PATH is the app binary itself (`/Applications/Ghostty.app/Contents/MacOS/ghostty`). Running `ghostty -e …`, `ghostty --…`, or `open -na Ghostty` boots a **second app instance** — two Ghostty processes in the Dock. Never do this. `ghostty +new-window` is Linux-only (`not supported on this platform`).
+AppleScript is the only automation channel on macOS. Ghostty 1.3+ ships a full scripting dictionary (`Ghostty.sdef`; explore with `sdef /Applications/Ghostty.app`). It targets the running instance and launches a single one if none is running. Never invoke the binary instead: `ghostty` on PATH is the app executable itself, so `ghostty -e …`, `ghostty --…`, or `open -na Ghostty` boots a second app instance, and `ghostty +new-window` IPC exists only on Linux (D-Bus).
 
-The correct channel is **AppleScript** (Ghostty 1.3+ ships a full scripting dictionary, `Ghostty.sdef`). It always targets the running instance (and launches a single one if none is running):
+### Object model
+
+The hierarchy is application → windows → tabs → terminals (surfaces). Windows, tabs, and terminals each carry a read-only stable `id` — this is the only correct way to address a surface. `name` is the dynamic title, owned by whatever foreground process last set it; `working directory` is the pwd the tty's login shell last reported, not the running program's cwd. Both are display metadata, not addresses.
+
+### Spawning surfaces
+
+`new window` and `new tab` take an optional `surface configuration`; `new tab` requires a target window. Both return the created object — always capture it, so you hold the stable id from the moment of creation:
 
 ```applescript
 tell application "Ghostty"
   activate
-  -- plain new window / tab
-  new window
-  new tab in window 1                   -- new tab REQUIRES a target window
-  -- with command, cwd, initial input
   set cfg to new surface configuration
   set initial working directory of cfg to "/Users/jurrejan/Documents/development"
-  set command of cfg to "htop"          -- run instead of shell
-  set initial input of cfg to "git status\n"  -- or type into the shell
-  new window with configuration cfg
-  new tab in window 1 with configuration cfg
+  set command of cfg to "htop"                       -- run instead of shell
+  set initial input of cfg to "git status\n"         -- or type into the shell
+  set environment variables of cfg to {"AGENT_ID=worker-1"}
+  set r to new tab in window 1 with configuration cfg
+  return {id of r, id of focused terminal of r}      -- e.g. {"tab-92d2db800", "DADB…"}
 end tell
 ```
 
-Also available: `split <terminal> direction right/down/…`, `input text "…" to <terminal>` (paste-like), `send key "enter" to <terminal>`, `focus`, `select tab`, `close tab/window`, `perform action "<ghostty action string>" on <terminal>`, and read-only access to windows/tabs/terminals (`id`, `name`, `working directory`). Explore with `sdef /Applications/Ghostty.app`.
-
 From bash: `osascript -e 'tell application "Ghostty" to new window'`.
 
-**Identifying surfaces — capture the return value.** `new window` / `new tab … with configuration` **returns the created object**: `set r to new tab in window 1 with configuration cfg` → `id of r` (e.g. `tab-92d2db800`) and `id of focused terminal of r`. Always capture it — the spawner then addresses its tab by stable `id`, never by title or index. Windows, tabs, and terminals all have read-only stable `id`; `name` is just the dynamic title (whatever the foreground process last set) — never use it as an address.
+For long `initial input` (multi-paragraph prompts, anything with quotes/backticks), put the text in a file and let the shell expand it inside the surface — never inline it into the AppleScript string:
 
-**A shell canNOT identify its own surface from env.** Ghostty sets no `ITERM_SESSION_ID` equivalent (only `GHOSTTY_RESOURCES_DIR`/`GHOSTTY_BIN_DIR`/`GHOSTTY_SHELL_FEATURES`). Two workarounds:
-- Spawner-side (preferred): inject identity at creation — `set environment variables of cfg to {"AGENT_ID=worker-1"}` — and keep the AGENT_ID→tab-id mapping in the spawner.
-- Shell-side: set a unique title marker `printf '\033]2;MARKER\033\\'`, then AppleScript-scan terminals for `name contains "MARKER"`. Needs a real tty (fails inside sandboxed tool shells) and shell integration's `title` feature overwrites it at the next prompt — query immediately. **Does NOT work while Claude Code (or any title-owning TUI) runs in the surface** — it rewrites the title continuously and stomps the marker instantly.
-- Claude-Code-session-side: Claude Code stamps the tab title with its own chat summary (spinner + task phrase, e.g. `⠂ Improve parallel shell spawning`). A session can find its own terminal by scanning `name of every terminal` for a distinctive substring of its chat title. Caveats: titles are generated summaries (match a substring, not exact) and aren't guaranteed unique across sessions.
-- Note: Ghostty's `working directory` is the **login shell's** cwd (where the tty's shell last reported pwd), not the running program's cwd — a `claude` launched elsewhere or cd'd internally won't match. Don't identify by cwd.
-
-**An AppleScript error is not proof of failure.** Error `-1708` ("event not handled") can fire AFTER the side effect already ran — a `new tab` call that errors may still have created the tab. Between any error and a retry, verify state first (e.g. `count of tabs of window 1`, or list tabs and their `working directory`); blind retries spawn duplicate surfaces.
-
-**Long initial input without quoting hell:** write the text (e.g. a multi-paragraph agent prompt) to a file and have the shell expand it inside the surface:
 ```applescript
 set initial input of cfg to "claude \"$(cat /path/to/brief.md)\"\n"
 ```
-Quotes, backticks, and newlines in the file pass through untouched — never inline long text into the AppleScript string itself.
+
+### Surface identity
+
+Ghostty sets no per-surface env var (no `ITERM_SESSION_ID` equivalent — only `GHOSTTY_RESOURCES_DIR`, `GHOSTTY_BIN_DIR`, `GHOSTTY_SHELL_FEATURES`), so identity is established at spawn time or recovered by title. In order of preference:
+
+1. **Spawner holds the id** — the return value of `new tab`/`new window` (above). Zero ambiguity.
+2. **Env injection** — `environment variables` in the configuration gives the child a self-known identity (`$AGENT_ID`); the spawner keeps the AGENT_ID→id map.
+3. **Title scan** — find a running surface by matching `name of every terminal` against a distinctive substring of its title. Whoever owns the title determines what to match: a Claude Code session continuously stamps the title with its chat summary (`⠂ Improve parallel shell spawning`), so match a substring of the chat title; a plain shell can stamp its own marker first (`printf '\033]2;MARKER\033\\'` — needs a real tty, and shell integration re-titles at the next prompt, so scan immediately). Titles are summaries, not keys: match substrings, expect possible collisions.
+
+### Error semantics
+
+An AppleScript error is not proof of failure. Error `-1708` ("event not handled") can fire after the side effect already ran — a `new tab` that errors may still have created the tab. Between any error and a retry, verify state (`count of tabs of window 1`, or list ids); blind retries spawn duplicate surfaces.
+
+### Manipulating existing surfaces
+
+`split <terminal> direction right/down/…`, `input text "…" to <terminal>` (paste-like), `send key "enter" to <terminal>`, `focus`, `select tab`, `close tab/window`, and `perform action "<ghostty action string>" on <terminal>` for anything in `ghostty +list-actions`.
 </automation_macos>
 
 <known_limitations>
