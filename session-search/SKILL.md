@@ -10,7 +10,7 @@ Display boot sequence:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
-║   SESSION SEARCH v2.0                                        ║
+║   SESSION SEARCH v3.0                                        ║
 ║   History Search & Analysis Engine                           ║
 ║                                                              ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -19,7 +19,7 @@ Display boot sequence:
 ║   [LOAD] Exact phrase search engine                          ║
 ║   [LOAD] Time window builder                                 ║
 ║   [LOAD] Timeline generator                                  ║
-║   [LOAD] Haiku analysis pool                                 ║
+║   [LOAD] Workflow analysis pool                              ║
 ║                                                              ║
 ║   System ready.                                              ║
 ║                                                              ║
@@ -135,69 +135,32 @@ Report extraction stats.
 
 - **Direct synthesis (default for ≤ ~300 messages):** the extracted messages already fit in context. Read `.session-search/user_messages.json` directly and synthesise the summary inline — skip the Haiku worker chain entirely. Supplement freely from `bd list` (open tickets) and recent `git log`. This is faster and richer than the multi-agent flow for small corpora.
 - **INVESTIGATE path (unfinished-work / status queries):** read the extracted messages inline, then cross-reference ground truth from git: `git status`, unpushed commits (`git log @{u}..`), uncommitted diffs, and the last `TodoWrite` state visible in the transcript. Produce per-session `{goal, accomplishments, unfinished, next_steps}` records. Do not run the message-categoriser pipeline — it answers "what was discussed", not "what is left".
+  - **Many sessions (> ~10):** fan out one investigator per session via the bundled workflow instead of reading everything inline:
+    ```
+    Workflow tool:
+      scriptPath: ~/.claude/skills/session-search/scripts/investigate_workflow.js
+      args: {"outputDir": "<abs path to .session-search>", "sessionIds": ["<id>", ...], "projectDir": "<abs repo path>"}
+    ```
+    Collect the distinct `session_id` values from `user_messages.json` first. The workflow returns `{sessions: [{session_id, goal, accomplishments, unfinished, next_steps}], dropped}` — present it directly; if `dropped > 0`, say which sessions failed rather than implying full coverage.
   - **"This session" / "current session" scopes to one session_id, not a time window.** `--since` merges every session touched in that window on a project — for a multi-session project that pulls in unrelated sessions. When the user means the active session, filter `user_messages.json` by the current `session_id` (it is the session-directory name in the scratchpad path) rather than relying on `--since`: `python3 -c "import json;print([m for m in json.load(open('.session-search/user_messages.json')) if m['session_id']=='<id>'])"`.
-- **Multi-agent pipeline (large corpora, > ~300–500 messages):** when the message volume risks context overflow, fan out to the Haiku workers below.
+- **Workflow pipeline (large corpora, > ~300–500 messages):** when the message volume risks context overflow, run the bundled analysis workflow below.
 
-**Override:** the path above is a size-based *default*. If the user explicitly asks for the multi-agent pipeline (mentions "haiku agents", "workers", "full pipeline"), run it regardless of corpus size — the Haiku path stays valid for small corpora when the user chose it deliberately. Honour the request instead of contradicting an earlier size-based decision.
+**Override:** the path above is a size-based *default*. If the user explicitly asks for the multi-agent pipeline (mentions "haiku agents", "workers", "full pipeline", "workflow"), run it regardless of corpus size — it stays valid for small corpora when the user chose it deliberately. Honour the request instead of contradicting an earlier size-based decision.
 
-**Multi-agent pipeline — launch two Haiku subagents in parallel** using Task tool with `model: haiku`:
+**Workflow pipeline** — one Workflow call replaces the old Worker A/B/C Task-tool chain (no file polling, no manual synchronisation):
 
 ```
-[ANALYZE] Spawning Worker A: Message Categorizer
-[ANALYZE] Spawning Worker B: Context Resolver
+Workflow tool:
+  scriptPath: ~/.claude/skills/session-search/scripts/analyse_workflow.js
+  args: {"outputDir": "<abs path to .session-search>", "messageCount": <N from extract>, "projectName": "<name>", "chunkSize": 150}
 ```
 
-**Worker A — Message Categorizer:**
-Read `.session-search/user_messages.json` (or per-project subdirectories if multi-project). Categorize each message:
-- TASK: Direct work requests ("create", "build", "fix", "add")
-- QUESTION: Information queries ("how", "what", "where", "why")
-- CORRECTION: Fixes/adjustments ("no", "wrong", "instead", "actually")
-- FEEDBACK: Reactions ("good", "thanks", "perfect", interrupts)
-- META: Commands, model switches, configuration
+- `outputDir` must be **absolute** — workflow agents may not share this cwd.
+- `messageCount` is the extracted-message count reported by `extract`; the script chunks it (~150/chunk), fans out one Haiku categorizer per chunk plus one context resolver concurrently, then a synthesis agent merges everything into `timeline_summary.md`.
+- The workflow runs in the background; wait for its completion notification. It returns `{summary, categorizedFiles, resolvedContext}` — `summary` is the path to `timeline_summary.md`.
+- If the result looks empty or wrong, Read `journal.jsonl` in the workflow's transcript directory before re-running.
 
-Write `.session-search/categorized_messages.json`:
-`[{timestamp, project, category, original, one_line_summary}]`
-
-**Worker B — Context Resolver:**
-Read `.session-search/user_messages.json`. For messages with unresolved references ("that", "it", "the thing", "this", "above"), infer what they refer to based on timestamp proximity and project context.
-
-Write `.session-search/resolved_context.json`:
-`[{uuid, timestamp, original, inferred_context, clarified_prompt}]`
-
-### Step 4: Synthesise
-
-**Waiting for worker output:** poll for the file, don't fixed-sleep. Use `until [ -f .session-search/<output_file> ]; do sleep 3; done` rather than a `sleep N; ls` guess — this returns as soon as the worker finishes and never over-waits.
-
-Launch one Haiku subagent:
-
-**Worker C — Timeline Synthesiser:**
-Read `.session-search/categorized_messages.json` and `.session-search/resolved_context.json`.
-
-Write `.session-search/timeline_summary.md`:
-
-```markdown
-# Project Timeline: <project_name>
-Period: <start_date> to <end_date>
-Messages analyzed: <N>
-
-## Executive Summary
-2-3 sentences: main themes, accomplishments, patterns.
-
-## Chronological Timeline
-| Date | Original | Clarified | Category |
-|------|----------|-----------|----------|
-Key requests with clarified versions.
-
-## Communication Patterns
-- Common request types
-- Prompting style observations
-- Areas where context was often missing
-
-## Suggested Prompt Improvements
-Rewritten versions of ambiguous prompts.
-```
-
-### Step 5: Present
+### Step 4: Present
 
 Read and display `.session-search/timeline_summary.md`.
 
@@ -214,15 +177,21 @@ All output goes to `.session-search/` (configurable via `-o`):
 | `timeline.txt` | search | ASCII timeline visualisation |
 | `message_index.json` | extract | Message references (uuid, source file/line) |
 | `user_messages.json` | extract | Flat JSON list of user messages, each `{type, uuid, timestamp, content, session_id}` — message body is in `content` (not `text`); no `project` field (single-project per file) |
-| `categorized_messages.json` | analyse | Haiku-categorised messages |
-| `resolved_context.json` | analyse | Haiku-resolved context |
-| `timeline_summary.md` | analyse | Final analysis report |
+| `categorized_<i>.json` | analyse workflow | Haiku-categorised messages, one file per chunk |
+| `resolved_context.json` | analyse workflow | Haiku-resolved context |
+| `timeline_summary.md` | analyse workflow | Final analysis report |
 
 ---
 
 ## Technical Reference
 
 **Script:** `{SKILL_DIR}/scripts/session_search.py`
+
+**Workflow scripts** (invoked via the Workflow tool with `scriptPath`, never executed directly):
+| Script | Args | Purpose |
+|--------|------|---------|
+| `scripts/analyse_workflow.js` | `{outputDir, messageCount, projectName, chunkSize?}` | Chunked Haiku categorization + context resolution → `timeline_summary.md` |
+| `scripts/investigate_workflow.js` | `{outputDir, sessionIds[], projectDir}` | Per-session state records grounded in git |
 
 **Subcommands:**
 ```
