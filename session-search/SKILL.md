@@ -88,7 +88,11 @@ The script outputs a summary box, timeline, and JSON.
 
 Show the summary box and timeline from stdout. The summary box is printed **first** — do not pipe stdout through `tail`, or you will lose it.
 
-**If matches exceed ~50–100**, the per-window browsing flow below is impractical. Instead: re-run `search` with a more specific phrase, add `--since`/`--folder` scope to narrow, run several targeted searches in parallel for synonymous phrases, or switch to the **ANALYSE flow** (extract + categorise) for a thematic summary.
+**If matches exceed ~50–100**, the per-window browsing flow below is impractical. Instead: re-run `search` with a more specific phrase, add `--since`/`--folder` scope to narrow, or switch to the **ANALYSE flow** (extract + categorise) for a thematic summary.
+
+**Synonymous phrases: one `--any` run, never parallel processes.** `search "phrase one" "phrase two" --any` matches any of the phrases in a single corpus pass. Do NOT launch multiple concurrent `search` processes for synonyms — each process re-reads the entire session corpus (multi-GB), and parallel copies multiply I/O and CPU until the machine crawls.
+
+**Broad-term guard:** when total matches exceed `--context-limit` (default 500), the script automatically skips context extraction and the timeline — counts, windows, and match previews in `search_index.json` stay complete, and stdout prints a notice. This is the signal the query is too broad: narrow it rather than overriding. `--context-limit 0` forces full extraction when the user explicitly wants everything (can write very large files).
 
 Then proactively surface the top matches by reading `search_index.json` — each `projects[*].matches[]` entry has `{timestamp, type, session_id, preview}`. Show the top ~10 (timestamp, role, preview) so the user sees content, not just window boundaries.
 
@@ -172,7 +176,7 @@ All output goes to `.session-search/` (configurable via `-o`):
 
 | File | Subcommand | Content |
 |------|------------|---------|
-| `search_index.json` | search | Top-level `{query, total_matches, total_windows, total_context_messages, project_count, projects[]}`. `total_matches` is an int (0 when none) — read it directly, no need to parse the stdout box |
+| `search_index.json` | search | Top-level `{query, total_matches, total_windows, total_context_messages, context_skipped, project_count, projects[]}`. `total_matches` is an int (0 when none) — read it directly, no need to parse the stdout box. `context_skipped: true` means the broad-term guard fired: `context_messages.json` is empty and the timeline was skipped (previews/windows here are still complete). Stdout JSON caps windows at 20/project (`windows_omitted` gives the rest) — the full list is always in this file |
 | `context_messages.json` | search | Full messages within all time windows. Each entry: `{timestamp, type, content, session_id, project}` — message body is in `content` (not `text`/`preview`) |
 | `timeline.txt` | search | ASCII timeline visualisation |
 | `message_index.json` | extract | Message references (uuid, source file/line) |
@@ -218,6 +222,8 @@ session_search.py list [scope]
 | `-m, --margin N` | Context margin minutes (default: 5) |
 | `-g, --gap N` | Merge gap minutes (default: 10) |
 | `-t, --timeline` | Generate ASCII timeline |
+| `--any` | Each query argument is an alternative phrase (OR, single corpus pass) |
+| `--context-limit N` | Skip context/timeline when matches exceed N (default 500; 0 = no limit) |
 
 **Extract flags:**
 | Flag | Purpose |

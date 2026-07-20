@@ -6,7 +6,8 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timedelta
+from bisect import bisect_right
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Iterator
 
@@ -339,9 +340,40 @@ def parse_timestamp(ts: str) -> datetime | None:
 
 # ── Search & Time Windowing ──────────────────────────────────
 
-def search_messages(messages: list[dict], query: str) -> list[dict]:
-    regex = re.compile(re.escape(query), re.IGNORECASE)
-    return [m for m in messages if regex.search(m["content"])]
+def build_query_regex(terms: list[str]) -> re.Pattern:
+    return re.compile("|".join(re.escape(t) for t in terms), re.IGNORECASE)
+
+
+def build_prefilter(terms: list[str]) -> re.Pattern | None:
+    """Bytes-level regex to skip whole session files that cannot match.
+
+    Only safe for plain-ASCII printable terms without JSON-escaped chars
+    (quotes, backslashes) — anything else disables the prefilter so
+    correctness never depends on raw-JSON byte layout.
+    """
+    for t in terms:
+        if not t.isascii() or not t.isprintable() or '"' in t or "\\" in t:
+            return None
+    return re.compile(b"|".join(re.escape(t.encode()) for t in terms), re.IGNORECASE)
+
+
+def file_may_match(session_file: Path, prefilter: re.Pattern | None) -> bool:
+    if prefilter is None:
+        return True
+    try:
+        return prefilter.search(session_file.read_bytes()) is not None
+    except OSError:
+        return False
+
+
+def slim_match(m: dict) -> dict:
+    """Keep only what search results need — never retain full content."""
+    return {
+        "timestamp": m["timestamp"],
+        "type": m["type"],
+        "session_id": m["session_id"],
+        "preview": m["content"][:100].replace("\n", " "),
+    }
 
 
 def build_time_windows(
@@ -371,20 +403,66 @@ def build_time_windows(
     return windows
 
 
+def make_window_test(windows: list[tuple[datetime, datetime]]):
+    """O(log W) membership test — windows from build_time_windows are sorted
+    and non-overlapping (separated by more than the merge gap)."""
+    starts = [w[0] for w in windows]
+    ends = [w[1] for w in windows]
+
+    def contains(ts: datetime) -> bool:
+        i = bisect_right(starts, ts) - 1
+        return i >= 0 and ts <= ends[i]
+
+    return contains
+
+
 def extract_window_messages(
     messages: list[dict],
     windows: list[tuple[datetime, datetime]],
 ) -> list[dict]:
+    contains = make_window_test(windows)
     result = []
     for msg in messages:
         ts = parse_timestamp(msg["timestamp"])
-        if not ts:
-            continue
-        for s, e in windows:
-            if s <= ts <= e:
-                result.append(msg)
-                break
+        if ts and contains(ts):
+            result.append(msg)
     return result
+
+
+def session_file_bounds(session_file: Path) -> tuple[datetime | None, datetime | None]:
+    """Cheap (first-timestamp, mtime) bounds without parsing the whole file."""
+    try:
+        mtime = datetime.fromtimestamp(session_file.stat().st_mtime, tz=timezone.utc)
+    except OSError:
+        return None, None
+    first_ts = None
+    try:
+        with open(session_file) as f:
+            for i, line in enumerate(f):
+                if i >= 100:
+                    break
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                ts = parse_timestamp(entry.get("timestamp", ""))
+                if ts:
+                    first_ts = ts
+                    break
+    except OSError:
+        return None, None
+    if first_ts and first_ts.tzinfo is None:
+        first_ts = first_ts.replace(tzinfo=timezone.utc)
+    return first_ts, mtime
+
+
+def file_overlaps_windows(session_file: Path, windows: list[tuple[datetime, datetime]]) -> bool:
+    first_ts, mtime = session_file_bounds(session_file)
+    if mtime is None:
+        return False
+    if first_ts is None:
+        return True  # can't bound it cheaply — parse and let the window test filter
+    return any(s <= mtime and first_ts <= e for s, e in windows)
 
 
 # ── Timeline Generation ──────────────────────────────────────
@@ -503,47 +581,85 @@ def _infer_activity(preview: str, msg_type: str) -> str | None:
 
 # ── Subcommand: search ───────────────────────────────────────
 
+RAW_RESULT_KEYS = ("matches_data", "context_data", "windows_dt", "session_files")
+MAX_STDOUT_WINDOWS = 20
+
+
 def cmd_search(args: argparse.Namespace) -> None:
-    query = " ".join(args.query)
+    if args.any:
+        terms = [t for t in args.query if t.strip()]
+        query = " OR ".join(terms)
+    else:
+        terms = [" ".join(args.query)]
+        query = terms[0]
+    regex = build_query_regex(terms)
+    prefilter = build_prefilter(terms)
+
     projects = resolve_projects(args)
     if not projects:
-        print(f"Error: No projects found for scope")
+        print("Error: No projects found for scope")
         sys.exit(1)
 
     output_dir = Path(args.output) if args.output else None
     all_results = []
 
+    # Pass 1: find matches. Only slim records (preview, not content) are kept,
+    # and files that cannot contain any term are skipped before JSON parsing.
     for proj in projects:
-        all_messages = []
-        for sf in iter_sessions_for_project(proj, getattr(args, "since", None)):
-            all_messages.extend(extract_messages(sf))
-        all_messages.sort(key=lambda m: m.get("timestamp", ""))
-
-        matches = search_messages(all_messages, query)
+        session_files = list(iter_sessions_for_project(proj, getattr(args, "since", None)))
+        matches = []
+        for sf in session_files:
+            if not file_may_match(sf, prefilter):
+                continue
+            for m in extract_messages(sf):
+                if regex.search(m["content"]):
+                    matches.append(slim_match(m))
         if not matches:
             continue
 
-        windows = build_time_windows(matches, args.margin, args.gap)
-        context_messages = extract_window_messages(all_messages, windows)
+        matches.sort(key=lambda m: m.get("timestamp", ""))
+        windows_dt = build_time_windows(matches, args.margin, args.gap)
 
         result = {
             "project": proj["project_path"],
             "query": query,
             "match_count": len(matches),
-            "window_count": len(windows),
-            "context_messages": len(context_messages),
+            "window_count": len(windows_dt),
+            "context_messages": 0,
             "windows": [
                 {
                     "start": w[0].isoformat(),
                     "end": w[1].isoformat(),
                     "duration_minutes": (w[1] - w[0]).total_seconds() / 60,
                 }
-                for w in windows
+                for w in windows_dt
             ],
             "matches_data": matches,
-            "context_data": context_messages,
+            "context_data": [],
+            "windows_dt": windows_dt,
+            "session_files": session_files,
         }
         all_results.append(result)
+
+    total_matches = sum(r["match_count"] for r in all_results)
+    skip_context = bool(args.context_limit) and total_matches > args.context_limit
+
+    # Pass 2: extract full context messages — only for files whose time bounds
+    # overlap a window, and skipped entirely when the query is too broad.
+    if not skip_context:
+        for r in all_results:
+            contains = make_window_test(r["windows_dt"])
+            ctx = []
+            for sf in r["session_files"]:
+                if not file_overlaps_windows(sf, r["windows_dt"]):
+                    continue
+                for m in extract_messages(sf):
+                    ts = parse_timestamp(m["timestamp"])
+                    if ts and contains(ts):
+                        ctx.append(m)
+            ctx.sort(key=lambda m: m.get("timestamp", ""))
+            r["context_data"] = ctx
+            r["context_messages"] = len(ctx)
 
     if not all_results:
         print()
@@ -593,6 +709,18 @@ def cmd_search(args: argparse.Namespace) -> None:
     print(box_bottom())
     print()
 
+    if skip_context:
+        print(
+            f"Note: {total_matches} matches exceed the context limit "
+            f"({args.context_limit}) — query is too broad for full extraction.\n"
+            "Context messages and timeline were skipped; counts, windows and "
+            "match previews are complete.\n"
+            "Narrow with a more specific phrase, --since/--folder scope, or "
+            "--any with tighter alternatives. To force full extraction anyway, "
+            "rerun with --context-limit 0."
+        )
+        print()
+
     # Save output
     if output_dir:
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -600,16 +728,8 @@ def cmd_search(args: argparse.Namespace) -> None:
         # Build serialisable results (strip raw data)
         serialisable = []
         for r in all_results:
-            sr = {k: v for k, v in r.items() if k not in ("matches_data", "context_data")}
-            sr["matches"] = [
-                {
-                    "timestamp": m["timestamp"],
-                    "type": m["type"],
-                    "session_id": m["session_id"],
-                    "preview": m["content"][:100].replace("\n", " "),
-                }
-                for m in r["matches_data"]
-            ]
+            sr = {k: v for k, v in r.items() if k not in RAW_RESULT_KEYS}
+            sr["matches"] = r["matches_data"]
             serialisable.append(sr)
 
         with open(output_dir / "search_index.json", "w") as f:
@@ -619,6 +739,7 @@ def cmd_search(args: argparse.Namespace) -> None:
                     "total_matches": total_matches,
                     "total_windows": total_windows,
                     "total_context_messages": total_ctx,
+                    "context_skipped": skip_context,
                     "project_count": len(all_results),
                     "projects": serialisable,
                 },
@@ -641,19 +762,13 @@ def cmd_search(args: argparse.Namespace) -> None:
         print(f"Results saved to: {output_dir}/")
 
     # Timeline
-    if args.timeline and output_dir:
+    if args.timeline and output_dir and skip_context:
+        print("Timeline skipped (context limit exceeded — see note above).")
+    elif args.timeline and output_dir:
         timeline_parts = []
         for r in all_results:
             proj_label = Path(r["project"]).name if len(all_results) > 1 else None
-            match_previews = [
-                {
-                    "timestamp": m["timestamp"],
-                    "type": m["type"],
-                    "preview": m["content"][:100].replace("\n", " "),
-                }
-                for m in r["matches_data"]
-            ]
-            tl = generate_timeline(match_previews, r["windows"], query, proj_label)
+            tl = generate_timeline(r["matches_data"], r["windows"], query, proj_label)
             timeline_parts.append(tl)
 
         timeline = "\n\n".join(timeline_parts)
@@ -665,17 +780,24 @@ def cmd_search(args: argparse.Namespace) -> None:
         print()
         print(f"Timeline saved to: {output_dir / 'timeline.txt'}")
 
-    # JSON output
+    # JSON output — cap per-project window lists so a broad query cannot
+    # flood stdout; the full window list is always in search_index.json.
+    projects_out = []
+    for r in all_results:
+        pr = {k: v for k, v in r.items() if k not in RAW_RESULT_KEYS}
+        if len(pr["windows"]) > MAX_STDOUT_WINDOWS:
+            pr["windows_omitted"] = len(pr["windows"]) - MAX_STDOUT_WINDOWS
+            pr["windows"] = pr["windows"][:MAX_STDOUT_WINDOWS]
+        projects_out.append(pr)
+
     output = {
         "query": query,
         "total_matches": total_matches,
         "total_windows": total_windows,
         "total_context_messages": total_ctx,
+        "context_skipped": skip_context,
         "project_count": len(all_results),
-        "projects": [
-            {k: v for k, v in r.items() if k not in ("matches_data", "context_data")}
-            for r in all_results
-        ],
+        "projects": projects_out,
     }
     print(json.dumps(output, indent=2))
 
@@ -912,6 +1034,14 @@ def main() -> None:
     sp_search.add_argument("-m", "--margin", type=int, default=5, help="Context margin minutes")
     sp_search.add_argument("-g", "--gap", type=int, default=10, help="Merge gap minutes")
     sp_search.add_argument("-t", "--timeline", action="store_true", help="Generate timeline")
+    sp_search.add_argument(
+        "--any", action="store_true",
+        help="Treat each query argument as an alternative phrase (OR, single pass)",
+    )
+    sp_search.add_argument(
+        "--context-limit", type=int, default=500,
+        help="Skip context/timeline extraction when total matches exceed N (0 = no limit, default 500)",
+    )
     add_scope_args(sp_search)
 
     # scan
