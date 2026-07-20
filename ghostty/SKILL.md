@@ -1,6 +1,6 @@
 ---
 name: ghostty
-description: Configure and customize Ghostty terminal emulator (Mitchell Hashimoto's GPU-accelerated terminal). Use when the user wants to edit ghostty config, add keybinds, set themes/fonts, configure splits/tabs/quick terminal, enable shell integration/ssh-terminfo, or debug why a ghostty setting is not applying. Triggers on "ghostty", mentions of `config.ghostty`, `~/.config/ghostty/`, or Ghostty-specific actions like `toggle_quick_terminal`, `new_split`, `goto_split`.
+description: Configure and customize Ghostty terminal emulator (Mitchell Hashimoto's GPU-accelerated terminal). Use when the user wants to edit ghostty config, add keybinds, set themes/fonts, configure splits/tabs/quick terminal, enable shell integration/ssh-terminfo, debug why a ghostty setting is not applying, or automate/script Ghostty (open windows/tabs/splits, run commands in them) — on macOS ALWAYS via AppleScript, never by launching the binary. Triggers on "ghostty", mentions of `config.ghostty`, `~/.config/ghostty/`, or Ghostty-specific actions like `toggle_quick_terminal`, `new_split`, `goto_split`.
 ---
 
 # Ghostty
@@ -187,10 +187,37 @@ ghostty +validate-config ~/Library/Application\ Support/com.mitchellh.ghostty/co
 **Show all options with docs:** `ghostty +show-config --default --docs | less`
 </common_tasks>
 
-<known_limitations>
-Ghostty has **no IPC for manipulating existing tabs/windows**. The only remote-control CLI is `ghostty +new-window` (opens a fresh window). There is no command to move, detach, reorder, or close existing tabs from outside the app.
+<automation_macos>
+## Automating Ghostty on macOS (1.3+) — NEVER launch the binary
 
-So "explode all tabs to windows" / "detach this tab" etc. have **no native or scriptable solution** today. Don't reach for Accessibility automation (System Events / cliclick) — surface the limitation instead and point at upstream issue #2630.
+**Critical:** `ghostty` on PATH is the app binary itself (`/Applications/Ghostty.app/Contents/MacOS/ghostty`). Running `ghostty -e …`, `ghostty --…`, or `open -na Ghostty` boots a **second app instance** — two Ghostty processes in the Dock. Never do this. `ghostty +new-window` is Linux-only (`not supported on this platform`).
+
+The correct channel is **AppleScript** (Ghostty 1.3+ ships a full scripting dictionary, `Ghostty.sdef`). It always targets the running instance (and launches a single one if none is running):
+
+```applescript
+tell application "Ghostty"
+  activate
+  -- plain new window / tab
+  new window
+  new tab
+  -- with command, cwd, initial input
+  set cfg to new surface configuration
+  set initial working directory of cfg to "/Users/jurrejan/Documents/development"
+  set command of cfg to "htop"          -- run instead of shell
+  set initial input of cfg to "git status\n"  -- or type into the shell
+  new window with configuration cfg
+end tell
+```
+
+Also available: `split <terminal> direction right/down/…`, `input text "…" to <terminal>` (paste-like), `send key "enter" to <terminal>`, `focus`, `select tab`, `close tab/window`, `perform action "<ghostty action string>" on <terminal>`, and read-only access to windows/tabs/terminals (`id`, `name`, `working directory`). Explore with `sdef /Applications/Ghostty.app`.
+
+From bash: `osascript -e 'tell application "Ghostty" to new window'`.
+</automation_macos>
+
+<known_limitations>
+- Tab **detach** to a new window still has no scriptable path (`move_tab:N` only reorders; upstream issue #2630).
+- `ghostty +new-window` IPC is Linux (D-Bus) only.
+- Don't reach for Accessibility automation (System Events / cliclick) — use the AppleScript dictionary above.
 </known_limitations>
 
 <references>
