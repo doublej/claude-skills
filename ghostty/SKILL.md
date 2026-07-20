@@ -218,7 +218,9 @@ From bash: `osascript -e 'tell application "Ghostty" to new window'`.
 
 **A shell canNOT identify its own surface from env.** Ghostty sets no `ITERM_SESSION_ID` equivalent (only `GHOSTTY_RESOURCES_DIR`/`GHOSTTY_BIN_DIR`/`GHOSTTY_SHELL_FEATURES`). Two workarounds:
 - Spawner-side (preferred): inject identity at creation — `set environment variables of cfg to {"AGENT_ID=worker-1"}` — and keep the AGENT_ID→tab-id mapping in the spawner.
-- Shell-side: set a unique title marker `printf '\033]2;MARKER\033\\'`, then AppleScript-scan terminals for `name contains "MARKER"`. Needs a real tty (fails inside sandboxed tool shells) and shell integration's `title` feature overwrites it at the next prompt — query immediately.
+- Shell-side: set a unique title marker `printf '\033]2;MARKER\033\\'`, then AppleScript-scan terminals for `name contains "MARKER"`. Needs a real tty (fails inside sandboxed tool shells) and shell integration's `title` feature overwrites it at the next prompt — query immediately. **Does NOT work while Claude Code (or any title-owning TUI) runs in the surface** — it rewrites the title continuously and stomps the marker instantly.
+- Claude-Code-session-side: Claude Code stamps the tab title with its own chat summary (spinner + task phrase, e.g. `⠂ Improve parallel shell spawning`). A session can find its own terminal by scanning `name of every terminal` for a distinctive substring of its chat title. Caveats: titles are generated summaries (match a substring, not exact) and aren't guaranteed unique across sessions.
+- Note: Ghostty's `working directory` is the **login shell's** cwd (where the tty's shell last reported pwd), not the running program's cwd — a `claude` launched elsewhere or cd'd internally won't match. Don't identify by cwd.
 
 **An AppleScript error is not proof of failure.** Error `-1708` ("event not handled") can fire AFTER the side effect already ran — a `new tab` call that errors may still have created the tab. Between any error and a retry, verify state first (e.g. `count of tabs of window 1`, or list tabs and their `working directory`); blind retries spawn duplicate surfaces.
 
