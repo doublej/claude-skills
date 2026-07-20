@@ -214,6 +214,12 @@ Also available: `split <terminal> direction right/down/…`, `input text "…" t
 
 From bash: `osascript -e 'tell application "Ghostty" to new window'`.
 
+**Identifying surfaces — capture the return value.** `new window` / `new tab … with configuration` **returns the created object**: `set r to new tab in window 1 with configuration cfg` → `id of r` (e.g. `tab-92d2db800`) and `id of focused terminal of r`. Always capture it — the spawner then addresses its tab by stable `id`, never by title or index. Windows, tabs, and terminals all have read-only stable `id`; `name` is just the dynamic title (whatever the foreground process last set) — never use it as an address.
+
+**A shell canNOT identify its own surface from env.** Ghostty sets no `ITERM_SESSION_ID` equivalent (only `GHOSTTY_RESOURCES_DIR`/`GHOSTTY_BIN_DIR`/`GHOSTTY_SHELL_FEATURES`). Two workarounds:
+- Spawner-side (preferred): inject identity at creation — `set environment variables of cfg to {"AGENT_ID=worker-1"}` — and keep the AGENT_ID→tab-id mapping in the spawner.
+- Shell-side: set a unique title marker `printf '\033]2;MARKER\033\\'`, then AppleScript-scan terminals for `name contains "MARKER"`. Needs a real tty (fails inside sandboxed tool shells) and shell integration's `title` feature overwrites it at the next prompt — query immediately.
+
 **An AppleScript error is not proof of failure.** Error `-1708` ("event not handled") can fire AFTER the side effect already ran — a `new tab` call that errors may still have created the tab. Between any error and a retry, verify state first (e.g. `count of tabs of window 1`, or list tabs and their `working directory`); blind retries spawn duplicate surfaces.
 
 **Long initial input without quoting hell:** write the text (e.g. a multi-paragraph agent prompt) to a file and have the shell expand it inside the surface:
