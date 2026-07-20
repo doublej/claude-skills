@@ -199,19 +199,28 @@ tell application "Ghostty"
   activate
   -- plain new window / tab
   new window
-  new tab
+  new tab in window 1                   -- new tab REQUIRES a target window
   -- with command, cwd, initial input
   set cfg to new surface configuration
   set initial working directory of cfg to "/Users/jurrejan/Documents/development"
   set command of cfg to "htop"          -- run instead of shell
   set initial input of cfg to "git status\n"  -- or type into the shell
   new window with configuration cfg
+  new tab in window 1 with configuration cfg
 end tell
 ```
 
 Also available: `split <terminal> direction right/down/…`, `input text "…" to <terminal>` (paste-like), `send key "enter" to <terminal>`, `focus`, `select tab`, `close tab/window`, `perform action "<ghostty action string>" on <terminal>`, and read-only access to windows/tabs/terminals (`id`, `name`, `working directory`). Explore with `sdef /Applications/Ghostty.app`.
 
 From bash: `osascript -e 'tell application "Ghostty" to new window'`.
+
+**An AppleScript error is not proof of failure.** Error `-1708` ("event not handled") can fire AFTER the side effect already ran — a `new tab` call that errors may still have created the tab. Between any error and a retry, verify state first (e.g. `count of tabs of window 1`, or list tabs and their `working directory`); blind retries spawn duplicate surfaces.
+
+**Long initial input without quoting hell:** write the text (e.g. a multi-paragraph agent prompt) to a file and have the shell expand it inside the surface:
+```applescript
+set initial input of cfg to "claude \"$(cat /path/to/brief.md)\"\n"
+```
+Quotes, backticks, and newlines in the file pass through untouched — never inline long text into the AppleScript string itself.
 </automation_macos>
 
 <known_limitations>
