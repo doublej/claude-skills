@@ -36,17 +36,17 @@ Capturing input: any real screenshot works. For local HTML:
 <findings>
 | id | Fires when | Typical fix |
 |---|---|---|
-| `body-too-small` | Dominant text cluster < 14 CSS px | Raise body to 14–16px |
+| `body-too-small` | Dominant text cluster < 14 CSS px (findings within ~7% of the floor are marked borderline and capped at warn) | Raise body to 14–16px |
 | `tiny-text` | Secondary cluster < 10px with real usage | Raise captions/labels to ≥11px |
 | `weak-hierarchy` | Largest heading < 1.5× body, or no cluster ≥1.25× body at all ("flat typography") | Push headings to ≥1.5× body or add weight contrast |
 | `no-weight-contrast` | Heading/body differ by neither size (<1.5×) nor stroke weight | Bold the headings |
-| `muddy-scale` | Two well-used sizes < 1.22× apart | Merge them or spread ≥1.25× |
+| `muddy-scale` | Two well-used sizes < 1.15× apart (1.15–1.22 steps like 12/14 are conventional body/caption pairs, not flagged) | Merge them or spread ≥1.25× |
 | `too-many-sizes` | > 5 well-used sizes | Consolidate to a 4–5 step scale |
 | `long-lines` | Body runs > 90 chars per line | Constrain measure to 60–75ch |
 | `wide-measure` | Body text runs > 75% of viewport width | Wrap earlier; don't fill containers edge to edge |
 | `wide-tracking` | Letter-spacing > 0.3em on running text | Reserve tracking for small caps labels |
 | `tight-leading` | Paragraph line-height < 1.3 | Body line-height 1.45–1.65 |
-| `ragged-alignment` | Left edges in one column drift 4–14px | Snap lines to one axis |
+| `ragged-alignment` | Left edges in one column drift ~0.3–0.6em, scattered (two clean edges ≥0.4em apart = intentional hanging indent, skipped) | Snap lines to one axis |
 
 Severities: `high` = fix before showing anyone, `warn` = should fix, `info` =
 context (e.g. retina-scale hint). The cluster table always prints — use it to

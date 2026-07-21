@@ -388,10 +388,12 @@ def analyze(img: Image.Image, args) -> dict:
     body_css = css(body.em)
     if body_css < args.min_body:
         sev = "high" if body_css < args.min_body - 2 else "warn"
-        add("body-too-small", sev,
-            f"Body text ≈{body_css}px (want ≥{args.min_body}px) across "
-            f"{len(body.lines)} lines.",
-            [ln.bbox for ln in body.lines])
+        msg = (f"Body text ≈{body_css}px (want ≥{args.min_body}px) across "
+               f"{len(body.lines)} lines.")
+        if body_css >= args.min_body * 0.93:  # inside ±10% size-estimate error
+            sev = "warn"
+            msg += " Borderline — within measurement tolerance."
+        add("body-too-small", sev, msg, [ln.bbox for ln in body.lines])
     for c in clusters:
         if c is not body and c.em < body.em and c.chars >= 40 and css(c.em) < 10:
             add("tiny-text", "warn",
@@ -421,10 +423,12 @@ def analyze(img: Image.Image, args) -> dict:
         add("weak-hierarchy", "high",
             f"Flat typography: no size cluster ≥1.25× body ({css(body.em)}px) — "
             "everything reads as one level.")
+    # <1.15 = visually indistinguishable near-duplicates. 1.15-1.22 steps
+    # (12/14, 14/16) are conventional body/caption pairs — not flagged.
     sized = sorted((c for c in clusters if c.chars >= 40), key=lambda c: c.em)
     for a, b in zip(sized, sized[1:]):
         r = b.em / a.em
-        if r < 1.22:
+        if r < 1.15:
             add("muddy-scale", "warn",
                 f"Near-identical sizes {css(a.em)}px and {css(b.em)}px "
                 f"({r:.2f}× apart) — merge them or push them ≥1.25× apart.")
@@ -483,8 +487,10 @@ def analyze(img: Image.Image, args) -> dict:
                 # Two clean edges a real indent apart (≥0.4em) is a deliberate
                 # hanging indent, not drift — only scattered edges are sloppy.
                 indent = len(edges) == 2 and spread >= 0.40 * c.em
-                if max(4.0, 0.30 * c.em) < spread <= 14 and len(cols) >= 2 \
-                        and not indent:
+                # true drift is sub-0.6em; larger offsets are layout structure
+                # (rank columns, merged leading elements), not sloppiness
+                if max(4.0, 0.30 * c.em) < spread <= min(14.0, 0.60 * c.em) \
+                        and len(cols) >= 2 and not indent:
                     add("ragged-alignment", "warn",
                         f"{len(group)} lines at ≈{css(c.em)}px share a column "
                         f"but their left edges drift by {spread}px — snap them "
