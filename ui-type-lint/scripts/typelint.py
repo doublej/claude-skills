@@ -23,8 +23,10 @@ from scipy import ndimage
 
 # Cap-height as a fraction of em for common UI fonts (Helvetica/Inter/SF ~0.70-0.73)
 CAP_RATIO = 0.72
-# Mixed-case detector: ascender height / x-height ratio threshold
-MIXED_CASE_RATIO = 1.22
+# Mixed-case band: below LO treat as uniform caps/digits, above HI as mixed
+# case; blend inside the band so the estimator is continuous (a hard cutoff
+# caused an ~18% jump that split one real size into two clusters)
+MIXED_LO, MIXED_HI = 1.15, 1.30
 # Relative gap that separates two font-size clusters
 CLUSTER_GAP = 1.12
 
@@ -190,26 +192,30 @@ def measure_line(line: Line, ink: np.ndarray) -> bool:
         return False  # heights too erratic — likely graphics, not a text line
     h50 = float(np.percentile(body_hs, 50))
     h80 = float(np.percentile(body_hs, 80))
-    if h80 / max(h50, 1.0) >= MIXED_CASE_RATIO:
-        line.em = h80 / CAP_RATIO  # mixed case: tall glyphs are caps/ascenders
+    ratio = h80 / max(h50, 1.0)
+    em_uniform = h50 / 0.70  # uniform heights: assume caps/digits
+    em_mixed = h80 / CAP_RATIO  # mixed case: tall glyphs are caps/ascenders
+    if ratio <= MIXED_LO:
+        line.em = em_uniform
+    elif ratio >= MIXED_HI:
+        line.em = em_mixed
     else:
-        line.em = h50 / 0.70  # uniform heights: assume caps/digits
+        t = (ratio - MIXED_LO) / (MIXED_HI - MIXED_LO)
+        line.em = (1 - t) * em_uniform + t * em_mixed
     if line.em < 5:
         return False
 
     # Stroke width from ink area / perimeter (robust at small sizes where a
     # distance transform is quantization-floored): ribbon of width w has
-    # area ≈ L*w and edge ≈ 2L, so w ≈ 2 * area / edge.
-    pad = 2
-    y0, y1 = max(0, line.y0 - pad), min(ink.shape[0], line.y1 + pad)
-    x0, x1 = max(0, line.x0 - pad), min(ink.shape[1], line.x1 + pad)
-    crop = ink[y0:y1, x0:x1]
-    area = int(crop.sum())
-    if area:
-        edge = area - int(ndimage.binary_erosion(crop).sum())
-        line.weight = (2.0 * area / max(edge, 1)) / line.em
-    else:
-        line.weight = 0.0
+    # area ≈ L*w and edge ≈ 2L, so w ≈ 2 * area / edge. Accumulated per glyph
+    # bbox — a whole-line rect crop counted unrelated ink (icons, rules).
+    area = edge = 0
+    for g in line.glyphs:
+        sub = ink[g.y0:g.y1, g.x0:g.x1]
+        a = int(sub.sum())
+        area += a
+        edge += a - int(ndimage.binary_erosion(sub).sum())
+    line.weight = ((2.0 * area / max(edge, 1)) / line.em) if area else 0.0
 
     # Provisional advance for run-splitting; refined from measured gaps below
     narrow = [g.w for g in line.glyphs if g.w / g.h <= 1.6 and g.h >= 0.5 * h_med]
@@ -277,7 +283,9 @@ def cluster_sizes(lines: list[Line]) -> list[Cluster]:
     lines = sorted(lines, key=lambda ln: ln.em)
     groups: list[list[Line]] = [[lines[0]]]
     for ln in lines[1:]:
-        ref = statistics.fmean(x.em for x in groups[-1])
+        # char-weighted center: short stray lines must not drag the boundary
+        wsum = sum(max(x.chars, 1) for x in groups[-1])
+        ref = sum(x.em * max(x.chars, 1) for x in groups[-1]) / wsum
         if ln.em / ref > CLUSTER_GAP:
             groups.append([ln])
         else:
@@ -324,6 +332,7 @@ def paragraph_leading(lines: list[Line]) -> list[dict]:
         em = statistics.fmean(ln.em for ln in blk)
         out.append({
             "lines": blk,
+            "cluster": blk[0].cluster,
             "em": em,
             "leading": statistics.median(pitches) / em,
             "bbox": [min(l.x0 for l in blk), min(l.y0 for l in blk),
@@ -332,11 +341,50 @@ def paragraph_leading(lines: list[Line]) -> list[dict]:
     return out
 
 
+def pick_body(clusters: list[Cluster], blocks: list[dict]) -> Cluster:
+    """Body = the cluster carrying the most *paragraph mass* (chars in
+    multi-line left-aligned blocks with real line length), not raw char
+    count — raw count favors footers, menus, and table metadata."""
+    mass: dict[int, int] = {}
+    for blk in blocks:
+        if statistics.median(ln.max_cpl for ln in blk["lines"]) >= 20:
+            mass[blk["cluster"]] = mass.get(blk["cluster"], 0) + \
+                sum(ln.chars for ln in blk["lines"])
+    if mass:
+        best = max(mass.values())
+        cands = [i for i, m in mass.items() if m >= 0.75 * best]
+        return max((clusters[i] for i in cands), key=lambda c: c.em)
+    return max(clusters, key=lambda c: c.chars)
+
+
+def line_contrast(line: Line, gray: np.ndarray, ink: np.ndarray) -> float:
+    """WCAG-style contrast ratio between text core color and local background.
+    Core color = darkest/lightest quintile of ink pixels (antialiasing pulls
+    the median toward the background)."""
+    pad = max(2, int(0.3 * line.em))
+    y0, y1 = max(0, line.y0 - pad), min(gray.shape[0], line.y1 + pad)
+    x0, x1 = max(0, line.x0 - pad), min(gray.shape[1], line.x1 + pad)
+    g, m = gray[y0:y1, x0:x1], ink[y0:y1, x0:x1]
+    fg_vals, bg_vals = g[m], g[~m]
+    if fg_vals.size < 10 or bg_vals.size < 10:
+        return 21.0
+    if float(np.std(bg_vals)) > 28:
+        return 21.0  # gradient/photo background — measurement unreliable
+    q = 20 if line.polarity == "dark" else 80
+    fg = float(np.percentile(fg_vals, q))
+    bg = float(np.median(bg_vals))
+    lum = lambda v: (v / 255.0) ** 2.2
+    lo, hi = sorted((lum(fg), lum(bg)))
+    return (hi + 0.05) / (lo + 0.05)
+
+
 def analyze(img: Image.Image, args) -> dict:
     rgb = img.convert("RGB")
     gray = np.asarray(rgb, dtype=np.float32) @ np.array([0.299, 0.587, 0.114],
                                                         dtype=np.float32)
-    masks = binarize(gray, window=31, delta=12.0)
+    # window follows DPR so detection behaves the same at scale 1 and 2
+    win = int(31 * args.scale) | 1
+    masks = binarize(gray, window=win, delta=12.0)
 
     lines: list[Line] = []
     for polarity, ink in masks.items():
@@ -362,7 +410,9 @@ def analyze(img: Image.Image, args) -> dict:
         return result
 
     clusters = cluster_sizes(lines)
-    body = max(clusters, key=lambda c: c.chars)
+    blocks = paragraph_leading(lines)
+    body = pick_body(clusters, blocks)
+    body_idx = clusters.index(body)
     css = lambda px: round(px / scale, 1)
 
     for c in clusters:
@@ -406,12 +456,15 @@ def analyze(img: Image.Image, args) -> dict:
     if headings:
         top = max(headings, key=lambda c: c.em)
         ratio = top.em / body.em
-        if ratio < args.min_heading_ratio:
+        # weight can carry hierarchy: 18/14 bold headings are conventional
+        weight_carries = (ratio >= 1.25 and body.weight > 0
+                          and top.weight / body.weight >= 1.15)
+        if ratio < args.min_heading_ratio and not weight_carries:
             sev = "high" if ratio < 1.35 else "warn"
             add("weak-hierarchy", sev,
                 f"Largest heading is only {ratio:.2f}× body "
                 f"({css(top.em)}px vs {css(body.em)}px; want ≥"
-                f"{args.min_heading_ratio}×).",
+                f"{args.min_heading_ratio}× or a clear weight step).",
                 [ln.bbox for ln in top.lines])
         if ratio < 1.5 and body.weight > 0 and top.weight / body.weight < 1.12:
             add("no-weight-contrast", "high",
@@ -425,14 +478,16 @@ def analyze(img: Image.Image, args) -> dict:
             "everything reads as one level.")
     # <1.15 = visually indistinguishable near-duplicates. 1.15-1.22 steps
     # (12/14, 14/16) are conventional body/caption pairs — not flagged.
+    # Pairs fully below body (caption tiers) are also conventional.
     sized = sorted((c for c in clusters if c.chars >= 40), key=lambda c: c.em)
     for a, b in zip(sized, sized[1:]):
         r = b.em / a.em
-        if r < 1.15:
+        if r < 1.15 and b.em >= body.em * 0.99:
             add("muddy-scale", "warn",
                 f"Near-identical sizes {css(a.em)}px and {css(b.em)}px "
-                f"({r:.2f}× apart) — merge them or push them ≥1.25× apart.")
-    if len(sized) > 5:
+                f"({r:.2f}× apart) — merge them, or separate the roles by "
+                "size (≥1.25×) or weight.")
+    if len(sized) > 6:
         add("too-many-sizes", "warn",
             f"{len(sized)} distinct text sizes with substantial use "
             f"({', '.join(str(css(c.em)) for c in sized)}px) — consolidate to a "
@@ -442,7 +497,7 @@ def analyze(img: Image.Image, args) -> dict:
     wide = [ln for ln in body.lines if ln.max_cpl > args.max_cpl and ln.chars >= 40]
     if wide:
         worst = max(ln.max_cpl for ln in wide)
-        sev = "high" if worst > args.max_cpl + 30 else "warn"
+        sev = "high" if worst > args.max_cpl + 20 else "warn"
         add("long-lines", sev,
             f"{len(wide)} body line(s) exceed {args.max_cpl} chars per line "
             f"(worst ≈{worst:.0f}cpl) — constrain the measure to 60–75ch.",
@@ -465,6 +520,28 @@ def analyze(img: Image.Image, args) -> dict:
             f"{len(tracked)} line(s) with letter-spacing >0.3em — wide tracking "
             "belongs on small caps labels only, not running text.",
             [ln.bbox for ln in tracked])
+
+    # -- contrast -------------------------------------------------------------
+    weak: list[tuple[Line, float]] = []
+    for ln in lines:
+        if ln.chars < 6:
+            continue
+        need = 3.0 if css(ln.em) >= 24 else 4.5
+        cr = line_contrast(ln, gray, masks[ln.polarity])
+        # sub-1.3 would be unreadable outright — that's segmentation noise
+        # (glow, shadows, artwork), not a typography choice
+        if 1.3 <= cr < need:
+            weak.append((ln, cr))
+    if weak:
+        wchars = sum(ln.chars for ln, _ in weak)
+        if len(weak) >= 3 or wchars / total_chars > 0.15:
+            worst = min(cr for _, cr in weak)
+            body_hit = any(ln.cluster == body_idx for ln, _ in weak)
+            sev = "high" if (worst < 3.0 and body_hit) else "warn"
+            add("low-contrast", sev,
+                f"{len(weak)} line(s) below WCAG contrast (worst ≈{worst:.1f}:1; "
+                "want 4.5:1 for text, 3:1 above 24px).",
+                [ln.bbox for ln, _ in sorted(weak, key=lambda t: t[1])])
 
     # -- alignment ------------------------------------------------------------
     for c in clusters:
@@ -499,15 +576,30 @@ def analyze(img: Image.Image, args) -> dict:
             group = [ln] if ln is not None else []
 
     # -- leading --------------------------------------------------------------
-    for blk in paragraph_leading(body.lines):
+    for blk in (b for b in blocks if b["cluster"] == body_idx):
         if blk["leading"] < 1.0:
             continue  # glyphs would overlap — mis-segmentation, not leading
         if blk["leading"] < 1.3:
             sev = "high" if blk["leading"] < 1.15 else "warn"
             add("tight-leading", sev,
                 f"Paragraph of {len(blk['lines'])} lines at line-height ≈"
-                f"{blk['leading']:.2f} (want 1.45–1.65 for body).",
+                f"{blk['leading']:.2f} (want ~1.4–1.6 for body).",
                 [blk["bbox"]])
+        elif blk["leading"] > 1.9:
+            # only wrapped prose has a "paragraph" to drift apart — link
+            # lists and settings rows legitimately sit at 2em+ pitch. Wrapped
+            # prose fills the block: non-final lines end near the right edge.
+            blines = blk["lines"]
+            x1m = max(l.x1 for l in blines)
+            w = max(x1m - min(l.x0 for l in blines), 1)
+            full = sum(1 for l in blines[:-1] if l.x1 >= x1m - 0.15 * w)
+            if full / (len(blines) - 1) >= 0.6 and \
+                    statistics.median(l.max_cpl for l in blines) >= 25:
+                add("loose-leading", "warn",
+                    f"Paragraph of {len(blines)} lines at line-height ≈"
+                    f"{blk['leading']:.2f} — lines drift apart above ~1.8; "
+                    "the paragraph stops reading as one block.",
+                    [blk["bbox"]])
 
     if scale == 1.0 and rgb.width >= 2200 and body_css >= 22:
         add("scale-hint", "info",
@@ -568,10 +660,11 @@ def main() -> int:
                         "Findings are reported in CSS px = device px / scale.")
     p.add_argument("--min-body", type=float, default=14.0,
                    help="Minimum acceptable body size in CSS px (default 14)")
-    p.add_argument("--min-heading-ratio", type=float, default=1.5,
-                   help="Minimum heading/body size ratio (default 1.5)")
-    p.add_argument("--max-cpl", type=float, default=90.0,
-                   help="Maximum chars per line for body text (default 90)")
+    p.add_argument("--min-heading-ratio", type=float, default=1.4,
+                   help="Minimum heading/body size ratio (default 1.4; a "
+                        "≥1.15× weight step relaxes it down to 1.25)")
+    p.add_argument("--max-cpl", type=float, default=80.0,
+                   help="Maximum chars per line for body text (default 80)")
     p.add_argument("--annotate", metavar="OUT.png",
                    help="Write a copy with line boxes and flagged regions drawn")
     p.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
