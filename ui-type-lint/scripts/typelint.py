@@ -371,7 +371,9 @@ def analyze(img: Image.Image, args) -> dict:
             "stroke_weight": round(c.weight, 3),
             "lines": len(c.lines),
             "chars": c.chars,
-            "role": "body" if c is body else ("heading" if c.em > body.em else "small"),
+            "role": ("body" if c is body else
+                     "heading" if c.em >= body.em * 1.25 else
+                     "small" if c.em < body.em else "text"),
         })
 
     findings = result["findings"]
@@ -477,8 +479,12 @@ def analyze(img: Image.Image, args) -> dict:
                     edges[g.x0 // 2] = edges.get(g.x0 // 2, 0) + 1
                 cols = [n for n in edges.values() if n >= 2]
                 # min spread scales with em: ink left-bearing varies ~0.1-0.3em
-                # with the starting letterform even when CSS x is identical
-                if max(4.0, 0.30 * c.em) < spread <= 14 and len(cols) >= 2:
+                # with the starting letterform even when CSS x is identical.
+                # Two clean edges a real indent apart (≥0.4em) is a deliberate
+                # hanging indent, not drift — only scattered edges are sloppy.
+                indent = len(edges) == 2 and spread >= 0.40 * c.em
+                if max(4.0, 0.30 * c.em) < spread <= 14 and len(cols) >= 2 \
+                        and not indent:
                     add("ragged-alignment", "warn",
                         f"{len(group)} lines at ≈{css(c.em)}px share a column "
                         f"but their left edges drift by {spread}px — snap them "
