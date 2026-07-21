@@ -500,6 +500,8 @@ def analyze(img: Image.Image, args) -> dict:
 
     # -- leading --------------------------------------------------------------
     for blk in paragraph_leading(body.lines):
+        if blk["leading"] < 1.0:
+            continue  # glyphs would overlap — mis-segmentation, not leading
         if blk["leading"] < 1.3:
             sev = "high" if blk["leading"] < 1.15 else "warn"
             add("tight-leading", sev,
