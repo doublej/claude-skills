@@ -209,6 +209,16 @@ def check_conflicts(prompt, params, findings):
             _add(findings, "info", "oref-no-ow",
                  "--oref without --ow uses weight 100; raise toward 300+ for strict likeness, drop to 30 for loose inspiration")
 
+    ver = next((v for f, v, _ in params if f.lower() in {"v", "version"}), None)
+    if ver:
+        try:
+            if float(ver.split()[0]) < 7:
+                _add(findings, "info", "old-model",
+                     f"--v {ver.split()[0]} selects a pre-2025 model; V8.2 is the current default",
+                     "drop --v to use the default, or --v 7 if you need native --oref")
+        except ValueError:
+            pass
+
     if "::" in prompt:
         _add(findings, "error", "multiprompt",
              ":: multi-prompt weighting is not supported on V7 or V8",
