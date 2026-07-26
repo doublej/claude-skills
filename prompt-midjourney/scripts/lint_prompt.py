@@ -51,14 +51,17 @@ ANTI_PATTERN_WORDS = [
     "hyperrealistic", "hyper realistic", "hyper-realistic",
     "photorealistic", "photo realistic", "photo-realistic",
     "beautiful", "stunning", "gorgeous", "breathtaking",
-    "perfect", "flawless", "immaculate",
+    "flawless", "immaculate", "perfect skin", "perfect face",
     "trending on artstation", "artstation", "deviantart",
     "unreal engine", "octane render",
-    "intricate details", "sharp focus", "professional",
+    "intricate details",
 ]
 
 # Anti-patterns that are only a problem as bare filler, fine when qualified.
+# Kept at info severity because each has a legitimate use ("a professional kitchen").
 SOFT_ANTI_PATTERNS = {
+    "professional": "if this describes quality rather than a subject, cut it — it reads as spam",
+    "sharp focus": "state the aperture instead (f/8, deep focus)",
     "cinematic lighting": "name the actual setup (low-key rim light, overcast softbox, practical neon)",
     "dramatic lighting": "name the actual setup (hard key from camera-left, deep falloff)",
     "epic": "describe the scale concretely (figure dwarfed by a 200m concrete wall)",
@@ -100,21 +103,32 @@ def parse_params(prompt):
     return out
 
 
+# Flags taking no value at all.
+BOOLEAN_FLAGS = {"hd", "sd", "raw", "tile", "draft", "video", "fast", "relax", "turbo"}
+# Flags taking exactly one token.
+SINGLE_VALUE_FLAGS = {
+    "ar", "aspect", "s", "stylize", "chaos", "c", "weird", "w", "sw", "ow", "iw", "exp",
+    "stop", "seed", "sv", "r", "repeat", "niji", "v", "version", "profile", "motion", "style", "q", "quality", "cw",
+}
+# Flags whose value is a list or free text: --no, --sref, --oref, --p. Not position-checked.
+
+
 def check_param_position(prompt, params, findings):
-    """All parameters must sit at the very end, after every word of the prompt."""
-    if not params:
-        return
-    first_param_start = params[0][2]
-    tail = prompt[first_param_start:]
-    # Strip out flags and their values, see if any prose survives between them.
-    stripped = re.sub(r"https?://\S+", " ", tail)
-    stripped = re.sub(r"--[a-zA-Z]+", " ", stripped)
-    stripped = re.sub(r"[\d.:,/]+", " ", stripped)
-    leftovers = [w for w in stripped.split() if len(w) > 2 and w.lower() not in {"raw", "random", "none", "low", "high", "niji"}]
-    if leftovers:
+    """All parameters sit at the end. Prose after a flag that can't hold it is misplaced text."""
+    for flag, value, _idx in params:
+        key = flag.lower()
+        tokens = value.split()
+        if key in BOOLEAN_FLAGS and tokens:
+            leftover = tokens
+        elif key in SINGLE_VALUE_FLAGS and len(tokens) > 1:
+            leftover = tokens[1:]
+        else:
+            continue
         _add(findings, "error", "param-position",
-             f"Prose appears after the first parameter ({' '.join(leftovers[:6])}...); mid-prompt parameters break the parser",
+             f"Text follows --{flag} that it cannot take ({' '.join(leftover[:6])}); "
+             "a parameter mid-prompt breaks the parser",
              "move every --flag to the end, after all natural language")
+        return
 
 
 def check_dead_params(params, findings):
