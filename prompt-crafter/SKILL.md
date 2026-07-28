@@ -1,13 +1,13 @@
 ---
 name: prompt-crafter
-description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design, XML-structured prompts for Claude (10-component framework, tag patterns). Use when the deliverable is a prompt, CLAUDE.md, system prompt, slash command, or skill instruction. Triggers on 'write a prompt', 'improve this prompt', 'lint my prompt', 'XML prompt', 'system prompt', 'CLAUDE.md rules'."
+description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design, XML-structured prompts, with model-specific guidance for Claude 5 (Fable/Opus/Sonnet), Claude 4.x, and GPT-5.6. Use when the deliverable is a prompt, CLAUDE.md, system prompt, slash command, or skill instruction. Triggers on 'write a prompt', 'improve this prompt', 'lint my prompt', 'XML prompt', 'system prompt', 'CLAUDE.md rules', 'prompt for opus 5', 'prompt for sonnet 5', 'fable prompt', 'gpt-5.6 prompt'."
 ---
 
 # Prompt Crafter
 
-Craft high-quality prompts for Claude Code across all surfaces: interactive sessions, CLAUDE.md files, system prompts, slash commands, and CLI automation.
+Craft high-quality prompts across all surfaces: interactive sessions, CLAUDE.md files, system prompts, slash commands, and CLI automation.
 
-Optional argument (`$ARGUMENTS`): target model — one of `opus-4-8`, `opus-4-7`, `sonnet`, `generic`. Default: `generic`.
+Optional argument (`$ARGUMENTS`): target model. See `<model_routing>` for accepted values. Default: `generic`.
 
 <scope>
 ## Step 0 — Scope check (do this first, before anything else)
@@ -22,25 +22,55 @@ Before applying any prompt pattern, confirm the **deliverable is a prompt or ins
 Only exception: if the user *intentionally* invoked `/prompt-crafter` for a fuzzy/large task and an implementation brief is genuinely what they want, you may produce it — but say so explicitly and confirm that's the intent rather than defaulting to it.
 </scope>
 
-<lint_rewrite>
-## Lint + Rewrite (model-specific)
+<model_routing>
+## Step 1 — Resolve the target model
 
-When the user asks to **improve, review, or lint a prompt**, select the template by target model.
+Do this for **both** paths — writing a new prompt and linting an existing one. Model-specific guidance is conditional: it only applies once a target is resolved.
 
-Model resolution order:
-1. `$ARGUMENTS` if provided (e.g. `/prompt-crafter opus-4-8`)
-2. Stated in conversation
+Resolution order:
+1. `$ARGUMENTS` if provided (e.g. `/prompt-crafter opus-5`)
+2. Stated in conversation, or named inside the draft prompt / surrounding code (a model ID string, an SDK call, a `model=` field)
 3. Default: `generic`
 
-| `$ARGUMENTS` / stated model | Template to load |
-|-----------------------------|-----------------|
-| `opus-4-8` | `references/lint-opus-4-8.md` |
-| `opus-4-7` | `references/lint-opus-4-7.md` |
-| `sonnet` | `references/lint-sonnet.md` |
-| `generic` / unspecified | `references/lint-generic.md` |
+| Accepted value | Route | Reference |
+|----------------|-------|-----------|
+| `fable-5`, `fable`, `mythos-5`, `claude-fable-5` | Claude Fable 5 / Mythos 5 | `references/lint-fable-5.md` |
+| `opus-5`, `opus`, `claude-opus-5` | Claude Opus 5 | `references/lint-opus-5.md` |
+| `sonnet-5`, `sonnet`, `claude-sonnet-5` | Claude Sonnet 5 | `references/lint-sonnet-5.md` |
+| `gpt-5.6`, `gpt-5.6-sol`, `sol`, `terra`, `luna` | GPT-5.6 | `references/lint-gpt-5-6.md` |
+| `opus-4-8` | Claude Opus 4.8 | `references/lint-opus-4-8.md` |
+| `opus-4-7` | Claude Opus 4.7 | `references/lint-opus-4-7.md` |
+| `sonnet-4-6` | Claude Sonnet 4.6 | `references/lint-sonnet-4-6.md` |
+| `generic` / unspecified | Model-agnostic | `references/lint-generic.md` |
 
-Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask if critical ones are missing), then apply the lint + rewrite workflow inline. The templates are self-contained instructions — follow them exactly.
-</lint_rewrite>
+Bare `opus` / `sonnet` resolve to the **5-series**. Older models need the explicit version suffix.
+For GPT-5.1 / 5.2 targets, hand off to the `prompt-gpt` skill instead.
+
+### Lint + Rewrite
+
+When the user asks to **improve, review, or lint a prompt**: read the routed reference, substitute `<<PLACEHOLDERS>>` with user-provided values (ask if critical ones are missing), then apply the lint + rewrite workflow inline. The templates are self-contained instructions — follow them exactly.
+
+### New prompt authoring
+
+When **writing** a prompt, do not load the full lint template. Apply the `<model_profiles>` deltas below on top of the base patterns, and load the routed reference only if the prompt is agentic, long-horizon, or the user asks for a full review.
+</model_routing>
+
+<model_profiles>
+## Step 2 — Apply the model profile (conditional)
+
+Base patterns below are model-agnostic. These deltas override them for the resolved target. If the target is `generic`, skip this section entirely.
+
+| Target | Apply | Delete |
+|--------|-------|--------|
+| **Claude Opus 5** | Explicit conciseness instruction (effort does **not** shorten visible output); deliverable-length calibration; scope-discipline clause; subagent cap; correction-narration limit | Verification instructions ("double-check", "verify before responding", "use a subagent to verify"); forced-progress scaffolding; any "delegate more" guidance |
+| **Claude Sonnet 5** | Explicit scope on instructions meant to generalise (it will not infer); tool-triggering nudge when thinking is off; concrete design specs or propose-4-directions; coverage-first code review | Forced-progress scaffolding; `temperature`/`top_p`/`top_k` (400); `budget_tokens` (400); holdover 4.6 style directives |
+| **Claude Fable 5** | Anti-gold-plating clause; anti-overplanning clause; progress-claim grounding; explicit boundaries; checkpoint rule; memory surface; async subagent delegation | Step-by-step scaffolding written for older models; any "show your reasoning" instruction (triggers `reasoning_extraction` refusal); all `thinking` config; assistant prefill |
+| **GPT-5.6** | Autonomy boundaries naming safe local actions; concrete tone choices; what a short answer must still contain; task-specific PTC routing | Duplicated instructions and redundant examples (10–15% eval gain, 41–66% fewer tokens); broad brevity instructions carried from 5.5; "ask first" on already-safe actions; irrelevant tools |
+
+**Shared across the Claude 5 series:** adaptive thinking (no `budget_tokens`), no sampling parameters, no last-assistant-turn prefill, `thinking.display` defaults to `"omitted"`, effort ladder `low`→`max`. Sweep low/medium before assuming high — all three punch above their tier at reduced effort.
+
+**Cross-cutting inversion:** on the 5-series, "tell the model to self-check" and "enumerate every step" are anti-patterns, not best practices. Cutting instructions is usually the higher-yield edit.
+</model_profiles>
 
 <workflow>
 ---
@@ -48,11 +78,13 @@ Read the template, substitute `<<PLACEHOLDERS>>` with user-provided values (ask 
 ## Workflow (new prompt creation)
 
 1. **Clarify intent** — What surface? (interactive, CLAUDE.md, CLI, slash command, API)
-2. **Select pattern** — Match the task to a prompt pattern
-3. **Structure context** — Apply the context hierarchy
-4. **Draft prompt** — Write using the appropriate template
-5. **Optimise** — Compress tokens, remove redundancy, add examples if needed
-6. **Verify** — Self-check with the reflexion checklist
+2. **Resolve the target model** — see `<model_routing>`
+3. **Select pattern** — Match the task to a prompt pattern
+4. **Structure context** — Apply the context hierarchy
+5. **Draft prompt** — Write using the appropriate template
+6. **Apply the model profile** — layer the `<model_profiles>` deltas on top; skip if target is `generic`
+7. **Optimise** — Compress tokens, remove redundancy, add examples if needed
+8. **Verify** — Self-check with the reflexion checklist
 </workflow>
 
 <surfaces>
@@ -345,11 +377,14 @@ Before finalising any prompt, check:
 - [ ] **Examples present** — If output format matters, is there at least one example?
 - [ ] **Verification included** — Does it specify how to confirm success?
 - [ ] **No defaults restated** — Are you only adding what Claude doesn't already know?
+- [ ] **Model profile applied** — If a target model was resolved, are its deltas layered on (including the deletions)?
 </verification>
 
 ## References
 
+- Model-specific lint templates: `references/lint-<target>.md` — see `<model_routing>` for the map
 - For deep XML tag patterns: `references/xml-patterns.md`
+- For GPT-5.1 / 5.2 targets: use the `prompt-gpt` skill
 - For CLAUDE.md optimisation: use the `claude-md-optimizer` skill
 - For CLAUDE.md/AGENT.md formatting (good vs bad examples): `../claude-md-optimizer/references/formatting-examples.md`
 - For CLI automation patterns: use the `claude-headless` skill

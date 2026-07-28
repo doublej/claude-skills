@@ -105,7 +105,7 @@ code-optimize  (user picks dimensions; fans out agents; fixes; atomic commits)
 | `full-optimize/SKILL.md:21-24`, `code-refactor/SKILL.md:60,70,119`, `code-audit/SKILL.md:89` | Invoke `codebase-mapper`, `repomap-analyzer`, `dev-refactor`, `codebase-simplify` — all renamed 2026-05-28 |
 | `tmux/scripts/tmux-init.sh:64-69`, `tmux/SKILL.md:52,177` | Call `iterm2/scripts/iterm2_run.py` which **was never committed** (`iterm2/scripts/` is empty); auto-visibility silently degrades |
 | `iterm2/SKILL.md:198-233` ≡ `tmux/SKILL.md:219-253` | Word-for-word duplicated "Remote Windows Hosts (SSH/SCP)" section → extract one shared reference |
-| `prompt-crafter/SKILL.md:10,30-35` + `references/lint-opus*.md` | Lint targets stop at opus-4-7/4-6; no template for current models — add one, retire 4-6 |
+| ~~`prompt-crafter/SKILL.md:10,30-35` + `references/lint-opus*.md`~~ | ~~Lint targets stop at opus-4-7/4-6; no template for current models~~ — **done**: routes + templates added for fable-5, opus-5, sonnet-5, gpt-5.6; `lint-sonnet.md` → `lint-sonnet-4-6.md` |
 | `skill-usage-tracker/SKILL.md:107` | Claims PostToolUse hook lives in repo `.claude/settings.json`; it's actually in global `~/.claude/settings.json` |
 | Hooks: `track_usage.py` + `mark_skill.sh` | Both parse the same PostToolUse(Skill) payload independently → single marker writer, two consumers |
 
