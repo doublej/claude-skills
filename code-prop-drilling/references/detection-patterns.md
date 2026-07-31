@@ -99,7 +99,160 @@ pattern: self\.(\w+)\s*=\s*(\1)
 ```
 A param stored as `self.x = x` that is only used as `self.x` in calls to sub-objects is drilling.
 
-## 5. Prop forwarding patterns
+## 5. TypeScript (non-component) signatures
+
+Family B. A `.ts` module exporting plain functions/classes — servers, CLIs, services, transports. Distinguish from family A by the absence of JSX/`.svelte` syntax in the file.
+
+### Function parameters
+```
+pattern: export\s+(?:async\s+)?function\s+(\w+)\s*\(([^)]*)\)
+pattern: const\s+(\w+)\s*=\s*(?:async\s*)?\(([^)]*)\)\s*(?::[^=]+)?=>
+```
+
+### Constructor-injected members (parameter properties)
+```
+pattern: constructor\s*\(([^)]*)\)
+pattern: (?:private|public|protected|readonly)\s+(\w+)\s*:
+```
+`constructor(private readonly db: Db)` declares AND assigns in one step — if `this.db` is only read inside calls to another object, that is drilling.
+
+### Deps / context object threading
+```
+pattern: (?:deps|ctx|context|env|services)\s*:\s*\{
+pattern: interface\s+(\w*(?:Deps|Context|Ctx|Services))\b
+```
+A `Deps` object is only drilling when a layer receives it, reads none of its fields, and hands it on. A layer that reads even one field is a legitimate consumer.
+
+### Factory closures (the composition root)
+```
+pattern: export\s+function\s+create(\w+)\s*\(([^)]*)\)
+```
+Params captured by a returned closure are NOT drilled — the closure is the injection point.
+
+## 6. C++ signatures
+
+Family B. The drilling signature is a constructor param stored in a trailing-underscore member that is only ever read to construct or call something else.
+
+### Constructor parameters
+```
+pattern: explicit\s+(\w+)\s*\(([^)]*)\)
+pattern: ^\s*(\w+)\s*\(([^)]*)\)\s*(?::|;|\{)
+```
+
+### Member-initialiser list (param → member binding)
+```
+pattern: \)\s*:\s*((?:\w+_?\(\w+\)\s*,?\s*)+)
+pattern: (\w+_)\s*\(\s*(\w+)\s*\)
+```
+Match `member_(param)` pairs, then check whether `member_` is read anywhere except as an argument.
+
+### Member declarations
+```
+pattern: ^\s*(?:const\s+)?[\w:<>,\s*&]+\s+(\w+_)\s*(?:=|;)
+```
+
+### Sub-object construction (the forwarding edge)
+```
+pattern: std::make_(?:unique|shared)<(\w+)>\(([^)]*)\)
+pattern: new\s+(\w+)\s*\(([^)]*)\)
+pattern: (\w+)_?\s*\{\s*([^}]*)\s*\}      # brace init of a member
+```
+
+### Free-function parameter forwarding
+```
+pattern: \b(\w+)\s*\(([^)]*\b\w+\b[^)]*)\)\s*;
+```
+Narrow to calls whose arguments are verbatim the enclosing function's params.
+
+## 7. Zig signatures
+
+Family B. Zig has no hidden injection — everything is an explicit param or struct field, which makes the graph easy to read and makes over-reporting easy too. Filter hard (see §12).
+
+### Function parameters
+```
+pattern: pub\s+fn\s+(\w+)\s*\(([^)]*)\)
+pattern: fn\s+(\w+)\s*\(([^)]*)\)
+```
+
+### init / deinit constructors
+```
+pattern: pub\s+fn\s+init\s*\(([^)]*)\)
+```
+`init(gpa, cfg)` storing `.cfg = cfg` into the struct, where `self.cfg` is only read to build a sub-struct, is drilling.
+
+### Struct fields set from params
+```
+pattern: (\w+)\s*:\s*[\w\.\[\]\*\?!]+\s*(?:=\s*[^,]+)?,
+pattern: \.(\w+)\s*=\s*(\1)\b        # .cfg = cfg — field bound straight from a param
+```
+
+### Sub-struct construction (the forwarding edge)
+```
+pattern: (\w+)\.init\(([^)]*)\)
+pattern: (\w+)\{\s*(\.\w+\s*=\s*[^,}]+,?\s*)+\}
+```
+
+### Context-struct convention
+```
+pattern: (?:Context|Ctx|Deps|Env)\s*=\s*struct\s*\{
+```
+Already-grouped deps — a layer passing an existing `Context` through is the intended design, not drilling.
+
+## 8. C# signatures
+
+Family B, constructor injection.
+
+### Constructor parameters
+```
+pattern: public\s+(\w+)\s*\(([^)]*)\)\s*(?:\{|:)
+```
+
+### Injected readonly fields
+```
+pattern: private\s+readonly\s+([\w<>,\s]+)\s+(_\w+)\s*;
+pattern: (_\w+)\s*=\s*(\w+)\s*;        # _config = config
+```
+
+### Primary constructors (C# 12+)
+```
+pattern: (?:class|record|struct)\s+(\w+)\s*\(([^)]*)\)
+```
+
+### Sub-object construction (the forwarding edge)
+```
+pattern: new\s+(\w+)\s*\(([^)]*)\)
+```
+
+### DI registration (the destination, not a finding)
+```
+pattern: services\.Add(?:Singleton|Scoped|Transient)<
+pattern: IOptions<(\w+)>
+```
+
+## 9. Kotlin / Java signatures
+
+Family B. On Android the layer graph is usually shallow; expect few real findings and many `Context` false positives.
+
+### Kotlin constructor / function params
+```
+pattern: class\s+(\w+)\s*(?:@\w+\s*)?\(([^)]*)\)
+pattern: fun\s+(\w+)\s*\(([^)]*)\)
+pattern: (?:private\s+)?val\s+(\w+)\s*:\s*(\w+)
+```
+
+### Java constructor / fields
+```
+pattern: public\s+(\w+)\s*\(([^)]*)\)\s*\{
+pattern: private\s+final\s+([\w<>]+)\s+(\w+)\s*;
+```
+
+### DI annotations (the destination, not a finding)
+```
+pattern: @(?:Inject|Provides|Binds|Module|HiltAndroidApp|AndroidEntryPoint)
+pattern: CompositionLocal(?:Of|Provider)
+```
+
+## 10. Prop forwarding patterns
 
 These indicate a component is passing props through without using them.
 
@@ -138,7 +291,46 @@ Python:  **kwargs
          pattern: \*\*\w+
 ```
 
-## 6. Child component/function call patterns
+### Family B explicit pass-through
+
+A param handed on under the same name, or a stored member handed on, with no read in between:
+
+```
+TypeScript:  child(ctx) / new Child(this.db)
+             pattern: \w+\(\s*(?:this\.)?(\w+)\s*[,)]
+
+C++:         Child(cfg) / std::make_unique<Child>(cfg_)
+             pattern: (?:make_unique|make_shared)<\w+>\(\s*(\w+_?)\s*[,)]
+             pattern: \w+\(\s*(\w+_)\s*[,)]
+
+Zig:         Child.init(gpa, cfg) / .{ .cfg = cfg }
+             pattern: \w+\.init\(\s*[^)]*\b(\w+)\b[^)]*\)
+             pattern: \.(\w+)\s*=\s*(?:self\.)?(\1)\b
+
+C#:          new Child(_config)
+             pattern: new\s+\w+\(\s*(?:this\.)?(_?\w+)\s*[,)]
+
+Kotlin/Java: Child(config) / new Child(this.config)
+             pattern: \w+\(\s*(?:this\.)?(\w+)\s*[,)]
+```
+
+### Family B spread / variadic forwarding (never drilling)
+
+```
+C++:         std::forward<Args>(args)...   perfect forwarding
+             pattern: std::forward<[^>]+>\(
+
+Zig:         args: anytype  /  @call(.auto, f, args)
+             pattern: :\s*anytype\b
+
+C#:          params object[] args
+             pattern: \bparams\s+\w+\[\]
+
+Kotlin:      vararg args
+             pattern: \bvararg\b
+```
+
+## 11. Child component/function call patterns
 
 ### React JSX
 ```
@@ -168,7 +360,27 @@ pattern: self\.(\w+)\s*=\s*(\w+)\(  # constructor assignment
 ```
 Track which params from the current function are passed as arguments to these calls.
 
-## 7. False positive filters
+### Family B ownership edges
+
+For C++, Zig, C#, Kotlin/Java and class-based TypeScript, the graph edge is usually **ownership**, not a call: layer A owns an instance of layer B, so A's constructor is where B's dependencies get handed over.
+
+```
+C++:         member declared as std::unique_ptr<Child> child_;
+             pattern: (?:unique_ptr|shared_ptr|optional)<(\w+)>\s+(\w+_)
+
+Zig:         field declared as child: Child,
+             pattern: (\w+)\s*:\s*([A-Z]\w+)\s*,
+
+C#:          private readonly Child _child;
+             pattern: private\s+readonly\s+(\w+)\s+(_\w+)
+
+Kotlin:      private val child: Child
+             pattern: private\s+val\s+(\w+)\s*:\s*(\w+)
+```
+
+Resolve the owned type to its own file, then continue the walk there. An ownership chain three classes deep with the same ctor param at each level is the canonical family-B CRITICAL finding.
+
+## 12. False positive filters
 
 ### Callback/event handler props
 Skip props matching these patterns — they are intentional pass-down:
@@ -233,11 +445,120 @@ pattern: class\s+\w+\(.*(?:ABC|Protocol)
 pattern: @click\.|@typer\.
 ```
 
+### The mandatory-threading set — NEVER flag
+
+These must appear at every layer for the code to be *correct*. Reporting them is worse than reporting nothing: the "fix" breaks cancellation, leaks memory, or leaks an Activity.
+
+```
+Zig:          std.mem.Allocator, allocator, gpa, arena
+              pattern: :\s*(?:std\.mem\.)?Allocator\b
+              Explicit allocator passing IS the language convention. Never a finding.
+
+C#:           CancellationToken
+              pattern: CancellationToken\s+\w+
+              Cooperative cancellation only works if threaded to every await point.
+
+TypeScript:   AbortSignal, signal
+              pattern: :\s*AbortSignal\b
+
+Kotlin/Java:  android.content.Context, Activity, Application
+              pattern: :\s*Context\b  |  \bContext\s+\w+
+              Platform APIs require it at the call site; hoisting it leaks the Activity.
+
+Go-style ctx: ctx, context (TypeScript/Hono/Koa/Express handler signatures)
+              pattern: \bctx\b|\bcontext\b
+```
+
+### TypeScript (family B) false positives
+```
+# Framework handler signature — req/res/next/ctx are the contract, not drilling
+pattern: \((?:req|request|res|response|next|ctx|c)\b
+
+# Factory closure params — captured, which IS the injection
+pattern: export\s+function\s+create\w+\s*\(
+
+# Generic type params and branded types
+pattern: <[A-Z]\w*(?:\s*extends\b)?
+```
+
+### C++ false positives
+```
+# Perfect forwarding / variadic templates — deliberate pass-through
+pattern: std::forward<|template\s*<[^>]*\.\.\.
+
+# Allocator, executor, io_context — same mandatory-threading logic as Zig's allocator
+pattern: \b(?:allocator|executor|io_context|io_service)\b
+
+# Pimpl handle — impl_ exists precisely to be forwarded
+pattern: (?:std::unique_ptr<\w*Impl>|\bimpl_\b)
+
+# Non-owning observer params required by an API contract
+pattern: \bconst\s+\w+\s*&\s*\w+\s*\)   # const& is often read-only borrow, verify before flagging
+
+# RAII scope guards / lock guards
+pattern: \b(?:lock_guard|unique_lock|scoped_lock|shared_lock)\b
+```
+
+Also skip anything under `third_party/`, `vendor/`, or a vendored upstream library (opus, ffmpeg, quirc, ggwave, stb, imgui). The project does not own that code.
+
+### Zig false positives
+```
+# Allocator — see the mandatory set above. This is the #1 Zig false positive.
+pattern: (?:gpa|allocator|arena|alloc)\s*:\s*(?:std\.mem\.)?Allocator
+
+# comptime params — resolved at compile time, no runtime flow
+pattern: comptime\s+\w+\s*:
+
+# anytype varargs — deliberate forwarding
+pattern: :\s*anytype\b
+
+# self receiver
+pattern: self\s*:\s*(?:\*|\*const\s+)?@This\(\)|self\s*:\s*(?:\*)?\w+
+
+# Error-set and type params
+pattern: :\s*type\b
+```
+
+### C# false positives
+```
+# CancellationToken — see the mandatory set above
+pattern: CancellationToken
+
+# Framework-injected services that are meant to reach every layer
+pattern: \b(?:IServiceProvider|ILogger<|ILoggerFactory|IConfiguration)\b
+
+# IOptions<T> — already the DI answer to config drilling
+pattern: IOptions<
+
+# Records with positional params (data carriers, not layers)
+pattern: record\s+(?:class\s+|struct\s+)?\w+\s*\(
+```
+
+### Kotlin / Java false positives
+```
+# Android Context — see the mandatory set above
+pattern: \bContext\b
+
+# DI-annotated ctors — already wired, not drilled
+pattern: @Inject|@AssistedInject|@HiltViewModel
+
+# Coroutine scope / dispatcher — threading these is the concurrency contract
+pattern: \b(?:CoroutineScope|CoroutineDispatcher|CoroutineContext)\b
+
+# data class primary ctor — a data carrier, not a layer
+pattern: data\s+class\s+\w+\s*\(
+```
+
 ### Common non-drilling props/params
 Skip these utility props that are typically passed at every level:
 ```
-Frontend: className, class, style, id, key, data-testid, aria-*, role, tabIndex
-Python:   self, cls, logger, verbose, debug
+Frontend:    className, class, style, id, key, data-testid, aria-*, role, tabIndex
+Python:      self, cls, logger, verbose, debug
+TypeScript:  ctx, req, res, next, signal, logger
+C++:         allocator, alloc, logger, impl_
+Zig:         gpa, allocator, arena, self, comptime params
+C#:          CancellationToken, ILogger, IServiceProvider
+Kotlin/Java: Context, CoroutineScope, savedStateHandle
 ```
 
 ## Search strategy
@@ -261,3 +582,16 @@ Python:   self, cls, logger, verbose, debug
 2. **Trace service layers** — route handler → service → repository chains are common drilling paths
 3. **Check config/settings objects** — a `config` param passed 3+ levels deep is often better served by DI or module-level access
 4. **Focus on non-`__init__` functions** — functions receiving params only to forward them to other functions
+
+### Family B search strategy (TypeScript, C++, Zig, C#, Kotlin/Java)
+
+1. **Start at the constructors.** In every one of these languages the drilling signature is the same shape: a ctor param stored into a field (`this.x`, `x_`, `_x`, `.x = x`) that is only ever read as an argument. Grep the assignment, then grep the field's every read.
+2. **Follow ownership, not calls.** A layer is usually a class that *owns* the next class. Resolve `unique_ptr<Child> child_` / `private readonly Child _child` / `child: Child` to that type's file and continue there. Call-graph walking finds far fewer real chains than ownership walking.
+3. **The composition root is the boundary.** `main()`, `Program.cs`, `createServer()`, `Application.onCreate()` — a param that originates there and reaches a leaf unchanged is the classic chain. Start from the root and walk down once, rather than tracing every leaf upward.
+4. **Config objects are the usual culprit.** A `Config`/`Settings`/`Options` struct threaded 3+ levels where each level reads one or two fields is the highest-value finding in family B, and narrowing the signature fixes it without any container.
+5. **Header-first in C++.** Read `.h`/`.hpp` only to build the graph — ctor signatures and member declarations both live there. Open the `.cpp` only to confirm whether a member is *read* or merely forwarded.
+6. **Watch the LoC-split files.** Codebases with a per-file line cap split one logical layer across siblings (`foo.zig` + `foo_impl.zig`, `layout.zig` + `layout_pack.zig`). Those are one layer, not two — collapse them before counting depth, or every chain inflates by one.
+
+### Polyglot repos
+
+Scan one language at a time and keep the chains separate. A prop cannot drill across a C-ABI boundary or a socket — where a value crosses from TypeScript to Zig to C++, that is a *protocol*, not a call chain, and its "layers" are wire messages. Report those boundaries as the natural chain terminators, never as intermediaries.
