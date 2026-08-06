@@ -12,6 +12,7 @@ Display boot sequence:
 ║                                                              ║
 ║   SESSION SEARCH v3.0                                        ║
 ║   History Search & Analysis Engine                           ║
+║   github.com/doublej                                         ║
 ║                                                              ║
 ╠══════════════════════════════════════════════════════════════╣
 ║                                                              ║
