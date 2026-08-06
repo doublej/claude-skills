@@ -4,10 +4,13 @@ description: "Scan all git worktrees for orphaned (unmerged) work against main/d
 ---
 
 <arguments>
-`/worktree-orphanage [target-branch...] [--yes]`
+`/worktree-orphanage [target-branch...] [--branches] [--yes]`
 
 - `target-branch...` — merge targets to check against. Default: auto-detect
   main, master, develop (every one that exists locally or on origin).
+- `--branches` / `-b` — also scan local branches that aren't checked out in
+  any worktree folder (shown as `(no worktree)` rows). Pass it through to
+  the script.
 - `--yes` / `-y` — skip the phase-2 confirmation gate, go straight to the
   detailed report.
 </arguments>
@@ -19,7 +22,7 @@ agents, no session-search.
 Run from the repo (pass any target-branch args through):
 
 ```bash
-<skill-dir>/scripts/scan.sh [target-branch...]
+<skill-dir>/scripts/scan.sh [--branches] [target-branch...]
 ```
 
 If cwd is not a repo (script exits 2 with `NOT_A_REPO`): scan immediate
