@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/jurrejan/Documents/development/_management/claude-skills/skill-usage-tracker/hooks/welcome_stats.py"
+          }
+        ]
+      }
+    ]
+  }
+}
