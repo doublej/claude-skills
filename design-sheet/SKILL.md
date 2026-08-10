@@ -14,14 +14,27 @@ High-density, one-page summary of a design system, made to be ingested by
 agents (like Claude Code) or used as the source of truth for frontend work.
 
 <workflow>
-1. Extract from the input (code or description): color tokens, font families
+1. If the target project root already has a `design-sheet.json`, read it first
+   and treat it as source of truth; only extract from code to fill its gaps.
+2. Extract from the input (code or description): color tokens, font families
    and roles, spacing scale + base unit, container/border logic, effects.
-2. Fill every section of `assets/template.md`, keeping its table formats.
-3. Distill one **Signature Motif** sentence — the visual hook that governs
+3. Fill every section of `assets/template.md`, keeping its table formats.
+4. Distill one **Signature Motif** sentence — the visual hook that governs
    all other decisions.
-4. Build the Midjourney baseprompt as
+5. Build the Midjourney baseprompt as
    `[subject], [details], [environment], [mood], [technical] --ar --v`.
+6. After delivering the Markdown sheet, write/update `design-sheet.json` in the
+   project root to match it, per `assets/design-sheet.schema.json`.
 </workflow>
+
+<machine_readable>
+- `design-sheet.json` lives in the consuming project's root, with
+  `"$schema"` pointing at this skill's `assets/design-sheet.schema.json`.
+- Mark inferred values with an `(inferred)` suffix inside the string, as in
+  the Markdown sheet.
+- To view one: open `assets/viewer.html` in a browser and drop the project's
+  `design-sheet.json` onto it.
+</machine_readable>
 
 <rules>
 - Deliver the sheet as a single Markdown block.
