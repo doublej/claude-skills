@@ -31,3 +31,50 @@ agents (like Claude Code) or used as the source of truth for frontend work.
 - Specifics over prose: exact hex, px, weights — no "roughly" or ranges
   unless the source itself is a range.
 </rules>
+
+<example>
+```markdown
+# Design Sheet: Project Obsidian
+
+## 1. Typography (The Monarchy)
+| Role | Family | Weights | Scale (px) | Tracking |
+| :--- | :--- | :--- | :--- | :--- |
+| **Display** | Geist Sans | 700, 900 | 48, 64, 96 | -0.03em |
+| **Body** | Geist Sans | 400, 500 | 16, 18 | 0 |
+| **Mono** | Geist Mono | 400 | 14, 15 | 0 |
+
+## 2. Color (Dark Theme)
+| Token | Hex/Value | Intent |
+| :--- | :--- | :--- |
+| `bg-primary` | #000000 | Base background |
+| `bg-surface` | #111111 | Card/Container background |
+| `text-base` | #EDEDED | Primary readability |
+| `text-muted` | #A0A0A0 | Supporting info |
+| `accent` | #FFFFFF | The hook |
+| `border` | #333333 | Separation |
+
+## 3. Spacing & Rhythm
+- **Base Unit:** 4px
+- **Scale:** 4, 8, 16, 24, 40, 64, 96
+- **Gutter:** 24px (Desktop) / 16px (Mobile)
+
+## 4. Containers & Borders
+- **Radius:** None
+- **Border Width:** 1px (Standard)
+- **Container Max-Width:** 1100px
+
+## 5. Atmosphere & Effects
+- **Shadows:** None (inferred)
+- **Texture:** Grain, 3% opacity
+- **Backdrop:** Solid
+
+## 6. Signature Motif
+- Pure-black void where white is spent only on the one thing that matters;
+  hierarchy is done with weight and space, never with color.
+
+## 7. Midjourney Baseprompt
+`minimal dashboard interface, stark white text on pure black, thin 1px hairline
+borders, monospaced data readouts, brutalist restraint, studio product shot,
+high contrast --ar 16:9 --v 8.2`
+```
+</example>
