@@ -34,3 +34,6 @@
 
 ## 6. Signature Motif
 - [One sentence describing the unique visual hook that defines this system]
+
+## 7. Midjourney Baseprompt
+`[subject], [subject details], [environment], [style/mood], [technical description] --ar [ratio] --v 8.2`

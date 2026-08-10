@@ -27,6 +27,7 @@ implementation.
    - **Spacing:** Identify the base unit (usually 4px or 8px) and the scale.
    - **Containers:** Define max-widths, border radius, and border weights.
    - **Atmosphere:** Describe shadows, textures, and backdrop effects.
+   - **Midjourney:** Construct a baseprompt following the `[subject] [details] [env] [mood] [tech]` pattern.
 4. **Define Motif:** Distill the visual identity into one "Signature Motif"
    sentence that governs all other decisions.
 
