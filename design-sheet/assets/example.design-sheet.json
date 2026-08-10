@@ -1,0 +1,36 @@
+{
+  "$schema": "./design-sheet.schema.json",
+  "name": "Project Obsidian",
+  "typography": [
+    { "role": "Display", "family": "Geist Sans", "weights": [700, 900], "scale": [48, 64, 96], "tracking": "-0.03em" },
+    { "role": "Body", "family": "Geist Sans", "weights": [400, 500], "scale": [16, 18], "tracking": "0" },
+    { "role": "Mono", "family": "Geist Mono", "weights": [400], "scale": [14, 15], "tracking": "0" }
+  ],
+  "color": {
+    "Dark": [
+      { "token": "bg-primary", "value": "#000000", "intent": "Base background" },
+      { "token": "bg-surface", "value": "#111111", "intent": "Card/Container background" },
+      { "token": "text-base", "value": "#EDEDED", "intent": "Primary readability" },
+      { "token": "text-muted", "value": "#A0A0A0", "intent": "Supporting info" },
+      { "token": "accent", "value": "#FFFFFF", "intent": "The hook" },
+      { "token": "border", "value": "#333333", "intent": "Separation" }
+    ]
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "scale": [4, 8, 16, 24, 40, 64, 96],
+    "gutter": "24px (Desktop) / 16px (Mobile)"
+  },
+  "containers": {
+    "radius": "None",
+    "borderWidth": "1px (Standard)",
+    "maxWidth": "1100px"
+  },
+  "atmosphere": {
+    "shadows": "None (inferred)",
+    "texture": "Grain, 3% opacity",
+    "backdrop": "Solid"
+  },
+  "motif": "Pure-black void where white is spent only on the one thing that matters; hierarchy is done with weight and space, never with color.",
+  "midjourney": "minimal dashboard interface, stark white text on pure black, thin 1px hairline borders, monospaced data readouts, brutalist restraint, studio product shot, high contrast --ar 16:9 --v 8.2"
+}

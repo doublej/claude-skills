@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jurrejan/claude-skills/design-sheet/assets/design-sheet.schema.json",
+  "title": "Design Sheet",
+  "description": "Machine-readable form of the design-sheet skill's 7-section template. Any value may carry an \"(inferred)\" suffix to mark it as inferred rather than sourced.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "typography", "color", "motif"],
+  "properties": {
+    "$schema": { "type": "string" },
+
+    "name": {
+      "type": "string",
+      "description": "Project name, as in \"Design Sheet: [Project Name]\"."
+    },
+
+    "typography": {
+      "type": "array",
+      "description": "Section 1. One entry per role.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "family"],
+        "properties": {
+          "role": { "type": "string", "description": "Display, Body, Mono, ..." },
+          "family": { "type": "string" },
+          "weights": { "type": "array", "items": { "type": "integer" } },
+          "scale": {
+            "type": "array",
+            "description": "Font sizes in px.",
+            "items": { "type": "number" }
+          },
+          "tracking": { "type": "string", "description": "e.g. \"-0.02em\" or \"0\"." }
+        }
+      }
+    },
+
+    "color": {
+      "type": "object",
+      "description": "Section 2. Theme name -> token list. One theme per color table.",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["token", "value"],
+          "properties": {
+            "token": { "type": "string", "description": "e.g. \"bg-primary\"." },
+            "value": { "type": "string", "description": "Hex or any CSS color value." },
+            "intent": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "spacing": {
+      "type": "object",
+      "description": "Section 3.",
+      "additionalProperties": false,
+      "properties": {
+        "baseUnit": { "type": "number", "description": "Base unit in px." },
+        "scale": { "type": "array", "items": { "type": "number" } },
+        "gutter": { "type": "string", "description": "e.g. \"24px (Desktop) / 16px (Mobile)\"." }
+      }
+    },
+
+    "containers": {
+      "type": "object",
+      "description": "Section 4.",
+      "additionalProperties": false,
+      "properties": {
+        "radius": { "type": "string" },
+        "borderWidth": { "type": "string" },
+        "maxWidth": { "type": "string" }
+      }
+    },
+
+    "atmosphere": {
+      "type": "object",
+      "description": "Section 5.",
+      "additionalProperties": false,
+      "properties": {
+        "shadows": { "type": "string" },
+        "texture": { "type": "string" },
+        "backdrop": { "type": "string" }
+      }
+    },
+
+    "motif": {
+      "type": "string",
+      "description": "Section 6. One sentence: the visual hook that governs every other decision."
+    },
+
+    "midjourney": {
+      "type": "string",
+      "description": "Section 7. [subject], [details], [environment], [mood], [technical] --ar --v"
+    }
+  }
+}
