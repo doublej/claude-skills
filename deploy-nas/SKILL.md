@@ -1,6 +1,6 @@
 ---
 name: deploy-nas
-description: "Deploy static sites and Node.js apps to NAS Caddy via mounted volume"
+description: "Deploy static sites and Node.js/Python apps to NAS Caddy over SSH (SMB mount optional)"
 allowed-tools:
   - Bash
   - Read
@@ -17,7 +17,7 @@ Deploy applications to a QNAP NAS running Caddy.
 <when_to_use>
 
 - Deploying static frontend sites to NAS
-- Deploying Node.js/SvelteKit apps to NAS
+- Deploying Node.js/SvelteKit or Python/FastAPI apps to NAS
 - Configuring Caddy for new sites
 
 </when_to_use>
@@ -28,7 +28,14 @@ Deploy applications to a QNAP NAS running Caddy.
 |------|----------|------------|-------|
 | **Frontend (Static)** | `/Volumes/Container/caddy/www` | File server | [Frontend Guide](guides/frontend.md) |
 | **Node.js Apps** | `/Volumes/Container/caddy/apps` | Reverse proxy | [Node Guide](guides/node.md) |
-| **LAN reverse proxy** | `etc/sites/<name>.caddy` (config only — nothing deployed to the NAS) | Reverse proxy to a host on the LAN (e.g. a Mac) | Quick Ref |
+| **Python Apps (FastAPI)** | `/Volumes/Container/caddy/apps` | Reverse proxy | [Node Guide](guides/node.md) — same PM2 flow, see *Python apps* |
+| **LAN reverse proxy** | `etc/sites/<name>.caddy` (config only — nothing deployed to the NAS) | Reverse proxy to a host on the LAN (e.g. Ubuntu at `192.168.178.121`, or a Mac) | Quick Ref |
+
+**LAN reverse proxy: the app is not deployed here.** Only the `.caddy` block
+lives on the NAS; the app itself runs on the LAN host and is deployed *there*
+(over SSH, on that machine) — not via NAS PM2 and not via Docker on the Mac.
+If the target `reverse_proxy` IP isn't the NAS (`172.29.20.1`), stop and use the
+**homenetwork** skill for the host-side deploy; this skill only owns the Caddy entry.
 
 </deployment_types>
 
@@ -38,7 +45,8 @@ Deploy applications to a QNAP NAS running Caddy.
 
 File transfers go over SSH (`rsync ... nas:...` — delta transfer, much faster
 than the SMB mount, which rewrites whole files). Node deploys need no mount at
-all; frontend deploys need it only for the final `apply_from_mac.sh` step.
+all; frontend deploys need it only for the final apply step — and
+`scripts/apply-caddy.sh` does that over SSH when the mount is unavailable.
 
 When the mount is needed, mount (or verify) it with the idempotent helper.
 It skips if already mounted, picks a reachable address (`jongserve.local`, then
@@ -61,9 +69,13 @@ without sudo) using these creds, so no Finder/Keychain prompt is needed. Overrid
 the namespace with `NAS_ONENV_NS=<ns>`. The NAS is `jongserve.local` — `nas.local`
 does not resolve.
 
-**No SMB mount? Use SSH.** The mount is a convenience, not a requirement. If
-`mount-nas.sh` fails (e.g. `no SMB password in onenv`), every Caddy *config*
-operation works over `ssh nas` instead — read with
+**No SMB mount? Use SSH.** The mount is a convenience, not a requirement.
+`scripts/apply-caddy.sh` is the apply step: it runs the mounted
+`apply_from_mac.sh` when `/Volumes/Container` is there and otherwise regenerates
+the imports, validates and reloads over SSH. Never abort a deploy because the
+mount or `nas/SMB_PASSWORD` is missing — call that script instead.
+
+Every other Caddy *config* operation works over `ssh nas` too — read with
 `ssh nas 'cat /share/CACHEDEV1_DATA/Container/caddy/etc/sites/<name>.caddy'`,
 write with `ssh nas 'cat > /share/CACHEDEV1_DATA/Container/caddy/etc/sites/<name>.caddy' <<'EOF' … EOF`,
 then reload (see <caution>). Only the static-site *file* copies still need the
@@ -85,6 +97,11 @@ mount (or `rsync` over SSH).
   for rollback, but a duplicate `.caddy` for the same domain fails validation
   on the next apply — the swap removes it (see guides/frontend.md). The staging
   dir is dot-prefixed precisely so the `www/*/` scan never sees it either.
+- **Re-deploy with an unchanged `.caddy`? The apply step is optional.** Caddy
+  serves static files from disk and the site is already in `Caddyfile.imports`,
+  so a redeploy of an existing site needs no reload — apply is a no-op safety
+  check. Skipping it is safe when it can't run; a *new* site or a changed
+  `.caddy` block always needs it.
 - **`apply_from_mac.sh` validates before reloading** (a malformed `.caddy` in any
   site aborts the reload, leaving the live config untouched). To check by hand:
   `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile'`
@@ -123,8 +140,8 @@ ssh nas "cd /share/CACHEDEV1_DATA/Container/caddy/www \
        && rm -f myapp.jurrejan.com.old/*.caddy; }; } \
   && mv .staging-myapp.jurrejan.com myapp.jurrejan.com"
 
-# Apply Caddy config (graceful reload; the only step needing the SMB mount)
-cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
+# Apply Caddy config (graceful reload; uses the mount if present, else SSH)
+~/.claude/skills/deploy-nas/scripts/apply-caddy.sh
 ```
 
 ### Node.js App
@@ -165,8 +182,8 @@ myapp.jurrejan.com {
 }
 EOF
 
-# Apply (regenerates imports, validates, reloads — or reload via SSH, see Caution)
-cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
+# Apply (regenerates imports, validates, reloads — mount or SSH, whichever works)
+~/.claude/skills/deploy-nas/scripts/apply-caddy.sh
 ```
 
 </quick_ref>
@@ -220,6 +237,7 @@ imported from `apps/` either — `deploy-app.sh` copies each `app.caddy` into
 <templates>
 
 - `scripts/mount-nas.sh` - Idempotent SMB mount helper (run from the preflight)
+- `scripts/apply-caddy.sh` - Apply step: `apply_from_mac.sh` when mounted, same work over SSH when not
 - `templates/frontend-caddy.caddy` - Caddy config for static sites
 - `templates/node-caddy.caddy` - Caddy reverse proxy config for Node apps
 - `templates/ecosystem.config.js` - PM2 config template

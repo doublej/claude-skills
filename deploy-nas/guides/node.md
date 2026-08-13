@@ -69,6 +69,36 @@ myapp.jurrejan.com {
 
 The IP `172.29.20.1` is the Docker bridge network IP for the NAS host.
 
+## Python apps (FastAPI / uvicorn)
+
+Same directory layout, same PM2 flow, same deploy scripts — only the
+`ecosystem.config.js` differs. **Nothing is on `PATH` over SSH**: `which python3`
+returns nothing, so every binary needs its absolute `/opt/bin/…` path
+(`python3`, `pip3`, `uvicorn` all live there). Run the app as a PM2-managed
+process with `interpreter: 'none'`, like `geluid` does:
+
+```javascript
+module.exports = {
+  apps: [{
+    name: 'myapp',
+    script: '/opt/bin/python3',
+    args: '-m uvicorn server.main:app --host 0.0.0.0 --port 3104',
+    interpreter: 'none',
+    cwd: '/share/CACHEDEV1_DATA/Container/caddy/apps/myapp.jurrejan.com',
+    env: { PORT: 3104, PYTHONUNBUFFERED: '1' },
+    instances: 1,
+    autorestart: true,
+    max_memory_restart: '300M',
+  }]
+}
+```
+
+Dependencies install NAS-side against the system interpreter:
+`ssh nas "/opt/bin/pip3 install -r /share/.../myapp.jurrejan.com/requirements.txt"`.
+Pin `fastapi` and `starlette` together — the NAS may already hold a different
+`starlette`, and the mismatch surfaces only as an ImportError in the PM2 log at
+startup, which reads like a crash-looping app.
+
 ## Workflow
 
 ### 1. Build Your Project
@@ -132,6 +162,12 @@ ssh nas "cd '${APPS_NAS}/${SITE}' \
 Probe the app's port (from `ecosystem.config.js`) for up to 10s; on failure,
 roll back to `build.old` and restart. Drop curl's `-f` if your app's `/`
 route legitimately returns 4xx/5xx.
+
+**Retry — never a single `sleep N` then one curl.** A PM2 restart can outlast
+any fixed sleep (Python apps importing a heavy dependency tree especially), so a
+one-shot check reports a healthy app as FAILED and can trigger a pointless
+rollback. If a script you didn't write does this, re-check by hand before
+believing it: `ssh nas "curl -I http://172.29.20.1:${PORT}"`.
 
 ```bash
 PORT=3102

@@ -100,12 +100,13 @@ ssh nas "cd '${WWW_NAS}' \
 
 ### 6. Apply Changes
 
-The only step that needs the SMB mount (run `scripts/mount-nas.sh` first if
-`/Volumes/Container` is absent):
-
 ```bash
-cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
+~/.claude/skills/deploy-nas/scripts/apply-caddy.sh
 ```
+
+The helper runs the mounted `apply_from_mac.sh` when `/Volumes/Container` is
+there and does the same regenerate/validate/reload over SSH when it isn't — a
+missing mount or `nas/SMB_PASSWORD` never blocks a deploy.
 
 Caddy reloads are graceful (no dropped connections). For a redeploy of an
 existing site the config is unchanged, so this step is a no-op safety check.
@@ -155,9 +156,8 @@ ssh nas "cd '${WWW_NAS}' \
     && { [ ! -d '${SITE}' ] || { mv '${SITE}' '${SITE}.old' && rm -f '${SITE}.old/'*.caddy; }; } \
     && mv '.staging-${SITE}' '${SITE}'"
 
-# Apply — the only step needing the SMB mount
-[ -d /Volumes/Container/caddy/etc ] || "$HOME/.claude/skills/deploy-nas/scripts/mount-nas.sh"
-cd /Volumes/Container/caddy/etc && ./apply_from_mac.sh
+# Apply (mount if available, else over SSH)
+"$HOME/.claude/skills/deploy-nas/scripts/apply-caddy.sh"
 
 echo "Deployed to https://${SITE}"
 ```

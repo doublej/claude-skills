@@ -16,6 +16,7 @@ SITE="${SUBDOMAIN}.jurrejan.com"
 WWW_NAS="/share/CACHEDEV1_DATA/Container/caddy/www"
 ETC_MAC="/Volumes/Container/caddy/etc"
 MOUNT_HELPER="$HOME/.claude/skills/deploy-nas/scripts/mount-nas.sh"
+APPLY_HELPER="$HOME/.claude/skills/deploy-nas/scripts/apply-caddy.sh"
 
 FORCE=0
 if [ "${1:-}" = "--force" ]; then FORCE=1; fi
@@ -62,18 +63,10 @@ ssh nas "cd '${WWW_NAS}' \
     && mv '.staging-${SITE}' '${SITE}'"
 
 # Apply (regenerates imports, validates, reloads — Caddy reloads are graceful).
-# This is the only step that needs the SMB mount; mount it idempotently.
+# Tries the SMB mount first, then falls back to doing the same over SSH, so a
+# missing mount/credential never blocks a deploy.
 echo -e "${YELLOW}Applying Caddy config...${NC}"
-if [ ! -d "$ETC_MAC" ]; then
-    if [ -x "$MOUNT_HELPER" ]; then
-        "$MOUNT_HELPER"
-    else
-        echo -e "${RED}Error: Caddy volume not mounted and mount helper missing${NC}"
-        open "smb://jongserve.local/Container"   # NOT nas.local — that name does not resolve
-        echo "Please authenticate and retry."
-        exit 1
-    fi
-fi
-cd "$ETC_MAC" && ./apply_from_mac.sh
+[ -d "$ETC_MAC" ] || [ ! -x "$MOUNT_HELPER" ] || "$MOUNT_HELPER" || true
+"$APPLY_HELPER"
 
 echo -e "${GREEN}Deployed to https://${SITE}${NC}"
