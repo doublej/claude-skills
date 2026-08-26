@@ -177,12 +177,12 @@ from claude_agent_sdk import (
 </message_types>
 
 <advanced_features>
-See `references/` for detailed patterns:
-- **Hooks** — programmatic lifecycle hooks (PreToolUse, PostToolUse, Stop, etc.)
-- **Subagents** — inline specialized agents via `agents` option
-- **MCP** — external tool servers + Python in-process SDK MCP servers
+All detailed patterns live in one file: `references/advanced-patterns.md`. There are no other reference files — read that one and jump to the section you need:
+- **Programmatic Hooks** — lifecycle hooks (PreToolUse, PostToolUse, Stop, etc.)
+- **Programmatic Subagents** — inline specialized agents via `agents` option
+- **MCP Integration** — external tool servers + Python in-process SDK MCP servers
 - **Sessions** — resume/fork conversations
-- **Multi-turn** — bidirectional conversations via async iterators (TS) or ClaudeSDKClient (Python)
+- **Multi-Turn Conversations** — async iterators (TS) or ClaudeSDKClient (Python)
 </advanced_features>
 
 <gotchas>
