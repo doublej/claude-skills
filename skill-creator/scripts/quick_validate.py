@@ -3,8 +3,10 @@
 Quick validation script for skills - minimal version
 """
 
-import sys
+import argparse
+import json
 import re
+import sys
 import yaml
 from pathlib import Path
 
@@ -86,11 +88,19 @@ def validate_skill(skill_path: str | Path) -> tuple[bool, str]:
     return True, "Skill is valid!"
 
 
-if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python quick_validate.py <skill_directory>")
-        sys.exit(1)
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Validate a skill directory")
+    parser.add_argument("skill_directory", help="Path to the skill directory to validate")
+    parser.add_argument("--json", action="store_true", help="Emit machine-readable JSON")
+    args = parser.parse_args()
 
-    valid, message = validate_skill(sys.argv[1])
-    print(message)
-    sys.exit(0 if valid else 1)
+    valid, message = validate_skill(args.skill_directory)
+    if args.json:
+        print(json.dumps({"valid": valid, "message": message, "path": args.skill_directory}))
+    else:
+        print(message)
+    return 0 if valid else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
