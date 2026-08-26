@@ -93,7 +93,7 @@ Draft first — never interview.
 
 Standard/heavy rules:
 - Launcher points at the mission file (short kickoff line, state on disk) — the prompt itself stays small. Short beats long: a 103-word master prompt has outperformed a 1,500-word one. Length is earned only by specifics (paths, commands, criteria), never prose.
-- State lives in markdown/JSON files that survive compaction and session death. Feature lists are JSON on purpose — agents corrupt JSON less than Markdown.
+- State lives in markdown/JSON files that survive compaction and session death. **Write them into the project repo — `loop/MISSION.md`, `loop/PROGRESS.md` — never a scratchpad, `/tmp`, or any other session-scoped path**, which is wiped before the run's next session can read it; a mission the loop cannot re-read after compaction is the same as no mission. Feature lists are JSON on purpose — agents corrupt JSON less than Markdown.
 - The turn/time cap is IDENTICAL in launcher and mission file. One number, two places.
 - **Never-ask with escape hatch**, baked into every mission: decide with research, log question + chosen answer + why in PROGRESS.md, keep moving. Blocked after 3 distinct approaches → ship the strong 80%, record what was cut. Blocked is never dressed up as done (honesty buckets: done / blocked / cut).
 - Evidence, not claims: every "it works" carries the test output, command result, or screenshot, verified from the source of truth (DB row, raw response, file on disk) — never a UI badge or the worker's own claim.
