@@ -607,12 +607,26 @@ just <recipe>  # should only output what's needed, not debug lines
 | **Shell setting wrong syntax** | Recipes fail in strict mode or env vars don't load | Use bare `set dotenv-load` (no `:=`), use `set shell := [...]` for custom shells |
 | **Shell setting missing `-c`** | `zsh: can't open input file: just --list` / recipe fails on exit code 127 (shell treats recipe body as a filename) | End the shell list with `"-c"`: `set shell := ["zsh", "-euo", "pipefail", "-c"]` |
 | **Info lines lack `@` prefix** | Output pollutes `just -q` and recipe chains | Add `@` to all `echo`, `echo ''`, logging lines |
+| **Comment between `[group(...)]` and the recipe** | `error: Extraneous attribute` — the justfile does not parse | Comment goes ABOVE the attribute, never between attribute and recipe name |
+| **Multi-line comment attached to a recipe** | `just --fmt` inserts a blank line between the comment lines; `just --fmt --check` fails | Keep recipe comments to ONE line; put detail in the recipe body |
 
 ---
 
 ## Recipe Style Guide
 
-- **Comment above EVERY recipe:** `# Description of what this does`
+- **Comment above EVERY recipe — exactly ONE line, placed ABOVE the attributes:**
+  ```just
+  # Deploy the built site to production (needs CF_TOKEN)
+  [group('deploy')]
+  deploy:
+      @echo deploying
+  ```
+  - ❌ Comment **between** `[group(...)]` and the recipe name → `error: Extraneous attribute`, the
+    justfile does not parse at all. Attributes must sit directly on the recipe line.
+  - ❌ **Two or more** comment lines directly above a recipe → `just --fmt` inserts a blank line
+    between them, so any `just --fmt --check` gate fails. Keep it to one line and move the detail
+    into the recipe body. (A standalone comment block separated from the recipe by a blank line is
+    fine — the rule only applies to comments attached to a recipe.)
 - **Suppress echo with `@` for info-only/debug lines** — NOT for commands
   - ✅ `@echo "Starting..."` then `uv run ...`
   - ❌ `echo "Starting..."` then `uv run ...` (pollutes output)
