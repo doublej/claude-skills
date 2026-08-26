@@ -1,6 +1,6 @@
 ---
 name: prompt-crafter
-description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design, XML-structured prompts, with model-specific guidance for Claude 5 (Fable/Opus/Sonnet), Claude 4.x, and GPT-5.6. Use when the deliverable is a prompt, CLAUDE.md, system prompt, slash command, or skill instruction. Triggers on 'write a prompt', 'improve this prompt', 'lint my prompt', 'XML prompt', 'system prompt', 'CLAUDE.md rules', 'prompt for opus 5', 'prompt for sonnet 5', 'fable prompt', 'gpt-5.6 prompt'."
+description: "Write/improve prompts, CLAUDE.md rules, system prompts, few-shot, CoT design, XML-structured prompts, with model-specific guidance for Claude 5 (Fable/Opus/Sonnet), Claude 4.x, and GPT-5.6. Use when the deliverable is a prompt, CLAUDE.md, system prompt, slash command, or skill instruction. Triggers on 'write a prompt', 'improve this prompt', 'lint my prompt', 'XML prompt', 'system prompt', 'CLAUDE.md rules', 'prompt for opus 5', 'prompt for sonnet 5', 'fable prompt', 'gpt-5.6 prompt'. NOT for codebase research, planning/design docs, feature builds, audits, or artifacts — if the deliverable is anything other than a prompt or instruction file, this skill does not apply."
 ---
 
 # Prompt Crafter
@@ -19,6 +19,10 @@ Before applying any prompt pattern, confirm the **deliverable is a prompt or ins
 1. State the mismatch in one line: "This loaded, but the real deliverable is X, not a prompt."
 2. **Exit skill mode.** Stop applying prompt patterns and handle the task with the right tool as a normal engineering task. Do not produce a prompt-shaped artifact (design brief, instruction doc) as a consolation deliverable just because the skill is open.
 
+The exit is permanent for the session: once you have stated the mismatch, do not re-apply prompt patterns later in the same task, and do not treat the skill as still active.
+
+**Multi-phase tasks:** the skill governs only the phase that produces a prompt or instruction artifact. Research, git operations, builds, and agent orchestration in the same task are handled normally — no prompt patterns, no prompt-shaped output.
+
 Only exception: if the user *intentionally* invoked `/prompt-crafter` for a fuzzy/large task and an implementation brief is genuinely what they want, you may produce it — but say so explicitly and confirm that's the intent rather than defaulting to it.
 </scope>
 
@@ -32,6 +36,8 @@ Resolution order:
 2. Stated in conversation, or named inside the draft prompt / surrounding code (a model ID string, an SDK call, a `model=` field)
 3. Default: `generic`
 
+Resolve within the first exchange. If nothing names a model, default to `generic` and load `references/lint-generic.md` immediately — do not defer model resolution until after research or codebase exploration is done.
+
 | Accepted value | Route | Reference |
 |----------------|-------|-----------|
 | `fable-5`, `fable`, `mythos-5`, `claude-fable-5` | Claude Fable 5 / Mythos 5 | `references/lint-fable-5.md` |
@@ -43,16 +49,32 @@ Resolution order:
 | `sonnet-4-6` | Claude Sonnet 4.6 | `references/lint-sonnet-4-6.md` |
 | `generic` / unspecified | Model-agnostic | `references/lint-generic.md` |
 
+**Multi-model systems** (orchestrator on one model, subagents on another): resolve each component's target separately and apply that profile to that component's instructions only. Subagents are spawned with an explicit `model:` override, so name the target per agent; forks always inherit the parent model and cannot be overridden.
+
 Bare `opus` / `sonnet` resolve to the **5-series**. Older models need the explicit version suffix.
 For GPT-5.1 / 5.2 targets, hand off to the `prompt-gpt` skill instead.
 
 ### Lint + Rewrite
 
-When the user asks to **improve, review, or lint a prompt**: read the routed reference, substitute `<<PLACEHOLDERS>>` with user-provided values (ask if critical ones are missing), then apply the lint + rewrite workflow inline. The templates are self-contained instructions — follow them exactly.
+When the user asks to **improve, review, or lint a prompt**: read the routed reference, substitute `<<PLACEHOLDERS>>` with user-provided values, then apply the lint + rewrite workflow inline. The templates are self-contained instructions — follow them exactly.
+
+Infer the metadata placeholders rather than interrogating the user:
+
+| Placeholder | Default / inference |
+|-------------|---------------------|
+| `<<TOOLS>>` | `none`, unless the draft prompt or surrounding surface names tools |
+| `<<WEB_ENABLED>>` | `yes` if the prompt mentions searching, browsing, or fetching; else `no` |
+| `<<RISK_PROFILE>>` | `medium` |
+
+State the inferred values in one line with the output. Only ask when a value is genuinely ambiguous **and** would change the checklist results.
+
+The template's `STOP` instruction supersedes any global session-closing format: end at the last template section. No "what changed / checks run / risk" footer after a lint run.
 
 ### New prompt authoring
 
-When **writing** a prompt, do not load the full lint template. Apply the `<model_profiles>` deltas below on top of the base patterns, and load the routed reference only if the prompt is agentic, long-horizon, or the user asks for a full review.
+When **writing** a prompt, do not load the full lint template. Apply the `<model_profiles>` deltas below on top of the base patterns.
+
+**Read the routed reference file before writing** when the prompt is agentic, long-horizon, or the user asks for a full review — the `<model_profiles>` summary is not sufficient on its own. Triggers that always count as agentic: workflow/orchestration prompts (`agent()` calls, multi-phase pipelines, structured schema output), multi-file builds with verification steps, and anything dispatched to a subagent. Load the reference on the first pass, not after a correction.
 </model_routing>
 
 <model_profiles>
@@ -79,12 +101,13 @@ Base patterns below are model-agnostic. These deltas override them for the resol
 
 1. **Clarify intent** — What surface? (interactive, CLAUDE.md, CLI, slash command, API)
 2. **Resolve the target model** — see `<model_routing>`
-3. **Select pattern** — Match the task to a prompt pattern
-4. **Structure context** — Apply the context hierarchy
-5. **Draft prompt** — Write using the appropriate template
-6. **Apply the model profile** — layer the `<model_profiles>` deltas on top; skip if target is `generic`
-7. **Optimise** — Compress tokens, remove redundancy, add examples if needed
-8. **Verify** — Self-check with the reflexion checklist
+3. **Ground the facts (conditional)** — if the prompt must embed environment-specific facts (file paths, DB schemas, API endpoints, route/entity inventory), verify them before drafting: read the files, or delegate to 2–3 Explore subagents for a large codebase and wait for their results. A prompt with wrong facts is worse than no prompt. Skip entirely when the prompt is generic.
+4. **Select pattern** — Match the task to a prompt pattern
+5. **Structure context** — Apply the context hierarchy
+6. **Draft prompt** — Write using the appropriate template
+7. **Apply the model profile** — layer the `<model_profiles>` deltas on top; skip if target is `generic`
+8. **Optimise** — Compress tokens, remove redundancy, add examples if needed
+9. **Verify** — Self-check with the reflexion checklist
 </workflow>
 
 <surfaces>
@@ -98,6 +121,7 @@ Base patterns below are model-agnostic. These deltas override them for the resol
 | CLI (`-p` flag) | Single string or piped input | No follow-up, must be self-contained |
 | System prompt / API | XML-structured | Parsed programmatically, needs tags |
 | Skill SKILL.md | Frontmatter + markdown | Progressive disclosure, must trigger correctly |
+| Dispatch prompt / agent brief | XML task + constraints, one mission per agent | Grounded: read the relevant files before drafting. Every claim cites a verified path, never an assumption. Self-contained — the agent gets no conversation history |
 | Workflow agent (script) | XML role + CoT + constraint-bounded | Inject a shared context BRIEF into all downstream agents; set label/phase/effort opts; return raw data not prose; use a schema for structured output |
 </surfaces>
 
@@ -322,6 +346,10 @@ Deep dive (10-component framework, long-context structure, chaining, validation 
 For reusable prompts, create `.claude/commands/<name>.md`:
 
 ```markdown
+---
+description: Audit test coverage for a target and list missing tests
+---
+
 Analyse the test coverage for $ARGUMENTS.
 
 1. Find all test files related to the target
@@ -332,6 +360,37 @@ Output as a checklist of missing tests with file paths.
 ```
 
 `$ARGUMENTS` gets replaced with whatever the user types after the command name.
+The `description:` frontmatter is what Claude Code shows in autocomplete — write it for any command meant to be reused.
+
+### Orchestration commands
+
+A slash command can host a full workflow brief when the deliverable is a repeatable multi-agent run. Use XML sections instead of a linear list:
+
+```markdown
+---
+description: Multi-agent wire-up for a feature across the codebase
+---
+
+<task>Wire up $ARGUMENTS end to end, one agent per layer.</task>
+
+<pre_flight>
+Scout first: locate the entry point, the existing sibling implementations, and the test files. Report paths before dispatching anything.
+</pre_flight>
+
+<workflow_shape>
+Phase 1 — scout (1 agent, read-only)
+Phase 2 — implement (1 agent per layer, parallel)
+Phase 3 — verify (1 agent, runs the suite)
+</workflow_shape>
+
+<agent_rules>
+- Each agent gets verified paths, never assumptions
+- Absolute paths only; agents share no conversation history
+- Return conclusions, not file dumps
+</agent_rules>
+```
+
+Same rules as `<surfaces>` "Dispatch prompt / agent brief": ground every path, keep each agent's mission single.
 </slash_command>
 
 <cli_patterns>
