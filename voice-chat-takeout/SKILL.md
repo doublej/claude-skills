@@ -314,6 +314,16 @@ composing; shape cannot. `for <subject>` ⇒ interview.
    not paste the template back as the brief, and do not skip the
    structure sections.
 
+   **The template read is a real `Read` call, and it has to produce
+   something.** Before you draft a single line of brief, `Read` the one
+   file above and then write out, in your reply, the section names listed
+   under that template's `## Structure` heading — verbatim, in order —
+   plus how many bullets its `## Hard rules` section carries. Those
+   section names *are* the brief's outline: compose under exactly them,
+   nothing added, nothing dropped. If you can't name them, you did not
+   read the file — the inline summary in this SKILL.md is not a
+   substitute, and it drifts. Go read it.
+
    **POV (non-negotiable)**: the brief is a handoff *from you (the
    project agent) to the voice agent*. The voice agent is "you"; the
    user is third-person ("the user", "they"); self-refer as "I".
