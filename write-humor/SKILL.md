@@ -34,9 +34,27 @@ Pick one. If genuinely ambiguous, ask once, then commit.
 
 ## Mode: CONSTRUCT — build from nothing
 
-1. **Establish the premise.** Do not skip this even when the user hands you a
-   topic. Topic ≠ premise. Read `references/premise.md`, run the attitude
-   rotation, generate six candidates, filter after.
+1. **Premise gate.** Read `references/premise.md` and emit this block *before*
+   the first line of draft — no file written, no line drafted until it exists:
+
+   ```
+   Topic:      <topic>
+   Facts:      use → <fact>, <fact>   |  hold → <fact> (<risk>)
+   Candidates: <attitude> → <premise>      (six, attitudes from the
+               <attitude> → <premise>       rotation vocabulary in premise.md)
+               … six total
+   Chosen:     <premise> — most personal pressure because <one line>
+   ```
+
+   The block is the step's output, not a note about it. A premise
+   reverse-engineered from an existing draft is that draft's premise — if you
+   drafted first, throw the draft away and start from the block.
+
+   **Facts line.** When the user supplies facts, sort them before committing:
+   hold back anything that would cost the audience's trust or the client's
+   credibility (admitted fake engagement, deception, embarrassing internals) and
+   name the risk. Ask about the held ones in the same turn; do not write them in
+   on the assumption they can be cut later.
 
    Climb the specificity ladder until you reach a scene, person, object, or
    behavior you can picture. Broad topics cannot be joked about.
@@ -128,9 +146,27 @@ Always, before returning humor to the user:
 python3 ~/.claude/skills/write-humor/scripts/joke_lint.py <file>
 ```
 
-Fix every `error`. Justify any `warn` you keep. The linter has no opinion about
-whether something is funny — premise quality, connector validity, and genuine
-attitude remain your job.
+Fix every `error`. Justify any `warn` you keep — **every one, by rule name**. A
+warning you did not mention is a warning you did not handle; if you justify one
+class and go quiet on another, you failed the check.
+
+The linter counts words and matches vocabulary. Two rules misfire when the work
+is structural rather than lexical, and each has one test that decides it:
+
+| Rule | Overridable when | Test — fails → the warning is real |
+|---|---|---|
+| `no-attitude` | the attitude is carried by inversion or form, not attitude vocabulary | Name in one sentence what the form asserts vs. what it means. Can't name it? Then it is description, not irony. |
+| `setup-bloat` | the flagged block is an escalating list where each item lands its own reveal | Check the last word of every item. Any item ending on trailing setup → trim, don't justify. |
+
+Write the override as one line per rule: rule, where, test result.
+
+> `no-attitude` ×4 (stanzas 1–4): kept — the attitude is the inversion, each
+> stanza states the ritual as if it were reasonable.
+> `setup-bloat` ×2 (list block): kept — every bullet ends on its own turn word.
+
+No other rule has a structural override. The linter has no opinion about whether
+something is funny — premise quality, connector validity, and genuine attitude
+remain your job.
 
 **Deliver options, not a verdict.** Give 2–3 versions and name the device each
 one uses. Voice is the user's decision; mechanics are yours. Recommend one and
