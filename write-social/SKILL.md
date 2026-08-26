@@ -1,11 +1,11 @@
 ---
 name: write-social
-description: "Write social posts for X.com, Threads, and Substack launches"
+description: "Write social posts for X.com, Threads, Reddit, and Substack launches"
 ---
 
 # Social Promotion
 
-Write promotional social content for applications, tools, and products across X.com (Twitter), Threads, and Substack.
+Write promotional social content for applications, tools, and products across X.com (Twitter), Threads, Reddit, and Substack.
 
 <workflow>
 
@@ -27,6 +27,8 @@ Gather before writing:
 - **Why** should they care (pain point solved, benefit unlocked)
 - **Proof** — any metrics, testimonials, demos, screenshots available?
 - **Tone** — the user's voice (default: direct, confident, no hype)
+
+In a project directory, mine the source before asking. Rate limits, thresholds, feature quirks and real numbers read out of the code (`70ms floor`, `bots never vote`) beat anything the intake questions produce, and specifics are what make copy survive the AI-slop filter in step 4. Mine first, then ask only for what the code cannot tell you: the promotion goal, the audience, and the proof assets.
 
 </step_brief>
 
@@ -59,6 +61,7 @@ Pick ONE angle per post. Never combine.
 Write for each requested platform. See `references/` for platform-specific rules:
 - `references/x-writing.md` — X.com posts and threads
 - `references/threads-writing.md` — Threads posts
+- `references/reddit-writing.md` — Reddit posts (read the target subreddit's rules too)
 - `references/substack-writing.md` — Substack articles
 
 ### Cross-Platform Rules
@@ -110,6 +113,12 @@ Output format per platform:
 [post text]
 > Posting note: [tactical advice]
 
+## Reddit — r/[subreddit]
+**Title:** [title, carries the whole post]
+**Flair:** [required flair, or "none required"]
+[body text, disclosure line included]
+> Posting note: [tactical advice — subreddit fit, timing, self-promo rules]
+
 ## Substack
 **Subject:** [subject line]
 **Subtitle:** [preview text]
@@ -130,6 +139,7 @@ When asked for a campaign (multiple posts over time), plan a sequence:
 | D-1 | X | Curiosity gap | Teaser |
 | D0 | All | Show don't tell | Launch post |
 | D+1 | Threads | Behind the scenes | Build story |
+| D+2 | Reddit | Behind the scenes | Self-post to one niche sub |
 | D+3 | Substack | Direct value | Deep dive article |
 | D+7 | X | Social proof | Traction update |
 
@@ -148,6 +158,7 @@ If the vault folder exists:
 - Write creative/strategy content to markdown files:
   - `social-x.md` — X.com strategy, specs, posting rules, creative notes
   - `social-threads.md` — Threads strategy, specs, posting rules, creative notes
+  - `social-reddit.md` — Reddit strategy, target subreddits, per-sub rules, creative notes
   - `social-substack.md` — Substack article body (referenced by posts.yaml `body_file`)
 - When posts are finalized, write structured entries to `posts.yaml`:
   - Each post gets an `id`, `platform`, `format`, `status`, `text`/`thread`, `images`, `reply`, `note`
