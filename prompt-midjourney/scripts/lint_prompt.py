@@ -10,6 +10,9 @@ import json
 import re
 import sys
 
+# Current default model. Bump alongside references/parameters.md when Midjourney ships one.
+DEFAULT_VERSION = "8.2"
+
 # Parameters that no longer work on the V8 family, mapped to their replacement.
 DEAD_PARAMS = {
     "cref": "removed after V6; use --oref (Omni Reference) for subject/character transfer",
@@ -213,10 +216,15 @@ def check_conflicts(prompt, params, findings):
     ver = next((v for f, v, _ in params if f.lower() in {"v", "version"}), None)
     if ver:
         try:
-            if float(ver.split()[0]) < 7:
+            num = float(ver.split()[0])
+            if num < 7:
                 _add(findings, "info", "old-model",
-                     f"--v {ver.split()[0]} selects a pre-2025 model; V8.2 is the current default",
+                     f"--v {ver.split()[0]} selects a pre-2025 model; V{DEFAULT_VERSION} is the current default",
                      "drop --v to use the default, or --v 7 if you need native --oref")
+            elif num == float(DEFAULT_VERSION):
+                _add(findings, "warn", "redundant-version",
+                     f"--v {ver.split()[0]} pins the version that is already the default; it has no effect",
+                     "drop --v — keeping it only obscures which flags are doing work")
         except ValueError:
             pass
 
@@ -292,6 +300,8 @@ def selftest():
     assert "param-position" not in codes("a red door --profile g5xvosf kl491gu")
     assert "param-position" not in codes("a red door --p g5xvosf kl491gu")
     assert "param-position" in codes("a red door --ar 16:9 stray words")
+    assert "redundant-version" in codes(f"a red door --v {DEFAULT_VERSION}")
+    assert "redundant-version" not in codes("a red door --v 7")
     print("selftest ok")
     return 0
 

@@ -89,6 +89,7 @@ Three separate systems. Picking the wrong one is the most common structural mist
 
 **Personalization `--p`**
 - `--p` applies the default profile; `--p <mID>` or `--profile <mID>` selects a specific moodboard.
+- Both spellings take one or more space-separated moodboard IDs: `--p g5xvosf kl491gu` blends two.
 - Stability tiers: 40 ratings minimum to activate, ~200 for fairly stable, ~2000 for maximum refinement.
 - A profile is a persistent taste bias. When output is inexplicably off-brief, check whether a profile is silently applied.
 

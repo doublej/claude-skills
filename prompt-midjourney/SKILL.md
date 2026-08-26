@@ -87,6 +87,10 @@ or time of day. Three members prove a concept; more is spending GPU on a decisio
 The failure mode is the *fixed* half drifting between members. Generate one member first, seed-lock
 (`--seed`) the rest against it, and confirm the shared elements survived before running the full set.
 
+Locked constants can spend 30 of the ~40 words on their own. The budget that matters in a series is
+the words *after* the locked block, so resolve a `too-long` warning by stating that remainder — not
+by cutting into the locks, which is what keeps the set coherent.
+
 ## 4. Lint before handing over
 
 ```bash
@@ -98,6 +102,10 @@ Catches dead parameters, out-of-range values, mid-prompt flags, em dashes, HD/as
 `--no` contradictions, over-long rendered text, and quality-spam words. Exit 1 on any error.
 
 Fix every error. Warnings are judgement calls — resolve or explain them, don't ignore them silently.
+
+`quality-spam` is the exception: treat it as an error. The only override is a term carried verbatim
+from the user's own source prompt at their request, and even then state what it costs in the handoff.
+"The user approved it earlier" is not grounds.
 
 ## 5. Score and iterate
 
@@ -146,7 +154,7 @@ The human-facing format stays the default.
 
 - Read `references/parameters.md` before stating any parameter's behaviour. Stale confidence is the main failure mode of this skill.
 - Never emit `--cref`, `--cw`, `--q`, `--turbo`, `--style raw`, or `::` weighting. Run the linter.
-- Never pad a prompt with quality adjectives to sound thorough.
+- Never pad a prompt with quality adjectives to sound thorough. One exception, in step 4: a term the user wants carried verbatim from their own source prompt.
 - Distinguish what is verified from what is inferred. If a parameter's current behaviour is uncertain, say so and point at the changelog rather than guessing confidently.
 - Every generation costs the user real GPU minutes. Don't propose a ten-iteration plan when three targeted changes will do, and don't recommend `--hd` for exploration.
 - Scores are preliminary until the user validates them. Present them as readings.
