@@ -24,6 +24,26 @@ Deploy static frontend sites to NAS Caddy.
 
 ### 1. Build Your Project
 
+**SvelteKit preflight.** `adapter-auto` does not produce a static tree — check
+`svelte.config.js` first and convert before building:
+
+```bash
+grep -q 'adapter-auto' svelte.config.js && bun add -d @sveltejs/adapter-static
+# then swap the import/adapter in svelte.config.js to @sveltejs/adapter-static
+```
+
+and set in `src/routes/+layout.ts` (create it if missing):
+
+```ts
+export const prerender = true;
+export const trailingSlash = 'always';
+```
+
+`trailingSlash = 'always'` makes each route emit `<route>/index.html`, which is
+what Caddy's file server serves. Any route that needs a server (form actions,
+`+server.ts`, `ssr = true`) cannot be prerendered — deploy that app as a Node
+app instead (see [Node Guide](node.md)).
+
 ```bash
 # Vite/SvelteKit static
 bun run build

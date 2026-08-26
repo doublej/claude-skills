@@ -142,7 +142,15 @@ ssh nas "cd /share/CACHEDEV1_DATA/Container/caddy/www \
 
 # Apply Caddy config (graceful reload; uses the mount if present, else SSH)
 ~/.claude/skills/deploy-nas/scripts/apply-caddy.sh
+
+# Verify — http=200 proves Caddy serves it. Never verify by grepping the
+# caddy container's logs: access logging is off, so there is nothing to find.
+curl -s -m 15 -o /tmp/${SUBDOMAIN}.html \
+  -w 'http=%{http_code} size=%{size_download}\n' https://${SITE}/index.html
 ```
+
+SvelteKit source? Convert to `@sveltejs/adapter-static` with `prerender = true`
+and `trailingSlash = 'always'` before building — see guides/frontend.md.
 
 ### Node.js App
 ```bash

@@ -69,4 +69,10 @@ echo -e "${YELLOW}Applying Caddy config...${NC}"
 [ -d "$ETC_MAC" ] || [ ! -x "$MOUNT_HELPER" ] || "$MOUNT_HELPER" || true
 "$APPLY_HELPER"
 
+# Smoke-check: a 200 from the public URL proves Caddy is serving the new tree.
+# Do NOT verify by grepping Caddy's container logs — access logging is off.
+echo -e "${YELLOW}Verifying...${NC}"
+curl -s -m 15 -o "/tmp/${SUBDOMAIN}.html" \
+    -w "http=%{http_code} size=%{size_download}\n" "https://${SITE}/index.html"
+
 echo -e "${GREEN}Deployed to https://${SITE}${NC}"
