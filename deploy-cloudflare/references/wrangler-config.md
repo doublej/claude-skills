@@ -192,15 +192,15 @@ Same structure but JSON with comments. Include schema for editor autocomplete:
 ## Setup Recipes (for Justfile)
 
 ```just
-[group('setup')]
 # Create D1 database and R2 bucket for the project
+[group('setup')]
 cf-setup name:
-    wrangler d1 create {{name}}
-    wrangler r2 bucket create {{name}}-assets
+    wrangler d1 create {{ name }}
+    wrangler r2 bucket create {{ name }}-assets
     @echo "Update wrangler config with the database_id from above"
 
-[group('setup')]
 # Set a secret in Cloudflare
+[group('setup')]
 cf-secret name:
-    wrangler secret put {{name}}
+    wrangler secret put {{ name }}
 ```

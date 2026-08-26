@@ -18,6 +18,23 @@ Other available accounts:
 - `Pimpelmees` — `7f1d3bdeb7fc43d512543aa335a15f55`
 </accounts>
 
+<account_env>
+With more than one account on the machine, wrangler picks the wrong one or stops on an
+account-selection prompt. Always pin the account in the environment:
+
+```bash
+export CLOUDFLARE_ACCOUNT_ID=e26bfba81a629fb8b4dcd538b1f73781
+```
+
+Pages configs reject `account_id` — adding it to `wrangler.toml` fails with
+"Configuration file for Pages projects does not support 'account_id'". The env var is the
+only way to pin the account for Pages. Workers may set `account_id` in the config, but the
+env var works there too.
+
+Credentials (`CLOUDFLARE_API_TOKEN`, account IDs) come from onenv/1Password — `onenv prime`.
+Never write them to a `.env` file.
+</account_env>
+
 <workflow>
 
 1. Detect project type (SvelteKit, Astro, Next.js, static, Worker)
@@ -68,6 +85,9 @@ compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat"]
 ```
 
+Do not add `account_id` to a Pages config — wrangler rejects it. Pin the account with
+`CLOUDFLARE_ACCOUNT_ID` in the environment instead (see above).
+
 ### Pages (Astro / Vite) — wrangler.toml
 
 ```toml
@@ -104,27 +124,31 @@ Add to the project's Justfile. Detect which pattern applies:
 _cf_output := ".svelte-kit/cloudflare"
 _cf_project := "<project-name>"
 
-[group('deploy')]
-# Deploy to Cloudflare Pages (production)
-cf-deploy: build
-    bunx wrangler pages deploy {{_cf_output}} --project-name {{_cf_project}} --branch production
+# Pins the account for every recipe below; required when several CF accounts exist
 
+export CLOUDFLARE_ACCOUNT_ID := "<account-id>"
+
+# Deploy to Cloudflare Pages (production)
 [group('deploy')]
+cf-deploy: build
+    bunx wrangler pages deploy {{ _cf_output }} --project-name {{ _cf_project }} --branch production
+
 # Deploy preview branch to Cloudflare Pages
+[group('deploy')]
 cf-deploy-preview branch="preview": build
-    bunx wrangler pages deploy {{_cf_output}} --project-name {{_cf_project}} --branch {{branch}}
+    bunx wrangler pages deploy {{ _cf_output }} --project-name {{ _cf_project }} --branch {{ branch }}
 ```
 
 ### Worker deploy
 
 ```just
-[group('deploy')]
 # Deploy Worker to Cloudflare
+[group('deploy')]
 cf-deploy:
     wrangler deploy
 
-[group('deploy')]
 # Validate Worker build without deploying
+[group('deploy')]
 cf-deploy-check:
     wrangler deploy --dry-run
 ```
@@ -132,18 +156,18 @@ cf-deploy-check:
 ### Combined (Worker + Pages client)
 
 ```just
-[group('deploy')]
 # Deploy Worker
+[group('deploy')]
 cf-deploy-worker:
     cd worker && bunx wrangler deploy
 
-[group('deploy')]
 # Build and deploy client to Cloudflare Pages
+[group('deploy')]
 cf-deploy-client: build
     bunx wrangler pages deploy <output-dir> --project-name <project-name> --branch production
 
-[group('deploy')]
 # Deploy everything
+[group('deploy')]
 cf-deploy: cf-deploy-worker cf-deploy-client
 ```
 </justfile_recipes>
@@ -167,6 +191,37 @@ cf-deploy: cf-deploy-worker cf-deploy-client
 | `wrangler kv namespace create <name>` | Create KV namespace |
 | `wrangler tail` | Stream live Worker logs |
 </commands>
+
+<custom_domains>
+
+Attach a custom domain to a Pages project from the dashboard, or via the Pages domains API:
+
+```bash
+curl -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/<project>/domains" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "<domain>"}'
+```
+
+The scoped `CLOUDFLARE_API_TOKEN` from onenv often lacks Pages write permission and returns
+`code 10000` (Authentication error) on this endpoint. Fall back to wrangler's OAuth token:
+
+```bash
+TOKEN=$(grep '^oauth_token' ~/.wrangler/config/default.toml | cut -d'"' -f2)
+```
+
+Use that as the bearer token for the domains calls. Deploys themselves keep working with the
+scoped token — only the domains API needs the fallback.
+
+Adding a new zone assigns it its own nameserver pair — it is *not* the pair the account's
+existing zones use. Pointing the registrar at the familiar pair leaves the zone Pending
+forever. Read the zone's own pair before touching the registrar:
+
+```bash
+curl -s "https://api.cloudflare.com/client/v4/zones?name=<domain>" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result[0].name_servers[]'
+```
+</custom_domains>
 
 <framework_dirs>
 
