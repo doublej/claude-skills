@@ -35,7 +35,7 @@ Shared driver discipline (send vs run, capture-after-settle, explicit pane targe
 | Command | Description |
 |---------|-------------|
 | `it2 new [-p profile] [-c cmd]` | Create window (shortcut for `window new`) |
-| `it2 newtab [-p profile] [-c cmd] [-w window]` | Create tab (shortcut for `tab new`) |
+| `it2 newtab [-p profile] [-c cmd] [-w window]` | Create tab (shortcut for `tab new`) — prints a **tab number**, not a session ID |
 | `it2 split [-s ID] [-p profile]` | Split horizontally (shortcut for `session split`) |
 | `it2 vsplit [-s ID] [-p profile]` | Split vertically (shortcut for `session split -v`) |
 | `it2 tab select <id>` | Activate tab by ID or index |
@@ -43,6 +43,8 @@ Shared driver discipline (send vs run, capture-after-settle, explicit pane targe
 | `it2 tab close [-f] [id]` | Close tab (use `-f` to force) |
 | `it2 session close [-f] [-s ID]` | Close session (use `-f` to force) |
 | `it2 session set-name [-s ID] <name>` | Set session name |
+
+> `it2 tab move` moves a tab to its **own new window** — it does not reorder tabs. The CLI has no reorder command; see "Reordering tabs within a window" below.
 
 ### Terminal I/O
 
@@ -67,6 +69,41 @@ it2 run -s "$SID" "echo hello"
 ```
 
 `$ITERM_SESSION_ID` is set automatically by iTerm2 shell integration in each shell session. It identifies the **calling** session, so the split always opens next to it regardless of which window is focused.
+
+### Session ID from `newtab` / `new`
+
+Only `split`/`vsplit` print a session UUID (`Created new pane: <UUID>`). `newtab` prints `Created new tab: 71` and `new` prints `Created new window: pty-…` — **neither emits a session UUID**, so the grep above returns empty and later `-s "$SID"` calls silently hit the wrong session.
+
+Resolve the tab number through `session list --json` (its `tab_id` field is a string):
+
+```bash
+TAB=$(it2 newtab 2>&1 | sed -n 's/^Created new tab: //p')
+SID=$(it2 session list --json | jq -r --arg t "$TAB" '.[] | select(.tab_id == $t) | .id')
+it2 run -s "$SID" "cd $(pwd) && echo hello"
+```
+
+Prefer `vsplit` whenever you just need a targetable session — it hands you the ID directly.
+
+### Reordering tabs within a window
+
+The `it2` CLI has no reorder command. Reordering needs the Python API directly:
+
+```bash
+~/.local/share/uv/tools/it2/bin/python - <<'PY'
+import iterm2
+
+async def main(connection):
+    app = await iterm2.async_get_app(connection)
+    w = app.current_terminal_window
+    tabs = list(w.tabs)
+    tabs.append(tabs.pop(0))          # any reordering of the same list works
+    await w.async_set_tabs(tabs)
+
+iterm2.run_until_complete(main)
+PY
+```
+
+Use the `it2` tool's own interpreter if `import iterm2` fails in your default `python3`.
 
 ### Submitting commands
 
@@ -197,6 +234,43 @@ it2 session set-name "Tests"
 it2 window arrange save "my-project"
 ```
 </workflows>
+
+<troubleshooting>
+## When `it2` hangs
+
+Wrap every `it2` call in `timeout 20 …` — a hang is the normal failure mode, not an error message.
+
+**A close command hangs**: `it2 tab close` / `it2 session close` block on iTerm2's own "close session?" confirmation dialog, even with `-f`. The dialog also stalls every other `it2` call until it is answered. Answer it in the GUI, or suppress it in Settings > Profiles > Session > "Prompt before closing". A declined dialog surfaces as `RPCException: USER_DECLINED`.
+
+**Every command hangs and prints the socket-downgrade error** ("you must manually delete the file at ~/Library/Application Support/iTerm2/private/socket"):
+
+```bash
+rm -f ~/Library/Application\ Support/iTerm2/private/socket
+```
+
+Then toggle the Python API off and on (Settings > General > Magic > Enable Python API) and retry. If it still hangs, fall back to AppleScript — it uses a separate channel and keeps working while the Python API is down.
+</troubleshooting>
+
+<applescript>
+## AppleScript fallback (external automation)
+
+Use this when the caller cannot shell out to `it2` — embedded `osascript` from Node/Python — or when the Python API is unreachable.
+
+```applescript
+tell application "iTerm2"
+  set targetWindow to (create window with default profile)
+  tell current session of current tab of targetWindow
+    write text "cd /path/to/project && npm run dev"
+    return id
+  end tell
+end tell
+```
+
+- `create tab with default profile` on an existing window instead of `create window` for a tab.
+- `id of current session` returns the same UUID form `it2 -s` takes, so the two can be mixed.
+- iTerm2 has no initial-working-directory setting here: `cd` must be part of the command you write.
+- `write text` always submits (appends a newline) — there is no send-without-newline equivalent.
+</applescript>
 
 <remote_windows>
 ## Remote Windows Hosts (SSH/SCP)
