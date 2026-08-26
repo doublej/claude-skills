@@ -32,6 +32,17 @@ Phase 6: ENFORCE     (optional) flag remaining occurrences of rejected synonyms 
 ```
 </pipeline>
 
+<scope_boundary>
+This skill writes exactly three kinds of artifact, nothing else:
+1. `GLOSSARY.md` at the chosen root.
+2. A `<vocabulary>` block in that root's `CLAUDE.md`.
+3. Optionally, ONE line per child `CLAUDE.md`: `Vocabulary: see ../GLOSSARY.md`.
+
+A child breadcrumb is one line. Do not turn it into a context packet — stack, ports, folder maps and quirks are the child project's own business, and the repo convention is that a parent holds no index.
+
+Out of scope for this skill — stop and tell the user it needs a separate invocation: rewriting a `CLAUDE.md` beyond the vocabulary block, creating skills, creating rules files, renaming identifiers.
+</scope_boundary>
+
 <phase_1_scope>
 
 1. Resolve target project root from `$ARGUMENTS` or current working directory.
@@ -132,7 +143,18 @@ Related: [[OtherTerm]]
 
 <phase_5_wire>
 
-Write `GLOSSARY.md` at project root. Format defined in `references/glossary-template.md`.
+First state the sizing tier out loud — it decides whether there is a file at all:
+
+| Terms | Treatment |
+|-------|-----------|
+| < 10 | Inline in CLAUDE.md, no separate file — stop here |
+| 10-50 | Standalone `GLOSSARY.md` at project root |
+| 50-100 | Same, split into Core / Process / Roles / Out-of-Scope |
+| > 100 | One `GLOSSARY.md` per bounded context + a context map at the root |
+
+Then write `GLOSSARY.md`. The structure below is canonical — do not go read a
+template to find it. `references/glossary-template.md` holds only a longer worked
+example; open it if this skeleton leaves you guessing, otherwise skip it.
 
 **Structure:**
 
