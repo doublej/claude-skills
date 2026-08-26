@@ -108,9 +108,10 @@ BOOLEAN_FLAGS = {"hd", "sd", "raw", "tile", "draft", "video", "fast", "relax", "
 # Flags taking exactly one token.
 SINGLE_VALUE_FLAGS = {
     "ar", "aspect", "s", "stylize", "chaos", "c", "weird", "w", "sw", "ow", "iw", "exp",
-    "stop", "seed", "sv", "r", "repeat", "niji", "v", "version", "profile", "motion", "style", "q", "quality", "cw",
+    "stop", "seed", "sv", "r", "repeat", "niji", "v", "version", "motion", "style", "q", "quality", "cw",
 }
-# Flags whose value is a list or free text: --no, --sref, --oref, --p. Not position-checked.
+# Flags whose value is a list or free text: --no, --sref, --oref, --p, --profile. Not position-checked.
+# --profile takes the same space-separated moodboard IDs as its short alias --p.
 
 
 def check_param_position(prompt, params, findings):
@@ -285,11 +286,25 @@ def lint(prompt):
     return findings
 
 
+def selftest():
+    """--profile takes multiple moodboard IDs, exactly like its short alias --p."""
+    codes = lambda p: {f["code"] for f in lint(p)}
+    assert "param-position" not in codes("a red door --profile g5xvosf kl491gu")
+    assert "param-position" not in codes("a red door --p g5xvosf kl491gu")
+    assert "param-position" in codes("a red door --ar 16:9 stray words")
+    print("selftest ok")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser(description="Lint a Midjourney prompt for V8.2 syntax and anti-patterns.")
     ap.add_argument("prompt", nargs="?", help="the prompt text; omit to read stdin")
     ap.add_argument("--json", action="store_true", help="emit JSON")
+    ap.add_argument("--selftest", action="store_true", help="run the built-in assertions")
     args = ap.parse_args()
+
+    if args.selftest:
+        return selftest()
 
     prompt = args.prompt if args.prompt is not None else sys.stdin.read()
     prompt = prompt.strip()

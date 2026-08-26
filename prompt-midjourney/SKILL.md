@@ -78,6 +78,15 @@ qualities into words.
 - Parameters at the very end, two ASCII hyphens.
 - Explore in SD or `--draft`; rerun keepers as `--hd`.
 
+**Series — several prompts delivered as one set**
+
+Lock everything that has to read as the same world: style flags (`--sref` / `--p` / `--s` / `--raw`),
+aspect ratio, and the lighting, material and palette words. Vary one axis per member — subject, angle,
+or time of day. Three members prove a concept; more is spending GPU on a decision not yet made.
+
+The failure mode is the *fixed* half drifting between members. Generate one member first, seed-lock
+(`--seed`) the rest against it, and confirm the shared elements survived before running the full set.
+
 ## 4. Lint before handing over
 
 ```bash
@@ -108,6 +117,17 @@ When the user shares output, work through `references/diagnostics.md`:
 
 Give the final prompt as a single copy-pasteable line, plus: which approach was used, what each
 parameter is doing, and — if iterating — what changed since the last version and what it cost.
+
+Build the final line — and any structured flags object — from the **post-lint** prompt, never from
+the pre-lint draft. Re-reading the original source is how a linted fix gets silently reverted.
+
+Closing gate: every warning the linter still reports is either fixed in the delivered prompt or
+called out here, one line per warning naming the tradeoff. Silence is not an option.
+
+Called programmatically (SDK entrypoint, agent workspace, or the caller asks for JSON), return a
+structured object instead of the flat line — at minimum `{body, flags, reasoning}`, with the
+accepted warnings and their justification carried in `reasoning` or a `warnings_accepted` field.
+The human-facing format stays the default.
 
 </workflow>
 

@@ -58,6 +58,7 @@ Working pattern: explore in SD (or Draft), then rerun the keeper seed-locked as 
 | `--draft` | — | off | 24 images per job at half cost; click Vary to render one at full res |
 | `--tile` | — | off | seamlessly tiling texture |
 | `--motion low\|high` | — | low | video only |
+| `--v N` | 7, 8.1, 8.2 | account default (V8.2) | pin a model version, overriding the account default. Only needed when targeting a non-default version — `--v 7` for native `--oref`. Omit it when the default is what you want. `--niji 7` selects the anime model |
 
 </core_parameters>
 
