@@ -32,24 +32,36 @@ The classification + diffing logic already lives in the templates repo at `tools
 
 `--force` makes seeds overwrite in place (destructive — local edits lost). On `--apply`, the script bumps `.template-meta.json` to the upstream version.
 
+**Net-new template files.** Files added upstream that don't exist locally are collected like any other change, but two things bite:
+
+- Without `--include-other`, the `other` bucket is emptied *before* the summary prints — those files show up in no count and no diff. They are invisible, not merely skipped. Always preview with `--include-other` (step 1).
+- A net-new *seed* file lands as `<file>.upstream`, never as `<file>`. You must `mv` it into place yourself.
+
 ## Workflow
 
-Run the updater via the project's Just recipe (every generated project has it; it resolves the repo path for you):
+The reliable path is the script itself — `$REPO` is `$COOKIECUTTER_TEMPLATES`, else `template_source.path` from `.template-meta.json`:
 
 ```bash
-just update-scaffold              # report-only
-just update-scaffold --diffs      # report-only + short per-file diffs
-just update-scaffold --apply      # safe apply (tooling overwritten, seeds → sidecars)
+python3 "$REPO/tools/update_scaffold.py" [--diffs|--apply|--force|--include-other] .
+```
+
+`just update-scaffold <args>` is a convenience alias that resolves `$REPO` for you, **but only if the project's Justfile already has that recipe**. The Justfile is a `seed` file, so a project generated before the recipe existed never receives it and `just` fails with "Justfile does not contain recipe 'update-scaffold'". On that error, fall straight through to the script call — don't debug the Justfile.
+
+```bash
+just update-scaffold                   # report-only
+just update-scaffold --diffs           # report-only + short per-file diffs
+just update-scaffold --apply           # safe apply (tooling overwritten, seeds → sidecars)
 just update-scaffold --apply --force   # also overwrite seeds (destructive)
 ```
 
-If `just` is unavailable, call the script directly:
-`python3 "$REPO/tools/update_scaffold.py" [--diffs|--apply|--force|--include-other] .`
-
-1. **Preview.** Run `just update-scaffold --diffs`. Summarize: version jump, count per bucket, and — most important — how many `seed` files will need manual merge. If it reports "Up to date", say so and stop.
-2. **Confirm, SAFE by default.** Ask the user yes / no / force. Default = safe: `template_managed` overwritten, `mergeable` merged, `seed` files written as `.upstream` sidecars. Offer `force` only as an explicit, warned opt-in.
+1. **Preview.** Run with `--diffs --include-other` (always both — see *Net-new template files*). Summarize: version jump, count per bucket, how many `seed` files will need manual merge, and any `other`/net-new files. If it reports "Up to date", say so and stop.
+2. **Confirm, SAFE by default.** Call consult-user-mcp `ask` (`type: "confirm"`, or `type: "pick"` when force is worth offering) with the bucket counts in the body. This is a real tool call, not a rhetorical pause — do not write "Applying safely" and proceed. The built-in `AskUserQuestion` tool is disabled in this environment; `ask` is the only channel.
+   - `ask` returns `{"afk": true}` or `{"cancelled": true}` → apply the **safe** default (never `--force`), say in one line that you applied it unattended, and carry the unanswered choice into the final report.
+   - `--force` requires an explicit human "force" answer. AFK, cancelled, or an autonomous session policy is never consent to force.
+   - Four options, not three: **safe** / **no** / **force** / **bump only**. Bump only = edit `template_version` in `.template-meta.json` to the upstream version by hand and change nothing else (the script has no flag for it). Offer it when the diff is entirely noise — e.g. upstream stripping this project's customizations — and the user just wants the SessionStart prompt to stop.
 3. **Apply.** `--apply` (safe) or `--apply --force` (destructive). Never pass `--force` unless the user explicitly chose it.
-4. **Report.** List every `<file>.upstream` sidecar written. For each, offer to `diff -u <file> <file>.upstream`, help cherry-pick wanted changes into `<file>`, then `rm <file>.upstream`. Recommend running `just check` afterward.
+4. **Report — one sidecar at a time.** List every `<file>.upstream` written, then walk them individually: show `diff -u <file> <file>.upstream`, `ask` what to keep, edit `<file>`, then `trash <file>.upstream` (a safe-rm hook blocks `rm -f`; `/usr/bin/trash` is recoverable and prints nothing on success — exit 0 with no output means it worked, don't retry through `npx`/`bunx`). Never batch-diff, never cherry-pick on your own judgement, never delete all sidecars in one glob, and never install a dependency a sidecar implies without asking. If `ask` returns AFK/cancelled: leave every sidecar on disk untouched and list them as pending decisions — an unreviewed sidecar is not a decision you may make.
+5. **Net-new files.** If the preview showed `other` files, add `--include-other` to the apply so they land as `.upstream` sidecars too — the rendered template lives in a temp dir that is gone afterwards, and the on-disk template still has unexpanded `{{cookiecutter.*}}` vars, so a sidecar is the only clean copy. Then `mv <file>.upstream <file>` for the ones worth having (agents, scripts, docs the project lacks), and `trash` the rest. Skip template skeleton files like `src/**` unless the user wants them. Recommend `just check` afterward.
 
 ## Retrofit projects
 
