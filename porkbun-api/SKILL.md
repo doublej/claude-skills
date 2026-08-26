@@ -8,13 +8,19 @@ description: "Domain and DNS management: records, nameservers, SSL, URL forwardi
 Manage domains and DNS through the Porkbun API.
 
 <setup>
-Set environment variables:
+Credentials come from onenv (1Password) — never `export`, never a `.env` file.
+The `porkbun` namespace holds `PORKBUN_API_KEY` and `PORKBUN_SECRET_KEY`.
+
+Prefix every command that talks to the API:
 ```bash
-export PORKBUN_API_KEY="pk1_..."
-export PORKBUN_SECRET_KEY="sk1_..."
+onenv export porkbun -- python3 ~/.claude/skills/porkbun-api/scripts/porkbun.py ping
 ```
 
-Get API keys from: https://porkbun.com/account/api
+`onenv export` works from any directory. `onenv run` does not — it needs a
+project-level `.onenv.json` and fails with `NO_PROJECT_CONFIG` without one.
+
+Keys are managed at https://porkbun.com/account/api and stored with
+`onenv set porkbun PORKBUN_API_KEY`.
 </setup>
 
 <reference>
@@ -28,39 +34,49 @@ All requests: HTTP POST with JSON body containing `apikey` and `secretapikey`.
 <cli>
 ## CLI Script
 
-Use `scripts/porkbun.py` for common operations:
+Use `scripts/porkbun.py` for common operations. The script is stdlib-only — no
+`uv run`, no venv. Always call it by absolute path so it works from whatever
+project you happen to be in; a relative `scripts/porkbun.py` only resolves when
+cwd is the skill directory. Each line below is a complete command:
 
 ```bash
+PB=~/.claude/skills/porkbun-api/scripts/porkbun.py   # or the repo path
+
 # Test authentication
-uv run python scripts/porkbun.py ping
+onenv export porkbun -- python3 $PB ping
 
 # List all domains
-uv run python scripts/porkbun.py domains
+onenv export porkbun -- python3 $PB domains
 
 # Check domain availability
-uv run python scripts/porkbun.py check example.com
+onenv export porkbun -- python3 $PB check example.com
 
 # DNS operations
-uv run python scripts/porkbun.py dns list example.com
-uv run python scripts/porkbun.py dns add example.com A 192.168.1.1 --name=api --ttl=600
-uv run python scripts/porkbun.py dns delete example.com 123456
+onenv export porkbun -- python3 $PB dns list example.com
+onenv export porkbun -- python3 $PB dns add example.com A 192.168.1.1 --name=api --ttl=600
+onenv export porkbun -- python3 $PB dns delete example.com 123456
 
 # Nameservers
-uv run python scripts/porkbun.py ns get example.com
-uv run python scripts/porkbun.py ns set example.com ns1.provider.com ns2.provider.com
+onenv export porkbun -- python3 $PB ns get example.com
+onenv export porkbun -- python3 $PB ns set example.com ns1.provider.com ns2.provider.com
 
 # URL Forwarding
-uv run python scripts/porkbun.py forward list example.com
-uv run python scripts/porkbun.py forward add example.com https://target.com temporary
-uv run python scripts/porkbun.py forward add example.com https://target.com permanent --subdomain=www --includepath
-uv run python scripts/porkbun.py forward delete example.com 123456
+onenv export porkbun -- python3 $PB forward list example.com
+onenv export porkbun -- python3 $PB forward add example.com https://target.com temporary
+onenv export porkbun -- python3 $PB forward add example.com https://target.com permanent --subdomain=www --includepath
+onenv export porkbun -- python3 $PB forward delete example.com 123456
 
 # SSL certificate
-uv run python scripts/porkbun.py ssl example.com
+onenv export porkbun -- python3 $PB ssl example.com
 
 # Pricing (no auth needed)
-uv run python scripts/porkbun.py pricing
+python3 $PB pricing
 ```
+
+`$PB` is set in the same shell invocation as the command that uses it — shell
+state does not survive between separate tool calls, so set it inline (`PB=...;
+onenv export porkbun -- python3 $PB ping`) or just paste the full path.
+
 </cli>
 
 <common_tasks>
