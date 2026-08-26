@@ -103,8 +103,15 @@ gh auth status                         # must be authenticated
 
 8. **Recreate venv** (if flagged by scan)
    ```bash
-   rm -rf .venv && uv venv && uv sync
+   trash .venv && uv venv && uv sync
    ```
+
+   Deletion in this workflow always goes through `trash` (macOS system binary,
+   `/usr/bin/trash`) — recoverable, and `rm -rf` is blocked by the safe-rm hook.
+   Do not use `npx trash`: it needs a node project context in the cwd and fails
+   with "could not determine executable to run" outside one. If `command -v
+   trash` comes back empty, install it (`brew install trash`) rather than
+   falling back to `rm -rf`.
 
 9. **Regenerate lock files** — run the appropriate command per lock file:
    - `uv.lock` → `uv lock`
@@ -118,6 +125,29 @@ gh auth status                         # must be authenticated
    mv /path/to/old-name /path/to/new-name
    ```
    After this, `cd` into the new path for remaining work.
+
+11. **Migrate Claude project state** — Claude Code keys per-project state
+   (including `memory/`) by a slug derived from the absolute path: every
+   character that is not a letter or digit becomes `-`. So `/` , `_` and `.`
+   all map to `-`, which is why `/Users/x/dev/_management/foo` becomes
+   `-Users-x-dev--management-foo` (doubled dash) and `/Users/x/.claude`
+   becomes `-Users-x--claude`. Rename the folder and that state is orphaned:
+   ```bash
+   OLD=$(echo "/path/to/old-name" | sed 's/[^a-zA-Z0-9]/-/g')
+   NEW=$(echo "/path/to/new-name" | sed 's/[^a-zA-Z0-9]/-/g')
+   if [ -d ~/.claude/projects/"$OLD" ] && [ ! -d ~/.claude/projects/"$NEW" ]; then
+     mv ~/.claude/projects/"$OLD" ~/.claude/projects/"$NEW"
+   fi
+   ```
+   Then fix absolute paths recorded inside the migrated state (`memory/` in
+   particular holds stale paths that survive the move):
+   ```bash
+   grep -rlI '/path/to/old-name' ~/.claude/projects/"$NEW"/ | while IFS= read -r f; do
+     sed -i '' 's|/path/to/old-name|/path/to/new-name|g' "$f"
+   done
+   ```
+   Skip silently if the old slug directory does not exist — not every project
+   has Claude state.
 
 </workflow>
 
