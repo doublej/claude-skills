@@ -61,9 +61,19 @@ imports (npm/pip/stdlib) are ignored — only intra-repo edges are checked.
 
 ## Workflow
 
-1. **No blueprint yet?** Don't invent one. Map the directory structure, propose a
-   layer/rule set to the user, and write it into the `## Architecture` block. The
-   human owns the rules; you only draft them.
+1. **No blueprint yet?** Don't invent one — but never stop here either. Which of
+   the two modes you are in decides what "no blueprint" means:
+   - **Interactive** (you are talking to a user): map the directory structure,
+     propose a layer/rule set, and write it into the `## Architecture` block once
+     they agree. The human owns the rules; you only draft them.
+   - **Scan-only** (dispatched as a subagent, e.g. by `code-optimize` — no user to
+     ask, and often read-only): do **not** author a blueprint and do not stall.
+     Infer the de-facto layers from the directory structure and report against
+     them as *observations*, not rule violations: imports that cross an obvious
+     boundary (UI → data access, app → internals of another package), import
+     cycles, and any layering the repo's own prose docs assert but the code
+     breaks. Say in the report that no blueprint exists and name the layer split
+     you assumed. An empty report is only valid if you actually checked.
 2. **Run the checker** (deterministic, no API cost):
 
    ```bash
@@ -71,6 +81,10 @@ imports (npm/pip/stdlib) are ignored — only intra-repo edges are checked.
    python3 scripts/archcheck.py --root <repo> --json     # machine-readable
    python3 scripts/archcheck.py --root <repo> --rules path/to/CLAUDE.md
    ```
+
+   Exit `2` with `{"status": "no_blueprint", ...}` means there are no rules to
+   check — not "clean". Stop running the script and fall back to step 1.
+   `{"status": "checked"}` is the only output that says anything about the code.
 
 3. **Read the report.** Each violation is `severity  src_file [layer] -> target [layer]  (rule)`.
    Severities: `forbidden` (explicit `forbid` hit), `layer` (no allow covers the edge),

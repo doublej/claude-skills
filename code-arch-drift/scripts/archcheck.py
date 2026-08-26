@@ -207,9 +207,19 @@ def check(
     return violations
 
 
+def no_blueprint(reason: str, as_json: bool) -> None:
+    """Report the no-rules case explicitly (stdout too, so `--json` is never empty)."""
+    if as_json:
+        print(json.dumps({"status": "no_blueprint", "reason": reason,
+                          "violations": [], "count": 0}, indent=2))
+    print(f"no blueprint: {reason}", file=sys.stderr)
+    sys.exit(2)
+
+
 def report(violations: list[dict[str, Any]], as_json: bool) -> None:
     if as_json:
-        print(json.dumps({"violations": violations, "count": len(violations)}, indent=2))
+        print(json.dumps({"status": "checked", "violations": violations,
+                          "count": len(violations)}, indent=2))
         return
     if not violations:
         print("✓ no architectural drift detected")
@@ -229,13 +239,11 @@ def main() -> None:
 
     blueprint = find_blueprint(args.root, args.rules)
     if not blueprint:
-        print("no blueprint found (need an `arch` block in CLAUDE.md/ARCHITECTURE.md/SPEC.md)", file=sys.stderr)
-        sys.exit(2)
+        no_blueprint("no CLAUDE.md/ARCHITECTURE.md/SPEC.md found", args.json)
     with open(blueprint, encoding="utf-8") as fh:
         rules = parse_rules(fh.read())
     if not rules or not rules[0]:
-        print(f"no `arch` block with layers found in {blueprint}", file=sys.stderr)
-        sys.exit(2)
+        no_blueprint(f"no `arch` block with layers in {blueprint}", args.json)
 
     violations = check(args.root, rules)
     report(violations, args.json)
