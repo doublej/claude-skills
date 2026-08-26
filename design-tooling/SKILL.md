@@ -10,11 +10,13 @@ If creating visual artifacts (slides, mocks, throwaway prototypes, etc), copy as
 
 If the user invokes this skill without any other guidance, ask them what they want to build or design, ask some questions, and act as an expert designer who outputs HTML artifacts _or_ production code, depending on the need.
 
+Ask via the consult-user-mcp `ask` tool — batch 2+ questions as one `type: "form"`, and pass `project_path` on the first call. Never use the built-in `AskUserQuestion` tool; it is disabled in this environment.
+
 ## Quick orientation
 
 - **Voice & content rules** — `README.md` §3 "Content fundamentals". Sentence case, no trailing periods on labels, math minus for negatives, no emoji in chrome.
 - **Visual foundations** — `README.md` §4. Borders not shadows. Solid surfaces, no gradients. Linear-leaning indigo accent used sparingly.
-- **Tokens** — `colors_and_type.css`. Semantic CSS vars only (`--color-bg`, `--color-fg`, `--color-muted`, `--color-pos`, `--color-neg`, `--color-accent`, …). Flip the theme by toggling `.dark` on `<html>`; never use Tailwind `dark:` utilities.
+- **Tokens** — `colors_and_type.css`. Semantic CSS vars only (`--color-bg`, `--color-fg`, `--color-muted`, `--color-pos`, `--color-neg`, `--color-accent`, …). Flip the theme by toggling `.dark` on `<html>`; never use Tailwind `dark:` utilities. (Published Artifacts are the exception — see "When making artifacts" §7.)
 - **Type** — Geist Variable (sans) for chrome, Geist Mono (with `tabular-nums`) for tabular numerals in tables/captions, and **Instrument Serif** for hero / display numerals only — the one big number per section (Stat card values, donut center, headline figures). If a number lives in a column, it's mono; if it's the anchor of its section, it's serif.
 - **Iconography** — Lucide, 1.5px stroke, currentColor. The `ui_kits/finance_dashboard/icons.jsx` file ships a typed subset (`I.Home`, `I.Search`, …); copy more from lucide.dev as needed.
 - **Layout** — centered `max-width: 1100px` column, sticky 56px TopNav, 64px BottomNav on mobile, 12-col grid with 24px gutters.
@@ -22,12 +24,13 @@ If the user invokes this skill without any other guidance, ask them what they wa
 
 ## When making artifacts
 
-1. Link `colors_and_type.css` and load Geist via Google Fonts.
+1. Link `colors_and_type.css` and load Geist via Google Fonts. For a **published Artifact**, a strict CSP blocks every external asset except Google Fonts — paste the token block from `colors_and_type.css` into an inline `<style>` instead of linking the file, keep the Geist `<link>`, and inline or data-URI everything else.
 2. Reuse `<Money/>`, `<Stat/>`, `<DataTable/>`, `<Card/>`, `<Button/>` shapes from `components.jsx`.
 3. Right-align all numerics. Use `.num` for any number that isn't already inside a `<Money/>` component.
 4. Use `--color-accent` sparingly — primary buttons, active nav, focus rings, links. Everything else is fg / muted / border.
 5. No drop shadows on chrome. Shadows belong on popovers, the command palette, and toasts.
 6. Test the dark theme by adding `class="dark"` to `<html>`. If it doesn't look right, you're reading a hardcoded color somewhere — fix the token.
+7. A **published Artifact** renders in the viewer's theme, which the `.dark` class never sees: an explicit choice stamps `data-theme="dark"` / `data-theme="light"` on the root, and the default "system" setting stamps nothing. So there, repeat the same dark token block under all three selectors — `.dark`, `:root[data-theme="dark"]`, and `@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) }` — with the light tokens on bare `:root`. Same tokens, more selectors; this is the one place `prefers-color-scheme` is sanctioned.
 
 ## When writing production code
 
