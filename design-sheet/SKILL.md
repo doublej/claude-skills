@@ -18,7 +18,8 @@ agents (like Claude Code) or used as the source of truth for frontend work.
    and treat it as source of truth; only extract from code to fill its gaps.
 2. Extract from the input (code or description): color tokens, font families
    and roles, spacing scale + base unit, container/border logic, effects.
-3. Fill every section of `assets/template.md`, keeping its table formats.
+3. Reproduce all 7 sections of the `<example>` below in order, keeping its
+   headings and table columns exactly. It is the canonical structure.
 4. Distill one **Signature Motif** sentence — the visual hook that governs
    all other decisions.
 5. Build the Midjourney baseprompt as
@@ -43,6 +44,9 @@ agents (like Claude Code) or used as the source of truth for frontend work.
   never leave template placeholders in the output.
 - Specifics over prose: exact hex, px, weights — no "roughly" or ranges
   unless the source itself is a range.
+- Vocabularies for the qualitative fields: Radius `None | 2px | 4px | 8px`,
+  Shadows `None | Crisp | Soft | Mesh`, Texture `Grain | Noise | Pattern | None`,
+  Backdrop `Blur | Solid | Translucent`.
 </rules>
 
 <example>
