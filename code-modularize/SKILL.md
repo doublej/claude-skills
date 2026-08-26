@@ -59,6 +59,7 @@ For each candidate file, read the full file content and determine:
 - File is generated or auto-maintained
 - Resulting modules would have <2 exported symbols each
 - File is a test file (split tests with their source, not separately)
+- `.svelte` file where the `<style>` block is >50% of total lines — the line count is CSS, not logic; measure the `<script>` block against the threshold instead. If you do split one, first grep the style block for `:global(` — those selectors couple the component to its siblings and break silently when moved (`just check` will not catch it).
 
 </workflow>
 
