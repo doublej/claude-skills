@@ -1,6 +1,6 @@
 ---
 name: ghostty
-description: Configure and customize Ghostty terminal emulator (Mitchell Hashimoto's GPU-accelerated terminal). Use when the user wants to edit ghostty config, add keybinds, set themes/fonts, configure splits/tabs/quick terminal, enable shell integration/ssh-terminfo, debug why a ghostty setting is not applying, or automate/script Ghostty (open windows/tabs/splits, run commands in them) — on macOS ALWAYS via AppleScript, never by launching the binary. Triggers on "ghostty", mentions of `config.ghostty`, `~/.config/ghostty/`, or Ghostty-specific actions like `toggle_quick_terminal`, `new_split`, `goto_split`.
+description: Configure and customize Ghostty terminal emulator (Mitchell Hashimoto's GPU-accelerated terminal). Use when the user wants to edit ghostty config, add keybinds, set themes/fonts, configure splits/tabs/quick terminal, enable shell integration/ssh-terminfo, debug why a ghostty setting is not applying, or automate/script Ghostty (open windows/tabs/splits, run commands in them) — on macOS ALWAYS via AppleScript, never by launching the binary. Triggers on "ghostty", mentions of `config.ghostty`, `~/.config/ghostty/`, or Ghostty-specific actions like `toggle_quick_terminal`, `new_split`, `goto_split`. NOT for session history — transcripts, past/closed sessions, `~/.claude/projects` — use session-search.
 ---
 
 # Ghostty
@@ -211,6 +211,34 @@ tell application "Ghostty"
   set r to new tab in window 1 with configuration cfg
   return {id of r, id of focused terminal of r}      -- e.g. {"tab-92d2db800", "DADB…"}
 end tell
+```
+
+The target window is the `in` **parameter of the application's** `new tab` command — it is not a message the window itself understands. `tell win to new tab with configuration cfg` errors `-1708` ("window id … doesn't understand the 'new tab' message"); keep the verb at application level and pass the window:
+
+```applescript
+tell application "Ghostty"
+  set w to new window with configuration cfg
+  set t2 to new tab in w with configuration cfg      -- second tab in that same window
+  set t3 to new tab in window id (id of w) with configuration cfg
+end tell
+```
+
+With no windows open there is nothing to target, so guard before choosing the verb:
+
+```applescript
+if (count of windows) is 0 then
+  set r to new window with configuration cfg
+else
+  set r to new tab in window 1 with configuration cfg
+end if
+```
+
+`focused terminal` is a property of a **tab**, not a window: it reads fine off a `new tab` return, but `focused terminal of w` on a `new window` return errors `-1728` ("Can't get focused terminal of window id …"). Reach the new window's surface positionally instead:
+
+```applescript
+set w to new window with configuration cfg
+set s to terminal 1 of tab 1 of window id (id of w)
+return {id of w, id of s}
 ```
 
 From bash: `osascript -e 'tell application "Ghostty" to new window'`.
