@@ -1,11 +1,11 @@
 ---
 name: epc-qr
-description: "Generate EPC QR codes for SEPA payments as ASCII art from IBAN and amount"
+description: "Generate EPC QR codes for SEPA payments from IBAN and amount — terminal ASCII/PNG, or an EPC payload built inside an app (web, mobile, server)"
 ---
 
 # EPC QR Code Generator
 
-Generate EPC (European Payments Council) QR codes for SEPA banking payments. Output scannable ASCII QR codes directly in terminal.
+Generate EPC (European Payments Council) QR codes for SEPA banking payments. Two paths: ASCII/PNG in the terminal via the bundled script, or build the payload in the app's own language — see `<web_integration>`.
 
 <quick_start>
 
@@ -155,7 +155,51 @@ Execute `scripts/generate_epc_qr.py` with JSON input via stdin:
 
 **Dependency**: `segno` library (`uv pip install segno`)
 
+Use this script for terminal/CLI work only. Inside an app (web, mobile, server),
+do NOT shell out to it — build the payload yourself, see `<web_integration>`.
+
 </script_reference>
+
+<web_integration>
+
+For a web/app feature, the field detection above is irrelevant (fields come from
+a form or the DB) but `<validation_rules>` and `<epc_specification>` still apply.
+Build the payload directly and render with whatever QR library the project already
+has (JS: `qrcode` for a PNG/data URL, `qrcode.react`/`qrcode-svg` for inline SVG).
+
+The EPC069-12 payload is 12 newline-joined lines, in this exact order:
+
+```
+BCD                 service tag
+002                 version
+1                   charset (1 = UTF-8)
+SCT                 identification
+{bic}               optional in v002
+{beneficiary}       max 70 chars
+{iban}              no spaces
+EUR{amount}         2 decimals, e.g. EUR50.00 — empty line if no amount
+{purpose}           optional, 4 chars
+{structuredRef}     optional — fill this OR the next line, never both
+{unstructuredRef}   optional, max 140 chars
+{originatorInfo}    optional, max 70 chars
+```
+
+```ts
+export function buildEpcPayload(p: EpcPayment): string {
+  return [
+    "BCD", "002", "1", "SCT",
+    p.bic ?? "",
+    p.beneficiary,
+    p.iban.replace(/\s/g, ""),
+    p.amount ? `EUR${p.amount.toFixed(2)}` : "",
+    "", "", p.reference ?? "", "",
+  ].join("\n").trimEnd();
+}
+```
+
+Total payload must stay under 331 bytes, and error correction must be level M.
+
+</web_integration>
 
 <edge_cases>
 
