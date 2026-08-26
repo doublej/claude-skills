@@ -126,8 +126,15 @@ def discover_projects(
             if norm_folder and not project_path.startswith(norm_folder):
                 continue
             if cutoff_ms:
-                entries = [e for e in entries if e.get("fileMtime", 0) >= cutoff_ms]
-                if not entries:
+                kept = [e for e in entries if e.get("fileMtime", 0) >= cutoff_ms]
+                if kept:
+                    entries = kept
+                elif any(
+                    sf.stat().st_mtime * 1000 >= cutoff_ms
+                    for sf in project_dir.glob("*.jsonl")
+                ):
+                    entries = None  # stale index — let the on-disk scan decide
+                else:
                     continue
             results.append({
                 "project_dir": project_dir,
@@ -181,30 +188,64 @@ def resolve_projects(args: argparse.Namespace) -> list[dict]:
 
 
 def iter_sessions_for_project(proj: dict, since_minutes: int | None = None) -> Iterator[Path]:
-    """Yield session files for a project dict, optionally time-filtered."""
+    """Yield session files for a project dict, optionally time-filtered.
+
+    The per-project `sessions-index.json` is a fast path, never the authority:
+    its `fullPath` entries go stale when session files are rotated or moved,
+    and a stale index must not hide files that are on disk. Index entries are
+    yielded first, then any remaining `*.jsonl` in the project directory.
+    """
+    cutoff = (datetime.now().timestamp() - since_minutes * 60) if since_minutes else None
+    seen: set[str] = set()
+
     if proj["session_entries"] is not None:
-        cutoff_ms = None
-        if since_minutes:
-            cutoff_ms = datetime.now().timestamp() * 1000 - since_minutes * 60 * 1000
         for entry in proj["session_entries"]:
-            if cutoff_ms and entry.get("fileMtime", 0) < cutoff_ms:
+            if cutoff and entry.get("fileMtime", 0) / 1000 < cutoff:
                 continue
             p = Path(entry["fullPath"])
             if p.exists():
+                seen.add(p.name)
                 yield p
-    else:
-        for sf in iter_project_sessions(proj["project_dir"]):
-            if since_minutes:
-                cutoff = datetime.now().timestamp() - since_minutes * 60
-                if sf.stat().st_mtime < cutoff:
-                    continue
-            yield sf
+
+    for sf in iter_project_sessions(proj["project_dir"]):
+        if sf.name in seen:
+            continue
+        if cutoff and sf.stat().st_mtime < cutoff:
+            continue
+        yield sf
 
 
 # ── Message Extraction ───────────────────────────────────────
 
-def extract_messages(session_file: Path) -> list[dict]:
-    """Extract messages with source refs, including speak MCP interactions."""
+def tool_use_text(block: dict) -> str:
+    """Flatten a tool_use input into searchable text.
+
+    Write bodies, Bash commands and Edit strings live in `input`, not in a text
+    block, so a phrase written to a file is invisible to a content-only search.
+    """
+    parts: list[str] = []
+
+    def walk(v: object) -> None:
+        if isinstance(v, str):
+            parts.append(v)
+        elif isinstance(v, dict):
+            for x in v.values():
+                walk(x)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x)
+
+    walk(block.get("input", {}))
+    return "\n".join(parts)
+
+
+def extract_messages(session_file: Path, include_tool_text: bool = False) -> list[dict]:
+    """Extract messages with source refs, including speak MCP interactions.
+
+    `include_tool_text` adds a `tool_text` field holding the flattened tool_use
+    inputs. Only search needs it — carrying full Write bodies through scan and
+    extract would balloon their output files for no benefit.
+    """
     messages = []
     speak_questions = {}
 
@@ -225,6 +266,7 @@ def extract_messages(session_file: Path) -> list[dict]:
             timestamp = entry.get("timestamp", "")
             uuid = entry.get("uuid", "")
 
+            tool_text = ""
             if isinstance(msg_content, list):
                 for block in msg_content:
                     if not isinstance(block, dict):
@@ -253,6 +295,15 @@ def extract_messages(session_file: Path) -> list[dict]:
                                     "is_speak_mcp": True,
                                 })
 
+                if include_tool_text:
+                    tool_text = "\n".join(
+                        t for t in (
+                            tool_use_text(p)
+                            for p in msg_content
+                            if isinstance(p, dict) and p.get("type") == "tool_use"
+                        ) if t
+                    )
+
                 text_parts = [
                     p.get("text", "")
                     for p in msg_content
@@ -260,10 +311,12 @@ def extract_messages(session_file: Path) -> list[dict]:
                 ]
                 msg_content = "\n".join(text_parts)
 
-            if not isinstance(msg_content, str) or not msg_content.strip():
+            if not isinstance(msg_content, str):
+                continue
+            if not msg_content.strip() and not tool_text.strip():
                 continue
 
-            messages.append({
+            record = {
                 "type": entry["type"],
                 "uuid": uuid,
                 "timestamp": timestamp,
@@ -271,7 +324,10 @@ def extract_messages(session_file: Path) -> list[dict]:
                 "session_id": session_id,
                 "source_file": str(session_file),
                 "source_line": line_num,
-            })
+            }
+            if tool_text:
+                record["tool_text"] = tool_text
+            messages.append(record)
     return messages
 
 
@@ -307,8 +363,9 @@ def is_system_noise(content: str) -> bool:
     if not content:
         return True
     prefixes = (
-        "<local-command-stdout>", "<command-name>/", "<system-reminder>",
-        "<task-notification", "Base directory for this skill:",
+        "<local-command-stdout>", "<command-name>/", "<command-message>",
+        "<system-reminder>", "<task-notification", "<agent-message",
+        "Base directory for this skill:", "Stop hook feedback:",
     )
     if any(content.startswith(p) for p in prefixes):
         return True
@@ -366,13 +423,22 @@ def file_may_match(session_file: Path, prefilter: re.Pattern | None) -> bool:
         return False
 
 
-def slim_match(m: dict) -> dict:
+def preview_at_match(text: str, regex: re.Pattern) -> str:
+    """100-char preview anchored on the match, so the found phrase is visible."""
+    mo = regex.search(text)
+    start = max(0, mo.start() - 20) if mo else 0
+    return text[start:start + 100].replace("\n", " ")
+
+
+def slim_match(m: dict, regex: re.Pattern, in_tool: bool = False) -> dict:
     """Keep only what search results need — never retain full content."""
+    source = m["tool_text"] if in_tool else m["content"]
     return {
         "timestamp": m["timestamp"],
         "type": m["type"],
         "session_id": m["session_id"],
-        "preview": m["content"][:100].replace("\n", " "),
+        "matched_in": "tool_use" if in_tool else "message",
+        "preview": ("[tool_use] " if in_tool else "") + preview_at_match(source, regex),
     }
 
 
@@ -611,9 +677,11 @@ def cmd_search(args: argparse.Namespace) -> None:
         for sf in session_files:
             if not file_may_match(sf, prefilter):
                 continue
-            for m in extract_messages(sf):
+            for m in extract_messages(sf, include_tool_text=True):
                 if regex.search(m["content"]):
-                    matches.append(slim_match(m))
+                    matches.append(slim_match(m, regex))
+                elif m.get("tool_text") and regex.search(m["tool_text"]):
+                    matches.append(slim_match(m, regex, in_tool=True))
         if not matches:
             continue
 

@@ -85,9 +85,15 @@ python3 {SKILL_DIR}/scripts/session_search.py search "<phrase>" [scope flags] -o
 
 The script outputs a summary box, timeline, and JSON.
 
+**Phrases starting with `--`** (e.g. `--allow-live`) are parsed as flags no matter how they are quoted. Put scope flags first and end the flag list with a bare `--`: `search -p <path> -o .session-search -- "--allow-live" "--only"`.
+
+**Zero matches on a phrase you are sure exists?** Search covers message text *and* `tool_use` bodies (Write content, Bash commands, Edit strings) — a match found there is tagged `matched_in: "tool_use"` and its preview is prefixed `[tool_use]`. Two blind spots remain:
+- **Full tool bodies are not in `context_messages.json`** (they would balloon it). To read the surrounding body, `grep -rl "<phrase>" ~/.claude/projects/` and read that JSONL line directly.
+- **Subagent transcripts are not scanned.** Messages the user types straight into a spawned agent live in `~/.claude/projects/<encoded>/<session_id>/subagents/agent-a<name>-*.jsonl`, not the main session file. When the user asks for requests "to" or "with" a named agent, grep those files directly.
+
 ### Step 2: Present results
 
-Show the summary box and timeline from stdout. The summary box is printed **first** — do not pipe stdout through `tail`, or you will lose it.
+Show the summary box and timeline from stdout. **Never truncate or parse that stream.** It is a summary box, then per-project timelines, then a JSON blob: `tail` drops the box, `head -N` cuts off the later projects' timelines, and a JSON parser chokes on the leading text. Whenever you need the full match list or just a match count, run the search with stdout discarded and read `search_index.json`.
 
 **If matches exceed ~50–100**, the per-window browsing flow below is impractical. Instead: re-run `search` with a more specific phrase, add `--since`/`--folder` scope to narrow, or switch to the **ANALYSE flow** (extract + categorise) for a thematic summary.
 
@@ -97,7 +103,31 @@ Show the summary box and timeline from stdout. The summary box is printed **firs
 
 Then proactively surface the top matches by reading `search_index.json` — each `projects[*].matches[]` entry has `{timestamp, type, session_id, preview}`. Show the top ~10 (timestamp, role, preview) so the user sees content, not just window boundaries.
 
-**Filter self-referential matches first.** A match whose `preview` starts with `"Base directory for this skill:"` — or whose `session_id` is the *current* session (this skill's own SKILL.md text, indexed as a message when it loaded) — is a false positive, not real history. Exclude these before surfacing the top matches; if they are the only hits, say so rather than presenting them as results.
+**Steps 2–3 exist so a human can pick a window — skip them when nobody is picking.** Go straight to reading and filtering `context_messages.json` (across every output dir) when any of these hold; this is the documented path, not a deviation:
+- **Autonomous / research context** — you are investigating on the user's behalf and will report a conclusion, not a menu of windows.
+- **Few matches (≤ ~15)** — the timeline already shows every window; a surfacing pass adds latency and nothing else.
+- **Synthesis wanted** — research-style phrasing, no single quoted term, several parallel searches to merge, or > ~100 matches across many sessions.
+
+**Very large context (> ~2000 messages): delegate, do not load inline.** The output files persist on disk — hand a subagent the *absolute* paths to `context_messages.json` and `search_index.json` with a targeted synthesis prompt, and keep the raw messages out of your own context.
+
+**Filter noise matches first.** These are user-turn messages in the JSONL but not things a human typed, and common terms (design words like "serif", flag names) hit them heavily via injected system prompts and agent payloads. Skip any match whose `preview` starts with:
+
+`Base directory for this skill:` · `<task-notification` · `<agent-message` · `<system-reminder>` · `<local-command-stdout>` · `<command-message>` · `<command-name>/` · `Stop hook feedback:` · `This session is being continued from` · `Caveat: The messages below were generated`
+
+Apply it in the snippet itself, not just by eye — the filter is what gets forgotten when you write an ad-hoc surfacing pass:
+
+```python
+NOISE = ("Base directory for this skill:", "<task-notification", "<agent-message",
+         "<system-reminder>", "<local-command-stdout>", "<command-message>",
+         "<command-name>/", "Stop hook feedback:", "This session is being continued from")
+real = [m for m in ms if not m["preview"].startswith(NOISE)]
+```
+
+The same list is the filter to apply when bulk-extracting human-typed messages from `context_messages.json` (`type == "user"`) for pattern distillation — do not rediscover it by trial and error. `is_system_noise()` in `session_search.py` holds the canonical list and already applies it to `scan`/`extract`; `search` results are deliberately unfiltered so nothing is hidden.
+
+**Also filter the current session.** Matches whose `session_id` is this live session are the skill's own SKILL.md text, indexed as it loaded. Get the current `session_id` from the session-directory name in your scratchpad path (`.../<project>/<session_id>/scratchpad`); failing that, treat any match whose window overlaps the last few minutes as a candidate.
+
+**If filtering leaves nothing, widen before reporting zero.** All-hits-are-current-session means the single-project scope missed the real history. Re-run with `--folder <parent of cwd>` automatically, and say in the summary that the scope was widened.
 
 ### Step 3: Offer review options
 
@@ -117,6 +147,10 @@ Then proactively surface the top matches by reading `search_index.json` — each
 python3 {SKILL_DIR}/scripts/session_search.py scan [scope flags]
 ```
 
+`scan` stdout is mixed the same way: human-readable boxes first, then the JSON. Do not `tail` it, and do not feed it to a JSON parser. `scan` accepts `-o` but writes no file, so to consume it programmatically redirect stdout to a file and slice from the first `[`. Guard for nulls — `oldest`/`newest` are `null` for projects with no messages, and an unguarded sort on them raises `TypeError`.
+
+**If the question needs data this skill does not hold** — correlating history with a project database, `git log`, a ticket store — use `scan` for the session-side baseline and then stop: the correlation is out of scope, so handle it with ad-hoc tooling rather than forcing it through the extract → analyse → present pipeline.
+
 Present stats. **If the scoped user-message count is ≤ ~300**, skip the size prompt and extract all automatically — the token cost is small and the choice adds friction. Only ask when the count is large enough that token cost matters:
 
 ```
@@ -132,7 +166,7 @@ How many recent messages would you like to analyze?
 python3 {SKILL_DIR}/scripts/session_search.py extract -n <limit> [scope flags] -o .session-search
 ```
 
-Report extraction stats.
+Report extraction stats. If `--since` was used, `user_messages.json` will contain messages older than the window (see Technical Reference) — filter it by message `timestamp` before synthesising, and report the filtered count.
 
 ### Step 3: Analyse
 
@@ -140,6 +174,8 @@ Report extraction stats.
 
 - **Direct synthesis (default for ≤ ~300 messages):** the extracted messages already fit in context. Read `.session-search/user_messages.json` directly and synthesise the summary inline — skip the Haiku worker chain entirely. Supplement freely from `bd list` (open tickets) and recent `git log`. This is faster and richer than the multi-agent flow for small corpora.
 - **INVESTIGATE path (unfinished-work / status queries):** read the extracted messages inline, then cross-reference ground truth from git: `git status`, unpushed commits (`git log @{u}..`), uncommitted diffs, and the last `TodoWrite` state visible in the transcript. Produce per-session `{goal, accomplishments, unfinished, next_steps}` records. Do not run the message-categoriser pipeline — it answers "what was discussed", not "what is left".
+  - **GIT SAFETY sub-case — skip the session pipeline entirely.** "did anything get lost", "conflicts", "verify nothing was lost", "git sweep": the answer lives in git, not in the transcripts, and per-session `{goal, unfinished}` records would not address it at any session count. Go straight to forensics: `git reflog` for resets/reverts, `git fsck --lost-found` for dangling commits, then a content-presence check of each dangling commit against `HEAD`.
+  - **Known topic list → targeted searches instead.** When the scope is a fixed set of topics, branches or worktree names, one `search` per name (then read `search_index.json` / `context_messages.json`) is a valid and much faster substitute for `scan` → `extract`. Reserve the full pipeline for open-ended scopes where you do not yet know what to look for.
   - **Many sessions (> ~10):** fan out one investigator per session via the bundled workflow instead of reading everything inline:
     ```
     Workflow tool:
@@ -177,7 +213,7 @@ All output goes to `.session-search/` (configurable via `-o`):
 
 | File | Subcommand | Content |
 |------|------------|---------|
-| `search_index.json` | search | Top-level `{query, total_matches, total_windows, total_context_messages, context_skipped, project_count, projects[]}`. `total_matches` is an int (0 when none) — read it directly, no need to parse the stdout box. `context_skipped: true` means the broad-term guard fired: `context_messages.json` is empty and the timeline was skipped (previews/windows here are still complete). Stdout JSON caps windows at 20/project (`windows_omitted` gives the rest) — the full list is always in this file |
+| `search_index.json` | search | Top-level `{query, total_matches, total_windows, total_context_messages, context_skipped, project_count, projects[]}`; each `projects[]` entry is `{project, query, match_count, window_count, context_messages, windows[], matches[]}` (the project path key is `project`, **not** `name`), and each `matches[]` entry is `{timestamp, type, session_id, matched_in, preview}` where `matched_in` is `"message"` or `"tool_use"`. `total_matches` is an int (0 when none) — read it directly, no need to parse the stdout box. `context_skipped: true` means the broad-term guard fired: `context_messages.json` is empty and the timeline was skipped (previews/windows here are still complete). Stdout JSON caps windows at 20/project (`windows_omitted` gives the rest) — the full list is always in this file |
 | `context_messages.json` | search | Full messages within all time windows. Each entry: `{timestamp, type, content, session_id, project}` — message body is in `content` (not `text`/`preview`) |
 | `timeline.txt` | search | ASCII timeline visualisation |
 | `message_index.json` | extract | Message references (uuid, source file/line) |
@@ -214,7 +250,7 @@ session_search.py list [scope]
 | `-p, --project PATH` | Single project (default: cwd) |
 | `--all-projects` | All projects under `~/.claude/projects/` |
 | `--folder PATH` | Projects whose projectPath starts with PATH |
-| `--since MINUTES` | Sessions modified in past N minutes |
+| `--since MINUTES` | Sessions whose **file mtime** falls in the past N minutes |
 | `-o, --output DIR` | Output directory (default: `.session-search`) |
 
 **Search flags:**
@@ -231,11 +267,14 @@ session_search.py list [scope]
 |------|---------|
 | `-n, --limit N` | Message count limit (default: 100) |
 
-**Data source:** `~/.claude/projects/<encoded-path>/<uuid>.jsonl`
-- Uses each project's `sessions-index.json` for fast discovery **when present**; project dirs without an index fall back to a direct `*.jsonl` scan (deriving the real path from each session's `cwd`), so a missing index never silently hides a project
-- Filters by `projectPath` and `fileMtime` before reading session files
-- Extracts full conversation context (user + assistant + speak MCP dialogs)
+**`--since` filters by session file mtime, not by message timestamp.** A long-running session touched inside the window drags its *entire* history in, so `extract --since 120` can return messages days older than two hours. When the user asked for a real time window, filter `user_messages.json` by each message's own `timestamp` after extracting, and report the filtered count.
 
-**Troubleshooting — `--all-projects`/`--folder` returns 0:** the script no longer depends on a top-level `sessions-index.json`. If a scope genuinely yields nothing the script prints `Error: No projects found for scope` and exits non-zero. Verify the `--folder` argument is a real filesystem path prefix (see Phase 2), or widen the scope.
+**Data source:** `~/.claude/projects/<encoded-path>/<uuid>.jsonl`
+- Uses each project's `sessions-index.json` as a *fast path only*; index entries whose `fullPath` has gone stale are backfilled from a direct `*.jsonl` scan of the project dir, so neither a missing nor a stale index can hide sessions
+- Filters by `projectPath` and `fileMtime` before reading session files
+- Extracts full conversation context (user + assistant + speak MCP dialogs), plus `tool_use` inputs for `search` only
+- **Not covered:** subagent transcripts under `<session_id>/subagents/agent-*.jsonl` and top-level `agent-*.jsonl` — grep those directly (see Phase 3a Step 1)
+
+**Troubleshooting — a scope returns 0:** the script depends on no index at any level. If a scope genuinely yields nothing it prints `Error: No projects found for scope` and exits non-zero. Verify the `--folder` argument is a real filesystem path prefix (see Phase 2), or widen the scope. If one project inside a `--folder` scan shows 0 sessions while its project dir clearly holds `*.jsonl` files, re-run that path alone with `extract -p <path>` and report the discrepancy — the on-disk fallback should make this impossible.
 
 </phase_intent>
