@@ -193,13 +193,13 @@ echo "$DRAFT" | python3 ~/.claude/skills/writer/scripts/clean.py
 Use the cleaned stdout as the output. What it removes:
 - Em-dashes: ` —` → `,` and bare `—` → `, ` (matches the user's raycast clean-watermark exactly)
 - Zero-width chars, NBSP, all U+2000–U+200A spaces, line/paragraph separators, BiDi controls
-- Non-printable control bytes
+- Control, format, private-use and unassigned characters (Unicode categories Cc/Cf/Co/Cn, minus tab/newline/CR)
 - RTF residue (`\rtf1`, `\fonttbl`, `\par`, etc.) and HTML font/style/class/span/div/p/meta tags with inline `font-family:`, `color:`, `background:` declarations
 - GUIDs (8-4-4-4-12 hex)
 - Trailing whitespace, runs of 3+ blank lines, double spaces
 - NFKC-normalizes the whole thing first
 
-What it does NOT remove (use the writing pass, not the filter): slop phrases, slop words, bad rhythm. The filter strips mechanical tells; the writing pass strips lexical tells. Both required.
+What it does NOT remove: emoji, accented letters and any other printable Unicode — the `control` count never covers those, so never tell the user an emoji was stripped as a control character. Also not removed (use the writing pass, not the filter): slop phrases, slop words, bad rhythm. The filter strips mechanical tells; the writing pass strips lexical tells. Both required.
 
 After output, mention what the filter removed if it removed anything. The script prints a one-line summary to **stderr** in the form `clean.py: <total> chars, <n> spaced em-dash, <n> bare em-dash, <n> zero-width, <n> control, …` (only the categories that fired appear; when a run strips just whitespace it may read `clean.py: 1 chars`). Relay that summary. If nothing was removed it prints `clean.py: nothing removed` — in that case say nothing.
 
@@ -217,7 +217,7 @@ For rejections, bad news, complaints, escalations — apply the Difficult Messag
 
 ### Output Format
 
-Present in a code block, ready to copy. For email, include subject line above:
+Present in a fenced code block (`~~~`), ready to copy. Never blockquote (`>`) lines — they render as quoted text, survive the paste into a mail client, and break the ready-to-copy guarantee. For email, include subject line above:
 
 **Subject:** [subject line]
 ~~~

@@ -51,7 +51,19 @@ FORMATTING_PATTERNS = [
 ]
 
 GUID_RE = re.compile(r"[A-F0-9]{8}(?:-[A-F0-9]{4}){3}-[A-F0-9]{12}", re.IGNORECASE)
-NON_PRINTABLE = re.compile(r"[^\t\n\r\x20-\x7E]+")
+
+# Real control/format/private-use/unassigned characters only. Emoji, accented
+# letters and other printable Unicode survive — the platform rules allow them.
+CONTROL_CATEGORIES = {"Cc", "Cf", "Co", "Cn"}
+KEEP_CONTROL = "\t\n\r"
+
+
+def strip_control(text: str) -> tuple[str, int]:
+    kept = [
+        c for c in text
+        if c in KEEP_CONTROL or unicodedata.category(c) not in CONTROL_CATEGORIES
+    ]
+    return "".join(kept), len(text) - len(kept)
 
 
 def clean(text: str) -> tuple[str, list[str]]:
@@ -78,8 +90,7 @@ def clean(text: str) -> tuple[str, list[str]]:
     if zw_count:
         parts.append(f"{zw_count} zero-width")
 
-    ctrl = sum(len(m) for m in NON_PRINTABLE.findall(text))
-    text = NON_PRINTABLE.sub("", text)
+    text, ctrl = strip_control(text)
     if ctrl:
         parts.append(f"{ctrl} control")
 
@@ -116,7 +127,19 @@ def clean(text: str) -> tuple[str, list[str]]:
     return text, parts
 
 
+def selftest() -> int:
+    text, parts = clean("Nice work \N{SLIGHTLY SMILING FACE}​\x07 café —\n")
+    assert "\N{SLIGHTLY SMILING FACE}" in text, text
+    assert "café" in text, text
+    assert "1 control" in parts, parts
+    assert "1 zero-width" in parts, parts
+    print("clean.py: selftest ok", file=sys.stderr)
+    return 0
+
+
 def main() -> int:
+    if "--selftest" in sys.argv[1:]:
+        return selftest()
     data = sys.stdin.read()
     if not data.strip():
         print("clean.py: empty input", file=sys.stderr)
