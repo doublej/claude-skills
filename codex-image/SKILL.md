@@ -29,6 +29,14 @@ Output lands in `CWD/tmp/` by default.
 
 2. Script runs `codex exec` non-interactively with the image prompt.
 
+   Codex is an autonomous agent, and pointed at a git repo it will make commits
+   of its own (an empty "checkpoint" plus whatever assets it decided to add).
+   `generate.sh` therefore runs it with `-C <empty temp dir>` so the user's repo
+   is not its working root, and tells it not to run git or touch files. **Never
+   invoke `codex exec` for image generation from the project directory** — and if
+   you ever do, check `git log`/`git status` afterwards and surface anything it
+   created before reporting the result.
+
 3. Script locates the generated image in `~/.codex/generated_images/`, copies it to dest, and prints `IMAGE_RESULT: <path>`.
 
 4. Report the final path to the user. Use `Read` to display the image inline if desired.
@@ -54,6 +62,8 @@ Do not background the calls or fan them out across subagents.
 <prompt_mode>
 
 Before generating, determine how the user wants their prompt handled. Use `consult-user-mcp ask` with a pick dialog:
+
+**Skipping the pick is allowed** when the user already supplied fully-structured prompts (scene, style, composition, palette — i.e. they did the Director pass themselves): infer the mode from what they wrote and don't make them re-answer. What is *not* optional is the confirmation — show the exact final prompt strings and get an OK before writing a batch script or calling `generate.sh`. Say which mode you inferred when you do.
 
 ```
 title: "Prompt mode"

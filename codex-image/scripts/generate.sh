@@ -9,13 +9,18 @@ INPUT_IMAGE="${3:-}"
 mkdir -p "$DEST_DIR"
 
 LAST_MSG=$(mktemp)
-trap 'rm -f "$LAST_MSG"' EXIT
+# Codex is an autonomous agent: given the project as its working root it will
+# happily `git commit` and drop stray assets into it. Hand it an empty scratch
+# dir instead — nothing of the user's repo is reachable as its workspace.
+WORKDIR=$(mktemp -d)
+trap 'rm -rf "$LAST_MSG" "$WORKDIR"' EXIT
 
 # Generate mode (text-to-image) or edit mode (image-to-image, when an input image is given)
-CODEX_ARGS=(-s danger-full-access --skip-git-repo-check --ephemeral -o "$LAST_MSG")
+CODEX_ARGS=(-C "$WORKDIR" -s danger-full-access --skip-git-repo-check --ephemeral -o "$LAST_MSG")
 if [ -n "$INPUT_IMAGE" ]; then
   [ -f "$INPUT_IMAGE" ] || { echo "ERROR: input image not found: $INPUT_IMAGE"; exit 1; }
-  CODEX_ARGS+=(-i "$INPUT_IMAGE")
+  # absolute: the agent's working root is $WORKDIR, not the caller's cwd
+  CODEX_ARGS+=(-i "$(cd "$(dirname "$INPUT_IMAGE")" && pwd)/$(basename "$INPUT_IMAGE")")
   INSTRUCTION="Edit the provided image with this instruction: $PROMPT"
   echo "▶ Launching Codex image edit..."
 else
@@ -25,6 +30,8 @@ fi
 
 codex exec "${CODEX_ARGS[@]}" \
   "$INSTRUCTION
+
+Use the image_gen tool only. Do not run git. Do not create, move or modify any file yourself — leave the image where image_gen writes it.
 
 After generating, print ONLY the absolute file path of the generated image on a single line prefixed with IMAGE_PATH: — nothing else after that line."
 
