@@ -39,7 +39,7 @@ Each rung up adds token cost and new failure modes.
 - Task is one-shot and merely large → subagents, not a loop. Loops are for repeated cycles, not big batches.
 - Reach for a loop only when iteration is essential or the work genuinely recurs.
 
-"No loop needed — here's the simpler fix" is a valid, complete outcome. Say it and stop.
+"No loop needed — here's the simpler fix" is a valid, complete outcome. Say it and stop. If it still wants a hands-off run, just not a repeating one, hand off to the `run-brief` skill.
 </step_0_ladder>
 
 <step_1_recon>
