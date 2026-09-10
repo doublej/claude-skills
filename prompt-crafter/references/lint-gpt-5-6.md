@@ -73,7 +73,7 @@ Stop after section 4. Do not emit a literal STOP token or append another footer.
 - When a tone is requested, paste: "Lead with the conclusion. Use plain words and [short sentences / connected paragraphs]; include [required evidence]."
 
 **6) Autonomy boundaries**
-- Preserve existing scope and authorisation. Add only missing boundaries, using: "Proceed with [authorised actions]. Ask before [actions outside that authorisation]. If required input or access is unavailable, report [blocked result] and stop." Do not convert a request for assessment into permission to edit.
+- Preserve existing scope and authorisation. For Codex execution, declare or check approval mode (`suggest` for inspection/planning only, `auto-edit` for autonomous edits with shell gated, `full-auto` for sandboxed autonomous changes). Add only missing boundaries, using: "Operate in [suggest | auto-edit | full-auto] mode. Proceed with [authorised actions]. Ask before [actions outside that authorisation]. If required input or access is unavailable, report [blocked result] and stop." Do not convert a request for assessment into permission to edit.
 
 **7) Instruction conflicts**
 - Resolve contradictory rules instead of stacking them. Output: identify the conflicting pair and the scope/precedence rule used to preserve the user's intent.
@@ -97,10 +97,10 @@ Stop after section 4. Do not emit a literal STOP token or append another footer.
 - Examples are optional. Each retained example must match every output rule, including evidence, scope, and empty-result behaviour. Delete redundant examples; fix contradictory ones.
 
 **14) Permission gates**
-- Preserve existing scope and authorisation. Add only missing boundaries, using: "Proceed with [authorised actions]. Ask before [actions outside that authorisation]. If required input or access is unavailable, report [blocked result] and stop." Do not convert a request for assessment into permission to edit.
+- Match prompt instructions to harness approval mode (`suggest`, `auto-edit`, or `full-auto`). Verify sandbox boundaries (Seatbelt/Docker egress and `--add-dir`). Add only missing boundaries, using: "Proceed with [authorised actions]. Ask before [actions outside that authorisation]. If required input or access is unavailable, report [blocked result] and stop."
 
 **15) Verification step**
-- Keep concrete acceptance checks, not an unbounded self-review phase. If needed, paste: "Run [acceptance command]. Report its exit status and any failing cases; if it cannot run, state why and mark the result unverified."
+- Keep concrete acceptance checks, not an unbounded self-review phase. For non-interactive or headless execution (`codex -q`, CI/CD), specify deterministic verification commands. If needed, paste: "Run [acceptance command]. Report its exit status and any failing cases; if it cannot run, state why and mark the result unverified."
 
 **16) Anti test-hack guidance** *(when relevant)*
 - Only for implementation tasks where fixture-specific shortcuts are a risk. Paste: "Implement the general behaviour in [specification]; tests are examples, not a list of inputs to hard-code."
