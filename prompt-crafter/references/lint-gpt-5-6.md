@@ -111,7 +111,7 @@ STOP after section 4.
 - Examples match the desired output format and behaviour exactly. No contradictory few-shot patterns. Prune any example that only restates a stated rule (see item 0).
 
 **14) Permission gates**
-- Gates for irreversible actions: never delete/overwrite/send/merge without asking; 1-line plan + approval before destructive action. Scope these to genuinely risky actions only (see item 6).
+- Gates match scope, reversibility, and existing authorization: actions the task itself requests (editing or overwriting the named files, running tests, creating a branch) need no confirmation; irreversible or outward-facing actions outside the stated scope (deleting unrelated files, pushing, sending, merging, prod changes) get a one-line plan and approval unless the user already granted it. See item 6.
 
 **15) Verification step**
 - Include a final requirement check against the deliverable and constraints.

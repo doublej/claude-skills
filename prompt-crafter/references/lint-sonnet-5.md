@@ -112,7 +112,7 @@ STOP after section 4.
 - Examples match the desired output format and behaviour exactly. No contradictory few-shot patterns.
 
 **15) Agentic eagerness / permission gates**
-- Gates for irreversible or risky actions: never delete/overwrite/send/merge without asking; 1-line plan + approval before destructive action.
+- Gates match scope, reversibility, and existing authorization: actions the task itself requests (editing or overwriting the named files, running tests, creating a branch) need no confirmation; irreversible or outward-facing actions outside the stated scope (deleting unrelated files, pushing, sending, merging, prod changes) get a one-line plan and approval unless the user already granted it.
 
 **16) Web constraints** *(only if WEB_ENABLED=yes)*
 - Reputable public sources only; no leaked keys/benchmarks/answer sheets; verify key claims with 2 independent sources; on insufficient evidence after a bounded search, say so and list what was tried.

@@ -54,7 +54,7 @@ STOP after section 4.
 **1) Delete verification instructions** *(highest-yield item)*
 - Opus 5 verifies its own work unprompted. Instructions like "double-check your answer", "re-verify before responding", "include a final verification step", "use a subagent to verify" cause **over-verification**.
 - Removing them reduces cost with no quality loss. This is a DELETE, not a rewrite.
-- Same applies to harness-level verification stages carried over from prior models.
+- Same applies to harness-level stages that re-check the author's own output. An independent verifier phase placed by the orchestrator (fresh context, reads only the spec and the result) is a different thing; keep it where the stakes warrant it.
 - Note: this inverts the usual "ask the model to self-check" best practice.
 
 **2) Verbosity — prompt for it explicitly**
@@ -110,7 +110,7 @@ STOP after section 4.
 - Examples match the desired output format and behaviour exactly. No contradictory few-shot patterns.
 
 **14) Agentic eagerness / permission gates**
-- Gates for irreversible or risky actions: never delete/overwrite/send/merge without asking; 1-line plan + approval before destructive action.
+- Gates match scope, reversibility, and existing authorization: actions the task itself requests (editing or overwriting the named files, running tests, creating a branch) need no confirmation; irreversible or outward-facing actions outside the stated scope (deleting unrelated files, pushing, sending, merging, prod changes) get a one-line plan and approval unless the user already granted it.
 
 **15) Web constraints** *(only if WEB_ENABLED=yes)*
 - Reputable public sources only; no leaked keys/benchmarks/answer sheets; verify key claims with 2 independent sources; on insufficient evidence after a bounded search, say so and list what was tried.

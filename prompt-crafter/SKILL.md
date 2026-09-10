@@ -54,7 +54,7 @@ Bare `opus` / `sonnet` resolve to the 5-series. Older models need the version su
 **Header line**, first line of every deliverable on both paths:
 
 ```
-Target: <model> · Reference: references/<file> · Applied: "<one sentence copied verbatim from that file that changed the draft>"
+Target: <model> · Reference: references/<file> · Applied: "<one sentence copied verbatim from that file that governed the draft>"
 ```
 
 The quote is a sentence that exists in the file, not a paraphrase of it. For the Claude 5 series, `<model_profiles>` reproduces the lint wording verbatim, so a sentence quoted from the profile also satisfies the header. A header that cannot be filled means the file was not opened.
@@ -72,8 +72,14 @@ The quote is a sentence that exists in the file, not a paraphrase of it. For the
 
 Ask only when a value is ambiguous **and** would flip a checklist result.
 
-**Which path:** improving, reviewing, or linting an existing prompt runs `<lint_path>`. Writing a new prompt runs `<authoring_path>`; open the routed lint file before drafting when the prompt is agentic (orchestration prompts, `agent()` calls, multi-file builds with verification, anything dispatched to a subagent), long-horizon, or the user wants a full review.
+**Which path:** "lint", "rewrite", "improve", or "fix" an existing prompt runs `<lint_path>`. "Review", "look at", "is this good", or a pasted prompt with a question runs `<feedback_path>`. Writing a new prompt runs `<authoring_path>`; open the routed lint file before drafting when the prompt is agentic (orchestration prompts, `agent()` calls, multi-file builds with verification, anything dispatched to a subagent), long-horizon, or the user wants a full review.
 </model_routing>
+
+<feedback_path>
+## Feedback path
+
+Output: the header line, then findings ranked by effect on the first run, each one line: the issue, the line it sits on, the fix. At most 7. A prompt with nothing worth changing gets one line: `No changes needed: <what makes it work>`. No rewrite, no checklist table, no self-check; offer the full lint in one line at the end only if findings exceed 3.
+</feedback_path>
 
 <lint_path>
 ## Lint path
@@ -82,7 +88,7 @@ The lint file's 4-section deliverable replaces every other output format, includ
 
 1. **Fill placeholders** → Output: `Assumptions:` line listing every `<<PLACEHOLDER>>` and its value, directly under the header.
 2. **Run the checklist** → Output: section 2 table with one row per item in the file's range from the routing table, in order, each with a status. Items marked *(only if …)* whose condition is false get status `n/a`. Fewer rows than the range means the file was not read to the end.
-3. **Rewrite** → Output: section 3 fenced block. Deleting is a valid fix; on the 5-series it is usually the fix.
+3. **Rewrite** → Output: section 3 fenced block, or `No changes needed` when every item passes. Deleting is a valid fix; on the 5-series it is usually the fix.
 4. **Self-check** → Output: section 4, at most 5 bullets, then the file's `STOP`. Nothing after it.
 </lint_path>
 
@@ -94,7 +100,7 @@ The lint file's 4-section deliverable replaces every other output format, includ
 3. **Write the frame** → Output: three lines: done-when (observable), shape (format), length (cap). They open or close the prompt.
 4. **Draft** → Output: the prompt, per `<principles>` and the surface's row in `<surfaces>`.
 5. **Apply the model profile** → Output: the clauses pasted from `<model_profiles>` (Claude 5 series) or `references/clauses.md` (other targets), brackets filled, and the deletions made. Skip only when the target is `generic`. Paste; do not paraphrase. The wording carries the calibration.
-6. **Cut** → Output: `Cuts:` list. Remove every line whose deletion does not change the expected output. An empty list means the draft was not challenged.
+6. **Cut** → Output: `Cuts:` list. Remove every line whose deletion does not change the expected output. Write `none` when every remaining line earns its place; do not cut to fill the list.
 7. **Emit** → Output: the reply per `<output_contract>`.
 </authoring_path>
 
@@ -145,11 +151,14 @@ API facts the prompt must not fight: adaptive thinking is on by default and `bud
 
 Delete on every 5-series target: "think step by step", `<thinking>` tags, "show your reasoning" (Fable refuses it), "double-check", "verify before responding", "after every N tool calls summarise", numbered reasoning scripts, and "only report high-severity issues" in review prompts (followed literally; recall falls).
 
-When a check matters, a separate agent reads only the spec and the result. The author model never grades its own work.
+Three kinds of verification, handled differently:
+- Required checks (tests, typecheck, an endpoint returning 200): always keep, written as the command and its observable result.
+- Independent review: a fresh-context agent that reads only the spec and the result, placed by the orchestrator or workflow as its own phase when the stakes warrant it (irreversible action, external delivery, multi-file build). Never spawned by the author to grade its own output.
+- Self-check language ("double-check", "verify before responding", "re-read your answer"): delete on every 5-series target. Opus 5 verifies unprompted and loops on it.
 
 ### Claude Opus 5
 
-Delete first: verification instructions of any kind (it verifies unprompted and loops), "use a subagent to verify", forced-progress scaffolding, and "delegate more" guidance written for Opus 4.8 (Opus 5 already delegates more readily).
+Delete first: self-check language and author-spawned verifiers (the third and second kinds above, when the author is the one spawning), forced-progress scaffolding, and "delegate more" guidance written for Opus 4.8 (Opus 5 already delegates more readily).
 
 | When | Paste |
 |------|-------|
@@ -218,7 +227,7 @@ Facts: <verified paths and commands embedded, or "none embedded">
 
 <the prompt, in a fenced block, ready to paste>
 
-Cuts: <≤5 bullets naming what was removed and why>
+Cuts: <≤5 bullets naming what was removed and why, or "none">
 Test it: <one concrete run: the command or message to send, and the single observable that shows it worked>
 ```
 
@@ -231,7 +240,6 @@ Fix the draft before emitting if any of these holds:
 - An example that is not exactly the wanted output.
 - Instructions inside a data tag, or unlabelled untrusted content.
 - A profile clause paraphrased instead of pasted, or a deletion from the profile still present.
-- `Cuts:` empty.
 </output_contract>
 
 <surfaces>

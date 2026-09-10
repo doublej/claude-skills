@@ -53,9 +53,7 @@ STOP after section 4.
 - Prefer "do X" over "don't do Y."
 
 **5) Agentic eagerness / permission gates**
-- Gates for irreversible actions:
-  - Never delete/overwrite/send/merge without asking.
-  - Before destructive action: 1-line plan + wait for approval.
+- Gates match scope, reversibility, and existing authorization: actions the task itself requests (editing or overwriting the named files, running tests, creating a branch) need no confirmation; irreversible or outward-facing actions outside the stated scope (deleting unrelated files, pushing, sending, merging, prod changes) get a one-line plan and approval unless the user already granted it.
 
 **6) Web constraints** *(only if WEB_ENABLED=yes)*
 - Use only reputable public sources.
