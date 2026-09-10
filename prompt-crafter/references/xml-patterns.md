@@ -7,7 +7,7 @@ Write structured, high-quality prompts for Claude using XML tags, following Anth
 - Prompt has multiple components (context, instructions, data, examples)
 - Data and instructions must not be confused
 - Output needs to be parseable (extract specific sections)
-- Complex task requiring CoT separation (`<thinking>` / `<answer>`)
+- Complex task requiring CoT separation (`<thinking>` / `<answer>`) — Claude 4.x with thinking off only; see the note under Chain of Thought
 - Long context with multiple documents
 
 ## The 10-Component Framework
@@ -24,7 +24,7 @@ Structure prompts using up to 10 components. Not all are needed every time — u
 7. Immediate Task     — NOW: Specific deliverable needed
 8. Chain of Thought   — THINK: Reasoning steps
 9. Output Format      — SHAPE: Structure of the response
-10. Prefilled Response — START: Begin Claude's response
+10. Prefilled Response — START: Begin Claude's response (Claude 4.x only; the 5-series returns 400 on assistant prefill)
 ```
 
 ### Minimal Prompt (3 components)
@@ -151,6 +151,8 @@ Queries at the end improve response quality by up to 30%.
 
 ## Chain of Thought with XML
 
+**Model gate.** The patterns in this section are for Claude 4.x with extended thinking off, and for GPT-5.6 only as a short "consider X and Y" list. On the Claude 5 series (Fable, Opus, Sonnet) and on 4.7/4.8 with thinking on, do not use them: adaptive thinking already plans, `<thinking>` tags leak into parsed output, "show your reasoning" triggers a refusal on Fable 5, and scripted steps produce literal compliance and worse plans. Give criteria and constraints instead, and set `effort` in the API.
+
 ### Basic CoT
 ```
 Think step-by-step before answering. Put reasoning in <thinking> tags, answer in <answer> tags.
@@ -170,7 +172,7 @@ Put your final answer in <answer> tags.
 ```
 
 ### Extended Thinking Mode
-When using Claude's built-in extended thinking, use `<scratchpad>` or `<thinking>` in few-shot examples — Claude generalises the pattern.
+Claude 4.x with extended thinking on: `<scratchpad>` or `<thinking>` inside few-shot examples is tolerated but unnecessary — the model plans on its own. Claude 5 series: leave reasoning tags out of examples entirely; the model will reproduce them in the output.
 
 ## Multishot Prompting with XML
 

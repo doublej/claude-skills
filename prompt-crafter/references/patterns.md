@@ -55,6 +55,8 @@ Weight: 40% technical fit, 30% team impact, 30% maintenance burden.
 
 ## Progressive Disclosure Prompt
 
+**Model gate.** Claude 4.x and earlier only. Opus 5 and Sonnet 5 want the complete task specification in one turn; a phased or approval-gated prompt makes them stall at each gate. On the 5-series, state done-when, boundaries, and criteria up front instead (SKILL.md principles 1, 8, 10).
+
 For complex tasks, break the prompt into phases:
 
 ```
@@ -67,6 +69,8 @@ Start with Phase 1.
 ```
 
 ## Spec-Driven Development Prompt
+
+**Model gate.** The "wait for my approval" step is a 4.x pattern. On the 5-series, replace the gate with a written spec the agent checks itself against, or run the spec and the build as two separate agents.
 
 From task description to working code via structured specification:
 
@@ -120,6 +124,8 @@ All must pass before reporting completion.
 ```
 
 ## Iterative Refinement Prompt
+
+**Model gate.** Self-critique loops are a DELETE on Opus 5 (it over-verifies and loops) and low-yield on Sonnet 5 and Fable 5. On the 5-series, use a fresh-context verifier agent instead: it reads only the spec and the result. Keep this template for Claude 4.x.
 
 For tasks where first-pass quality matters:
 

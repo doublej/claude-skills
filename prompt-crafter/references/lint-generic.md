@@ -65,7 +65,7 @@ STOP after section 4.
 - Specify output type: patched code / unified diff / JSON / etc.
 
 **8) Verbosity clamp**
-- Set word/token limits; define structure to prevent over-production.
+- Define the output shape and length by example ("a 3-row table", "one paragraph like this: …"); a shape the model can copy beats a bare word limit, and on the Claude 5 series effort settings do not shorten visible output, so length must be stated in the prompt.
 
 ---
 

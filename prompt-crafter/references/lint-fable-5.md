@@ -94,7 +94,7 @@ STOP after section 4.
 - Add: "Delegate independent subtasks to subagents and keep working while they run. Intervene if a subagent goes off track or is missing relevant context."
 
 **12) Self-verification in long runs** *(only if RUN_SHAPE=long-horizon autonomous)*
-- Fresh-context verifier subagents outperform self-critique. Add: "Establish a method for checking your own work at an interval of [X] as you build. Run this every [X interval], verifying your work with subagents against the specification."
+- Fresh-context verifier subagents outperform self-critique. Add, with the interval filled in from the run shape (per phase, per N files, or per milestone): "After each [phase], spawn a verifier subagent that reads only the specification and the current result, and report its verdict before continuing." Never ask the author model to grade its own work.
 
 **13) Memory surface** *(only if MEMORY=yes; otherwise flag that one should exist)*
 - Fable 5 performs notably better with somewhere to record lessons — a plain Markdown file is enough.
