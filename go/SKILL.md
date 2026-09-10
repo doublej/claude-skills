@@ -46,7 +46,8 @@ target. AFK response or no MCP → take the prefilled defaults and note them in 
 </gaps>
 
 <brief>
-Load `prompt-crafter`. Target: fable-5 for the orchestrator, sonnet for legwork agents.
+Load `prompt-crafter`. Target: the owner tier picked in `<execute>`; sonnet for any
+bounded piece it hands off.
 Upgrade the one-liner into a brief that carries: the reason and audience, the grounded facts
 above, the done-condition, the relevant block of `references/preferences.md`, and the
 verifier. The brief is what runs. The one-liner is never run as-is.
@@ -70,11 +71,22 @@ verifier. The brief is what runs. The one-liner is never run as-is.
 </provision>
 
 <execute>
-Pick by size, not by habit:
-- fits one context and is one dependent chain → do it inline at low effort. This is the
-  default and it is the ponytail rung.
-- many independent pieces → `/orchestrate` with the brief; sonnet workers, opus only for
-  hard cross-cutting pieces; anything that writes gets its own worktree.
+Pick the owner by uncertainty and cost of error, before size:
+- obvious local edit, clear scope, observable acceptance → sonnet.
+- normal feature or fix → opus owns it end to end: investigate, implement, test, finish.
+- unclear architecture, elusive bug, conflicting requirements, expensive failure mode →
+  fable straight away, and it keeps the implementation when that needs sustained
+  judgment. Never make a cheaper tier fail first.
+Then pick the shape by size, not by habit:
+- fits one context and is one dependent chain → the owner does it inline at low effort.
+  This is the default and it is the ponytail rung. Raise effort for one hard decision,
+  not for the whole run; effort and tier are separate dials.
+- many independent pieces → `/orchestrate` with the brief. Delegate only a piece with a
+  clear boundary whose result is cheaper to check than to produce; fan-out saves clock,
+  not tokens. Anything that writes gets its own worktree.
+- stuck → escalate a question, not the task: objective, code, observed failure, what was
+  tried, the exact decision needed. Escalate when the next attempt would repeat the same
+  hypothesis with no new evidence.
 - JJ is AFK or the run will outlast a sitting → prepend `references/pm-contract.md` to the
   brief and hand it to `run-brief`.
 - loop shape → `loop-brief`.

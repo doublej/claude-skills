@@ -21,17 +21,26 @@ in one head. Say which case you're in before you fan out.
 
 ## Routing
 
-| Tier | Give it |
-|---|---|
-| haiku 4.5 | Inventory, grep sweeps, log scans, high-volume reading. 200K context — partition the work so no agent exceeds it. |
-| sonnet 5 | Default worker: implementation, tests, review, data analysis, tool use. The documented orchestrator/worker pairing. |
-| opus 5 | Multi-file refactors, hard debugging, cross-cutting design, anything vision or computer-use. |
-| fable 5 | Only if opus already failed on it. It's twice opus's price for the top of the reasoning range. |
+Route by uncertainty and cost of error, not by reputation and not by making a
+cheaper tier fail first. Optimize total effort — retries, handoffs, review —
+not the price of one call.
 
-Run subagents at low effort — on research-shaped work, low gave up 1–3 points for
-a third to a half off. Before escalating a tier, try the same tier at higher
-effort; lowering or raising effort beats an architecture change more often than
-not.
+| Tier (codex twin) | Give it | Don't |
+|---|---|---|
+| haiku 4.5 | Inventory, grep sweeps, log scans, high-volume reading. 200K context — partition so no agent exceeds it. | Anything needing judgment. |
+| sonnet 5 (luna) | Bounded work: clear scope, the relevant files, constraints, observable acceptance. Implementation, tests, review, tool use. | Discover hidden requirements or judge its own completeness. |
+| opus 5 (sol) | Default owner: investigate, implement, test and finish a coherent feature or fix. | Act as dispatcher when it could just finish. |
+| fable 5 (astra) | Resolve uncertainty and own hard work: architecture choices, elusive bugs, conflicting requirements, expensive failure modes. Keeps the implementation when it needs sustained judgment — a forced handoff after planning loses what was just paid for. | Mandatory plan-and-review on every small edit. |
+
+Tier and effort are separate dials. Run subagents at low effort — on
+research-shaped work, low gave up 1–3 points for a third to a half off. Raise
+effort for one hard decision, not for the whole run; a smaller model thinking
+longer does not stand in for a stronger one on a judgment call.
+
+**Escalate a question, not the task.** A failed attempt yields evidence. When the
+next attempt would repeat the same hypothesis with no new evidence, escalate one
+tier with: objective, relevant code, observed failure, what was tried, the exact
+decision needed, and a path to the original evidence.
 
 ## Rules
 

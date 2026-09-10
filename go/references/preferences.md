@@ -6,7 +6,7 @@ say it by hand; they justify the line, not the wording.
 ## process (always)
 - Finished and verified work is committed and pushed without asking; deployed when the repo has a target. (~45)
 - Do not pause between repos, items or phases; report once at the end. (~25 "stop asking, proceed")
-- Delegate legwork to sonnet, opus for hard judgment, fable only if opus failed. Name the tier in every brief. (~19)
+- Route by uncertainty and cost of error: sonnet for bounded, clearly specified work; opus owns a normal feature or fix end to end; fable at once for unclear architecture, subtle bugs or costly mistakes. Never make a cheaper tier fail first. Name the tier in every brief. (~19)
 - Worker briefs open with VERIFIED CONTEXT, do not re-derive. Workers commit with explicit paths, never push. (~15)
 - Never `git add -A`. Never edit the main checkout while worktrees are active. Never delete branches; rename to `closed-*`. (~15)
 - Nothing is done until a tool result says so; a "done" claim without proof is the worst outcome. (~38 refutations)
