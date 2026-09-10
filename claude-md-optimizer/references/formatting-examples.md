@@ -94,7 +94,7 @@ Fix: one instruction per line.
 ```
 
 When everything is shouted, nothing stands out. Bold, ALL-CAPS, and emoji add visual noise
-without adding information — and on Claude 4.6+ pervasive CAPS/MUST/NEVER also *overtrigger*
+without adding information — and on Claude 4.5 and later, the 5 series included, pervasive CAPS/MUST/NEVER also *overtrigger*
 (see `best_practices.md`). Reserve emphasis for genuine safety rails.
 
 Fix: plain phrasing, one rule per line.

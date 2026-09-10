@@ -15,7 +15,7 @@ set -euo pipefail
 
 CLAUDE_SKILLS_DIR="$HOME/.claude/skills"
 CODEX_SKILLS_DIR="$HOME/.codex/skills"
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
 SKILLIGNORE_FILE="$SCRIPT_DIR/.skillignore"
 
 CODEX_MODE=false
