@@ -5,7 +5,7 @@ description: "Write, improve, or review prompts, CLAUDE.md rules, system prompts
 
 # Prompt Crafter
 
-Produce prompts that a model follows on the first run: interactive asks, CLAUDE.md files, system prompts, slash commands, skill instructions, agent briefs, workflow agents, and `claude -p` strings.
+Produce prompts that a model follows on the first run: interactive asks, CLAUDE.md files, AGENTS.md files, system prompts, slash commands, skill instructions, agent briefs, workflow agents, and headless CLI strings (`claude -p`, `codex -q`).
 
 Optional argument (`$ARGUMENTS`): target model. Default: `generic`. In `/prompt-crafter sonnet-5: <request>`, strip the separator colon from the model token; the remaining text is the request. The target is the model that will run the finished prompt, not the model crafting it.
 
@@ -14,7 +14,7 @@ The test for every deliverable: a fresh model, given only the prompt, produces t
 <scope>
 ## Step 0 — Scope gate
 
-Output (internal): the deliverable kind, one of prompt, CLAUDE.md, system prompt, slash command, skill instruction, agent brief. Only a failed gate reaches the reply, as the one line: `Deliverable: not a prompt (<what it is>), exiting skill`.
+Output (internal): the deliverable kind, one of prompt, CLAUDE.md, AGENTS.md, system prompt, slash command, skill instruction, agent brief. Only a failed gate reaches the reply, as the one line: `Deliverable: not a prompt (<what it is>), exiting skill`.
 
 The skill applies only when the deliverable is a prompt or instruction file: writing, reviewing, or improving one. If it is not (the skill co-loaded next to a build, audit, research, or artifact task):
 
@@ -113,7 +113,7 @@ Output (internal): a draft that satisfies these criteria across every section an
 - **Decision criteria.** Specify what counts; prescribe order only for real dependencies. Keep required tests and observable checks, remove generic self-critique and scripted internal reasoning on the 5-series.
 - **Examples only when useful.** An example teaches a hard format or edge case. It must match all rules, including evidence requirements and empty results; no quota of examples.
 - **Data boundaries.** Label untrusted input as data. In long prompts, put documents before the task; for a short prompt, lead with the task. Use XML only where it clarifies multiple components.
-- **Lean scope.** Remove platitudes, redundant examples, repeated rules, and unsupported model claims. Soft drafting targets: interactive ask 5 lines, slash command 30, system prompt 150, CLAUDE.md 200. Completeness wins over these targets.
+- **Lean scope.** Remove platitudes, redundant examples, repeated rules, and unsupported model claims. Soft drafting targets: interactive ask 5 lines, slash command 30, system prompt 150, CLAUDE.md / AGENTS.md 200. Completeness wins over these targets.
 - **Bounded tools.** Name only available capabilities; supply a fallback for missing required access. For agentic work define permitted actions, an appropriate stop condition, and what a blocked result contains. Add budgets or delegation only when the task warrants them.
 </principles>
 
@@ -157,8 +157,10 @@ For slash commands, include the proposed save path in Assumptions so the invocat
 |---------|--------|----------------|
 | Interactive session | Natural language | Builds on context; state only the delta |
 | CLAUDE.md | Flat markdown + XML sections | Loaded every session; every line is paid every turn |
+| AGENTS.md | Markdown hierarchy, cascading | Merges down directory tree; `AGENTS.override.md` replaces parent rules |
 | Slash command | Markdown template, `$ARGUMENTS` | Single purpose; `description:` frontmatter drives autocomplete |
-| CLI (`claude -p`) | Single string or piped input | No follow-up; must carry facts, scope, and done-when |
+| CLI (`claude -p`) | Single string or piped input | No follow-up; must carry facts, scope, done-when, and permission mode |
+| Codex CLI / exec | Single string, flags (`-q`, `-a`) | Non-interactive execution; declare approval mode, sandbox bounds, and JSON schema |
 | System prompt / API | XML-structured | Parsed programmatically; role, boundaries, output contract |
 | Skill SKILL.md | Frontmatter + markdown | Description is the trigger; body under 500 lines; required reads produce an output that proves the read |
 | Dispatch prompt / agent brief | XML task + constraints, one mission per agent | Self-contained (the agent has no history); every path verified; return conclusions, not file dumps |
@@ -177,6 +179,12 @@ Use plain language for a short task. For a format the model cannot infer, open `
 Output (reply, inside the prompt fence): project instructions containing only grounded commands and relevant rules. State precedence if rules can collide. Put scope-specific rules in the intended rule file, with `paths:` frontmatter; list each proposed file path outside its fence if the user requests multiple files. Keep imports resolvable from the destination and verify referenced files before claiming they exist. Use headings or flat XML for independent concerns; don't fill a fixed section inventory with boilerplate.
 </claude_md>
 
+<agents_md>
+## AGENTS.md
+
+Output (reply, inside the prompt fence): project or subsystem instructions containing verified build/test commands, environment constraints, and path boundaries. Respect the cascading hierarchy: `~/.codex/AGENTS.md` (global user) → `<repo>/AGENTS.md` (repo root) → `<subsystem>/AGENTS.md` (directory-specific rules). If a directory contains `AGENTS.override.md`, it completely replaces the inherited `AGENTS.md` chain for that directory. Do NOT use Claude-style glob frontmatter (`paths: [...]`) in `AGENTS.md`; Codex scoping is strictly directory-hierarchical. Keep rules terse, verified, and actionable.
+</agents_md>
+
 <slash_command>
 ## Slash command and CLI
 
@@ -184,7 +192,7 @@ Output (reply, inside the prompt fence): a complete Markdown template beginning 
 
 For inspection commands, specify the candidate set, evidence that includes or excludes a candidate, read-only boundaries, missing-access behaviour, empty-result text, and the final list shape. Discover the future repo's test configuration and tests wherever configured, not only beside source files. Distinguish confirmed zero coverage from no identified test association; imports, shared test helpers, integration tests, and differently named test files can invalidate filename-only guesses. Report inconclusive cases separately and avoid silently omitting files.
 
-For CLI prompts, deliver a safely quoted invocation or stdin text. It must carry its inputs, scope, done-when, and blocked-result behaviour because there may be no follow-up. Do not add permission-bypass flags as boilerplate.
+For CLI prompts, deliver a safely quoted invocation or stdin text. It must carry its inputs, scope, done-when, and blocked-result behaviour because there may be no follow-up. For Claude Code (`claude -p`), specify `--permission-mode` (`acceptEdits` or `plan`) and scope tools via `--allowedTools`; never add `--permission-mode bypassPermissions` without isolated sandboxing. For Codex CLI (`codex -q` or `codex exec`), declare approval mode (`-a suggest`, `auto-edit`, or `full-auto`), sandbox boundaries (`--cd`, `--add-dir`), and structured `--json` extraction. Do not add permission-bypass flags as boilerplate.
 </slash_command>
 
 <xml_reference>
@@ -206,7 +214,7 @@ Refer to data tags by name in the consuming instruction. Output (internal): each
 
 ## References
 
-- Required on every path: the target's lint file from the unchanged routing table.
-- Optional shared wording: `references/clauses.md` → selected key and pasted clause.
-- Optional XML examples: `references/xml-patterns.md` → selected example and filled structure.
-- Optional workflow/project templates: `references/patterns.md` → selected template and filled contract.
+- Required on every path: the target's lint file from the unchanged routing table (`references/lint-<target>.md`).
+- Optional shared wording: `references/clauses.md` → selected key and pasted clause (Codex approval/sandbox modes, Claude permissions/tool restrictions, subagent handoff, done-when, boundaries).
+- Optional XML & JSON examples: `references/xml-patterns.md` → selected pattern and filled structure (evidence extraction, document comparison, structured agent JSON output schema for CLI/SDK, tool-call interceptor guard).
+- Optional workflow/project templates: `references/patterns.md` → selected template and filled contract (`CLAUDE.md`, `AGENTS.md` hierarchy/overrides, Codex/Claude headless CLI automation, Claude Agent SDK subagents/hooks, environment hygiene).
