@@ -1,6 +1,6 @@
 ---
 name: prompt-crafter
-description: "Write, improve, or review prompts, CLAUDE.md rules, system prompts, slash commands, skill instructions, and agent briefs. Routes Claude 5, Claude 4.x, GPT-5.6, and generic targets to model-specific lint and pasteable clauses. Use when the deliverable is a prompt or instruction file, not the implementation it describes."
+description: "Write, improve, or review prompts, CLAUDE.md rules, system prompts, slash commands, skill instructions, and agent briefs. Routes Claude 5, Claude 4.x, GPT-6, GPT-5.6, and generic targets to model-specific lint and pasteable clauses. Use when the deliverable is a prompt or instruction file, not the implementation it describes."
 ---
 
 # Prompt Crafter
@@ -38,9 +38,11 @@ Resolution order:
 
 | Accepted value | Route | Reference | Checklist items |
 |----------------|-------|-----------|-----------------|
+| `fable-5.1`, `fable-5-1`, `claude-fable-5-1`, `mythos-5.1` | Claude Fable 5.1 / Mythos 5.1 | `references/lint-fable-5-1.md` | 0–22 |
 | `fable-5`, `fable`, `mythos-5`, `claude-fable-5` | Claude Fable 5 / Mythos 5 | `references/lint-fable-5.md` | 0–22 |
 | `opus-5`, `opus`, `claude-opus-5` | Claude Opus 5 | `references/lint-opus-5.md` | 0–18 |
 | `sonnet-5`, `sonnet`, `claude-sonnet-5` | Claude Sonnet 5 | `references/lint-sonnet-5.md` | 0–19 |
+| `gpt-6`, `gpt-6-omni` | GPT-6 | `references/lint-gpt-6.md` | 0–19 |
 | `gpt-5.6`, `gpt-5.6-sol`, `sol`, `terra`, `luna` | GPT-5.6 | `references/lint-gpt-5-6.md` | 0–18 |
 | `opus-4-8` | Claude Opus 4.8 | `references/lint-opus-4-8.md` | 0–15 |
 | `opus-4-7` | Claude Opus 4.7 | `references/lint-opus-4-7.md` | 0–15 |
