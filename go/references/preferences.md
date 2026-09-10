@@ -43,5 +43,5 @@ say it by hand; they justify the line, not the wording.
 ## autonomous runs
 - Budget unless given: 12 haiku, 6 sonnet, 2 opus. Exhausted → stop, report, list what is left.
 - Done-condition stated in the first message and held to.
-- Fresh-eyes verifier after every merge and every third job (Fable only; Opus self-verifies).
+- Fresh-eyes verifier after every merge and when real risk remains outside the checks that ran; it hunts defects, not improvements (Fable only; Opus self-verifies).
 - Lessons that outlive the run: one line in the nearest CLAUDE.md, no new docs.
