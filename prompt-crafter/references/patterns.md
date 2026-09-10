@@ -15,7 +15,7 @@ Use only when subagents are available, authorised, and useful. Each brief carrie
 
 ## Independent acceptance trial
 
-Use for an explicitly requested trial or an authorised workflow that needs independent acceptance evidence. Give the evaluator only the specification and result, without the author's conclusions. It is not a default phase of every prompt-writing task.
+Give evaluator only specification and result, without author conclusions.
 
 ```xml
 <task>Evaluate [result] against the specification below using [authorised checks].</task>
@@ -32,11 +32,9 @@ Use for an explicitly requested trial or an authorised workflow that needs indep
 <output_format>Files changed, acceptance result, and unresolved blockers. Stop after this report.</output_format>
 ```
 
-Keep all requirements in the initial brief. Add a human checkpoint only when user input is actually required; a model version alone does not justify an extra turn.
+## Claude project instructions (CLAUDE.md)
 
-## Project instructions
-
-Use only the rows the project needs; do not invent stack choices, CI policies, file-size limits, or dependency approval processes.
+Use only the rows the project needs; do not invent stack choices or unverified policies.
 
 ```markdown
 # [Project name]
@@ -56,9 +54,9 @@ Test: `[verified command]`
 [Required result fields and meaningful length constraint.]
 ```
 
-## Path-scoped rule file
+## Claude path-scoped rule file
 
-Output: a proposed `.claude/rules/<name>.md` with the actual intended glob and a rule that applies to every matching file.
+Output: `.claude/rules/<name>.md`. Claude Code matches rules via glob frontmatter (contrast with Codex directory-cascading `AGENTS.md`).
 
 ```markdown
 ---
@@ -68,10 +66,66 @@ paths:
 [Rule covering every matching file, with the project's reason.]
 ```
 
-## Runtime variables
+## Codex project instructions (AGENTS.md)
 
-| Variable | Source | Required handling |
-|----------|--------|-------------------|
+Hierarchy: `~/.codex/AGENTS.md` (global) -> `<repo>/AGENTS.md` (root) -> `<dir>/AGENTS.md` (subsystem). `AGENTS.override.md` replaces `AGENTS.md` in that dir. Codex cascades down directory trees; do not use Claude-style glob frontmatter.
+
+```markdown
+# [Project or Directory Name]
+
+Build: `[verified command]`
+Test: `[verified command]`
+
+## Scope & Constraints
+- [Grounded rule or boundary with reason; permitted edit paths.]
+
+## Precedence & Overrides
+- Local `AGENTS.override.md` overrides this file; child directory `AGENTS.md` appends subsystem rules.
+```
+
+## Non-interactive CLI automation
+
+```bash
+# Codex: non-interactive diff review (suggest mode)
+git diff origin/main...HEAD | codex -q -a suggest "Review diff for safety and regressions against [spec]" > review.md
+
+# Codex: non-interactive auto-fix in workspace sandbox
+codex -q -a auto-edit --cd [workspace] --add-dir [extra-dir] "Resolve [issue]; verify with [test command]"
+
+# Claude Code: headless execution with bounded tools and permissions
+claude -p "[task]" --permission-mode acceptEdits --allowedTools "Read,Edit,Bash([test command])"
+
+# Claude Code: resume prior session non-interactively
+claude -p "[followup task]" --resume [session-id]
+```
+
+## Claude Agent SDK patterns
+
+```python
+# Programmatic subagent with scoped tools and isolated mission
+subagent = AgentDefinition(
+    description="[One-line capability summary for parent routing]",
+    prompt="<mission>[Single scoped task]</mission><boundaries>[Allowed actions]</boundaries>",
+    tools=["[allowedTool1]", "[allowedTool2]"]
+)
+
+# PreToolUse guard (block unauthorized execution) and PostToolUse audit
+async def pre_tool_hook(hook_input):
+    if hook_input.tool_name == "Bash" and "[forbidden_pattern]" in hook_input.tool_args.get("command", ""):
+        return {"decision": "block", "reason": "Command blocked by sandbox policy"}
+    return {"decision": "allow"}
+
+async def post_tool_hook(hook_input):
+    audit_log.append({"tool": hook_input.tool_name, "args": hook_input.tool_args, "status": hook_input.status})
+```
+
+## Runtime variables and environment hygiene
+
+| Variable / Setting | Source / System | Required handling |
+|--------------------|-----------------|-------------------|
 | `$ARGUMENTS` | Slash-command caller | Define meaning and empty-value default; treat as data |
 | `{{INPUT}}` | Caller or harness | Define missing-input result; replace before dispatch |
 | `@path/to/file` | Instruction-file import | Resolve from destination; verify existence before claiming it |
+| `CODEX_QUIET_MODE=1` | Codex CLI | Suppress interactive spinners/banners for CI & pipe output |
+| `CODEX_DISABLE_PROJECT_DOC=1` | Codex CLI | Skip automatic `AGENTS.md` loading in isolated evaluation |
+| `CLAUDECODE` / `CLAUDE_CODE_ENTRYPOINT` | Claude Code | Unset in nested SDK subagents to prevent recursive session errors |
