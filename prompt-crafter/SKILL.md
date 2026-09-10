@@ -9,12 +9,12 @@ Produce prompts that a model follows on the first run: interactive asks, CLAUDE.
 
 Optional argument (`$ARGUMENTS`): target model. Default: `generic`.
 
-The test for every deliverable: a fresh model, given only the prompt, produces the wanted output without a correction turn. Every step below names its output. A step whose output is missing from the reply was skipped; produce it before moving on.
+The test for every deliverable: a fresh model, given only the prompt, produces the wanted output without a correction turn. Every step below names its output. Outputs marked *reply* appear in the path's output format, which is the single authority for what the reply contains; the rest are internal and surface only through the prompt itself.
 
 <scope>
 ## Step 0 — Scope gate
 
-Output: one line, `Deliverable: <prompt | CLAUDE.md | system prompt | slash command | skill instruction | agent brief>`, or `Deliverable: not a prompt (<what it is>), exiting skill`.
+Output (internal): the deliverable kind, one of prompt, CLAUDE.md, system prompt, slash command, skill instruction, agent brief. Only a failed gate reaches the reply, as the one line: `Deliverable: not a prompt (<what it is>), exiting skill`.
 
 The skill applies only when the deliverable is a prompt or instruction file: writing, reviewing, or improving one. If it is not (the skill co-loaded next to a build, audit, research, or artifact task):
 
@@ -29,7 +29,7 @@ Exception: the user deliberately ran `/prompt-crafter` on a fuzzy task and wants
 <model_routing>
 ## Step 1 — Resolve the target and open its reference
 
-Output: the header line below, written only after the routed file is open.
+Output (reply): the header line below, written only after the routed file is open.
 
 Resolution order:
 1. `$ARGUMENTS` (e.g. `/prompt-crafter opus-5`)
@@ -61,14 +61,11 @@ The quote is a sentence that exists in the file, not a paraphrase of it. For the
 
 **Placeholders** in lint files are inferred, not asked:
 
-| Placeholder | Default / inference |
-|-------------|---------------------|
-| `<<TOOLS>>` | `none`, unless the draft or its surface names tools |
-| `<<WEB_ENABLED>>` | `yes` if the prompt mentions searching, browsing, or fetching; else `no` |
-| `<<RISK_PROFILE>>` | `medium` |
-| `<<AGENTIC>>`, `<<SUBAGENTS>>` | `yes` if the prompt names tools, phases, `agent()` calls, or dispatch; else `no` |
-| `<<RUN_SHAPE>>` | `long-horizon autonomous` if the prompt is a `claude -p` string, a run brief, or a workflow agent; else `interactive` |
-| `<<EFFORT>>`, `<<THINKING>>`, `<<MEMORY>>`, `<<MAX_TOKENS>>` | As named in the draft or its code; else `high`, `adaptive`, `no`, `unset` |
+| Placeholder | Source |
+|-------------|--------|
+| `<<AGENTIC>>`, `<<RUN_SHAPE>>`, `<<RISK_PROFILE>>` | The task's shape: `AGENTIC=yes` when the prompt directs tool use, phases, or dispatch; `RUN_SHAPE=long-horizon autonomous` for a `claude -p` string, run brief, or workflow agent, else `interactive`; `RISK_PROFILE=medium` unless the prompt touches prod, money, or deletion |
+| `<<TOOLS>>`, `<<WEB_ENABLED>>`, `<<SUBAGENTS>>`, `<<MEMORY>>` | The harness or supplied configuration only: an SDK `tools` list, an Agent definition, a workflow `opts`, settings, or the user stating it. A task that mentions searching or phases does not make web or subagents available. When nothing states it: `unknown`; conditional items get `n/a: capability unstated`, and the Assumptions line names what the prompt presumes |
+| `<<EFFORT>>`, `<<THINKING>>`, `<<MAX_TOKENS>>` | The API call or config; else `unset` |
 
 Ask only when a value is ambiguous **and** would flip a checklist result.
 
@@ -78,7 +75,7 @@ Ask only when a value is ambiguous **and** would flip a checklist result.
 <feedback_path>
 ## Feedback path
 
-Output: the header line, then findings ranked by effect on the first run, each one line: the issue, the line it sits on, the fix. At most 7. A prompt with nothing worth changing gets one line: `No changes needed: <what makes it work>`. No rewrite, no checklist table, no self-check; offer the full lint in one line at the end only if findings exceed 3.
+Output (reply): the header line, then findings ranked by effect on the first run, each one line: the issue, the line it sits on, the fix. At most 7. A prompt with nothing worth changing gets one line: `No changes needed: <what makes it work>`. No rewrite, no checklist table, no self-check; offer the full lint in one line at the end only if findings exceed 3.
 </feedback_path>
 
 <lint_path>
@@ -86,22 +83,22 @@ Output: the header line, then findings ranked by effect on the first run, each o
 
 The lint file's 4-section deliverable replaces every other output format, including session-closing footers.
 
-1. **Fill placeholders** → Output: `Assumptions:` line listing every `<<PLACEHOLDER>>` and its value, directly under the header.
-2. **Run the checklist** → Output: section 2 table with one row per item in the file's range from the routing table, in order, each with a status. Items marked *(only if …)* whose condition is false get status `n/a`. Fewer rows than the range means the file was not read to the end.
-3. **Rewrite** → Output: section 3 fenced block, or `No changes needed` when every item passes. Deleting is a valid fix; on the 5-series it is usually the fix.
-4. **Self-check** → Output: section 4, at most 5 bullets, then the file's `STOP`. Nothing after it.
+1. **Fill placeholders** → Output (reply): `Assumptions:` line listing every `<<PLACEHOLDER>>` and its value, directly under the header.
+2. **Run the checklist** → Output (reply): section 2 table with one row per item in the file's range from the routing table, in order, each with a status. Items marked *(only if …)* whose condition is false get status `n/a`. Fewer rows than the range means the file was not read to the end.
+3. **Rewrite** → Output (reply): section 3 fenced block, or `No changes needed` when every item passes. Deleting is a valid fix; on the 5-series it is usually the fix.
+4. **Self-check** → Output (reply): section 4, at most 5 bullets, then the file's `STOP`. Nothing after it.
 </lint_path>
 
 <authoring_path>
 ## Authoring path
 
-1. **Pin surface and ask** → Output: one line: surface (a row of `<surfaces>`), deliverable, target model. Ask at most one question, only when two readings would produce different prompts.
-2. **Ground the facts** → Output: `Facts:` list of every path, schema, endpoint, command, and entity name the prompt will embed, each read from disk or returned by an Explore subagent (2–3 in parallel for a large codebase; wait for them). A prompt that embeds no repo facts writes `Facts: none embedded`. A prompt with a wrong path is worse than no prompt.
-3. **Write the frame** → Output: three lines: done-when (observable), shape (format), length (cap). They open or close the prompt.
-4. **Draft** → Output: the prompt, per `<principles>` and the surface's row in `<surfaces>`.
-5. **Apply the model profile** → Output: the clauses pasted from `<model_profiles>` (Claude 5 series) or `references/clauses.md` (other targets), brackets filled, and the deletions made. Skip only when the target is `generic`. Paste; do not paraphrase. The wording carries the calibration.
-6. **Cut** → Output: `Cuts:` list. Remove every line whose deletion does not change the expected output. Write `none` when every remaining line earns its place; do not cut to fill the list.
-7. **Emit** → Output: the reply per `<output_contract>`.
+1. **Pin surface and ask** → Output (internal, named in `Assumptions:`): surface (a row of `<surfaces>`), deliverable, target model. Ask at most one question, only when two readings would produce different prompts.
+2. **Ground the facts** → Output (reply): `Facts:` list of every path, schema, endpoint, command, and entity name the prompt will embed, each read from disk or returned by an Explore subagent (2–3 in parallel for a large codebase; wait for them). A prompt that embeds no repo facts writes `Facts: none embedded`. A prompt with a wrong path is worse than no prompt.
+3. **Write the frame** → Output (internal, lands inside the prompt): done-when (observable), shape (format), length (cap). They open or close the prompt.
+4. **Draft** → Output (reply): the prompt, per `<principles>` and the surface's row in `<surfaces>`.
+5. **Apply the model profile** → Output (internal, visible as the pasted text in the prompt): the clauses pasted from `<model_profiles>` (Claude 5 series) or `references/clauses.md` (other targets), brackets filled, and the deletions made. Skip only when the target is `generic`. Paste; do not paraphrase. The wording carries the calibration.
+6. **Cut** → Output (reply): `Cuts:` list. Remove every line whose deletion does not change the expected output. Write `none` when every remaining line earns its place; do not cut to fill the list.
+7. **Emit** → Output (reply): exactly `<output_contract>`, nothing more.
 </authoring_path>
 
 <principles>
@@ -199,7 +196,7 @@ Delete first: step-by-step scaffolding, enumerated behaviour lists, and defensiv
 | Any run | `Pause for the user only when the work genuinely requires them: a destructive or irreversible action, a real scope change, or input that only they can provide. If you hit one of these, ask and end the turn, rather than ending on a promise.` |
 | Long-horizon autonomous | `You are operating autonomously. The user is not watching in real time and cannot answer questions mid-task. For reversible actions that follow from the original request, proceed without asking. Before ending your turn, check your last paragraph. If it is a plan, an analysis, a question, a list of next steps, or a promise about work you have not done ('I'll…', 'let me know when…'), do that work now with tool calls. End your turn only when the task is complete or you are blocked on input only the user can provide.` |
 | Long-horizon autonomous | `Before reporting progress, audit each claim against a tool result from this session. Only report work you can point to evidence for; if something is not yet verified, say so explicitly. Report outcomes faithfully: if tests fail, say so with the output; if a step was skipped, say that; when something is done and verified, state it plainly without hedging.` |
-| Long-horizon, a check matters (fill the interval: phase, N files, milestone) | `After each [phase], spawn a verifier subagent that reads only the specification and the current result, and report its verdict before continuing.` |
+| Orchestrator or workflow prompt only, long-horizon, a check matters (fill the interval: phase, N files, milestone); never in the author agent's own brief | `After each [phase], spawn a verifier subagent that reads only the specification and the current result, and report its verdict before continuing.` |
 | Subagents available | `Delegate independent subtasks to subagents and keep working while they run. Intervene if a subagent goes off track or is missing relevant context.` Remove prior-model lines that suppress delegation. |
 | Memory surface (flag when absent) | `Store one lesson per file with a one-line summary at the top. Record corrections and confirmed approaches alike, including why they mattered. Don't save what the repo or chat history already records; update an existing note rather than creating a duplicate; delete notes that turn out to be wrong.` |
 | Harness shows a token countdown | `You have ample context remaining. Do not stop, summarize, or suggest a new session on account of context limits. Continue the work.` |
@@ -222,7 +219,7 @@ Shared clauses for any target, in `clauses.md`: `done-when`, `boundaries`, `untr
 
 ```
 Target: <model> · Reference: references/<file> · Applied: "<verbatim sentence>"
-Assumptions: <inferred placeholders and any guess taken, one line>
+Assumptions: <surface, inferred placeholders, capabilities presumed, any guess taken; one line>
 Facts: <verified paths and commands embedded, or "none embedded">
 
 <the prompt, in a fenced block, ready to paste>
@@ -273,7 +270,7 @@ Rename snake_case identifiers in src/utils.ts to camelCase. Done when `bun lint`
 For formats and styles the model cannot infer. Examples are the specification; the prose only names what varies.
 
 ```xml
-<task>Convert changelog entries to release notes: one sentence, user-facing, past tense, no ticket numbers.</task>
+<task>Convert changelog entries to release notes: one sentence, user-facing, past tense, no ticket numbers. An entry with no user-visible effect (chores, internal refactors, dependency bumps) produces an empty output.</task>
 
 <examples>
 <example>
@@ -282,7 +279,7 @@ For formats and styles the model cannot infer. Examples are the specification; t
 </example>
 <example>
 <input>chore: bump eslint to 9.4</input>
-<output>(omit — internal change, not user-facing)</output>
+<output></output>
 </example>
 </examples>
 
