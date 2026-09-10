@@ -102,21 +102,30 @@ claude -p "[followup task]" --resume [session-id]
 ## Claude Agent SDK patterns
 
 ```python
-# Programmatic subagent with scoped tools and isolated mission
-subagent = AgentDefinition(
-    description="[One-line capability summary for parent routing]",
-    prompt="<mission>[Single scoped task]</mission><boundaries>[Allowed actions]</boundaries>",
-    tools=["[allowedTool1]", "[allowedTool2]"]
+# Programmatic subagent registered in parent (requires "Agent" in allowed_tools)
+options = ClaudeAgentOptions(
+    allowed_tools=["Read", "Glob", "Agent"],
+    agents={"reviewer": AgentDefinition(
+        description="[Capability summary for parent routing]",
+        prompt="<mission>[Scoped task]</mission><boundaries>[Allowed actions]</boundaries>",
+        tools=["Read", "Glob"],
+    )},
 )
 
-# PreToolUse guard (block unauthorized execution) and PostToolUse audit
-async def pre_tool_hook(hook_input):
-    if hook_input.tool_name == "Bash" and "[forbidden_pattern]" in hook_input.tool_args.get("command", ""):
-        return {"decision": "block", "reason": "Command blocked by sandbox policy"}
-    return {"decision": "allow"}
+# PreToolUse guard (deny/allow) and PostToolUse audit hook
+async def pre_tool_hook(input_data, tool_use_id, context):
+    cmd = input_data.get("tool_input", {}).get("command", "")
+    if "[forbidden_pattern]" in cmd:
+        return {"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": "Blocked by policy",
+        }}
+    return {}
 
-async def post_tool_hook(hook_input):
-    audit_log.append({"tool": hook_input.tool_name, "args": hook_input.tool_args, "status": hook_input.status})
+async def post_tool_hook(input_data, tool_use_id, context):
+    audit_log.append({"tool_use_id": tool_use_id, "input": input_data.get("tool_input")})
+    return {}
 ```
 
 ## Runtime variables and environment hygiene
