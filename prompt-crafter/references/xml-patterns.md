@@ -22,7 +22,7 @@ Structure prompts using up to 10 components. Not all are needed every time — u
 5. Examples           — SHOW: 1-3 input/output pairs
 6. Conversation History — PRIOR: Relevant context from before
 7. Immediate Task     — NOW: Specific deliverable needed
-8. Chain of Thought   — THINK: Reasoning steps
+8. Chain of Thought   — THINK: Reasoning steps (Claude 4.x with thinking off only; the 5-series plans on its own and leaks the tags)
 9. Output Format      — SHAPE: Structure of the response
 10. Prefilled Response — START: Begin Claude's response (Claude 4.x only; the 5-series returns 400 on assistant prefill)
 ```
@@ -74,13 +74,9 @@ Priority: High/Medium/Low
 Analyse Q2 financials. Highlight trends, flag concerns, recommend actions.
 </task>
 
-<thinking_instructions>
-Before answering, reason through:
-1. Which metrics changed significantly?
-2. What caused the changes?
-3. What actions follow?
-Put reasoning in <thinking> tags, final report in <report> tags.
-</thinking_instructions>
+<criteria>
+A metric is worth reporting when it moved more than 10% or changes a recommendation. Name the cause you can support from the data; say "cause unknown" otherwise.
+</criteria>
 
 <output_format>
 <report>
@@ -268,4 +264,4 @@ Before finalising an XML-structured prompt:
 - [ ] Long documents use `<document index="N">` with `<source>` metadata
 - [ ] Output format is specified (either via tags or explicit structure)
 - [ ] No tags nested deeper than 3 levels
-- [ ] CoT uses separate tags for reasoning vs. answer
+- [ ] Claude 4.x thinking-off only: CoT uses separate tags for reasoning vs. answer; on the 5-series no reasoning tags at all

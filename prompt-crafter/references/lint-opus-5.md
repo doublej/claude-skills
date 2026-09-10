@@ -68,7 +68,7 @@ STOP after section 4.
 
 **4) Agentic narration** *(only if AGENTIC=yes)*
 - Opus 5 narrates readily and its per-message output is longer than prior models'.
-- Describe cadence and shape, not just volume: one sentence before the first tool call; brief updates only on findings or direction changes; lead with the outcome when finishing.
+- Describe cadence and shape, not just volume. Add: "Say one sentence before the first tool call. Send an update only on a finding or a change of direction. When finishing, lead with the outcome."
 - Remove forced-progress scaffolding ("after every N tool calls, summarise") — it is redundant.
 
 **5) Task scope discipline**
@@ -77,7 +77,7 @@ STOP after section 4.
 
 **6) Subagent spawning** *(only if SUBAGENTS=yes)*
 - Opus 5 delegates **more** readily than Opus 4.8 — the opposite direction. Remove any "delegate more" guidance written for 4.8.
-- Add an explicit cap: delegate only for large, genuinely independent, parallelisable tracks; never for work finishable in a handful of tool calls; never to verify its own work; prefer one subagent over several; keep spawn counts low.
+- Add an explicit cap: "Delegate only large, independent, parallelisable tracks; do work that fits in a handful of tool calls yourself. Never spawn a subagent to verify your own work. Prefer one subagent over several, at most [N]."
 
 **7) Self-correction narration**
 - Opus 5 narrates corrections to its earlier statements more than prior models.
@@ -93,7 +93,7 @@ STOP after section 4.
 
 **9) Code review prompts** *(when relevant)*
 - "Only report high-severity issues" / "be conservative" / "don't nitpick" are followed literally and depress measured recall.
-- Replace with coverage-first: report every finding with confidence and severity; filter in a separate pass.
+- Replace with coverage-first: "Report every issue you find, including ones you are uncertain about or consider low-severity. Do not filter for importance or confidence at this stage — a separate verification step will do that. For each finding, include your confidence level and an estimated severity so a downstream filter can rank them."
 
 **10) Vision prompts** *(only if images are involved)*
 - Give crop / analyse / visually-verify tools — more cost-effective than raising thinking.

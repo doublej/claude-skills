@@ -1,30 +1,28 @@
 # Extended Prompt Patterns
 
-Advanced patterns for specific scenarios. Load on demand.
+Templates for specific scenarios. Load on demand. Every template is written for the Claude 5 series and GPT-5.6: criteria and done-when, no step scripts, no self-critique. Where a Claude 4.x variant differs, it is noted under the template.
 
 ## Multi-Agent Prompting
 
-When spawning subagents via Task tool, each agent gets an isolated context. Structure their prompts for independence:
+Each subagent gets an isolated context and cannot see the parent conversation. Its prompt carries everything it needs, states the output shape the parent will parse, and covers one module and one concern.
 
-```
-You are reviewing {{MODULE}} for performance issues.
-
-Context:
-- Language: TypeScript
-- Framework: Express.js
-- Target: Response times under 200ms at p95
-
-Steps:
-1. Read all files in src/{{MODULE}}/
-2. Profile any database queries (look for N+1, missing indexes)
-3. Check for synchronous operations that could be async
-4. Report findings as a prioritised list with file:line references
+```xml
+<task>Review src/{{MODULE}}/ for performance issues that would push p95 response time above 200ms.</task>
+<context>TypeScript, Express.js. Database access goes through src/db/client.ts (verified path).</context>
+<criteria>Report N+1 queries, missing indexes, and synchronous work on the request path. Skip micro-optimisations under 5ms; they do not move p95.</criteria>
+<report>A prioritised list, one finding per line: file:line, the problem, the fix. No narrative.</report>
 ```
 
-Key principles:
-- Include all context the agent needs (it cannot see the parent conversation)
-- Be explicit about output format (the parent needs to parse/use it)
-- Scope narrowly (one module, one concern per agent)
+## Verifier Agent
+
+Replaces self-critique on every model. The verifier reads only the specification and the result, never the author's reasoning.
+
+```xml
+<task>Verify the change in {{DIFF_OR_PATH}} against the specification below. You did not write it and have no stake in it passing.</task>
+<specification>{{SPEC}}</specification>
+<criteria>Confirm each requirement in the specification with a concrete observation: a command and its exit code, a file and the line that satisfies it, a test name and its result. A requirement with no observation is "unverified", not "probably fine".</criteria>
+<report>One line per requirement: PASS / FAIL / UNVERIFIED, the observation, the failing input if any. Then a one-line verdict.</report>
+```
 
 ## Debate Pattern (multi-perspective evaluation)
 
@@ -53,40 +51,37 @@ Weight: 40% technical fit, 30% team impact, 30% maintenance burden.
 <critic>{{CRITIC_OUTPUT}}</critic>
 ```
 
-## Progressive Disclosure Prompt
+## Complete Specification in One Turn
 
-**Model gate.** Claude 4.x and earlier only. Opus 5 and Sonnet 5 want the complete task specification in one turn; a phased or approval-gated prompt makes them stall at each gate. On the 5-series, state done-when, boundaries, and criteria up front instead (SKILL.md principles 1, 8, 10).
+The 5-series and GPT-5.6 plan from the full task. Give done-when, boundaries, and criteria up front; the model orders the work itself.
 
-For complex tasks, break the prompt into phases:
-
-```
-Phase 1: Read src/auth/ and summarise the current authentication flow.
-Phase 2: Identify gaps against OWASP authentication guidelines.
-Phase 3: Propose changes (do not implement yet).
-Phase 4: After I approve, implement the changes.
-
-Start with Phase 1.
+```xml
+<task>Bring src/auth/ in line with OWASP authentication guidance.</task>
+<criteria>A gap counts when OWASP ASVS v4 section 2 names it and the code does not meet it. Cite the ASVS control ID for each.</criteria>
+<boundaries>Change code only under src/auth/. Session storage format stays as is; two other services read it. Do not commit.</boundaries>
+<done_when>Every gap found is either fixed or listed with the reason it was left, and `bun test src/auth` exits 0.</done_when>
+<report>Gaps found (control ID, file:line, fixed / left and why), then the test output tail.</report>
 ```
 
-## Spec-Driven Development Prompt
+Claude 4.x variant: the same prompt may be split into phases ("summarise the flow, then list gaps, then propose changes, then implement after approval"). Do not carry that split to the 5-series; it stalls at each gate.
 
-**Model gate.** The "wait for my approval" step is a 4.x pattern. On the 5-series, replace the gate with a written spec the agent checks itself against, or run the spec and the build as two separate agents.
+## Spec-Then-Build
 
-From task description to working code via structured specification:
+Two agents, no approval gate. The spec agent writes the specification; the build agent receives it as data and is verified against it by a third.
 
+**Spec agent:**
+```xml
+<task>Write the specification for: {{DESCRIPTION}}</task>
+<output_format>
+<spec>
+Inputs and outputs · Edge cases · Affected files (verified paths) · Test cases (name and expected result)
+</spec>
+</output_format>
 ```
-Task: {{DESCRIPTION}}
 
-Before implementing:
-1. Write a specification in <spec> tags covering:
-   - Inputs and outputs
-   - Edge cases
-   - Affected files
-   - Test cases
-2. Wait for my approval of the spec
-3. Implement following the approved spec
-4. Run all tests in the spec
-```
+**Build agent:** the `<spec>` block as `<specification>`, plus `<done_when>Every test case in the specification passes.</done_when>`. Then the Verifier Agent above.
+
+Claude 4.x variant: a single agent with "write the spec, wait for my approval, then implement" works, and the pause is sometimes wanted.
 
 ## Context Compression Prompt
 
@@ -105,41 +100,19 @@ that integrates with all three.
 
 ## Guard Rail Prompt
 
-Prevent common Claude Code mistakes with explicit boundaries:
+Boundaries with reasons, and verification as an observable.
 
 ```xml
 <task>Refactor the database layer to use connection pooling.</task>
 
-<guardrails>
-- Do NOT modify any test files
-- Do NOT change environment variable names
-- Do NOT add new dependencies without listing them first
-- If a change affects more than 5 files, stop and report your plan
-</guardrails>
+<boundaries>
+- Leave test files unchanged; they are the acceptance bar for this refactor
+- Keep environment variable names; deploy config references them by name
+- List any new dependency before adding it; each one goes through licence review
+- If the change spreads beyond 5 files, stop and report the plan; a larger diff needs a second reviewer
+</boundaries>
 
-<verification>
-Run: npm test && npm run typecheck
-All must pass before reporting completion.
-</verification>
-```
-
-## Iterative Refinement Prompt
-
-**Model gate.** Self-critique loops are a DELETE on Opus 5 (it over-verifies and loops) and low-yield on Sonnet 5 and Fable 5. On the 5-series, use a fresh-context verifier agent instead: it reads only the spec and the result. Keep this template for Claude 4.x.
-
-For tasks where first-pass quality matters:
-
-```
-Write the migration script for the schema change described in MIGRATION.md.
-
-After writing it:
-1. Re-read your script and check for:
-   - Missing rollback logic
-   - Data loss scenarios
-   - Transactions around multi-step operations
-2. Fix any issues found
-3. Dry-run with: npm run migrate:dry
-4. Report the result
+<done_when>`npm test && npm run typecheck` exits 0. Paste the last 5 lines of its output.</done_when>
 ```
 
 ## Template Variables
@@ -170,9 +143,9 @@ Follow existing patterns. Keep changes minimal and focused.
 </change_policy>
 
 <rules>
-- Functions: max 15 lines
-- No new dependencies without discussion
-- All PRs need tests
+- Functions: max 15 lines; longer ones hide the second responsibility
+- New dependencies go in the PR description first; each one is a supply-chain review
+- Every PR carries tests; CI blocks merge without them
 </rules>
 ```
 

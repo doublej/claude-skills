@@ -65,7 +65,7 @@ STOP after section 4.
 
 **4) More literal instruction following**
 - Sonnet 5 does not silently generalise an instruction from one item to another and does not infer unmade requests — strongest at lower effort.
-- Where an instruction should apply broadly, **state the scope explicitly** ("Apply this formatting to every section, not just the first one").
+- Where an instruction should apply broadly, **state the scope explicitly**: "Apply this [rule] to every [section / file / endpoint], not just the first one."
 - Re-baseline holdover style/tone/scope directives from 4.6 — they now apply at face value.
 
 **5) Verbosity calibration**
@@ -77,7 +77,7 @@ STOP after section 4.
 - More agentic than 4.6 by default — reaches for tools and self-verification loops more readily.
 - **With thinking disabled it is markedly less tool-eager** — add an explicit nudge if the harness depends on tool calls.
 - `high`/`xhigh` effort substantially increases tool usage in agentic search and coding.
-- For under-used tools, state explicitly when and why to call them.
+- For under-used tools, state explicitly when and why to call them: "Call [tool] when [condition]; [why a lookup beats an answer from memory]."
 
 **7) Progress updates** *(only if AGENTIC=yes)*
 - Sonnet 5 gives regular, high-quality interim updates by default. **Remove** forced scaffolding ("after every 3 tool calls, summarise progress").

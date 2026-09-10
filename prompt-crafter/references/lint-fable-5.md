@@ -105,7 +105,7 @@ STOP after section 4.
 
 **15) Readability in long agentic sessions**
 - Deep sessions produce dense shorthand, arrow chains, and references to unseen reasoning.
-- Add a communication-style addendum: the final summary is for a reader who saw none of the working thread — outcome first, complete sentences, terms spelled out, no arrow chains or invented labels, each identifier in its own plain-language clause. If forced to choose between short and clear, choose clear.
+- Add: "The final summary is for a reader who saw none of the working thread: outcome first, complete sentences, terms spelled out, no arrow chains or invented labels. If forced to choose between short and clear, choose clear."
 
 **16) Verbatim mid-task delivery** *(only if RUN_SHAPE=long-horizon autonomous)*
 - If the UX requires content the user must see exactly as written mid-run, define a `send_to_user` client-side tool (input = the message; render it directly).
