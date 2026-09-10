@@ -45,3 +45,33 @@ Even a short answer includes: [required fields]. Brevity cuts explanation, never
 ```text
 Discover [required repo facts] at execution time. If access is missing, report what could not be inspected instead of guessing.
 ```
+
+## codex-approval-mode
+
+```text
+Operate in [suggest | auto-edit | full-auto] mode. [Suggest: inspect and plan only; ask before editing or executing shell commands. | Auto-edit: modify files autonomously; ask before executing shell commands. | Full-auto: execute edits and test commands autonomously within the workspace sandbox.]
+```
+
+## codex-sandbox-boundary
+
+```text
+Execute commands inside the local workspace sandbox. Network egress is blocked; do not attempt external API or package downloads. Confine all file changes to [workspace directory] and authorized additional paths: [add-dir paths].
+```
+
+## claude-permission-mode
+
+```text
+Permission mode: [acceptEdits | bypassPermissions | plan]. [acceptEdits: apply file modifications autonomously; prompt for terminal commands. | bypassPermissions: execute autonomously in an isolated external sandbox; do not prompt. | plan: inspect and plan only; make no file modifications or command executions.]
+```
+
+## claude-tool-restrictions
+
+```text
+Available tools are restricted to [allowedTools]. Disallowed: [disallowedTools]. For shell actions, run only [authorized commands, e.g. Bash(npm test)]; report blocked actions if other commands are required.
+```
+
+## subagent-handoff
+
+```text
+Subagent task: [single scoped mission]. Parent tool use ID: [id]. Return only the requested fields ([required schema]); do not retain conversation history or execute actions beyond this scope.
+```
