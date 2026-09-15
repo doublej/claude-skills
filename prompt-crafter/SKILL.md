@@ -1,11 +1,11 @@
 ---
 name: prompt-crafter
-description: "Write, improve, or review prompts, CLAUDE.md rules, system prompts, slash commands, skill instructions, and agent briefs. Routes Claude 5, Claude 4.x, GPT-6, GPT-5.6, and generic targets to model-specific lint and pasteable clauses. Use when the deliverable is a prompt or instruction file, not the implementation it describes."
+description: "Write, improve, or review prompts, CLAUDE.md rules, system prompts, slash commands, skill instructions, agent briefs, and deep research prompts. Routes Claude 5, Claude 4.x, GPT-6, GPT-5.6, generic, and deep research targets (ChatGPT, Claude Research, Gemini, Perplexity, research agents) to tailored lint and clauses. Use when the deliverable is a prompt or instruction file, not the implementation it describes."
 ---
 
 # Prompt Crafter
 
-Produce prompts that a model follows on the first run: interactive asks, CLAUDE.md files, AGENTS.md files, system prompts, slash commands, skill instructions, agent briefs, workflow agents, and headless CLI strings (`claude -p`, `codex -q`).
+Produce prompts that a model follows on the first run: interactive asks, CLAUDE.md files, AGENTS.md files, system prompts, slash commands, skill instructions, agent briefs, deep research prompts, workflow agents, and headless CLI strings (`claude -p`, `codex -q`).
 
 Optional argument (`$ARGUMENTS`): target model. Default: `generic`. In `/prompt-crafter sonnet-5: <request>`, strip the separator colon from the model token; the remaining text is the request. The target is the model that will run the finished prompt, not the model crafting it.
 
@@ -14,9 +14,9 @@ The test for every deliverable: a fresh model, given only the prompt, produces t
 <scope>
 ## Step 0 — Scope gate
 
-Output (internal): the deliverable kind, one of prompt, CLAUDE.md, AGENTS.md, system prompt, slash command, skill instruction, agent brief. Only a failed gate reaches the reply, as the one line: `Deliverable: not a prompt (<what it is>), exiting skill`.
+Output (internal): the deliverable kind, one of prompt, CLAUDE.md, AGENTS.md, system prompt, slash command, skill instruction, agent brief, deep research prompt. Only a failed gate reaches the reply, as the one line: `Deliverable: not a prompt (<what it is>), exiting skill`.
 
-The skill applies only when the deliverable is a prompt or instruction file: writing, reviewing, or improving one. If it is not (the skill co-loaded next to a build, audit, research, or artifact task):
+The skill applies only when the deliverable is a prompt or instruction file: writing, reviewing, or improving one. A prompt that another agent or research product will run is a deliverable (see `<deep_research>`); doing the research here is not. If it is not (the skill co-loaded next to a build, audit, research, or artifact task):
 
 1. Say so in one line: "This loaded, but the real deliverable is X, not a prompt."
 2. Exit skill mode for the rest of the session and handle the task normally. Do not produce a prompt-shaped consolation artifact.
@@ -48,6 +48,7 @@ Resolution order:
 | `opus-4-7` | Claude Opus 4.7 | `references/lint-opus-4-7.md` | 0–15 |
 | `sonnet-4-6` | Claude Sonnet 4.6 | `references/lint-sonnet-4-6.md` | 0–12 |
 | `generic` / unspecified | Model-agnostic | `references/lint-generic.md` | 1–8 |
+| `deep-research`, `chatgpt-deep-research`, `o3-deep-research`, `o4-mini-deep-research`, `claude-research`, `gemini-deep-research`, `deep-research-preview-04-2026`, `perplexity`, `sonar` | Research product (the product fixes the model) | `references/lint-generic.md` + `<deep_research>` overlay | 1–8, then DR items |
 
 Bare `opus` / `sonnet` resolve to the 5-series. Older models need the version suffix. GPT-5.1 / 5.2: hand off to the `prompt-gpt` skill.
 
@@ -73,6 +74,23 @@ For placeholders outside this table, use supplied configuration or `unknown` (`u
 
 **Which path:** "lint", "rewrite", "improve", or "fix" an existing prompt runs `<lint_path>`. "Review", "look at", "is this good", or a pasted prompt with a question runs `<feedback_path>`. Writing a new prompt runs `<authoring_path>`. Open the routed lint file on every path, including a one-line generic prompt. When authoring, use its checklist and pasteable clauses as source material; its lint-only deliverable does not switch paths. The routed 5-series lint file wins over this skill on disagreements about model guidance.
 </model_routing>
+
+<deep_research>
+## Deep research overlay
+
+Output (internal): research profile, or `none`. Output (reply): when a profile applies, the `Research overlay:` line directly under the header.
+
+Applies when the finished prompt will run as a deep research job, stated in `$ARGUMENTS` (a research row in the routing table), named in conversation, or implied by the ask ("deep research prompt", "research brief", "prompt for Gemini deep research", a multi-source investigation handed to an agent):
+- a research product: ChatGPT deep research, OpenAI deep research API, Claude Research, Gemini Deep Research, Perplexity
+- a self-built research agent: a lead/subagent orchestrator, workflow, or headless run whose job is multi-source web investigation ending in a cited report. It keeps its model route per component (Multi-model systems above) and adds this overlay.
+
+Not a trigger: a web lookup inside a coding or build task, or a request that Claude research the topic now (Step 0 exits).
+
+1. **Pick the profile** → Output (reply): `Research overlay: <profile> · "<sentence copied from that profile in references/deep-research.md>"`. Profiles: `openai-api`, `chatgpt`, `claude-research`, `gemini`, `perplexity`, `orchestrator`, `generic` (unknown executor).
+2. **Fill the brief** → Output (in the prompt): the reference's brief template, slots filled from the ask. The routed lint file still governs model wording; the overlay governs research scope, sources, and report shape.
+3. **Default the scope** → Output (`Assumptions:`): each scope decision the executor cannot ask about (question, audience, time window, geography, source bar, report shape) with its default. Ask only when a default would research the wrong thing.
+4. **Lint and feedback** → Lint path: append the reference's DR items to Checklist results after the routed range. Feedback path: DR findings rank with the rest, same cap.
+</deep_research>
 
 <feedback_path>
 ## Feedback path
@@ -138,6 +156,7 @@ The labels below are outside the prompt fence. The first line is the header, and
 
 ````text
 Target: <model> · Reference: references/<file> · Applied: "<sentence copied from the opened file>"
+Research overlay: <profile> · "<sentence copied from that profile>"   ← deep research only; omit the line otherwise
 Assumptions: <surface; consequential defaults; executor capabilities presumed; unknown/unset settings relevant to the task>
 Facts: <grounded repo facts and sources; or none embedded, with user-supplied literals/runtime inputs labelled>
 
@@ -167,6 +186,7 @@ For slash commands, include the proposed save path in Assumptions so the invocat
 | Skill SKILL.md | Frontmatter + markdown | Description is the trigger; body under 500 lines; required reads produce an output that proves the read |
 | Dispatch prompt / agent brief | XML task + constraints, one mission per agent | Self-contained (the agent has no history); every path verified; return conclusions, not file dumps |
 | Workflow agent (script) | XML role + criteria + constraints | Shared BRIEF injected into every downstream agent; label/phase/effort set; schema for structured output |
+| Deep research job | Research brief per `references/deep-research.md` profile | Runs for minutes with no mid-run steering; carries question, scope, time window, source bar, and report shape up front |
 </surfaces>
 
 <patterns>
@@ -217,6 +237,7 @@ Refer to data tags by name in the consuming instruction. Output (internal): each
 ## References
 
 - Required on every path: the target's lint file from the unchanged routing table (`references/lint-<target>.md`).
+- Required when `<deep_research>` applies: `references/deep-research.md` → profile and quoted sentence in the `Research overlay:` line, filled brief template in the prompt, DR items on the lint path.
 - Optional shared wording: `references/clauses.md` → selected key and pasted clause (Codex approval/sandbox modes, Claude permissions/tool restrictions, subagent handoff, done-when, boundaries).
 - Optional XML & JSON examples: `references/xml-patterns.md` → selected pattern and filled structure (evidence extraction, document comparison, structured agent JSON output schema for CLI/SDK, tool-call interceptor guard).
 - Optional workflow/project templates: `references/patterns.md` → selected template and filled contract (`CLAUDE.md`, `AGENTS.md` hierarchy/overrides, Codex/Claude headless CLI automation, Claude Agent SDK subagents/hooks, environment hygiene).
