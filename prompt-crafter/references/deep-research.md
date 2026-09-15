@@ -20,7 +20,7 @@ Decide this before drafting; it is the largest difference between platforms.
 
 ## Brief template
 
-Fill every slot from the ask or a labelled default. Delete a tag that has nothing task-specific in it rather than filling it with platitudes. For a reusable template, `[date]` is a runtime variable with a stated source (the harness clock), never a hardcoded year.
+Fill every slot from the ask or a labelled default. Delete a tag that has nothing task-specific in it rather than filling it with platitudes. For a reusable template, `[date]` is a runtime variable with a stated source (the harness clock), never a hardcoded year. When a profile shortens the brief, keep slots in order of how many checked sources carry them: date and window (10), report shape (9), scope and sources (8 each), then evidence and stop (6 each).
 
 ```xml
 <research_question>[The question in the requester's words.] The report is for [reader], who will use it to [decision or action].</research_question>
@@ -28,7 +28,7 @@ Fill every slot from the ask or a labelled default. Delete a tag that has nothin
 <scope>Time window: [range]; prefer [recency rule]. Region and language: [region]; prioritise sources in [language]. In scope: [sub-topics with non-overlapping boundaries]. Out of scope: [exclusions].</scope>
 <sources>Prefer [primary sources for this domain: official filings, original papers, standards, vendor documentation, datasets] over summaries of them. Avoid [SEO content farms, named unreliable sources]. When sources conflict, weigh recency, consistency with other findings, and source quality, and report the conflict with both sides.</sources>
 <evidence>Cite each factual claim to the source that directly supports it. Keep established facts, reported speculation ("could", "may", announced plans), and your own inference distinguishable. Mark uncertain values [uncertain]. If something cannot be found, write "not found" and list the searches tried.</evidence>
-<report>[Shape fitted to the question type — comparison: one table with columns [criteria]; landscape: one section per [segment]; decision: recommendation first, then evidence.] Use concrete figures, names, and dates; no generic conclusions. End with gaps and open questions. Length: [bound].</report>
+<report>[Shape fitted to the question type — comparison: one table with columns [criteria]; landscape: one section per [segment]; list or dataset: one row per [item] with fields [fields], no introduction or conclusion; decision: recommendation first, then evidence.] Use concrete figures, names, and dates; no generic conclusions. End with gaps and open questions. Length: [bound].</report>
 <stop>Stop when [every in-scope sub-topic is answered with cited evidence at the stated confidence]; do not keep searching past that for completeness.</stop>
 ```
 
@@ -45,7 +45,7 @@ Write the brief so the executor could run it with no questions: question and pur
 The deep research API does not ask clarifying questions, so the brief carries every decision up front and marks unknown details as open rather than inventing them.
 
 - Placement: role, evidence rules, and report spec in the developer message; research question, context, and scope in the user message.
-- Configuration, not prose: model `o3-deep-research` or `o4-mini-deep-research`; at least one data source tool (web search, file search, or MCP); budget via `max_tool_calls`.
+- Configuration, not prose: model `o3-deep-research` or `o4-mini-deep-research`; at least one data source tool (web search, file search, or MCP); budget via `max_tool_calls`; `background` mode, because runs take minutes.
 - Tables and charts appear only when the report spec requests them explicitly.
 - Thin ask and the user wants a pipeline: a cheaper model asks 3–6 questions that most reduce ambiguity, then rewrites the answers into a first-person brief. Deliver those as two prompts; otherwise default the scope and list it in `Assumptions:`.
 - Private data: a public-web run first, then a second run with the private MCP and no web search, so private content cannot leak into queries.
@@ -89,8 +89,8 @@ A self-built research agent needs the date injected, one capped clarification ro
 Stages, each its own prompt; write only the stages the user asked for:
 1. **Clarifier:** returns JSON with `need_clarification` and at most 3 questions, one round, skipped when the ask already answers them. Asks about acronyms and unknown terms.
 2. **Brief writer:** first-person brief in the template shape; missing details stay open.
-3. **Lead:** "No clarifications will be given; do not ask the user questions." Effort table: simple fact → 1 subagent; standard → 2–3; medium → 3–5; high → 5–10, maximum 20. Needing more than 20 means restructure the question. Bias towards a single agent when parts are not separable.
-4. **Subagent brief:** objective, output format, tools and sources, task boundaries (use `references/patterns.md` Independent task brief). Short, broad queries first, then narrow. Return findings with source URLs, not raw pages. Stop when the objective can be answered confidently.
+3. **Lead:** "No clarifications will be given; do not ask the user questions." Classify the query first: depth-first (one question from several perspectives, one subagent per perspective), breadth-first (independent sub-questions; a comparison gets one subagent per element), or straightforward (one subagent). Effort table: simple fact → 1 subagent; standard → 2–3; medium → 3–5; high → 5–10, maximum 20. Needing more than 20 means restructure the question. Bias towards a single agent when parts are not separable. After each round, record what is still missing; stop delegating when nothing in scope is.
+4. **Subagent brief:** objective, output format, tools and sources, task boundaries (use `references/patterns.md` Independent task brief). Self-contained, with no acronyms or abbreviations. Tool-call budget by difficulty: under 5 simple, about 5 medium, about 10 hard, up to 15 multi-part; hard cap 20. Short, broad queries first, then narrow. Return findings with source URLs, not raw pages. Stop when the objective can be answered confidently.
 5. **Compression:** keep every source URL attached to its finding.
 6. **Writer:** the requester's language; no references to the agent itself; one citation number per unique URL.
 7. **Citation pass:** cite only where the source directly supports the claim.
@@ -114,7 +114,7 @@ Lint path: one row each after the routed range. Feedback path: findings rank wit
 
 **DR7) Report shape** — fitted to the question type; tables requested explicitly when wanted; concrete data over generic conclusions; gaps section.
 
-**DR8) Effort and stop** — observable stop rule; budgets set in configuration where the platform has them (`max_tool_calls`, search filters, run cap); orchestrator caps subagents.
+**DR8) Effort and stop** — observable stop rule; budgets set in configuration where the platform has them (`max_tool_calls`, search filters, run cap); orchestrator caps subagents and per-subagent tool calls.
 
 **DR9) What, not how** — no scripted search order or hyper-specific queries. A single-fact lookup does not need deep research: say so and suggest a normal search prompt.
 
@@ -131,4 +131,5 @@ Checked 2026-09-15; refresh when a platform ships a new research model.
 - ai.google.dev/gemini-api/docs/deep-research (2026-08-26); blog.google Deep Research tips (2025-03-19)
 - docs.perplexity.ai/docs/sonar/prompt-guide
 - support.claude.com/en/articles/11088861-use-research-on-claude (2026-06-02)
-- bytedance/deer-flow `skills/public/deep-research/SKILL.md`; assafelovic/gpt-researcher `prompts.py`; dzhng/deep-research `src/prompt.ts`; google-gemini/gemini-fullstack-langgraph-quickstart `backend/src/agent/prompts.py`; Weizhena/Deep-Research-skills
+- bytedance/deer-flow `skills/public/deep-research/SKILL.md`; assafelovic/gpt-researcher `prompts.py`; dzhng/deep-research `src/prompt.ts`; google-gemini/gemini-fullstack-langgraph-quickstart `backend/src/agent/prompts.py`; Weizhena/Deep-Research-skills; stanford-oval/storm `knowledge_storm/storm_wiki/modules/persona_generator.py` (perspectives)
+- forum.openai.com "Exploring deep research: three tips" (2025-04-29, community post; over-instruction warning)
