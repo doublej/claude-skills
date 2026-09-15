@@ -1,6 +1,6 @@
 # Deep research overlay
 
-Consumed by `<deep_research>` in SKILL.md. Output (reply): the `Research overlay:` line with the profile name and the profile's first sentence copied verbatim. Output (in the prompt): the brief template below, filled, with that profile's adjustments. Output (lint path): DR1–DR10 rows after the routed range. The routed lint file still governs model wording; this file governs research scope, sources, evidence, and report shape.
+Consumed by `<deep_research>` in SKILL.md. Output (reply): the `Research overlay:` line with the profile name and the profile's first sentence copied verbatim. Output (in the prompt): the brief template below, filled, with that profile's adjustments. Output (lint path): DR1–DR10 rows after the routed range. The routed lint file still governs model wording; this file governs research scope, sources, evidence, report shape, and stop rule.
 
 Specify what to find, how far back, from which sources, in what shape, and when to stop. Do not script how to search: sources warn both against vague delegation ("research the semiconductor shortage") and against rigid step-by-step instructions that box the executor in.
 
@@ -44,7 +44,7 @@ Write the brief so the executor could run it with no questions: question and pur
 
 The deep research API does not ask clarifying questions, so the brief carries every decision up front and marks unknown details as open rather than inventing them.
 
-- Placement: role, evidence rules, and report spec in the developer message; research question, context, and scope in the user message.
+- Placement: role, `<evidence>`, `<report>`, and `<stop>` in the developer message; `<research_question>`, `<context>`, `<scope>`, and `<sources>` in the user message. Deliver both in one fence under `## Developer message` and `## User message` headings.
 - Configuration, not prose: model `o3-deep-research` or `o4-mini-deep-research`; at least one data source tool (web search, file search, or MCP); budget via `max_tool_calls`; `background` mode, because runs take minutes.
 - Tables and charts appear only when the report spec requests them explicitly.
 - Thin ask and the user wants a pipeline: a cheaper model asks 3–6 questions that most reduce ambiguity, then rewrites the answers into a first-person brief. Deliver those as two prompts; otherwise default the scope and list it in `Assumptions:`.
@@ -69,7 +69,8 @@ Claude Research has no published prompt schema: ask for the research tool by nam
 
 Gemini Deep Research is steered through its plan: state the end goal and report shape plainly, then correct the plan (Edit plan in the app, `collaborative_planning` in the API) instead of lengthening the prompt.
 
-- App: goal, reader, time window, and report shape in a few lines; drop `<sources>` and `<stop>` unless the ask sets a real constraint.
+- `gemini-deep-research` means the app unless an API call, SDK code, or the API model ID is present.
+- App: every tag in one or two sentences; drop `<sources>` unless the ask sets a real source constraint. Keep `<stop>` as one line.
 - API: model `deep-research-preview-04-2026` (or its `-max` variant). Formatting instructions in the prompt control report structure; there are no structured outputs, so request Markdown sections or tables, not a JSON schema. Runs cap at 60 minutes: size the scope to fit.
 - Include "list what you could not determine" (the docs' "prompt for unknowns").
 

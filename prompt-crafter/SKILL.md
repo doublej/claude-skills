@@ -86,8 +86,8 @@ Applies when the finished prompt will run as a deep research job, stated in `$AR
 
 Not a trigger: a web lookup inside a coding or build task, or a request that Claude research the topic now (Step 0 exits).
 
-1. **Pick the profile** → Output (reply): `Research overlay: <profile> · "<sentence copied from that profile in references/deep-research.md>"`. Profiles: `openai-api`, `chatgpt`, `claude-research`, `gemini`, `perplexity`, `orchestrator`, `generic` (unknown executor).
-2. **Fill the brief** → Output (in the prompt): the reference's brief template, slots filled from the ask. The routed lint file still governs model wording; the overlay governs research scope, sources, and report shape.
+1. **Pick the profile** → Output (reply): `Research overlay: <profile> · "<the profile's first sentence, copied from references/deep-research.md>"`. A research product brings its own web search: `WEB_ENABLED=yes` for `chatgpt`, `claude-research`, `perplexity`, and the Gemini app; `openai-api`, the Gemini API, and `orchestrator` take it from configuration. Profiles: `openai-api`, `chatgpt`, `claude-research`, `gemini`, `perplexity`, `orchestrator`, `generic` (unknown executor).
+2. **Fill the brief** → Output (in the prompt): the reference's brief template, slots filled from the ask. The routed lint file still governs model wording; the overlay governs research scope, sources, evidence, report shape, and stop rule.
 3. **Default the scope** → Output (`Assumptions:`): each scope decision the executor cannot ask about (question, audience, time window, geography, source bar, report shape) with its default. Ask only when a default would research the wrong thing.
 4. **Lint and feedback** → Lint path: append the reference's DR items to Checklist results after the routed range. Feedback path: DR findings rank with the rest, same cap.
 </deep_research>
@@ -156,7 +156,7 @@ The labels below are outside the prompt fence. The first line is the header, and
 
 ````text
 Target: <model> · Reference: references/<file> · Applied: "<sentence copied from the opened file>"
-Research overlay: <profile> · "<sentence copied from that profile>"   ← deep research only; omit the line otherwise
+Research overlay: <profile> · "<the profile's first sentence>"   ← deep research only; omit the line otherwise
 Assumptions: <surface; consequential defaults; executor capabilities presumed; unknown/unset settings relevant to the task>
 Facts: <grounded repo facts and sources; or none embedded, with user-supplied literals/runtime inputs labelled>
 
