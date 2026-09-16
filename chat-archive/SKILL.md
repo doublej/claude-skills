@@ -63,6 +63,14 @@ Platform is auto-detected from JSON structure. Override with `--platform chatgpt
 Output is JSON with `imported`, `skipped`, `total_conversations`, `total_messages`.
 Report results to user, then offer to search or import more.
 
+**`design_chats/` exports** (Claude.ai design/artifact chats) use a different shape — one JSON file per chat instead of one array. Unzip the export, then run:
+
+```bash
+python3 {SKILL_DIR}/scripts/import_design_chats.py <path/to/design_chats/dir> --db ~/.chat-archive/conversations.db
+```
+
+Titles are stored as `[Design] <title>` so they're distinguishable in search results. Imported rows are `platform: "claude"`, same as regular conversations.
+
 ## Phase 3: SEARCH
 
 Ask user for search query via `consult-user-mcp`. Optional filters:
@@ -115,4 +123,6 @@ For showing a conversation, delegate to a **haiku** subagent. The script auto-li
 **ChatGPT**: Array of objects with `title`, `create_time`, `mapping` (tree of nodes with `message.content.parts[]`). Walk from `current_node` up parent chain, reverse for chronological.
 
 **Claude.ai**: Array of objects with `name`, `created_at`, `updated_at`, `chat_messages[]` each having `sender` (human/assistant), `text`, `created_at`.
+
+**Claude.ai design_chats**: One file per chat (not an array) — `title`, `messages[]` each having `role`, `created_at`, and a nested `content` object whose own `content` string is the message text (assistant's is a turn summary; full detail lives in unindexed `contentBlocks`), plus optional `attachments[].content` holding the real user-typed text. `import_design_chats.py` maps this to the same shape `import_claude()` expects and reuses it unchanged.
 </phases>
