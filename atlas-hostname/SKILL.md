@@ -28,9 +28,10 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    `atlas info --json` → look at `devCommand`.
    Missing → say "no dev server, nothing to expose" and stop. Never invent a dev script for a CLI, library or native project.
    Failing with `No scanned project` → `atlas scan`, retry once. Still missing → the folder is not under `~/dev` or is archived; stop.
+   **Nested project** (`api/` + `ui/` under one root, the normal `multi-stack/` shape): the scanner never descends into a folder that already carries `.atlas` (`scanner.ts`, `descend = !isProject || relPath in config.depth`). A child needs an entry in `~/dev/.atlas-config.json` → `"depth": {"<rel-path>": <n>}`, then `atlas scan`, then `atlas info --json` from the child. Each child that serves a browser or an API gets its own port and its own hostname; two registrations are the price, not a mistake.
 
 2. **Port in range.**
-   Read `.atlas` `port`. Must be 4100–4999. Missing or outside (3000, 5173, 8000 are the usual offenders) →
+   Read `.atlas` `port`. Must be 4100–4999, and it must be the port a **browser** opens. A root `.atlas` in a multi-stack project often carries the API port; the UI is a separate child (step 1). Missing or outside (3000, 5173, 8000 are the usual offenders) →
    `curl -s localhost:47891/api/ports/allocate` → `{"port":N}`; write `"port": N` into `.atlas`; pin the same N where the project already pins ports (`package.json` dev script, Justfile recipe, uvicorn/flask args, Go `PORT` default).
 
 3. **Bind address.**
@@ -39,11 +40,18 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    - Fan-out wrapper (`concurrently`, `turbo`, `npm-run-all`, `honcho`, `foreman`, `pm2`, `overmind`): atlas injects **nothing**. Every sub-command that listens needs its own `--host 0.0.0.0 --port <its port>`.
    Per-stack defaults: Vite family, uvicorn, flask → loopback only, fix needed. Next.js, node-api, Go `":"+port` → already all interfaces.
 
-4. **Slug.**
-   Print the hostname before registering: `https://<slug>.atlas.local.jurrejan.com`. Ugly or ambiguous slug → offer `"slug": "<short>"` in `.atlas` (it is slugified). Say plainly: moving or renaming the folder changes the slug and orphans the old NAS file; run `atlas hostnames rm` before a move.
+4. **Slug — settle it before the first registration.**
+   Ugly or ambiguous default → write `"slug": "<short>"` into `.atlas` (it is slugified). A `.atlas` edit is not read until `atlas scan`, so: edit → `atlas scan` → `atlas info --json` and confirm `slug` is the one you intend. That check is free; learning the slug from `atlas run` output costs two certificates, and fixing it afterwards (`atlas hostnames rm`, re-register) costs two more.
+   Print the hostname: `https://<slug>.atlas.local.jurrejan.com`. Say plainly: moving or renaming the folder changes the slug and orphans the old NAS file; run `atlas hostnames rm` (bare: current folder) before a move.
 
 5. **Register and verify.**
-   Server should start → `atlas run` (stops the project's previous listeners, waits 60s for the bind, prints the hostname). No server wanted → `atlas hostnames assign`.
+   From an interactive terminal: `atlas run` (stops the project's previous listeners, waits 60s for the bind, prints the hostname). **From an agent tool shell `atlas run` does not work**: it exits 0, prints the hostname, and the server dies with SIGTRAP when the tool call returns. Do this instead:
+   ```
+   nohup <dev command> > ~/dev/.atlas-logs/<slug>.log 2>&1 & disown
+   atlas hostnames assign            # registers without spawning; bare = current folder
+   lsof -nP -iTCP:<port> -sTCP:LISTEN   # listener must exist before curling
+   ```
+   Registration is a Caddy route to a port. It survives the server dying; a 502 later means the port is empty or loopback-bound, never "re-register".
    Read the output, do not assume:
    - `lanReachable: false` / "binds localhost only" → step 3 was missed; fix and rerun.
    - "NAS push failed, not synced" (`nasSynced: false`) → NAS unreachable (off-LAN, VPN, NAS down); report it, hand out localhost as stated fallback.
@@ -51,7 +59,10 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    ```
    curl -sS -o /dev/null -w '%{http_code}\n' https://<slug>.atlas.local.jurrejan.com/
    ```
-   200 → done. 502 → loopback bind, back to step 3. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
+   200 → GET passes. 502 with a listener → loopback bind, back to step 3. 502 without a listener → server died, read the log. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
+   **A 200 is not done when the app talks to anything else.** Caddy rewrites `Host` but not `Origin`, and a browser on another device is not this Mac:
+   - Own origin allowlist (better-auth `trustedOrigins`, Auth.js, Django `CSRF_TRUSTED_ORIGINS`, Rails `config.hosts`, Sanctum stateful domains; SvelteKit's `csrf.checkOrigin` is fine): POST once with `-X POST -H 'Origin: https://<slug>.atlas.local.jurrejan.com'` to an auth endpoint. 403 / `INVALID_ORIGIN` → add the hostname to that list.
+   - Separate backend: the frontend's baked API base must be the API's hostname, not `127.0.0.1:<port>` (on a phone that is the phone). `curl -sS https://<ui>/ | grep -o '<api-host>'` shows what is baked; `curl -sS -i -X OPTIONS https://<api>/<route> -H 'Origin: https://<ui>' | grep -i allow-origin` shows whether CORS admits it. Put the hostname in `.env.development`, never `.env`; `vite build` reads `.env` and ships it.
 
 6. **Record it.** One line in the project's CLAUDE.md:
    `Dev: \`atlas run\` → https://<slug>.atlas.local.jurrejan.com (port <N>).`
@@ -86,7 +97,9 @@ Check these before reporting success; each has cost a debugging session.
 - **Folder renamed** → new slug, new hostname, orphaned `<old-slug>-atlas.caddy` on the NAS. Nothing cleans it up. `atlas hostnames rm` before the move.
 - **NAS unreachable** → no hostname, no error. Read `nasSynced` / the "not synced" line.
 - **Host header** → already handled by Caddy. Do not add `allowedHosts`.
-- **Started from a tool shell that exits** → a dev server launched under `timeout` or a subshell that ends can die with SIGTRAP. Launch it with `atlas run` from a shell that stays open, or `nohup … & disown`.
+- **Started from a tool shell that exits** → SIGTRAP after the call returns, exit code still 0. Step 5's `nohup … & disown` + `atlas hostnames assign` is the only shape that works from an agent.
+- **UI hostname 200, app dead** → API base or CORS still points at localhost. Step 5's second check.
+- **`atlas hostnames assign --help`** treats `--help` as a path and POSTs it (404). Usage is `atlas hostnames [list | assign [path] | rm [path]]`, bare = current folder.
 </failure_modes>
 
 <non_goals>
