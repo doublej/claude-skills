@@ -168,7 +168,7 @@ def main():
     t.add_argument("--findings", default=os.environ.get("TMPDIR", "/tmp") + "/credential-stash.json")
     t.add_argument("--title", required=True)
     t.add_argument("--vault", default="Private")
-    t.add_argument("--account", help="op account shorthand/url, e.g. pimpelmees.1password.com")
+    t.add_argument("--account", default="my.1password.com", help="op account (default: personal my.1password.com)")
     t.add_argument("--category", choices=["Login", "API Credential", "Password"])
     t.add_argument("--url", help="website URL so 1Password autofill triggers there")
     t.add_argument("--username")

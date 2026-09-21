@@ -28,12 +28,12 @@ Script: `python3 ~/.claude/skills/credential-stash/scripts/stash.py`
    - **Login** — has a username and/or a site: needs `--url` (the exact page where 1Password should autofill, e.g. `https://app.example.com/login`, or `http://localhost:8787/login` for local dev; 1Password matches localhost fine) and `--username`.
    - **API Credential** — bare key/token: needs `--url` of the console it was issued from when known.
    - **onenv** — a `KEY=value` the project reads from env: `--onenv <namespace> <KEY>` (namespace = project name, see `onenv list`).
-   Pick the account: `pimpelmees.1password.com` for Pimpelmees / client work, `my.1password.com` for personal. Vault default `Private`; run `op vault list --account <acct>` if unsure.
+   Account and vault: always the personal account (`my.1password.com`, vault `Private`) unless JJ names another account or vault. Do not infer `pimpelmees.1password.com` from the project.
 
 3. **Stash** each keeper by id:
    ```bash
    S="python3 ~/.claude/skills/credential-stash/scripts/stash.py"
-   $S stash c1 --title "Directus haist admin" --url https://cms.haist.nl/admin/login --username admin --vault Private --account pimpelmees.1password.com
+   $S stash c1 --title "Directus haist admin" --url https://cms.haist.nl/admin/login --username admin
    $S stash c2 --title "Porkbun API" --category "API Credential" --url https://porkbun.com/account/api
    $S stash c3 --onenv porkbun PORKBUN_SECRET_KEY
    # scan missed it but you know it (e.g. from a seed script): read the secret from stdin
@@ -48,7 +48,7 @@ Script: `python3 ~/.claude/skills/credential-stash/scripts/stash.py`
 
 <rules>
 - Never echo a full secret into the reply or a command argument; the script exists so `op` reads it from stdin.
-- Confirm with the user before stashing when a finding's owner or URL is ambiguous. Wrong-vault items are worse than a delayed one.
+- Confirm with the user before stashing when a finding's owner or URL is ambiguous. Vault choice is never the ambiguity: personal `Private` unless told otherwise.
 - Do not talk yourself out of a login because it is "just a demo" or "public anyway". If JJ would paste it into a form, stash it. Mention the demo nature in `--notes` instead.
 - An empty scan is not "nothing to stash". Step 2's file review is mandatory before reporting nothing.
 - Title format: `<service> <role or account>` (e.g. `Cloudflare pimpelmees API token`), so `op item get "<title>"` is unambiguous later.
