@@ -42,11 +42,11 @@ Read the relevant machine doc before working on a host:
 |---|---|---|---|---|---|
 | **M2 Pro** (this machine) | `192.168.178.145` | — (local) | `jurrejan` | macOS Tahoe | yes (`~/.local/bin/claude`) |
 | **Ubuntu Server** | `192.168.178.121` | `ssh ubuntu-server` | `jurrejan` | Ubuntu 24.04 | **no** |
-| **QNAP NAS** | `192.168.178.100` | `ssh admin@192.168.178.100` | `admin` | QTS 5.2.6 | **no** |
+| **QNAP NAS** | `192.168.178.100` | `ssh admin@192.168.178.100` | `admin` | QTS 5.2.6 | yes (container, `/opt/bin/claude`) |
 | **Fractal PC** | `192.168.178.197` | `ssh fractal` (alias `ssh pc`) | `user` (Windows home `C:\Users\jurre`) | Windows 11 Pro | yes (`C:\Users\jurre\.local\bin\claude.exe`) |
 | **Old MacBook** | unknown | `ssh macserver` | `jurrejan` | macOS (offline) | unknown (offline) |
 
-Only **M2 Pro** and **Fractal** can run `claude` — spawn remote workers there, no capability probe needed.
+**M2 Pro**, **Fractal** and the **NAS** can run `claude` — spawn remote workers there, no capability probe needed. The NAS runs it in a container (`homenetwork/services/claude-nas/`); its home is `/share/CACHEDEV1_DATA/.claude-nas-home`, not `/root`, and one-shot commands need the **full path** `/opt/bin/claude` because `ssh nas '<cmd>'` does not read `/root/.profile`.
 
 ### SSH Gotchas
 
