@@ -58,7 +58,8 @@ atlas flow          # branch flow of this project (feature/* → develop → mai
 atlas flow init     # opt an existing repo in (--dry-run first)
 atlas ports         # port collisions across daemons and projects
 atlas tree view     # the CLAUDE.md context chain for this folder
-atlas prime         # session briefing (already wired as a SessionStart hook)
+atlas prime         # crash course: commands, workflows, guardrails — run this first
+atlas brief         # session briefing (already wired as a SessionStart hook)
 ```
 
 </adjacent>
