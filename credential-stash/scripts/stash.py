@@ -30,6 +30,10 @@ PATTERNS = [
         r"(?i)\b([A-Z0-9_]*(?:api[_-]?key|secret|token|password|passwd|pwd|client[_-]?secret)[A-Z0-9_]*)"
         r"\s*[:=]\s*[\"']?([^\s\"',;]{8,})")),
     ("labelled", re.compile(r"(?i)\b(password|passphrase|pin|api key|token)\b\s*(?:is|:)\s*[`\"']?([^\s`\"',;]{6,})")),
+    # `demo@site.nl / demo-pass-2026` login lines in READMEs and seed output
+    ("email-slash-pass", re.compile(r"`?([A-Za-z0-9._+-]+@[A-Za-z0-9.-]+\.[a-z]{2,})`?\s*/\s*`?([^\s`\"',;]{6,})`?")),
+    # string literal shortly after a password-ish word: hashPassword("x"), password: await hash("x")
+    ("password-literal", re.compile(r"(?i)\b(\w*(?:password|passwd|secret)\w*)\b[^\n\"'`]{0,60}[\"'`]([^\"'`\s]{6,})[\"'`]")),
 ]
 PLACEHOLDER = re.compile(r"(?i)^(?:<.*>|\$\{?[A-Z_]+\}?|op://.*|\*+|x{4,}|your[_-]|changeme|example|placeholder|redacted|\.\.\.|none|null|true|false|undefined|\[.*\])")
 URL = re.compile(r"https?://[^\s\"'<>)\]]+")
@@ -82,7 +86,9 @@ def scan(args):
                         if kind == "url-with-creds":
                             username, secret, host = m.group(1), m.group(2), m.group(3)
                             label = host.split("/")[0]
-                        elif kind in ("assignment", "labelled"):
+                        elif kind == "email-slash-pass":
+                            username, secret, label = m.group(1), m.group(2), "login"
+                        elif kind in ("assignment", "labelled", "password-literal"):
                             label, secret, username = m.group(1), m.group(2), None
                         else:
                             label, secret, username = kind, m.group(0), None
@@ -112,8 +118,10 @@ def scan(args):
 
 
 def stash(args):
-    findings = {f["id"]: f for f in json.loads(Path(args.findings).read_text())}
-    f = findings[args.id]
+    if args.id == "-":
+        f = {"secret": sys.stdin.read().rstrip("\n")}
+    else:
+        f = {f["id"]: f for f in json.loads(Path(args.findings).read_text())}[args.id]
     if args.onenv:
         ns, key = args.onenv
         subprocess.run(["onenv", "set", ns, key, "--value-stdin"], input=f["secret"], text=True, check=True)
@@ -156,7 +164,7 @@ def main():
     s.add_argument("--out", default=os.environ.get("TMPDIR", "/tmp") + "/credential-stash.json", help="findings file with full values (chmod 600)")
     s.set_defaults(fn=scan)
     t = sub.add_parser("stash", help="store one finding in 1Password (or onenv)")
-    t.add_argument("id", help="finding id from scan, e.g. c1")
+    t.add_argument("id", help="finding id from scan, e.g. c1 — or `-` to read the secret from stdin")
     t.add_argument("--findings", default=os.environ.get("TMPDIR", "/tmp") + "/credential-stash.json")
     t.add_argument("--title", required=True)
     t.add_argument("--vault", default="Private")
