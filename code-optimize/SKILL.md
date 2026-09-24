@@ -64,7 +64,8 @@ Every dimension runs the same five steps:
 
 ```
 1. SCAN    read-only; machine output via --json where a scan command exists;
-           `ratchet.py <root> lower --dimensions <d>` records the baseline count
+           only write: `ratchet.py <root> lower --dimensions <d>` records the
+           baseline count
 2. PLAN    findings → prioritised task plan (references/plan-format.md);
            first ratchet of a dimension in this repo also runs
            <prove_the_count>; present to user, get approval before any edit
