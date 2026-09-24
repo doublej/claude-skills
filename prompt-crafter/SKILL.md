@@ -40,7 +40,8 @@ Resolution order:
 |----------------|-------|-----------|-----------------|
 | `fable-5.1`, `fable-5-1`, `claude-fable-5-1`, `mythos-5.1` | Claude Fable 5.1 / Mythos 5.1 | `references/lint-fable-5-1.md` | 0–22 |
 | `fable-5`, `fable`, `mythos-5`, `claude-fable-5` | Claude Fable 5 / Mythos 5 | `references/lint-fable-5.md` | 0–22 |
-| `opus-5`, `opus`, `claude-opus-5` | Claude Opus 5 | `references/lint-opus-5.md` | 0–18 |
+| `opus-5.5`, `opus-5-5`, `opus`, `claude-opus-5-5` | Claude Opus 5.5 | `references/lint-opus-5-5.md` | 0–23 |
+| `opus-5`, `claude-opus-5` | Claude Opus 5 | `references/lint-opus-5.md` | 0–18 |
 | `sonnet-5`, `sonnet`, `claude-sonnet-5` | Claude Sonnet 5 | `references/lint-sonnet-5.md` | 0–19 |
 | `gpt-6`, `gpt-6-omni` | GPT-6 | `references/lint-gpt-6.md` | 0–19 |
 | `gpt-5.6`, `gpt-5.6-sol`, `sol`, `terra`, `luna` | GPT-5.6 | `references/lint-gpt-5-6.md` | 0–18 |
@@ -50,7 +51,7 @@ Resolution order:
 | `generic` / unspecified | Model-agnostic | `references/lint-generic.md` | 1–8 |
 | `deep-research`, `chatgpt-deep-research`, `o3-deep-research`, `o4-mini-deep-research`, `claude-research`, `gemini-deep-research`, `deep-research-preview-04-2026`, `perplexity`, `sonar` | Research product (the product fixes the model) | `references/lint-generic.md` + `<deep_research>` overlay | 1–8, then DR items |
 
-Bare `opus` / `sonnet` resolve to the 5-series. Older models need the version suffix. GPT-5.1 / 5.2: hand off to the `prompt-gpt` skill.
+Bare `opus` resolves to Opus 5.5; bare `sonnet` to Sonnet 5. Model IDs may carry a context suffix (`claude-opus-5-5[1m]`); strip it before matching. Older models need the version suffix. GPT-5.1 / 5.2: hand off to the `prompt-gpt` skill.
 
 **Multi-model systems** (orchestrator on one model, subagents on another): resolve each component separately and apply that profile to that component's instructions only. Forks inherit the parent model and cannot be overridden.
 
@@ -129,8 +130,8 @@ Output (internal): a draft that satisfies these criteria across every section an
 - **Observable success.** Name what appears, in what shape, and when work ends. Use a meaningful cap (one row per file, one paragraph per finding); arbitrary caps must not hide required results.
 - **Complete task.** Provide intent, inputs, constraints, and done-when in one turn. Preserve existing authorisation. Add a question only where the answer changes the work and no safe default suffices.
 - **Reasons and scope.** Explain non-obvious constraints; state which files, sections, or cases each rule covers. A reason must be supplied or grounded, never an invented CI or business policy.
-- **Actionable wording.** Say what to do. Keep prohibitions for real boundaries, such as read-only inspection. Use normal-strength language.
-- **Decision criteria.** Specify what counts; prescribe order only for real dependencies. Keep required tests and observable checks, remove generic self-critique and scripted internal reasoning on the 5-series.
+- **Actionable wording.** Say what to do. Keep prohibitions for real boundaries, such as read-only inspection, and for design prompts, where a named list of patterns to leave out steers better than generic direction. Use normal-strength language.
+- **Decision criteria.** Specify what counts; prescribe order only for real dependencies. Keep required tests and observable checks, remove generic self-critique, "think carefully" lines, scripted internal reasoning, and requests to show reasoning in the reply on the 5-series.
 - **Examples only when useful.** An example teaches a hard format or edge case. It must match all rules, including evidence requirements and empty results; no quota of examples.
 - **Data boundaries.** Label untrusted input as data. In long prompts, put documents before the task; for a short prompt, lead with the task. Use XML only where it clarifies multiple components.
 - **Lean scope.** Remove platitudes, redundant examples, repeated rules, and unsupported model claims. Soft drafting targets: interactive ask 5 lines, slash command 30, system prompt 150, CLAUDE.md / AGENTS.md 200. Completeness wins over these targets.
