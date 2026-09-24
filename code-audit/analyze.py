@@ -5,6 +5,7 @@ import re
 from pathlib import Path
 from types import ModuleType
 import argparse
+import json
 
 sys.path.insert(0, str(Path(__file__).parent))
 from detectors import deprecated, conventions, deadcode, duplicates
@@ -100,6 +101,7 @@ def main() -> None:
     parser.add_argument('repository', help='Path to repository to analyze')
     parser.add_argument('--output', default='repomap-analysis.md', help='Output report file')
     parser.add_argument('--map-tokens', type=int, default=32768, help='Repomap token limit')
+    parser.add_argument('--json', action='store_true', help='Print findings and counts as JSON instead of writing the report')
     args = parser.parse_args()
 
     repo_path = Path(args.repository).resolve()
@@ -107,12 +109,17 @@ def main() -> None:
         print(f"Error: Repository path does not exist: {repo_path}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Analyzing repository: {repo_path}")
-    print("Generating repository map...")
+    print(f"Analyzing repository: {repo_path}", file=sys.stderr)
+    print("Generating repository map...", file=sys.stderr)
     repomap_data = run_repomap(str(repo_path), args.map_tokens)
 
-    print("Running detectors...")
+    print("Running detectors...", file=sys.stderr)
     findings = run_analysis(repomap_data, str(repo_path))
+
+    if args.json:
+        counts = {name: len(items) for name, items in findings.items()}
+        print(json.dumps({"count": sum(counts.values()), "counts": counts, "findings": findings}, indent=2, default=str))
+        return
 
     print(f"Generating report: {args.output}")
     generate_report(findings, args.output, str(repo_path))

@@ -33,6 +33,7 @@ python3 {SKILL_DIR}/analyze.py <path-to-repo> --output report.md --map-tokens 16
 |------|---------|---------|
 | `--output` | `repomap-analysis.md` | Output report file path |
 | `--map-tokens` | `32768` | Token limit for repomap generation |
+| `--json` | off | Print `{count, counts, findings}` to stdout instead of writing the report |
 
 </usage>
 
