@@ -17,6 +17,8 @@ trap 'rm -rf "$LAST_MSG" "$WORKDIR"' EXIT
 
 # Generate mode (text-to-image) or edit mode (image-to-image, when an input image is given)
 CODEX_ARGS=(-C "$WORKDIR" -s danger-full-access --skip-git-repo-check --ephemeral -o "$LAST_MSG")
+# CODEX_MODEL overrides config.toml, e.g. when its model is refused for the account
+[ -n "${CODEX_MODEL:-}" ] && CODEX_ARGS+=(-m "$CODEX_MODEL")
 if [ -n "$INPUT_IMAGE" ]; then
   [ -f "$INPUT_IMAGE" ] || { echo "ERROR: input image not found: $INPUT_IMAGE"; exit 1; }
   # absolute: the agent's working root is $WORKDIR, not the caller's cwd
