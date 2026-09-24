@@ -20,6 +20,7 @@ CODEX_ARGS=(-C "$WORKDIR" -s danger-full-access --skip-git-repo-check --ephemera
 if [ -n "$INPUT_IMAGE" ]; then
   [ -f "$INPUT_IMAGE" ] || { echo "ERROR: input image not found: $INPUT_IMAGE"; exit 1; }
   # absolute: the agent's working root is $WORKDIR, not the caller's cwd
+  # -i takes several values, so the prompt needs the -- below to stay a prompt
   CODEX_ARGS+=(-i "$(cd "$(dirname "$INPUT_IMAGE")" && pwd)/$(basename "$INPUT_IMAGE")")
   INSTRUCTION="Edit the provided image with this instruction: $PROMPT"
   echo "▶ Launching Codex image edit..."
@@ -28,7 +29,7 @@ else
   echo "▶ Launching Codex image generation..."
 fi
 
-codex exec "${CODEX_ARGS[@]}" \
+codex exec "${CODEX_ARGS[@]}" -- \
   "$INSTRUCTION
 
 Use the image_gen tool only. Do not run git. Do not create, move or modify any file yourself — leave the image where image_gen writes it.
