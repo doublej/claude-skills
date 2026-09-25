@@ -14,12 +14,12 @@ The canonical "good" output is **flt** (`https://doublej.github.io/flt/`): a sti
 4. **Deploys** via a GitHub Actions workflow (`setup-bun@v2` → build → `configure-pages@v5` → deploy)
 5. **Verifies** the production build and prerendered pages
 
-## Design System (flt)
+## Design System
 
-- **Fonts**: Instrument Sans (UI) + DM Mono (code/terminals)
-- **Palette**: light page (`#f8f8f8`), **dark terminals** (`#1e1e1e`), blue accent (`#2266cc`)
-- **Components**: `Nav.svelte` (sticky, blurred, base-aware) + `Terminal.svelte` (traffic-light, dark/green variants)
-- **Animation**: `fadeSlideUp` (500ms ease-out), `prefers-reduced-motion` respected
+- **Fonts**: Familjen Grotesk (text) + Martian Mono (wordmark, commands, terminals)
+- **Palette**: one per-project **plate** colour (picked from the repo name, or chosen from 8 named plates in `src/lib/theme.ts`); paper, ink and terminals are tinted from the same hue
+- **Components**: `Nav.svelte` (sticky, blurred, base-aware) + `Terminal.svelte` (titled bar, lines print in on mount)
+- **Animation**: terminal line print + cursor blink only; `prefers-reduced-motion` respected
 - **Orphan control**: `orphan-obliterator` as a GitHub dependency
 
 ## Output Structure
@@ -30,7 +30,8 @@ docs/
 ├── src/
 │   ├── app.html                       # <title>, <meta>, fonts, umami, project-linking widget
 │   ├── lib/
-│   │   ├── styles/global.css          # flt design system
+│   │   ├── styles/global.css          # design tokens (hue-derived)
+│   │   ├── theme.ts                   # plate colour for this project
 │   │   └── components/
 │   │       ├── Nav.svelte             # sticky blurred nav
 │   │       └── Terminal.svelte        # animated terminal demos

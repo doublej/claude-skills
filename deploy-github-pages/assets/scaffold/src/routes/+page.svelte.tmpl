@@ -1,8 +1,7 @@
 <!--
-  Home page starter — flt-quality structure. Replace the placeholder content
-  (steps, features, commands) with real project content extracted from the README.
-  Keep the section order and the Terminal-based demo: it is what makes the site
-  "look good" rather than generic.
+  Home page starter. Replace the placeholder content (steps, features, commands)
+  with real project content extracted from the README. Keep the section order:
+  plate hero -> demo -> features -> plate CTA. The Terminal demo is the centrepiece.
 -->
 <script lang="ts">
   import { base } from '$app/paths'
@@ -11,186 +10,379 @@
   import Terminal from '$lib/components/Terminal.svelte'
 
   type Mode = 'run' | 'install' | 'agent'
+  type Tone = 'hi' | 'dim' | 'ok' | 'err'
+  type Line = string | { text: string; tone: Tone }
+
+  const wordmark = '{{WORDMARK}}'
   let mode = $state<Mode>('install')
-  let copied = $state(false)
+  let copied = $state<string | null>(null)
   let step = $state(0)
 
-  // TODO: one entry per frame of the animated demo. Tell a real end-to-end story.
-  const steps = [
-    { title: 'First command', description: 'Describe the real task a user accomplishes here.' },
-    { title: 'Second command', description: 'Build on the previous step — show progression.' },
-    { title: 'Result', description: 'Show the payoff: the output the user wanted.' },
+  // TODO: one entry per frame of the demo. Tell a real end-to-end story.
+  // Output lines are plain strings, or { text, tone } to colour one line.
+  const steps: { title: string; description: string; command: string; output: Line[] }[] = [
+    {
+      title: 'Install',
+      description: 'Describe the real task a user accomplishes here.',
+      command: 'bun install -g github:{{REPO_SLUG}}',
+      output: [{ text: 'installed {{WORDMARK}}', tone: 'ok' }],
+    },
+    {
+      title: 'First command',
+      description: 'Build on the previous step. Show progression.',
+      command: '{{WORDMARK}} --help',
+      output: ['usage: {{WORDMARK}} <command> [options]', '', { text: 'commands:', tone: 'dim' }, '  run     do the main thing'],
+    },
+    {
+      title: 'Result',
+      description: 'Show the payoff: the output the user wanted.',
+      command: '{{WORDMARK}} run',
+      output: [{ text: 'done', tone: 'hi' }],
+    },
   ]
 
-  // TODO: real install/run commands for this project.
-  const display_map: Record<Mode, string> = {
+  // TODO: real commands. Drop modes that do not apply (no agent mode for a plain library).
+  const commands: Record<Mode, string> = {
     run: 'bunx github:{{REPO_SLUG}}',
     install: 'bun install -g github:{{REPO_SLUG}}',
     agent: 'bunx github:{{REPO_SLUG}} prime',
   }
-  const copy_map: Record<Mode, string> = {
-    run: 'bunx github:{{REPO_SLUG}}',
-    install: 'bun install -g github:{{REPO_SLUG}}',
-    agent: 'bunx github:{{REPO_SLUG}} prime',
-  }
+  const modes = Object.keys(commands) as Mode[]
 
-  // TODO: real features (3 or 6 reads best in the grid).
+  // TODO: real features. 4 or 6 read best in the two-column list.
   const features = [
-    { icon: '⇄', title: 'Feature one', description: 'What it does and why it matters.' },
-    { icon: '◇', title: 'Feature two', description: 'What it does and why it matters.' },
-    { icon: '★', title: 'Feature three', description: 'What it does and why it matters.' },
+    { title: 'Feature one', description: 'What it does and why it matters, in a sentence.' },
+    { title: 'Feature two', description: 'What it does and why it matters, in a sentence.' },
+    { title: 'Feature three', description: 'What it does and why it matters, in a sentence.' },
+    { title: 'Feature four', description: 'What it does and why it matters, in a sentence.' },
   ]
 
   onMount(() => {
     const instance = obliterate({
-      selectors: ['p', '.tagline', '.description', '.feature-card p'],
+      selectors: ['p', '.tagline', '.description', '.feature-list dd'],
       rules: { minLastLineWords: 3, maxProtectedChars: 40 },
     })
     return () => instance.destroy()
   })
 
-  function copyCommand() {
-    navigator.clipboard.writeText(copy_map[mode])
-    copied = true
-    setTimeout(() => (copied = false), 2000)
+  function copyCommand(key: string, text: string) {
+    navigator.clipboard.writeText(text)
+    copied = key
+    setTimeout(() => (copied = null), 2000)
   }
 </script>
 
 <main>
-  <section class="hero">
+  <section class="hero plate" aria-labelledby="hero-title">
     <div class="container">
-      <h1>{{PROJECT_TITLE}}</h1>
-      <p class="tagline">{{PROJECT_DESCRIPTION}}</p>
-
-      <div class="hero-actions">
-        <div class="mode-toggle">
-          <button class:active={mode === 'run'} onclick={() => (mode = 'run')}>Run</button>
-          <button class:active={mode === 'install'} onclick={() => (mode = 'install')}>Install</button>
-          <button class:active={mode === 'agent'} onclick={() => (mode = 'agent')}>Agent</button>
-        </div>
-        <div class="command-box">
-          <code>{display_map[mode]}</code>
-          <button class="copy-btn" onclick={copyCommand}>{copied ? 'Copied' : 'Copy'}</button>
-        </div>
-      </div>
-
-      <div class="hero-links">
-        <a href="{{REPO_URL}}" target="_blank" rel="noopener noreferrer" class="hero-link">View on GitHub</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="demo">
-    <div class="container">
-      <div class="demo-header">
-        <div class="demo-header-text">
-          <h2>{steps[step].title}</h2>
-          <p class="description">{steps[step].description}</p>
-        </div>
-        <div class="demo-nav">
-          <button class="nav-arrow" disabled={step === 0} onclick={() => step--}>&larr;</button>
-          <span class="demo-count">{step + 1} / {steps.length}</span>
-          <button class="nav-arrow" disabled={step === steps.length - 1} onclick={() => step++}>&rarr;</button>
-        </div>
-      </div>
-      <Terminal>
-        <!-- TODO: render the command + output for `steps[step]`. Use <span class="tg">…</span>
-             for green terminal text, and a `.tg-prompt` for the $ prompt. -->
-        <div><span class="tg-prompt">$</span> command for step {step + 1}</div>
-        <div>output line…</div>
-      </Terminal>
-    </div>
-  </section>
-
-  <section class="features">
-    <div class="container">
-      <h2>What it does</h2>
-      <div class="grid">
-        {#each features as feature}
-          <div class="feature-card">
-            <div class="feature-icon">{feature.icon}</div>
-            <h3>{feature.title}</h3>
-            <p>{feature.description}</p>
+      <h1 id="hero-title" class="hero-wordmark" style:--chars={wordmark.length}>{wordmark}</h1>
+      <div class="hero-grid">
+        <p class="tagline">{{PROJECT_DESCRIPTION}}</p>
+        <div class="hero-install">
+          <div class="mode-toggle" role="group" aria-label="Command to show">
+            {#each modes as m}
+              <button aria-pressed={mode === m} onclick={() => (mode = m)}>{m[0].toUpperCase() + m.slice(1)}</button>
+            {/each}
           </div>
-        {/each}
-      </div>
-      <div class="features-cta">
-        <a href="{base}/features" class="features-link">See all features &rarr;</a>
+          <div class="command-box">
+            <code><span class="t-prompt"></span>{commands[mode]}</code>
+            <button class="copy-btn" onclick={() => copyCommand('hero', commands[mode])}>
+              {copied === 'hero' ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+          <a href="{{REPO_URL}}" target="_blank" rel="noopener noreferrer" class="source-link">Read the source on GitHub</a>
+        </div>
       </div>
     </div>
   </section>
 
-  <section class="cta">
+  <section class="demo" aria-labelledby="demo-title">
+    <div class="container demo-grid">
+      <div class="demo-steps">
+        <h2 id="demo-title">A first session</h2>
+        <ol class="step-list">
+          {#each steps as s, i}
+            <li>
+              <button aria-pressed={step === i} onclick={() => (step = i)}>
+                <span class="step-num">{i + 1}</span>{s.title}
+              </button>
+            </li>
+          {/each}
+        </ol>
+        <p class="description" aria-live="polite">{steps[step].description}</p>
+      </div>
+      {#key step}
+        <Terminal title="~/{{REPO_NAME}}">
+          <div><span class="t-prompt"></span>{steps[step].command}</div>
+          {#each steps[step].output as line}
+            {#if typeof line === 'string'}
+              <div>{line || ' '}</div>
+            {:else}
+              <div class="t-{line.tone}">{line.text}</div>
+            {/if}
+          {/each}
+        </Terminal>
+      {/key}
+    </div>
+  </section>
+
+  <section class="features" aria-labelledby="features-title">
     <div class="container">
-      <h2>Ready to start?</h2>
-      <pre class="cta-install"><code>{display_map.install}</code></pre>
-      <p><a href="{{REPO_URL}}" target="_blank" rel="noopener noreferrer">GitHub</a> · MIT License</p>
+      <div class="features-grid">
+        <div class="features-head">
+          <h2 id="features-title">What it does</h2>
+          <a href="{base}/features">All features</a>
+        </div>
+        <dl class="feature-list">
+          {#each features as feature}
+            <div>
+              <dt>{feature.title}</dt>
+              <dd>{feature.description}</dd>
+            </div>
+          {/each}
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta plate" aria-labelledby="cta-title">
+    <div class="container cta-inner">
+      <h2 id="cta-title">Install {wordmark}</h2>
+      <div class="cta-action">
+        <div class="command-box">
+          <code><span class="t-prompt"></span>{commands.install}</code>
+          <button class="copy-btn" onclick={() => copyCommand('cta', commands.install)}>
+            {copied === 'cta' ? 'Copied' : 'Copy'}
+          </button>
+        </div>
+        <p>Source, issues and releases on <a href="{{REPO_URL}}" target="_blank" rel="noopener noreferrer">GitHub</a>.</p>
+      </div>
     </div>
   </section>
 </main>
 
 <style>
-  .container {
-    max-width: var(--container-max-width);
-    margin: 0 auto;
-    padding: 0 var(--container-padding);
-  }
-
   section { padding: var(--section-padding) 0; }
 
-  .hero { text-align: center; animation: fadeSlideUp 0.5s ease-out forwards; }
-  h1 { font-size: 2.6rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 1rem; }
-  .tagline { font-size: 1.15rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto 2rem; }
+  /* Hero: the plate, with the wordmark sized to fill the container width */
+  .hero { padding: clamp(40px, 7vw, 88px) 0 clamp(48px, 8vw, 104px); }
+  .hero .container { container-type: inline-size; }
 
-  .hero-actions { max-width: 520px; margin: 0 auto 1.5rem; }
-  .mode-toggle { display: inline-flex; gap: 4px; background: var(--accent-subtle); padding: 4px; border-radius: 10px; margin-bottom: 12px; }
-  .mode-toggle button {
-    border: none; background: transparent; font: inherit; font-size: 0.85rem; font-weight: 500;
-    color: var(--text-secondary); padding: 6px 16px; border-radius: 7px; cursor: pointer; transition: background 0.15s, color 0.15s;
+  .hero-wordmark {
+    font-family: var(--font-mono);
+    font-stretch: 112.5%;
+    font-weight: 800;
+    /* Martian Mono at this width and tracking advances ~0.70em per glyph; 0.74 leaves slack so the name stays on one line */
+    font-size: clamp(2.25rem, calc(100cqi / (var(--chars) * 0.74)), 12rem);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    margin: 0 0 clamp(28px, 5vw, 56px) -0.04em;
+    overflow-wrap: anywhere;
   }
-  .mode-toggle button.active { background: var(--bg-secondary); color: var(--text-primary); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--grid-gap);
+    align-items: end;
+  }
+
+  .tagline {
+    font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    max-width: 26ch;
+  }
+
+  .hero-install { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .hero-install > :not(.command-box) { justify-self: start; }
+
+  .mode-toggle {
+    display: inline-flex;
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .mode-toggle button {
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .mode-toggle button + button { border-left: 1.5px solid var(--ink); }
+  .mode-toggle button[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
 
   .command-box {
-    display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    background: var(--bg-code); border-radius: 10px; padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    background: var(--term-bg);
+    color: var(--term-text);
+    border-radius: 4px;
+    padding: 10px 10px 10px 18px;
   }
-  .command-box code { color: var(--text-code); font-size: 0.9rem; }
+
+  .command-box code {
+    min-width: 0;
+    font-size: 0.875rem;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding: 4px 0;
+  }
+
   .copy-btn {
-    border: none; background: rgba(255,255,255,0.1); color: #ddd; font: inherit; font-size: 0.8rem;
-    padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: background 0.15s;
+    flex-shrink: 0;
+    border: 1px solid color-mix(in oklch, var(--term-text) 30%, transparent);
+    background: transparent;
+    color: var(--term-text);
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-width: 5.5em;
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s;
   }
-  .copy-btn:hover { background: rgba(255,255,255,0.18); }
 
-  .hero-link { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.95rem; }
-  .hero-link:hover { text-decoration: underline; }
+  .copy-btn:hover { background: color-mix(in oklch, var(--term-text) 12%, transparent); }
+  .copy-btn:focus-visible { outline-color: var(--plate); }
 
-  .demo-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; gap: 16px; }
-  .demo-header h2 { font-size: 1.4rem; font-weight: 600; }
-  .demo-nav { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
-  .nav-arrow {
-    border: 1px solid var(--border); background: var(--bg-secondary); color: var(--text-primary);
-    width: 36px; height: 36px; border-radius: 8px; cursor: pointer; font-size: 1rem;
+  .source-link { font-weight: 500; margin-top: 4px; }
+
+  /* Demo: the step list is a real sequence, so it is numbered */
+  .demo-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--grid-gap);
+    align-items: start;
   }
-  .nav-arrow:disabled { opacity: 0.35; cursor: default; }
-  .demo-count { font-family: 'DM Mono', monospace; font-size: 0.85rem; color: var(--text-tertiary); }
 
-  .features h2, .cta h2 { font-size: 1.8rem; font-weight: 600; text-align: center; margin-bottom: 2rem; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--grid-gap); }
-  .feature-card { background: var(--bg-secondary); padding: 24px; border: 1px solid var(--border); border-radius: 12px; }
-  .feature-icon { font-size: 1.5rem; margin-bottom: 12px; }
-  .feature-card h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; }
-  .feature-card p { font-size: 0.95rem; color: var(--text-secondary); }
-  .features-cta { text-align: center; margin-top: 2rem; }
-  .features-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+  .demo h2, .features h2 {
+    font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
 
-  .cta { text-align: center; }
-  .cta-install { display: inline-block; background: var(--bg-code); color: var(--text-code); padding: 14px 20px; border-radius: 10px; margin-bottom: 1rem; }
-  .cta a { color: var(--accent); text-decoration: none; }
+  .step-list { list-style: none; display: grid; gap: 4px; margin-bottom: 20px; }
 
-  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 700px) {
-    .grid { grid-template-columns: 1fr; }
-    h1 { font-size: 2rem; }
-    .demo-header { flex-direction: column; align-items: flex-start; }
+  .step-list button {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    border: none;
+    background: none;
+    color: var(--ink-faint);
+    font: inherit;
+    font-size: 1.125rem;
+    font-weight: 500;
+    text-align: left;
+    padding: 8px 0;
+    cursor: pointer;
+    transition: color 0.15s;
+  }
+
+  .step-list button:hover, .step-list button[aria-pressed='true'] { color: var(--ink); }
+
+  .step-num {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    transition: background 0.15s;
+  }
+
+  .step-list button[aria-pressed='true'] .step-num { background: var(--plate); border-color: var(--ink); }
+
+  .description { color: var(--ink-soft); max-width: 38ch; min-height: 3.1em; }
+
+  /* Keep the page still while steps with different output lengths swap in */
+  .demo-grid :global(.terminal-body) { min-height: 11em; }
+
+  /* Features: a definition list, not cards */
+  .features { padding-top: 0; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--grid-gap);
+    border-top: 2px solid var(--ink);
+    padding-top: clamp(32px, 5vw, 56px);
+  }
+
+  .features-head a { font-weight: 500; }
+
+  .feature-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(28px, 4vw, 44px) var(--grid-gap);
+  }
+
+  .feature-list dt {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+
+  .feature-list dt::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    flex-shrink: 0;
+    background: var(--plate);
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+  }
+
+  .feature-list dd { color: var(--ink-soft); padding-left: 20px; }
+
+  /* CTA: the plate again, closing the page */
+  .cta-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px var(--grid-gap);
+    align-items: end;
+  }
+
+  .cta-action { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+
+  .cta h2 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+
+  @media (max-width: 860px) {
+    .hero-grid, .demo-grid, .features-grid, .cta-inner { grid-template-columns: minmax(0, 1fr); }
+    .hero-grid { gap: 28px; }
+    .description { min-height: 0; }
+  }
+
+  @media (max-width: 560px) {
+    .feature-list { grid-template-columns: minmax(0, 1fr); }
+    .command-box { padding-left: 14px; }
+    .command-box code { font-size: 0.8rem; }
   }
 </style>

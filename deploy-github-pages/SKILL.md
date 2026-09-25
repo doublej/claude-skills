@@ -75,10 +75,11 @@ docs/
   package.json  svelte.config.js  vite.config.ts  tsconfig.json
   src/
     app.html                       # <title>, <meta>, fonts, umami, project-linking widget
-    lib/styles/global.css          # flt design system (tokens, .tg terminal colors, .compare-table)
+    lib/styles/global.css          # hue-derived tokens, .t-* terminal colours, .plate, .compare-table
+    lib/theme.ts                   # the project's plate colour (auto-picked from REPO_NAME)
     lib/components/Nav.svelte       # sticky blurred nav, base-aware links, active state
-    lib/components/Terminal.svelte  # traffic-light terminal (dark | green variants)
-    routes/+layout.svelte           # imports global.css + renders <Nav/>
+    lib/components/Terminal.svelte  # titled terminal; lines print in on mount
+    routes/+layout.svelte           # imports global.css, injects the plate, renders <Nav/>
     routes/+layout.ts               # prerender = true
     routes/+page.svelte             # home (starter to fill in)
     routes/features/+page.svelte    # features page (starter to fill in)
@@ -93,23 +94,25 @@ docs/
 This is the bulk of the work. Replace the starter placeholders with real content. **Keep the section order and the `Terminal`-based demo** — that is what makes the site look good rather than generic.
 
 ### 3.1 Home page (`docs/src/routes/+page.svelte`)
-- **Hero**: real `<h1>` + tagline. Wire the run/install/agent toggle to real commands (drop modes that don't apply, e.g. no `agent` mode for a plain library).
-- **Animated demo**: fill `steps[]` with a real end-to-end story (one frame per step) and render each frame's command + output inside `<Terminal>`. Use `.tg-prompt` for the `$`, `.tg` / `.tg-bright` / `.tg-dim` for green output, or the default dark variant for normal shells. This is the centerpiece.
-- **Features grid**: 3 or 6 real cards with a short icon glyph, title, description.
-- **CTA**: real install command.
+- **Hero**: the `<h1>` is the wordmark, sized to fill the plate; the tagline is `PROJECT_DESCRIPTION`. Wire the `commands` map (run/install/agent) to real commands and delete modes that don't apply (no `agent` for a plain library).
+- **Animated demo**: fill `steps[]` with a real end-to-end story, one frame per step: `title`, `description`, `command`, `output[]`. Output lines are strings, or `{ text, tone }` with tone `hi` / `dim` / `ok` / `err`. This is the centrepiece.
+- **Features**: 4 or 6 real `{ title, description }` entries. They render as a two-column definition list, not cards; no icons.
+- **CTA**: uses `commands.install`; nothing to fill beyond that.
+- **Plate colour**: auto-picked from the repo name. If the project clearly fits one, set `PLATE` in `src/lib/theme.ts` from the table in `references/design-patterns.md`.
 
 ### 3.2 Features page (`docs/src/routes/features/+page.svelte`)
-- One block per major feature, each with its own `Terminal` demo.
-- A comparison table vs. alternatives reads well — use `class="compare-table"`.
+- One block per major feature in `features[]` (`title`, `body`, `command`, `output[]`), each rendered with its own `Terminal`.
+- Fill the comparison table (`alternatives`, `comparison`) with the tools people really use instead, or delete that section. Keep it honest.
 
 ### 3.3 Nav (`docs/src/lib/components/Nav.svelte`)
 - Edit the `links` array to match the pages you actually create. Keep the GitHub link last and external.
 - Add more routes (e.g. a `prime`/usage page) by creating `docs/src/routes/<name>/+page.svelte` and a matching nav link.
 
 ### 3.4 Content rules
-- Use the `Terminal` component for **every** command demo — never inline `<pre>` for CLI output.
+- Use the `Terminal` component for **every** command demo — never inline `<pre>` for CLI output. One direct child per line; start commands with `<span class="t-prompt"></span>`.
 - `obliterate` is already wired in the home page's `onMount`; add any new long-paragraph selectors to its `selectors` list.
-- Respect the design tokens in `global.css`; don't introduce new colors/fonts.
+- Respect the design tokens in `global.css`; don't introduce new colors/fonts. All colour comes from the plate hue.
+- Sentence case, no all-caps labels, no arrows appended to links (see `references/design-patterns.md`).
 
 </step_3_content>
 
@@ -147,7 +150,7 @@ Verify the build output (`docs/build/index.html`):
 
 Quality checklist:
 - [ ] Sticky nav with working active states
-- [ ] At least one animated `Terminal` demo with real commands
+- [ ] At least one `Terminal` demo with real commands; the wordmark sits on one line at 375px
 - [ ] Responsive at 375 / 768 / 1440px (grid collapses, demo header stacks)
 - [ ] `prefers-reduced-motion` respected (already in `global.css`)
 - [ ] Semantic structure (`main`, `section`, `nav`, headings in order)
@@ -171,8 +174,8 @@ Then consider these follow-up skills: `frontend-design` (aesthetics), `mobile-we
 
 ## References
 
-- `references/design-patterns.md` — full design system + component patterns
+- `references/design-patterns.md` — plate colours, tokens, layout, component usage
 - `references/content-strategy.md` — content extraction patterns
-- `references/animation-patterns.md` — animation timing and accessibility
+- `references/animation-patterns.md` — the terminal print motion and reduced-motion rules
 - `references/sveltekit-setup.md` — SvelteKit/adapter-static configuration details
 - `assets/scaffold/` — the actual files emitted (source of truth)

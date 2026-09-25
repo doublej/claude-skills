@@ -1,47 +1,135 @@
 <!--
-  Features page starter. Expand each feature into its own block with a Terminal
-  demo showing the feature in action. A comparison table (.compare-table) versus
-  alternatives reads well here. Delete this page (and its Nav link) if the project
-  only warrants a single page.
+  Features page starter. One block per major feature, each with a Terminal demo
+  showing it in action, then a comparison table against the real alternatives.
+  Delete this page (and its Nav link) if the project only warrants a single page.
 -->
 <script lang="ts">
   import Terminal from '$lib/components/Terminal.svelte'
 
-  // TODO: real feature deep-dives.
+  // TODO: real feature deep-dives, each with the command that shows it off.
   const features = [
-    { title: 'Feature one', body: 'Explain the capability in a sentence or two.' },
-    { title: 'Feature two', body: 'Explain the capability in a sentence or two.' },
+    {
+      title: 'Feature one',
+      body: 'Explain the capability in a sentence or two: what the user types and what they get back.',
+      command: '{{WORDMARK}} feature-one',
+      output: ['output line'],
+    },
+    {
+      title: 'Feature two',
+      body: 'Explain the capability in a sentence or two: what the user types and what they get back.',
+      command: '{{WORDMARK}} feature-two',
+      output: ['output line'],
+    },
+  ]
+
+  // TODO: compare against the tools people would actually use instead. Keep it honest.
+  const alternatives = ['Alternative A', 'Alternative B']
+  const comparison = [
+    { aspect: 'Setup', ours: 'One command', others: ['Config file', 'Plugin install'] },
+    { aspect: 'Works offline', ours: 'Yes', others: ['Yes', 'No'] },
   ]
 </script>
 
 <main>
-  <section class="hero">
-    <div class="container">
-      <h1>What makes {{WORDMARK}} different</h1>
-      <p class="subtitle">The capabilities you won't find elsewhere.</p>
+  <section class="page-head plate" aria-labelledby="page-title">
+    <div class="container head-grid">
+      <h1 id="page-title">What <span class="name">{{WORDMARK}}</span> does</h1>
+      <p class="subtitle">{{PROJECT_DESCRIPTION}}</p>
     </div>
   </section>
 
-  {#each features as feature}
-    <section class="feature">
-      <div class="container">
-        <h2>{feature.title}</h2>
-        <p>{feature.body}</p>
-        <Terminal>
-          <div><span class="tg-prompt">$</span> demo command</div>
-          <div>output…</div>
+  {#each features as feature, i}
+    <section class="feature" aria-labelledby="feature-{i}">
+      <div class="container feature-grid">
+        <div>
+          <h2 id="feature-{i}">{feature.title}</h2>
+          <p>{feature.body}</p>
+        </div>
+        <Terminal title="~/{{REPO_NAME}}">
+          <div><span class="t-prompt"></span>{feature.command}</div>
+          {#each feature.output as line}
+            <div>{line || ' '}</div>
+          {/each}
         </Terminal>
       </div>
     </section>
   {/each}
+
+  <section class="compare" aria-labelledby="compare-title">
+    <div class="container">
+      <h2 id="compare-title">Compared with the alternatives</h2>
+      <div class="table-scroll">
+        <table class="compare-table">
+          <thead>
+            <tr>
+              <td></td>
+              <th scope="col" class="ours">{{WORDMARK}}</th>
+              {#each alternatives as name}<th scope="col">{name}</th>{/each}
+            </tr>
+          </thead>
+          <tbody>
+            {#each comparison as row}
+              <tr>
+                <th scope="row">{row.aspect}</th>
+                <td class="ours">{row.ours}</td>
+                {#each row.others as cell}<td>{cell}</td>{/each}
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
 </main>
 
 <style>
-  .container { max-width: var(--container-max-width); margin: 0 auto; padding: 0 var(--container-padding); }
   section { padding: var(--section-padding) 0; }
-  .hero { text-align: center; }
-  h1 { font-size: 2.4rem; font-weight: 600; letter-spacing: -0.03em; margin-bottom: 1rem; }
-  .subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 640px; margin: 0 auto; }
-  .feature h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.75rem; }
-  .feature p { color: var(--text-secondary); max-width: 680px; margin-bottom: 1.5rem; }
+
+  .page-head { padding: clamp(48px, 8vw, 96px) 0; }
+
+  h1 {
+    font-size: clamp(2.25rem, 6vw, 4.5rem);
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    max-width: 16ch;
+  }
+
+  .name { white-space: nowrap; }
+
+  .head-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px var(--grid-gap);
+    align-items: end;
+  }
+
+  .subtitle { font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 500; max-width: 36ch; line-height: 1.35; }
+
+  .feature + .feature { padding-top: 0; }
+
+  .feature-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: var(--grid-gap);
+    align-items: start;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+
+  .feature p { color: var(--ink-soft); max-width: 40ch; }
+
+  .compare { padding-top: 0; }
+  .compare h2 { border-top: 2px solid var(--ink); padding-top: clamp(32px, 5vw, 56px); margin-bottom: 28px; }
+
+  .table-scroll { overflow-x: auto; }
+  .table-scroll .compare-table { min-width: 520px; }
+
+  @media (max-width: 860px) {
+    .feature-grid, .head-grid { grid-template-columns: minmax(0, 1fr); }
+  }
 </style>

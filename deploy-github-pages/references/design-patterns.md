@@ -1,504 +1,108 @@
-# Design System Patterns
+# Design patterns
 
-Complete design system specification extracted from consult-user-mcp and beads-kanban documentation sites.
+The scaffold's design, and the rules for filling it in. Source of truth is `assets/scaffold/`; this file explains why it looks the way it does.
 
-## Typography
+<direction>
+Every site is one title in a series of technical handbooks: the layout is shared, and each project owns one full-bleed colour field, the **plate**. The project name is set huge in a wide monospace on that plate, and the terminal session is the only other loud thing on the page.
+</direction>
 
-### Font Families
+<plate>
+The plate is the per-project character. `src/lib/theme.ts` holds eight named plates as OKLCH triples; `+layout.svelte` injects the chosen one as `--plate-l`, `--plate-c`, `--hue` on `html:root`. Every other colour in `global.css` is derived from `--hue`, so paper, ink and terminal backgrounds all lean toward the plate.
 
-```css
-/* Primary font for all text */
-font-family: 'Instrument Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+By default the plate is picked by hashing `REPO_NAME`, so two repos rarely match. During step 3, set it on purpose when the project suggests one:
 
-/* Monospace font for code */
-font-family: 'DM Mono', 'Courier New', monospace;
+| Plate | Hue | Suits |
+|---|---|---|
+| `signal` | red, 22 | alerting, security, destructive or "stop the bad thing" tools |
+| `marigold` | yellow, 82 | build and release tooling, generators |
+| `chartreuse` | yellow-green, 118 | linters, checkers, anything that passes or fails |
+| `mint` | green, 165 | data, storage, sync |
+| `lagoon` | cyan, 205 | network, streaming, pipes |
+| `cobalt` | blue, 262 | infrastructure, CLIs that manage other tools |
+| `iris` | violet, 298 | AI, agents, MCP servers |
+| `orchid` | pink, 340 | design, media, creative tooling |
+
+```ts
+// src/lib/theme.ts
+const PLATE: PlateName | null = 'iris'
 ```
 
-**Loading (in app.html):**
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+Do not add hex colours. If a new plate is needed, add an entry to `PLATES` with lightness 0.7 to 0.88 so ink text stays readable on it.
+</plate>
+
+<tokens>
+| Token | Role |
+|---|---|
+| `--plate` | Hero and CTA fields, prompt `$`, cursor, active step, link underlines, feature markers |
+| `--paper` / `--paper-tint` | Page ground / faint panel |
+| `--ink` / `--ink-soft` / `--ink-faint` | Headings and text / body copy / inactive controls |
+| `--rule` | Table row separators |
+| `--term-bg` / `--term-bar` / `--term-text` / `--term-dim` | Terminal and command boxes |
+| `--font-text` | Familjen Grotesk: all prose, headings, UI |
+| `--font-mono` | Martian Mono: wordmark (width 112.5%), commands and terminals (width 87.5%) |
+| `--section-padding`, `--container-*`, `--grid-gap` | Fluid spacing; `.container` is global |
+</tokens>
+
+<type>
+Two families, clearly distinct. Scale in rem: body 1.0625, h3 1.25, tagline 1.3 to 1.75, h2 1.75 to 2.5, CTA h2 2 to 3.5, page h1 2.25 to 4.5. The hero wordmark is sized from its character count (`--chars`) so it fills the container width on one line at any viewport.
+
+- Sentence case everywhere. No all-caps labels, no eyebrows above headings.
+- No arrows appended to link text. Links are ink with a plate-coloured underline.
+- Headings use `text-wrap: balance`; prose runs through `obliterate` for orphans.
+</type>
+
+<layout>
+Left-aligned throughout, on a 4:7 two-column grid that collapses to one column at 860px.
+
+```
+Home                                   Features
+[nav: ■ wordmark ........ links]       [nav]
+██ PLATE █████████████████████████     ██ PLATE ██████████████████
+██ WORDMARK (fills width)       ██     ██ What X does │ description ██
+██ tagline      │ toggle        ██     █████████████████████████████
+██              │ $ command     ██     feature text │ Terminal
+█████████████████████████████████      feature text │ Terminal
+steps (numbered) │ Terminal            ─────────────────────────
+─────────────────────────────────      Compared with the alternatives
+What it does │ ■ dt  ■ dt              [compare-table, .ours column tinted]
+             │ ■ dt  ■ dt
+██ PLATE: Install X │ $ command ██
 ```
 
-### Font Sizes
+- The plate appears at most twice per page: the top field and the closing CTA.
+- Numbered markers only on the demo steps, because they are a real sequence. Features are a `<dl>`, not numbered and not cards.
+- A 2px ink rule opens the features and comparison sections. No other dividers.
+- Radius is small and hierarchical: 6px terminals, 4px command boxes and toggles, 3px buttons.
+</layout>
 
-```css
-/* Headings */
-h1 { font-size: 2.5rem; }    /* 40px */
-h2 { font-size: 2rem; }      /* 32px */
-h3 { font-size: 1.5rem; }    /* 24px */
-h4 { font-size: 1.25rem; }   /* 20px */
+<components>
+**Nav** (`Nav.svelte`): sticky, paper at 84% with blur. Plate square + wordmark in wide mono. Active link gets a plate underline and `aria-current="page"`. Edit `links`; keep GitHub last.
 
-/* Body text */
-body { font-size: 1.1rem; }  /* 17.6px */
-p { font-size: 1.1rem; }
+**Terminal** (`Terminal.svelte`): `<figure>` with a title bar (`title`, default `zsh`) and a body that prints lines in on mount. Props: `title`, `maxWidth`, children. Each direct child is one line. Classes for output:
 
-/* Small text */
-small { font-size: 0.9rem; }     /* 14.4px */
-.secondary { font-size: 0.95rem; } /* 15.2px */
+| Class | Use |
+|---|---|
+| `.t-prompt` | Empty span before a command; renders the `$` in plate colour |
+| `.t-hi` | The line the user came for |
+| `.t-dim` | Headers, hints, secondary output |
+| `.t-ok` / `.t-err` | Success / failure |
 
-/* Code */
-code { font-size: 0.9rem; }
-pre code { font-size: 0.85rem; }
+```svelte
+<Terminal title="~/{{REPO_NAME}}">
+  <div><span class="t-prompt"></span>tool run --fast</div>
+  <div class="t-dim">scanning 214 files</div>
+  <div class="t-ok">0 problems</div>
+</Terminal>
 ```
 
-### Font Weights
-
-```css
-/* Instrument Sans weights */
-h1, h2 { font-weight: 600; }     /* Semibold for main headings */
-h3 { font-weight: 500; }         /* Medium for subheadings */
-body { font-weight: 400; }       /* Regular for body text */
-strong { font-weight: 500; }     /* Medium for emphasis */
-
-/* DM Mono weights */
-code { font-weight: 400; }       /* Regular for code */
-```
-
-### Line Heights
-
-```css
-h1, h2, h3 { line-height: 1.2; }
-body, p { line-height: 1.6; }
-code { line-height: 1.4; }
-```
-
-### Letter Spacing
-
-```css
-h1 { letter-spacing: -0.03em; }  /* Tighter for large headings */
-h2 { letter-spacing: -0.02em; }
-body { letter-spacing: normal; }
-```
-
-## Color Palette
-
-### Light Theme (the flt system)
-
-This is the canonical palette emitted by `assets/scaffold/src/lib/styles/global.css`. Dark **terminals** sit on a light page — the contrast is what makes demos pop.
-
-```css
-:root {
-  /* Backgrounds */
-  --bg-primary: #f8f8f8;       /* Main page background */
-  --bg-secondary: #fefefe;     /* Card backgrounds */
-  --bg-code: #1e1e1e;          /* Terminal / code body (dark) */
-  --bg-code-header: #262626;   /* Terminal title bar */
-
-  /* Text colors */
-  --text-primary: #2a2a2a;     /* Main text */
-  --text-secondary: #555;      /* Secondary text */
-  --text-tertiary: #777;       /* Tertiary text */
-  --text-code: #d4d4d4;        /* Text on dark terminal */
-
-  /* Borders */
-  --border: #e2e2e2;           /* Default borders */
-
-  /* Accent (blue, not black) */
-  --accent: #2266cc;           /* Links, emphasis */
-  --accent-subtle: #edf2fa;    /* Toggle/pill backgrounds */
-}
-```
-
-Terminal-green helpers (for the `green` Terminal variant, GDS/TUI demos):
-```css
-.tg { color: #33ff33; }        /* default green output */
-.tg-dim { color: #1a9a1a; }    /* secondary green */
-.tg-bright { color: #66ff66; } /* emphasis green */
-.tg-prompt { color: #33ff33; } /* the $ prompt */
-```
-
-### Usage Guidelines
-
-**Backgrounds:**
-- Page: `var(--bg-primary)` (#f8f8f8)
-- Cards/panels: `var(--bg-secondary)` (#fefefe)
-- Terminals/code: `var(--bg-code)` (#1e1e1e) — always dark
-
-**Text:**
-- Headings: `var(--text-primary)` (#2a2a2a)
-- Body text: `var(--text-secondary)` (#555)
-- Captions/metadata: `var(--text-tertiary)` (#777)
-- On dark terminals: `var(--text-code)` (#d4d4d4)
-
-**Borders:**
-- Default: `1px solid var(--border)` (#e2e2e2)
-
-**Accent:**
-- Links / emphasis: `var(--accent)` (#2266cc)
-- Pill / toggle backgrounds: `var(--accent-subtle)` (#edf2fa)
-
-> Some component snippets below use convenience tokens not in the shipped core
-> set — `--accent-hover` (≈ `#1a52a8`, a darker accent) and `--bg-tertiary`
-> (≈ `#f0f0f0`). Add them to `:root` only if a component needs them; the scaffold
-> ships the core tokens above.
-
-## Spacing System
-
-### CSS Variables
-
-```css
-:root {
-  /* Section spacing */
-  --section-padding: 60px;
-
-  /* Container */
-  --container-max-width: 1200px;
-  --container-padding: 24px;
-
-  /* Grid */
-  --grid-gap: 24px;
-
-  /* Component spacing */
-  --spacing-xs: 8px;
-  --spacing-sm: 12px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-2xl: 48px;
-}
-```
-
-### Section Padding
-
-```css
-section {
-  padding: var(--section-padding) var(--container-padding);
-  /* 60px top/bottom, 24px left/right */
-}
-```
-
-### Container
-
-```css
-.container {
-  max-width: var(--container-max-width); /* 1200px */
-  margin: 0 auto;
-  padding: 0 var(--container-padding);   /* 24px */
-}
-```
-
-### Grid Gaps
-
-```css
-.grid {
-  display: grid;
-  gap: var(--grid-gap); /* 24px */
-}
-```
-
-## Layout Patterns
-
-### Hero Section
-
-```css
-.hero {
-  padding: var(--section-padding) var(--container-padding);
-  text-align: center;
-  background: var(--bg-primary);
-}
-
-.hero h1 {
-  font-size: 2.5rem;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-}
-
-.hero .description {
-  font-size: 1.1rem;
-  color: var(--text-secondary);
-  max-width: 700px;
-  margin: 0 auto;
-  line-height: 1.6;
-}
-```
-
-### Feature Grid
-
-```css
-.features {
-  padding: var(--section-padding) var(--container-padding);
-}
-
-.features .grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--grid-gap);
-}
-
-.feature-card {
-  background: var(--bg-secondary);
-  padding: 24px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
-.feature-card h3 {
-  font-size: 1.25rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  color: var(--text-primary);
-}
-
-.feature-card p {
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-```
-
-### Code Block
-
-```css
-.install-box {
-  background: var(--bg-code);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: 'DM Mono', monospace;
-  font-size: 0.9rem;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.install-box button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.install-box button:hover {
-  background: var(--accent-hover);
-}
-```
-
-## Responsive Breakpoints
-
-### Breakpoint Values
-
-```css
-/* Mobile: < 700px */
-/* Tablet: 700px - 999px */
-/* Desktop: 1000px+ */
-```
-
-### Media Queries
-
-```css
-/* Desktop first (default styles for desktop) */
-
-/* Tablet */
-@media (max-width: 1000px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-/* Mobile */
-@media (max-width: 700px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  .container {
-    padding: 0 16px;
-  }
-
-  h1 {
-    font-size: 2rem; /* 32px */
-  }
-
-  h2 {
-    font-size: 1.75rem; /* 28px */
-  }
-}
-```
-
-### Responsive Typography
-
-```css
-@media (max-width: 700px) {
-  html {
-    font-size: 14px; /* Base font size scales down */
-  }
-
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
-}
-```
-
-## Border Radius
-
-```css
-/* Cards */
-.card { border-radius: 8px; }
-
-/* Buttons */
-button { border-radius: 6px; }
-
-/* Small elements */
-.badge { border-radius: 4px; }
-
-/* Circular */
-.avatar { border-radius: 50%; }
-```
-
-## Shadows (Minimal)
-
-```css
-/* Subtle shadow for cards */
-.card {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-/* Hover state */
-.card:hover {
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-}
-```
-
-**Note:** Use shadows sparingly. Borders are preferred over shadows in this design system.
-
-## Buttons
-
-### Primary Button
-
-```css
-.button-primary {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.button-primary:hover {
-  background: var(--accent-hover);
-}
-```
-
-### Secondary Button
-
-```css
-.button-secondary {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--border);
-  padding: 12px 24px;
-  border-radius: 6px;
-  font-size: 0.95rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.button-secondary:hover {
-  border-color: var(--accent);
-  background: var(--bg-tertiary);
-}
-```
-
-## Links
-
-```css
-a {
-  color: var(--accent);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-a:hover {
-  color: var(--accent-hover);
-  text-decoration: underline;
-}
-```
-
-## Footer
-
-```css
-footer {
-  padding: var(--section-padding) var(--container-padding);
-  text-align: center;
-  border-top: 1px solid var(--border);
-  color: var(--text-tertiary);
-  font-size: 0.9rem;
-}
-
-footer a {
-  color: var(--text-secondary);
-}
-
-footer a:hover {
-  color: var(--text-primary);
-}
-```
-
-## Accessibility
-
-### Color Contrast
-
-All color combinations meet WCAG AA standards:
-- `#2a2a2a` on `#f8f8f8`: ~12:1 (AAA)
-- `#555` on `#f8f8f8`: ~7:1 (AAA)
-- `#606060` on `#fafafa`: 6.1:1 (AA)
-- White on `#1a1a1a`: 17.4:1 (AAA)
-
-### Focus States
-
-```css
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-button:focus-visible,
-a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-```
-
-### Reduced Motion
-
-```css
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-```
-
-## Anti-Patterns (Avoid)
-
-Based on design-frontend skill:
-
-**Don't use:**
-- Inter font (use Instrument Sans instead)
-- Generic gradient backgrounds
-- Excessive shadows
-- Too many colors (stick to the defined palette)
-- Overly complex animations
-- Dark mode toggle (light theme only for consistency)
-
-**Do use:**
-- Instrument Sans + DM Mono
-- Minimal, subtle design
-- Defined color palette
-- Simple, purposeful animations
-- Light theme consistently
+**Command box** (home page): dark box with `$`, the command and a Copy button that reads "Copied" for two seconds. The Run/Install/Agent toggle uses `aria-pressed`; delete modes that do not apply.
+
+**Comparison table** (`.compare-table`, global): first column is `<th scope="row">`; mark the project's column cells with `class="ours"`. Wrap in `.table-scroll` so it scrolls at 375px.
+</components>
+
+<responsive>
+- 860px: all two-column grids stack; the command block drops under the tagline.
+- 560px: feature list goes to one column; command and terminal text shrink.
+- Long commands scroll inside their box; the page itself never scrolls sideways. Grid columns use `minmax(0, 1fr)` for this; keep that when adding columns.
+- Check 375, 768 and 1440px.
+</responsive>
