@@ -117,8 +117,8 @@ reports the layer split, and the dimension has no ratchet.
 
 <coverage>
 
-Every scan script reports `coverage.scanned` and `coverage.unscanned` (source
-files by extension). A dimension that scanned **zero** files of the project's
+The language scanners (smells, simplify, modularize, logging) report
+`coverage.scanned` and `coverage.unscanned` (source files by extension). A dimension that scanned **zero** files of the project's
 stack reports `no scanner for <exts>`, not "zero findings", and gets no
 ratchet. Partial coverage appears in the plan as one blind-spots line, for
 example `logging: .lua (12) unscanned`.
