@@ -10,6 +10,7 @@ import json
 sys.path.insert(0, str(Path(__file__).parent))
 from detectors import deprecated, conventions, deadcode, duplicates
 from report_generator import generate_report
+from detectors.utils import coverage
 
 # Resolve code-map's bundled repomap relative to this skill
 SKILL_DIR = Path(__file__).parent
@@ -118,7 +119,7 @@ def main() -> None:
 
     if args.json:
         counts = {name: len(items) for name, items in findings.items()}
-        print(json.dumps({"count": sum(counts.values()), "counts": counts, "findings": findings}, indent=2, default=str))
+        print(json.dumps({"count": sum(counts.values()), "counts": counts, "coverage": coverage(str(repo_path)), "findings": findings}, indent=2, default=str))
         return
 
     print(f"Generating report: {args.output}")

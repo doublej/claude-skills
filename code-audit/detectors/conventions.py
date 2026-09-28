@@ -1,4 +1,5 @@
 import re
+import sys
 from collections import Counter
 from pathlib import Path
 from .utils import iter_source_files
@@ -9,12 +10,8 @@ QUOTE_LANGS = {'.py', '.js', '.ts', '.jsx', '.tsx', '.rb'}
 # Languages with import-order conventions
 IMPORT_LANGS = {'.py', '.js', '.ts', '.jsx', '.tsx'}
 
-# Python stdlib modules (subset for fast checks)
-PYTHON_STDLIB = {
-    'os', 'sys', 're', 'json', 'datetime', 'collections', 'itertools',
-    'functools', 'pathlib', 'subprocess', 'argparse', 'typing', 'math',
-    'hashlib', 'logging', 'unittest', 'io', 'abc', 'enum', 'dataclasses',
-}
+# The full stdlib list: a subset counted `time`, `shutil` or `__future__` as third-party
+PYTHON_STDLIB = sys.stdlib_module_names
 
 # Multi-language function definition pattern
 FUNC_DEF_PATTERN = re.compile(

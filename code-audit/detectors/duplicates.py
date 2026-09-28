@@ -86,6 +86,8 @@ def find_similar_functions(source_dir: str | Path) -> list[dict[str, Any]]:
                     })
 
     for locations in function_bodies.values():
+        # both patterns can match one function; a function is not its own duplicate
+        locations = list({(x['file'], x['line']): x for x in locations}.values())
         if len(locations) < 2:
             continue
         loc = locations[0]
