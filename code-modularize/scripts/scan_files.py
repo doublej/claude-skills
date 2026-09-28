@@ -12,6 +12,7 @@ import json
 import re
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
 LANG_PATTERNS = {
@@ -24,10 +25,10 @@ LANG_PATTERNS = {
     },
     ".ts": {
         "function": re.compile(
-            r"^( *)(?:export\s+)?(?:async\s+)?function\s+(\w+)", re.MULTILINE
+            r"^([ \t]*)(?:export\s+)?(?:async\s+)?function\s+(\w+)", re.MULTILINE
         ),
         "class": re.compile(
-            r"^( *)(?:export\s+)?class\s+(\w+)", re.MULTILINE
+            r"^([ \t]*)(?:export\s+)?class\s+(\w+)", re.MULTILINE
         ),
         "import": re.compile(
             r"""^import\s+.*?from\s+['"]([^'"]+)['"]""", re.MULTILINE
@@ -51,12 +52,118 @@ LANG_PATTERNS = {
         "class": re.compile(r"^( *)(?:public\s+|private\s+)?(?:class|struct|enum|protocol)\s+(\w+)", re.MULTILINE),
         "import": re.compile(r"^import\s+(\w+)", re.MULTILINE),
     },
+    ".kt": {
+        "function": re.compile(
+            r"^([ \t]*)(?:(?:public|private|protected|internal|override|open|abstract|final|suspend|inline"
+            r"|operator|infix|tailrec|external|actual|expect)[ \t]+)*fun[ \t]+(?:<[^>\n]*>[ \t]*)?"
+            r"(?:[\w.<>?]+\.)?(\w+)[ \t]*\(",
+            re.MULTILINE,
+        ),
+        "class": re.compile(
+            r"^([ \t]*)(?:(?:public|private|protected|internal|open|abstract|sealed|data|enum|annotation"
+            r"|inner|value|final|companion)[ \t]+)*(?:class|interface|object)[ \t]+(\w+)",
+            re.MULTILINE,
+        ),
+        "import": re.compile(r"^import\s+([\w.]+)", re.MULTILINE),
+    },
+    # Java/C# methods need a leading modifier: package-private methods and constructors
+    # are missed on purpose, so a statement like `if (` or `foo(` is never counted.
+    ".java": {
+        "function": re.compile(
+            r"^([ \t]*)(?:@\w+(?:\([^)\n]*\))?[ \t]+)*(?:(?:public|protected|private|static|final|abstract"
+            r"|synchronized|native|default|strictfp)[ \t]+)+(?:<[^>\n]+>[ \t]+)?[\w.<>\[\]?, ]+?[ \t]+(\w+)[ \t]*\(",
+            re.MULTILINE,
+        ),
+        "class": re.compile(
+            r"^([ \t]*)(?:(?:public|protected|private|static|final|abstract|sealed|non-sealed|strictfp)[ \t]+)*"
+            r"(?:class|interface|record|enum|@interface)[ \t]+(\w+)",
+            re.MULTILINE,
+        ),
+        "import": re.compile(r"^import\s+(?:static\s+)?([\w.]+)", re.MULTILINE),
+    },
+    ".cs": {
+        "function": re.compile(
+            r"^([ \t]*)(?:(?:public|private|protected|internal|static|async|virtual|override|abstract|sealed"
+            r"|extern|unsafe|new|partial|readonly)[ \t]+)+[\w.<>\[\]?, ]+?[ \t]+(\w+)[ \t]*(?:<[^>\n]*>)?[ \t]*\(",
+            re.MULTILINE,
+        ),
+        "class": re.compile(
+            r"^([ \t]*)(?:(?:public|private|protected|internal|static|abstract|sealed|partial|readonly|unsafe"
+            r"|new|file|ref)[ \t]+)*(?:record(?:[ \t]+(?:struct|class))?|class|interface|enum|struct)[ \t]+(\w+)",
+            re.MULTILINE,
+        ),
+        "import": re.compile(r"^(?:global\s+)?using\s+(?:static\s+)?([\w.]+)\s*;", re.MULTILINE),
+    },
+    ".rb": {
+        "function": re.compile(r"^([ \t]*)def[ \t]+(?:self\.)?(\w+[?!]?)", re.MULTILINE),
+        "class": re.compile(r"^([ \t]*)(?:class|module)[ \t]+([A-Z]\w*)", re.MULTILINE),
+        "import": re.compile(r"""^[ \t]*require(?:_relative)?[ \t(]+['"]([^'"]+)['"]""", re.MULTILINE),
+    },
+    ".php": {
+        "function": re.compile(
+            r"^([ \t]*)(?:(?:public|private|protected|static|abstract|final)[ \t]+)*function[ \t]+&?(\w+)[ \t]*\(",
+            re.MULTILINE,
+        ),
+        "class": re.compile(
+            r"^([ \t]*)(?:(?:abstract|final|readonly)[ \t]+)*(?:class|trait|interface|enum)[ \t]+(\w+)",
+            re.MULTILINE,
+        ),
+        "import": re.compile(
+            r"""^[ \t]*(?:use[ \t]+([\w\\]+)|(?:require|include)(?:_once)?[ \t(]+['"]([^'"]+)['"])""",
+            re.MULTILINE,
+        ),
+    },
+    # Dart functions have no keyword: best-effort, only a capitalised or primitive return type
+    # followed by `name(` counts, so `if (`, `return foo(` and constructor calls never match.
+    ".dart": {
+        "function": re.compile(
+            r"^([ \t]*)(?:(?:static|external|abstract)[ \t]+)*(?:[A-Z][\w.]*(?:<[^\n]*?>)?\??|void|int|double"
+            r"|bool|num|dynamic)[ \t]+(\w+)[ \t]*(?:<[^>\n]*>)?\(",
+            re.MULTILINE,
+        ),
+        "class": re.compile(
+            r"^([ \t]*)(?:(?:abstract|base|final|sealed|interface|mixin)[ \t]+)*"
+            r"(?:class|mixin|enum|extension(?![ \t]+on\b))[ \t]+(\w+)",
+            re.MULTILINE,
+        ),
+        "import": re.compile(r"""^import\s+['"]([^'"]+)['"]""", re.MULTILINE),
+    },
+    # C/C++: column-0 definitions only (indented lines are statements far too often),
+    # never a line starting with a control keyword, never a `;`-terminated prototype.
+    ".c": {
+        "function": re.compile(
+            r"^()(?!(?:if|else|while|for|switch|return|do|case|goto|sizeof|typedef|throw|delete|new|using"
+            r"|namespace)\b)[A-Za-z_][\w \t*:<>,&]*?[ \t*&]+(?:\w+::)*(\w+)[ \t]*\([^;\n]*$",
+            re.MULTILINE,
+        ),
+        "class": re.compile(r"^([ \t]*)(?:class|struct)[ \t]+(\w+)[^;\n]*$", re.MULTILINE),
+        "import": re.compile(r"""^#include\s+[<"]([^>"]+)[>"]""", re.MULTILINE),
+    },
 }
 # Aliases
-for ext in (".tsx", ".jsx", ".js"):
+for ext in (".tsx", ".jsx", ".js", ".mjs", ".cjs", ".svelte", ".vue"):
     LANG_PATTERNS[ext] = LANG_PATTERNS[".ts"]
+LANG_PATTERNS[".kts"] = LANG_PATTERNS[".kt"]
+for ext in (".h", ".cc", ".cpp", ".hpp", ".cxx", ".hh"):
+    LANG_PATTERNS[ext] = LANG_PATTERNS[".c"]
 
-SKIP_DIRS = {".git", "node_modules", ".venv", "__pycache__", "dist", "build", ".next", "target"}
+# Only the <script> blocks of these files are code; the markup around them is not.
+MARKUP_SUFFIXES = {".svelte", ".vue"}
+SCRIPT_BLOCK = re.compile(r"<script\b[^>]*>(.*?)</script>", re.DOTALL)
+
+SKIP_DIRS = {
+    ".git", "node_modules", "bower_components", "vendor", "third_party",
+    ".venv", "venv", "__pycache__", "dist", "build", "out", ".next", ".nuxt",
+    ".svelte-kit", ".output", "target", "coverage", "Pods", ".build",
+    "DerivedData", ".gradle", ".dart_tool", ".terraform",
+    "generated", "__generated__",
+}
+GENERATED_SUFFIXES = (".min.js", ".bundle.js", ".d.ts")
+# Source languages this scanner has no patterns for; reported so an empty result is not read as clean.
+UNSCANNED_SOURCE = {
+    ".scala", ".ex", ".exs", ".erl", ".hs", ".ml", ".clj", ".lua", ".r", ".jl",
+    ".zig", ".nim", ".m", ".mm", ".fs", ".elm", ".sol", ".gd",
+}
 DEFAULT_THRESHOLD = 150
 
 
@@ -73,22 +180,30 @@ def git_files(directory: Path) -> list[Path] | None:
         return None
 
 
-def collect_files(target: Path, threshold: int) -> list[Path]:
-    if target.is_file():
-        return [target]
+def is_skipped(rel: Path) -> bool:
+    return bool(SKIP_DIRS.intersection(rel.parts)) or rel.name.endswith(GENERATED_SUFFIXES)
 
+
+def list_files(target: Path) -> list[Path]:
+    """All tracked (or walked) files under target, minus vendored and generated ones."""
     tracked = git_files(target)
-    if tracked is not None:
-        candidates = [f for f in tracked if f.suffix in LANG_PATTERNS and f.exists()]
-    else:
-        candidates = [
-            f for f in target.rglob("*")
-            if f.is_file()
-            and f.suffix in LANG_PATTERNS
-            and not any(d in f.parts for d in SKIP_DIRS)
-        ]
+    files = tracked if tracked is not None else target.rglob("*")
+    return [f for f in files if not is_skipped(f.relative_to(target)) and f.is_file()]
 
-    return [f for f in candidates if count_lines(f) > threshold]
+
+def build_coverage(files: list[Path]) -> dict:
+    scanned = Counter(f.suffix for f in files if f.suffix in LANG_PATTERNS)
+    unscanned = Counter(f.suffix.lower() for f in files if f.suffix.lower() in UNSCANNED_SOURCE)
+    return {"scanned": dict(sorted(scanned.items())), "unscanned": dict(sorted(unscanned.items()))}
+
+
+def collect_files(target: Path, threshold: int) -> tuple[list[Path], dict]:
+    if target.is_file():
+        return [target], build_coverage([target])
+
+    files = list_files(target)
+    candidates = [f for f in files if f.suffix in LANG_PATTERNS]
+    return [f for f in candidates if count_lines(f) > threshold], build_coverage(files)
 
 
 def count_lines(path: Path) -> int:
@@ -120,6 +235,17 @@ def find_imports(text: str, pattern: re.Pattern) -> list[str]:
     return list({m.group(1) or m.group(2) for m in pattern.finditer(text) if m.group(1) or (m.lastindex and m.lastindex >= 2 and m.group(2))})
 
 
+def script_only(text: str) -> str:
+    """Blank everything outside <script> blocks, keeping line numbers."""
+    parts, pos = [], 0
+    for m in SCRIPT_BLOCK.finditer(text):
+        parts.append("\n" * text.count("\n", pos, m.start(1)))
+        parts.append(m.group(1))
+        pos = m.end(1)
+    parts.append("\n" * text.count("\n", pos))
+    return "".join(parts)
+
+
 def analyze_file(path: Path) -> dict:
     try:
         text = path.read_text()
@@ -132,10 +258,15 @@ def analyze_file(path: Path) -> dict:
     if not patterns:
         return {"path": str(path), "loc": loc, "symbols": [], "imports": []}
 
+    code_end = loc
+    if suffix in MARKUP_SUFFIXES:
+        text = script_only(text)
+        code_end = len(text.rstrip().splitlines())
+
     functions = find_symbols(text, patterns["function"])
     classes = find_symbols(text, patterns["class"])
     all_symbols = sorted(functions + classes, key=lambda s: s["line"])
-    all_symbols = measure_symbol_lengths(all_symbols, loc)
+    all_symbols = measure_symbol_lengths(all_symbols, code_end)
 
     imports = find_imports(text, patterns["import"]) if "import" in patterns else []
 
@@ -183,7 +314,7 @@ def scan(target_path: str, threshold: int) -> dict:
         return {"error": f"Path not found: {target}"}
 
     base = target if target.is_dir() else target.parent
-    files = collect_files(target, threshold)
+    files, coverage = collect_files(target, threshold)
 
     results = [analyze_file(f) for f in sorted(files)]
     import_map = build_import_map(results, base) if len(results) > 1 else {}
@@ -195,8 +326,14 @@ def scan(target_path: str, threshold: int) -> dict:
         "target": str(target),
         "threshold": threshold,
         "file_count": len(results),
+        "coverage": coverage,
         "files": results,
     }
+
+
+def print_unscanned(coverage: dict) -> None:
+    if coverage["unscanned"]:
+        print("Unscanned: " + ", ".join(f"{ext} ({n})" for ext, n in coverage["unscanned"].items()))
 
 
 def print_human(result: dict) -> None:
@@ -207,6 +344,7 @@ def print_human(result: dict) -> None:
     print(f"Target:    {result['target']}")
     print(f"Threshold: {result['threshold']} lines")
     print(f"Files:     {result['file_count']} over threshold")
+    print_unscanned(result["coverage"])
     print()
 
     if not result["files"]:
