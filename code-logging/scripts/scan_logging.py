@@ -2,24 +2,30 @@
 """Multi-language logging scanner. Mechanical extraction only — semantic judgment is Claude's job.
 
 Detects log call sites, classifies mechanical issues, surfaces gap candidates.
-Languages: Python, JavaScript/TypeScript, Rust, Go, Swift.
+Languages: Python, JavaScript/TypeScript (+ Svelte/Vue), Rust, Go, Swift, Kotlin, Java, C#,
+Ruby, PHP, C/C++ (best-effort). A language missing from a pattern table skips that check.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
+import shutil
+import subprocess
 import sys
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Iterable
 
 EXCLUDE_DIRS = {
-    ".git", "node_modules", "dist", "build", ".next", ".nuxt", ".svelte-kit",
-    ".venv", "venv", "__pycache__", "target", ".cargo", "vendor",
-    ".pytest_cache", ".mypy_cache", ".ruff_cache", "coverage",
-    ".DS_Store", "DerivedData", ".build",
+    ".git", "node_modules", "bower_components", "vendor", "third_party",
+    ".venv", "venv", "__pycache__", "dist", "build", "out",
+    ".next", ".nuxt", ".svelte-kit", ".output", "target", ".cargo", "coverage",
+    "Pods", ".build", "DerivedData", ".gradle", ".dart_tool", ".terraform",
+    ".pytest_cache", ".mypy_cache", ".ruff_cache", ".DS_Store",
+    "generated", "__generated__",
 }
 EXCLUDE_FILE_PATTERNS = (".min.js", ".bundle.js", ".d.ts", ".lock", ".pyc")
 TEST_HINTS = ("test_", "_test.", ".test.", ".spec.", "tests/", "/__tests__/")
@@ -27,10 +33,23 @@ TEST_HINTS = ("test_", "_test.", ".test.", ".spec.", "tests/", "/__tests__/")
 LANG_BY_EXT = {
     ".py": "python",
     ".js": "javascript", ".jsx": "javascript", ".mjs": "javascript", ".cjs": "javascript",
-    ".ts": "typescript", ".tsx": "typescript",
+    ".ts": "typescript", ".tsx": "typescript", ".svelte": "typescript", ".vue": "typescript",
     ".rs": "rust",
     ".go": "go",
     ".swift": "swift",
+    ".kt": "kotlin", ".kts": "kotlin",
+    ".java": "java",
+    ".cs": "csharp",
+    ".rb": "ruby",
+    ".php": "php",
+    ".c": "c", ".h": "c",
+    ".cc": "cpp", ".cpp": "cpp", ".cxx": "cpp", ".hh": "cpp", ".hpp": "cpp", ".hxx": "cpp",
+}
+
+# Source extensions this scanner does not handle — counted in `coverage.unscanned`.
+UNSCANNED_EXTS = {
+    ".scala", ".ex", ".exs", ".erl", ".hs", ".ml", ".clj", ".lua", ".r", ".jl", ".zig",
+    ".nim", ".m", ".mm", ".fs", ".elm", ".sol", ".gd", ".dart",
 }
 
 VAGUE_TERMS = {
@@ -79,15 +98,50 @@ class FileResult:
 
 # ---------- file walking ----------
 
+def git_ls(root: Path, *flags: str) -> list[str] | None:
+    proc = subprocess.run(["git", "ls-files", "-z", *flags], cwd=root, capture_output=True)
+    if proc.returncode != 0:
+        return None
+    return [rel for rel in proc.stdout.decode("utf-8", "replace").split("\0") if rel]
+
+
+def list_candidates(root: Path) -> Iterable[Path]:
+    """Files git would show (tracked + untracked, .gitignore honoured); a pruned walk outside a repo.
+
+    Descends into submodules and into nested independent repos (own `.git` dir) even when the
+    parent ignores them; worktree checkouts (`.git` file) are skipped as duplicates.
+    """
+    listed = git_ls(root, "--cached", "--others", "--exclude-standard") if shutil.which("git") else None
+    if listed is None:
+        for dirpath, dirnames, filenames in os.walk(root):
+            here = Path(dirpath)
+            if here != root and (here / ".git").exists():
+                dirnames[:] = []
+                if (here / ".git").is_dir():
+                    yield from list_candidates(here)
+                continue
+            dirnames[:] = [d for d in dirnames if d not in EXCLUDE_DIRS]
+            yield from (here / name for name in filenames)
+        return
+    ignored = git_ls(root, "--others", "--ignored", "--exclude-standard", "--directory") or []
+    ignored_dirs = [rel for rel in ignored if rel.endswith("/")]
+    for rel in listed + ignored_dirs:
+        p = root / rel
+        if not rel.endswith("/") and not p.is_dir():
+            yield p
+        elif (p / ".git").is_dir() or (not rel.endswith("/") and (p / ".git").exists()):
+            if not any(part in EXCLUDE_DIRS for part in Path(rel).parts):
+                yield from list_candidates(p)
+
+
 def walk_files(root: Path) -> Iterable[Path]:
-    for p in root.rglob("*"):
-        if not p.is_file():
-            continue
-        if any(part in EXCLUDE_DIRS for part in p.parts):
+    """All non-excluded files under root; callers filter by extension."""
+    for p in list_candidates(root):
+        if any(part in EXCLUDE_DIRS for part in p.relative_to(root).parts[:-1]):
             continue
         if any(p.name.endswith(suf) for suf in EXCLUDE_FILE_PATTERNS):
             continue
-        if p.suffix not in LANG_BY_EXT:
+        if not p.is_file():
             continue
         yield p
 
@@ -132,7 +186,48 @@ LOGGER_SIGS = {
         ("os.Logger", re.compile(r"import\s+os|Logger\s*\(\s*subsystem")),
         ("print", re.compile(r"\bprint\s*\(")),
     ],
+    "kotlin": [
+        ("kotlin-logging", re.compile(r"import\s+(?:mu\.KotlinLogging|io\.github\.oshai)")),
+        ("slf4j", re.compile(r"import\s+org\.slf4j")),
+        ("android.Log", re.compile(r"import\s+android\.util\.Log\b")),
+        ("timber", re.compile(r"import\s+timber\.log")),
+        ("println", re.compile(r"^\s*println\s*\(", re.M)),
+    ],
+    "java": [
+        ("slf4j", re.compile(r"import\s+org\.slf4j|@Slf4j")),
+        ("log4j", re.compile(r"import\s+org\.apache\.(?:logging\.)?log4j")),
+        ("java.util.logging", re.compile(r"import\s+java\.util\.logging")),
+        ("android.Log", re.compile(r"import\s+android\.util\.Log\b")),
+        ("System.out", re.compile(r"System\.(?:out|err)\.print")),
+    ],
+    "csharp": [
+        ("ILogger", re.compile(r"using\s+Microsoft\.Extensions\.Logging|\bILogger\b")),
+        ("Serilog", re.compile(r"using\s+Serilog")),
+        ("NLog", re.compile(r"using\s+NLog")),
+        ("log4net", re.compile(r"using\s+log4net")),
+        ("Console", re.compile(r"Console\.(?:Error\.)?Write")),
+    ],
+    "ruby": [
+        ("Rails.logger", re.compile(r"Rails\.logger")),
+        ("SemanticLogger", re.compile(r"SemanticLogger")),
+        ("Logger", re.compile(r"Logger\.new|require\s+['\"]logger['\"]")),
+        ("puts", re.compile(r"^\s*puts\b", re.M)),
+    ],
+    "php": [
+        ("Monolog", re.compile(r"Monolog\\")),
+        ("Laravel Log", re.compile(r"\bLog::|Illuminate\\Support\\Facades\\Log")),
+        ("PSR-3", re.compile(r"Psr\\Log\\LoggerInterface")),
+        ("error_log", re.compile(r"\berror_log\s*\(")),
+    ],
+    "cpp": [
+        ("spdlog", re.compile(r"#include\s*[<\"]spdlog/")),
+        ("glog", re.compile(r"#include\s*[<\"]glog/")),
+        ("iostream", re.compile(r"std::c(?:err|out)\s*<<")),
+        ("macro", re.compile(r"\b[A-Z0-9_]*LOG_?(?:[IDVWEF]|INFO|DEBUG|WARN|WARNING|ERROR)\s*\(")),
+    ("stdio", re.compile(r"\bfprintf\s*\(\s*stderr")),
+    ],
 }
+LOGGER_SIGS["c"] = LOGGER_SIGS["cpp"]
 
 
 def detect_logger(language: str, source: str) -> str:
@@ -152,7 +247,7 @@ CALL_PATTERNS: dict[str, list[tuple[str, re.Pattern]]] = {
         ("warn",  re.compile(r"\b(?:logger|log|logging|_log)\.(?:warning|warn)\s*\(")),
         ("error", re.compile(r"\b(?:logger|log|logging|_log)\.(?:error|exception)\s*\(")),
         ("error", re.compile(r"\b(?:logger|log|logging|_log)\.critical\s*\(")),
-        ("info",  re.compile(r"^\s*print\s*\(")),  # bare print → flag as candidate
+        ("info",  re.compile(r"^\s*print\s*\(", re.M)),  # bare print → flag as candidate
     ],
     "javascript": [
         ("info",  re.compile(r"\bconsole\.(?:log|info)\s*\(")),
@@ -181,10 +276,96 @@ CALL_PATTERNS: dict[str, list[tuple[str, re.Pattern]]] = {
         ("debug", re.compile(r"\b(?:logger|log)\.(?:debug|trace)\s*\(")),
         ("warn",  re.compile(r"\b(?:logger|log)\.warning\s*\(")),
         ("error", re.compile(r"\b(?:logger|log)\.(?:error|fault|critical)\s*\(")),
-        ("info",  re.compile(r"^\s*print\s*\(")),
+        ("info",  re.compile(r"^\s*print\s*\(", re.M)),
     ],
 }
 CALL_PATTERNS["typescript"] = CALL_PATTERNS["javascript"]
+
+_JVM_LOGGER = r"\b(?:[lL]og(?:ger)?|LOG(?:GER)?)"
+_JVM_CALLS = [
+    # slf4j / log4j / kotlin-logging (lambda form `logger.info { }`)
+    ("info",  re.compile(_JVM_LOGGER + r"\.info\s*[({]")),
+    ("debug", re.compile(_JVM_LOGGER + r"\.(?:debug|trace)\s*[({]")),
+    ("warn",  re.compile(_JVM_LOGGER + r"\.warn\s*[({]")),
+    ("error", re.compile(_JVM_LOGGER + r"\.error\s*[({]")),
+    # android.util.Log / Timber
+    ("info",  re.compile(r"\b(?:Log|Timber)\.i\s*\(")),
+    ("debug", re.compile(r"\b(?:Log|Timber)\.[dv]\s*\(")),
+    ("warn",  re.compile(r"\b(?:Log|Timber)\.w\s*\(")),
+    ("error", re.compile(r"\b(?:Log|Timber)\.(?:e|wtf)\s*\(")),
+]
+CALL_PATTERNS["kotlin"] = _JVM_CALLS + [
+    ("info",  re.compile(r"^\s*println\s*\(", re.M)),
+]
+CALL_PATTERNS["java"] = _JVM_CALLS + [
+    # java.util.logging levels
+    ("info",  re.compile(_JVM_LOGGER + r"\.config\s*\(")),
+    ("debug", re.compile(_JVM_LOGGER + r"\.fine(?:r|st)?\s*\(")),
+    ("warn",  re.compile(_JVM_LOGGER + r"\.warning\s*\(")),
+    ("error", re.compile(_JVM_LOGGER + r"\.severe\s*\(")),
+    ("info",  re.compile(r"\bSystem\.out\.print(?:ln|f)?\s*\(")),
+    ("error", re.compile(r"\bSystem\.err\.print(?:ln|f)?\s*\(")),
+]
+_CS_LOGGER = r"\b_?(?:[lL]og(?:ger)?|LOG(?:GER)?)"
+CALL_PATTERNS["csharp"] = [
+    # ILogger extensions (LogInformation), Serilog (Information), NLog/log4net (Info)
+    ("info",  re.compile(_CS_LOGGER + r"\.(?:Log)?(?:Information|Info)\s*[(<]")),
+    ("debug", re.compile(_CS_LOGGER + r"\.(?:Log)?(?:Debug|Trace|Verbose)\s*[(<]")),
+    ("warn",  re.compile(_CS_LOGGER + r"\.(?:Log)?(?:Warning|Warn)\s*[(<]")),
+    ("error", re.compile(_CS_LOGGER + r"\.(?:Log)?(?:Error|Critical|Fatal)\s*[(<]")),
+    ("info",  re.compile(r"\bConsole\.Write(?:Line)?\s*\(")),
+    ("error", re.compile(r"\bConsole\.Error\.Write(?:Line)?\s*\(")),
+]
+_RB_LOGGER = r"(?:\bRails\.logger|\blogger|\blog|\bLOGGER)"
+CALL_PATTERNS["ruby"] = [
+    ("info",  re.compile(_RB_LOGGER + r"\.info\b(?![?!=])")),
+    ("debug", re.compile(_RB_LOGGER + r"\.debug\b(?![?!=])")),
+    ("warn",  re.compile(_RB_LOGGER + r"\.warn\b(?![?!=])")),
+    ("error", re.compile(_RB_LOGGER + r"\.(?:error|fatal)\b(?![?!=])")),
+    ("info",  re.compile(r"^\s*(?:puts|print|pp|p)(?:\(|\s+[\"'\w:@#])", re.M)),
+    ("warn",  re.compile(r"^\s*warn(?:\(|\s+[\"'\w:@#])", re.M)),
+]
+_PHP_LOGGER = r"(?:\$(?:this->)?_?(?:logger|log)->|\bLog::)"
+CALL_PATTERNS["php"] = [
+    ("info",  re.compile(_PHP_LOGGER + r"(?:info|notice)\s*\(")),
+    ("debug", re.compile(_PHP_LOGGER + r"debug\s*\(")),
+    ("warn",  re.compile(_PHP_LOGGER + r"warning\s*\(")),
+    ("error", re.compile(_PHP_LOGGER + r"(?:error|critical|alert|emergency)\s*\(")),
+    ("error", re.compile(r"\berror_log\s*\(")),
+    # debug leftovers; `echo` is skipped — in PHP it is page output, not logging
+    ("debug", re.compile(r"^\s*(?:var_dump|print_r)\s*\(", re.M)),
+]
+_CPP_LOGGER = r"(?:\bspdlog::|\b(?:m_|_)?logger_?->)"
+CALL_PATTERNS["cpp"] = [
+    ("info",  re.compile(_CPP_LOGGER + r"info\s*\(")),
+    ("debug", re.compile(_CPP_LOGGER + r"(?:debug|trace)\s*\(")),
+    ("warn",  re.compile(_CPP_LOGGER + r"warn\s*\(")),
+    ("error", re.compile(_CPP_LOGGER + r"(?:error|critical)\s*\(")),
+    ("info",  re.compile(r"\bLOG\s*\(\s*INFO\s*\)")),
+    ("debug", re.compile(r"\bVLOG\s*\(")),
+    ("warn",  re.compile(r"\bLOG\s*\(\s*WARNING\s*\)")),
+    ("error", re.compile(r"\bLOG\s*\(\s*(?:ERROR|FATAL)\s*\)")),
+    # project macros: PCLOG_W(, ALOGE(, LOG_ERROR( — the suffix names the level
+    ("info",  re.compile(r"\b[A-Z0-9_]*LOG_?(?:I|INFO)\s*\(")),
+    ("debug", re.compile(r"\b[A-Z0-9_]*LOG_?(?:D|V|DEBUG|VERBOSE|TRACE)\s*\(")),
+    ("warn",  re.compile(r"\b[A-Z0-9_]*LOG_?(?:W|WARN|WARNING)\s*\(")),
+    ("error", re.compile(r"\b[A-Z0-9_]*LOG_?(?:E|F|ERR|ERROR|FATAL|CRITICAL)\s*\(")),
+    # stdout `printf` is skipped — in C it is almost always program output, not logging
+    ("error", re.compile(r"\bfprintf\s*\(\s*stderr\b")),
+]
+CALL_PATTERNS["c"] = CALL_PATTERNS["cpp"]
+
+# Language-specific context markers the shared extract_message regex misses
+# (PHP/Kotlin `$var`, PHP/Ruby `=>`/`key:` hashes, C printf conversions, `<<` streams).
+EXTRA_CONTEXT_PATTERNS = {
+    "kotlin": re.compile(r"\$\w|[\"']\s*\+|\+\s*[\"']"),
+    "java": re.compile(r"[\"']\s*\+|\+\s*[\"']"),
+    "csharp": re.compile(r"[\"']\s*\+|\+\s*[\"']"),
+    "php": re.compile(r"\$\w|=>"),
+    "ruby": re.compile(r"=>|\b\w+:\s"),
+    "cpp": re.compile(r"%[-+ #0-9.*]*[hlLqjzt]*[diouxXeEfgGcsp]|<<\s*[^\s\"]"),
+}
+EXTRA_CONTEXT_PATTERNS["c"] = EXTRA_CONTEXT_PATTERNS["cpp"]
 
 
 def extract_message(call_line: str) -> tuple[str, bool, bool]:
@@ -216,7 +397,17 @@ SCOPE_PATTERNS = {
     "rust": re.compile(r"^\s*(?:pub\s+)?(?:async\s+)?fn\s+(\w+)"),
     "go": re.compile(r"^\s*func\s+(?:\([^)]+\)\s+)?(\w+)"),
     "swift": re.compile(r"^\s*(?:public\s+|private\s+|internal\s+|fileprivate\s+|open\s+)?(?:static\s+)?func\s+(\w+)"),
+    "kotlin": re.compile(r"^\s*(?:\w+\s+)*fun\s+(?:<[^>]*>\s*)?(?:[\w.<>]+\.)?(\w+)"),
+    "ruby": re.compile(r"^\s*def\s+(?:self\.)?(\w+[?!=]?)"),
+    "php": re.compile(r"^\s*(?:\w+\s+)*function\s+&?(\w+)"),
 }
+# Java / C# / C / C++ method or function header: `<types> name(...` not ending in `;`.
+_C_LIKE_KEYWORDS = r"(?:return|new|else|throw|await|case|goto|delete|yield|using|co_return|co_await)\b"
+_C_LIKE_FLOW = r"(?:if|for|foreach|while|switch|catch|lock|using|sizeof|return)\b"
+SCOPE_PATTERNS["java"] = re.compile(
+    r"^\s*(?!" + _C_LIKE_KEYWORDS + r")(?:[\w<>\[\],.?*&:]+\s+)+[*&]*(?!" + _C_LIKE_FLOW + r")(\w+)\s*\([^;]*$"
+)
+SCOPE_PATTERNS["csharp"] = SCOPE_PATTERNS["c"] = SCOPE_PATTERNS["cpp"] = SCOPE_PATTERNS["java"]
 
 
 def find_scope(lines: list[str], lineno: int, language: str) -> str:
@@ -239,6 +430,13 @@ LOOP_PATTERNS = {
     "rust": re.compile(r"^\s*(?:for|while|loop)\b"),
     "go": re.compile(r"^\s*for\b"),
     "swift": re.compile(r"^\s*(?:for|while|repeat)\b"),
+    "kotlin": re.compile(r"^\s*(?:for|while)\s*\(|\.forEach\s*\{"),
+    "java": re.compile(r"^\s*(?:for|while)\s*\("),
+    "csharp": re.compile(r"^\s*(?:for|foreach|while)\s*\("),
+    "ruby": re.compile(r"^\s*(?:while|until|for)\b|\.(?:each\w*|times|map)\s*(?:do\b|\{)|\bloop\s+do\b"),
+    "php": re.compile(r"^\s*(?:for|foreach|while)\s*\("),
+    "c": re.compile(r"^\s*(?:for|while)\s*\("),
+    "cpp": re.compile(r"^\s*(?:for|while)\s*\("),
 }
 
 ERROR_HANDLER_PATTERNS = {
@@ -248,6 +446,13 @@ ERROR_HANDLER_PATTERNS = {
     "rust": re.compile(r"\bErr\s*\(|\.unwrap_err\(\)|match.*\{[^}]*Err"),
     "go": re.compile(r"if\s+err\s*!=\s*nil"),
     "swift": re.compile(r"^\s*}?\s*catch\b"),
+    "kotlin": re.compile(r"^\s*}?\s*catch\s*\("),
+    "java": re.compile(r"^\s*}?\s*catch\s*\("),
+    "csharp": re.compile(r"^\s*}?\s*catch\b"),
+    "ruby": re.compile(r"^\s*rescue\b"),
+    "php": re.compile(r"^\s*}?\s*catch\s*\("),
+    "cpp": re.compile(r"^\s*}?\s*catch\s*\("),
+    # "c": no exception construct — silent-error-branch detection is skipped
 }
 
 
@@ -273,7 +478,17 @@ EXTERNAL_CALL_PATTERNS = {
     "rust": re.compile(r"reqwest::|sqlx::|tokio::process::|std::process::Command"),
     "go": re.compile(r"http\.(?:Get|Post|Do)|sql\.Exec|exec\.Command"),
     "swift": re.compile(r"URLSession|dataTask|Process\("),
+    "kotlin": re.compile(r"\.newCall\(|HttpClient\.|\.executeQuery\(|\.executeUpdate\(|ProcessBuilder\(|Runtime\.getRuntime\(\)\.exec"),
+    "java": re.compile(r"\.newCall\(|HttpClient\.|\.executeQuery\(|\.executeUpdate\(|ProcessBuilder\(|Runtime\.getRuntime\(\)\.exec"),
+    "csharp": re.compile(r"\bHttpClient\b.*\.(?:Get|Post|Put|Delete|Send)\w*Async\(|\.(?:Get|Post|Put|Send)Async\(|\.ExecuteNonQuery\w*\(|\.ExecuteReader\w*\(|Process\.Start\("),
+    "ruby": re.compile(r"Net::HTTP|HTTParty\.|Faraday\.|RestClient\.|Open3\.|\bsystem\s*\(|%x[{(]"),
+    "php": re.compile(r"\bcurl_exec\s*\(|\bHttp::|->request\s*\(|\bshell_exec\s*\(|\bproc_open\s*\(|\bexec\s*\("),
+    "c": re.compile(r"\bcurl_easy_perform\s*\(|\bsystem\s*\(|\bpopen\s*\("),
+    "cpp": re.compile(r"\bcurl_easy_perform\s*\(|\bsystem\s*\(|\bpopen\s*\("),
 }
+
+
+COMMENT_PREFIXES = ("//", "/*", "*", "#")
 
 
 def find_gaps(lines: list[str], language: str) -> list[Gap]:
@@ -306,7 +521,7 @@ def find_gaps(lines: list[str], language: str) -> list[Gap]:
                 snippet = "\n".join(lines[i:block_end])[:240]
                 gaps.append(Gap(line=i + 1, kind="silent_error_branch", scope=scope, snippet=snippet))
 
-        if ext_pat and ext_pat.search(line):
+        if ext_pat and ext_pat.search(line) and not line.lstrip().startswith(COMMENT_PREFIXES):
             window_start = max(0, i - 3)
             window_end = min(len(lines), i + 4)
             if not block_has_log(window_start, window_end):
@@ -344,24 +559,40 @@ def classify(call: LogCall, language: str) -> None:
 
 # ---------- per-file scan ----------
 
+# Bare stdout calls. In a file with no real logger they are the program's output (a CLI
+# printing results), not logging; they only count next to a logger, where they are stray debug.
+STDOUT_CALLS = {
+    r"^\s*print\s*\(",
+    r"^\s*println\s*\(",
+    r"^\s*(?:puts|print|pp|p)(?:\(|\s+[\"'\w:@#])",
+}
+STDOUT_LOGGERS = {"none", "print", "println", "puts"}
+
+
 def scan_file(path: Path) -> FileResult | None:
     try:
         source = path.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return None
-    language = LANG_BY_EXT[path.suffix]
+    language = LANG_BY_EXT[path.suffix.lower()]
     lines = source.splitlines()
     logger = detect_logger(language, source)
     fr = FileResult(path=str(path), language=language, logger=logger)
 
     loop_pat = LOOP_PATTERNS.get(language)
     err_pat = ERROR_HANDLER_PATTERNS.get(language)
+    ctx_pat = EXTRA_CONTEXT_PATTERNS.get(language)
 
     for level, pat in CALL_PATTERNS.get(language, []):
+        if pat.pattern in STDOUT_CALLS and logger.split(":", 1)[1] in STDOUT_LOGGERS:
+            continue
         for m in pat.finditer(source):
             lineno = source.count("\n", 0, m.start())
             line_text = lines[lineno] if lineno < len(lines) else ""
             message, has_interp, has_fields = extract_message(line_text)
+            line_end = source.find("\n", m.end())
+            if ctx_pat and ctx_pat.search(source, m.end(), len(source) if line_end == -1 else line_end):
+                has_interp = True
             scope = find_scope(lines, lineno, language)
             in_loop = bool(loop_pat and in_construct(lines, lineno, language, loop_pat))
             in_err = bool(err_pat and in_construct(lines, lineno, language, err_pat, look_back=4))
@@ -454,9 +685,18 @@ def main() -> int:
         return 2
 
     results: list[FileResult] = []
+    scanned: dict[str, int] = {}
+    unscanned: dict[str, int] = {}
     for p in walk_files(root):
+        ext = p.suffix.lower()
+        if ext not in LANG_BY_EXT and ext not in UNSCANNED_EXTS:
+            continue
         if not args.include_tests and is_test_file(p):
             continue
+        if ext in UNSCANNED_EXTS:
+            unscanned[ext] = unscanned.get(ext, 0) + 1
+            continue
+        scanned[ext] = scanned.get(ext, 0) + 1
         fr = scan_file(p)
         if fr and (fr.calls or fr.gaps):
             if args.no_gaps:
@@ -468,6 +708,10 @@ def main() -> int:
         "root": str(root),
         "summary": summary,
         "top_issues": top_issues(results, args.top),
+        "coverage": {
+            "scanned": dict(sorted(scanned.items(), key=lambda kv: -kv[1])),
+            "unscanned": dict(sorted(unscanned.items(), key=lambda kv: -kv[1])),
+        },
     }
     if args.json:
         payload["files"] = [asdict(fr) for fr in results]
@@ -479,6 +723,8 @@ def main() -> int:
             for fr in results
         ]
     print(json.dumps(payload, indent=2))
+    if unscanned and not args.json:
+        print("Unscanned: " + ", ".join(f"{ext} {n}" for ext, n in payload["coverage"]["unscanned"].items()), file=sys.stderr)
     return 0
 
 
