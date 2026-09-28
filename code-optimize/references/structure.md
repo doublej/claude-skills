@@ -109,7 +109,7 @@ Before moving anything, produce a **target tree proposal**:
    - **python**: package dir matches distribution name; keep `tests/` top-level
    - **rust**: `src/` with `main.rs`/`lib.rs`; one module = one file or dir with `mod.rs`
    - **swift**: SwiftPM `Sources/<Target>/`, `Tests/<Target>Tests/`
-4. Present via the plan format (`references/plan-format.md`) and get approval.
+4. Add the moves to the run's merged plan (`references/plan-format.md`); the single run approval covers them.
    Batch moves per subtree so each batch is independently verifiable.
 
 </target_tree>
@@ -193,7 +193,7 @@ Per batch of moves:
 2. Full test suite.
 3. Residue grep: search the repo for the old paths/module names — zero hits
    outside CHANGELOG/docs history.
-4. Commit the batch: `optimize(structure): move <area> — <reason>`. Moves and
+4. Commit the batch in the intake commit style, e.g. `refactor(structure): move <area> — <reason>`. Moves and
    their import fixes must never be split across commits.
 
 </verify>

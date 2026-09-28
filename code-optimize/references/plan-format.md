@@ -310,6 +310,9 @@ port/adapter boundaries.
 
 Present the generated plan with options:
 
+One approval covers the whole run: every selected dimension's clusters are in
+one plan. The user may drop dimensions or clusters in the same answer.
+
 | Option | Behaviour |
 |--------|-----------|
 | Approve all | Save tasks.md, start execution |
@@ -320,15 +323,17 @@ Present the generated plan with options:
 If the user cancels at the approval step:
 
 1. Ask why (briefly)
-2. Save reason to `docs/refactor/{timestamp}/cancelled-reason.md`
+2. Save reason to `.optimize/runs/{timestamp}/cancelled-reason.md`
 3. Preserve partial analysis artifacts
 
 </user_approval>
 
 <save_artifacts>
 
+Artifacts stay out of the project's own docs. `.optimize/.gitignore` holds `runs/`.
+
 ```text
-docs/refactor/{timestamp}/
+.optimize/runs/{timestamp}/
 ├── analysis-report.md     # Full analysis with all findings
 ├── tasks.md               # Approved refactoring tasks
 └── standards-used.md      # Standards referenced during analysis

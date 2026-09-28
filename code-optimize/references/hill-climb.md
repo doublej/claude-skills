@@ -20,11 +20,16 @@ python3 ~/.claude/skills/code-optimize/scripts/ratchet.py <root> check [--json] 
 | `logging` | sum of `issue_counts` + `gap_counts` |
 | `smells` | code-audit `count` (deprecated + conventions + deadcode + duplicates) |
 | `modularize` | files over the line threshold |
-| `simplify` | summed per-file `complexity` |
+| `simplify` | oversized + deeply nested functions (function-level, so a file split can't raise it) |
+| `practices` | scan_practices `count` (one finding per rule and file) |
 | `perf:<name>` | custom `cmd` entry, see references/perf.md |
 
 `structure`, `claude-md`, `glossary`, `docs` have no deterministic count: they
 run the normal plan → fix flow without a ratchet.
+
+Only the lead runs `ratchet.py`, and it runs `lower` for a dimension right
+before that dimension's FIX step, not during SCAN. Earlier dimensions move the
+code, so a baseline taken at SCAN time goes stale.
 
 `lower` never raises a ceiling. Raising one is a manual edit to
 `baseline.json` that the user approves first.
@@ -56,8 +61,8 @@ first cluster. Work one cluster at a time:
 
 1. Take the largest cluster of findings from the latest scan.
 2. Find or write the smallest check that fails on it: a test, a scan filter, a grep.
-3. Fix it. Run the quality gates. Commit `optimize(<dimension>): <summary>`,
-   one commit per cluster.
+3. Fix it. Run the intake gate list (no new failures against the baseline).
+   Commit in the intake commit style, one commit per cluster.
 4. `ratchet.py <root> lower --dimensions <dimension>`. The count dropped and
    the gates are green: commit the baseline with the fix. Otherwise revert
    that cluster's commit and try another approach.

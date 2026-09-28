@@ -215,7 +215,7 @@ git clean -fd
 git add <files_in_batch>
 git commit -m "simplify: {batch_summary}"
 ```
-   (Under the dispatcher, use `optimize(simplify): {batch_summary}`.)
+   (Under the dispatcher, use the intake commit style, e.g. `refactor(simplify): {batch_summary}`.)
 
 4. Repeat for next batch.
 
