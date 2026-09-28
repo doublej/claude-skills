@@ -2,6 +2,7 @@
 RepoMap class for generating repository maps.
 """
 
+import hashlib
 import os
 import sys
 from pathlib import Path
@@ -36,6 +37,13 @@ from importance import filter_important_files
 # Constants
 CACHE_VERSION = 1
 TAGS_CACHE_DIRNAME = f".repomap.tags.cache.v{CACHE_VERSION}"
+
+
+def tags_cache_dir(root: Path) -> Path:
+    """Per-repo cache outside the repo, so a scan never dirties the working tree."""
+    base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    key = hashlib.sha1(str(Path(root).resolve()).encode()).hexdigest()[:16]
+    return base / "repomap" / key / TAGS_CACHE_DIRNAME
 SQLITE_ERRORS = (sqlite3.OperationalError, sqlite3.DatabaseError)
 
 # Tag namedtuple for storing parsed code definitions and references
@@ -92,7 +100,7 @@ class RepoMap:
     
     def load_tags_cache(self) -> None:
         """Load the persistent tags cache."""
-        cache_dir = self.root / TAGS_CACHE_DIRNAME
+        cache_dir = tags_cache_dir(self.root)
         try:
             self.TAGS_CACHE = diskcache.Cache(str(cache_dir))
         except Exception as e:
@@ -106,7 +114,7 @@ class RepoMap:
     def tags_cache_error(self) -> None:
         """Handle tags cache errors."""
         try:
-            cache_dir = self.root / TAGS_CACHE_DIRNAME
+            cache_dir = tags_cache_dir(self.root)
             if cache_dir.exists():
                 shutil.rmtree(cache_dir)
             self.load_tags_cache()
