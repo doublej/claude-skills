@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Self-check for ratchet.py: ceilings only go down, and a raised count is caught."""
 
-from ratchet import lower, violations
+from ratchet import lower, simplify_count, violations
 
 base = {"smells": {"ceiling": 10}, "perf:send": {"cmd": "echo 5"}}
 
@@ -22,5 +22,15 @@ assert violations(after, {"smells": 8, "logging": 40}) == {
 assert violations(after, {"smells": 7, "arch": None, "new": 99}) == {}, (
     "equal, unmeasured, and unknown are not violations"
 )
+
+whole = [{"oversized_functions": [{}, {}], "deep_functions": [{}]}]
+split = [
+    {"oversized_functions": [{}], "deep_functions": [{}]},
+    {"oversized_functions": [{}], "deep_functions": []},
+]
+assert simplify_count(whole) == simplify_count(split) == 3, (
+    "splitting a file leaves the simplify count unchanged"
+)
+assert simplify_count([{"loc": 900}]) == 0, "file size alone is modularize's count"
 
 print("ratchet self-check: ok")

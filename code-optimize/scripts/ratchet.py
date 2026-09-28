@@ -79,6 +79,15 @@ def _modularize(root: Path) -> int:
     )["file_count"]
 
 
+def simplify_count(files: list[dict]) -> int:
+    """Oversized plus deeply nested functions. Function-level on purpose: splitting a file
+    (modularize) leaves it unchanged, where a summed per-file score would rise."""
+    return sum(
+        len(f.get("oversized_functions", [])) + len(f.get("deep_functions", []))
+        for f in files
+    )
+
+
 def _simplify(root: Path) -> int:
     files = _scan(
         [
@@ -89,7 +98,19 @@ def _simplify(root: Path) -> int:
         ],
         root,
     )["files"]
-    return round(sum(f.get("complexity", 0) for f in files))
+    return simplify_count(files)
+
+
+def _practices(root: Path) -> int:
+    return _scan(
+        [
+            "python3",
+            str(SKILLS / "code-optimize/scripts/scan_practices.py"),
+            str(root),
+            "--json",
+        ],
+        root,
+    )["count"]
 
 
 # structure, claude-md, glossary, docs have no deterministic count; they are not ratcheted.
@@ -99,6 +120,7 @@ MEASURES = {
     "smells": _smells,
     "modularize": _modularize,
     "simplify": _simplify,
+    "practices": _practices,
 }
 
 
