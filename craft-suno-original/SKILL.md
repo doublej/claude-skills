@@ -13,8 +13,8 @@ adjectives passed straight through. Commit to specific choices instead.
 This skill reuses the craft-suno-songs toolkit. Resolve it once:
 `SUNO=~/.claude/skills/craft-suno-songs`
 
-- `$SUNO/references/suno-5.5.md`: field rules, Style construction, fidelity
-  tail, controls. Read it for every request.
+- `$SUNO/references/suno-v6.md`: v6 models, field rules, Style construction,
+  endings, fidelity tail, controls. Read it for every request.
 - `$SUNO/references/lyric-craft.md`: read it whenever lyrics are written or
   revised.
 - `references/request-translation.md` (this skill): read it for every request.
@@ -50,7 +50,7 @@ direction in a single line below the fields.
 </workflow>
 
 <style_field>
-Follow the Style rules in `suno-5.5.md`: dense comma-separated trait
+Follow the Style rules in `suno-v6.md`: dense comma-separated trait
 fragments, 80–120 words, at most 1,000 characters, ending with the fidelity
 tail `lossless, 24bit, flac, wav, studio`. Order it:
 
@@ -59,12 +59,13 @@ tail `lossless, 24bit, flac, wav, studio`. Order it:
 3. at least one mood cause, stated as sound;
 4. groove, harmony, and core instrumentation in plain support;
 5. vocal register, grain, and delivery (skip for instrumentals);
-6. production space and the energy arc across sections;
+6. production space, the energy arc, and how the song ends;
 7. the fidelity tail.
 
 Never put a bare abstract adjective (`epic`, `dreamy`, `vibey`) in Style
 without its audible cause beside it. Never put subject words (names, places,
-the story) in Style; they belong to Lyrics and Title.
+the story) in Style; they belong to Lyrics and Title. Never negate in Style
+(`no drums`): v6 renders the named element, so it belongs in Exclude.
 </style_field>
 
 <exclude_field>
@@ -91,8 +92,10 @@ fence, under these exact headings:
 - Style-only: Style, Exclude, Settings. Lyrics-only: Lyrics and Title.
 - Revision: update the anchor first, then return only the changed fields.
 
-Settings default to `Model: v5.5`; set Weirdness and Style Influence from
-`suno-5.5.md` and mark them as recommendations.
+Settings default to `Model: v6` with `Variety: 0%`, so Suno keeps the Style
+text as written; set Weirdness and Style Influence from the `suno-v6.md`
+table and mark them as recommendations. Recommend `v6-wild` when the user
+wants something adventurous or a v6 take came back flat.
 </output_contract>
 
 <revisions>
@@ -129,6 +132,8 @@ Before answering, verify:
 - the lyrics use the user's concrete details, and the chorus hook belongs to
   this situation only;
 - the use-case constraints (tempo, density, vocal presence, form) hold;
+- Style states the ending, the last lyric header agrees, and Style holds no
+  negations;
 - the `lyric-craft.md` audit passes when lyrics were written;
 - Style ends with the fidelity tail, stays at or under 120 words, and
   Exclude carries the guard plus nearby drift risks;

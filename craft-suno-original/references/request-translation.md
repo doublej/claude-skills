@@ -47,7 +47,7 @@ cause (`dreamy, slow-attack pads`).
 | sad | slow harmonic rhythm, minor or modal, sparse arrangement, exposed close-mic vocal |
 | melancholic but hopeful | minor verses lifting to a major-key chorus, rising melodic contour |
 | epic | wide dynamic build, low brass or taiko, stacked choir, long crescendo to a full-band peak |
-| chill | 80–95 BPM, laid-back swing, soft transients, warm Rhodes, no hard peaks |
+| chill | 80–95 BPM, laid-back swing, soft transients, warm Rhodes, rounded peaks |
 | cozy | close dry room, nylon guitar or felt piano, soft breathy vocal, small ensemble |
 | dark | low register, minor, sub-heavy bass, sparse high end, restrained vocal |
 | energetic | 120+ BPM, driving eighth-note bass, bright hats, shouted or belted hooks |
@@ -61,14 +61,16 @@ cause (`dreamy, slow-attack pads`).
 | cinematic | orchestral swells, wide stereo, dynamic contrast, patient intro |
 
 Words not in the table: ask what a listener would physically hear, and write that.
+Phrase every cause positively. A negation in Style (`no drums`) makes v6 add
+the thing; put unwanted elements in Exclude.
 
 ## Translate scene and use into constraints
 
 | Use | Constraints |
 |---|---|
-| workout, running | 125–150 BPM, steady pulse, no long breakdowns, chanted hook |
-| study, focus, background | instrumental by default, low density, no sudden peaks, loop-friendly |
-| sleep, lullaby | 60–70 BPM, soft dynamics, no percussion peaks, gentle resolving ending |
+| workout, running | 125–150 BPM, steady pulse, short breakdowns, chanted hook |
+| study, focus, background | instrumental by default, low density, even dynamics, loop-friendly |
+| sleep, lullaby | 60–70 BPM, soft dynamics, brushed percussion at most, gentle resolving ending |
 | wedding entrance, ceremony | build from sparse to full, clear moment of arrival, warm major key |
 | party, club | 118–128 BPM, strong kick, hook within the first 30 seconds, DJ-friendly intro |
 | video intro, jingle | short form, hook immediately, clean ending, instrumental unless asked |
