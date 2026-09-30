@@ -52,7 +52,7 @@ For a minimal example, see the `template-skill` example.
 
 # Output Formatting Recommendations
 
-For guidance on consistent skill output formatting, see [OUTPUT_FRAMEWORK.md](OUTPUT_FRAMEWORK.md).
+For guidance on consistent skill output formatting, see [OUTPUT_FRAMEWORK.md](OUTPUT_FRAMEWORK.md). The required house pattern (banner, report, signature) is [PRESENTATION.md](PRESENTATION.md).
 
 The framework provides:
 - 7 common output patterns with usage guidance

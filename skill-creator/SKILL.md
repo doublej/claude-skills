@@ -175,6 +175,7 @@ Prefer **Edit** for updates: the diff stays visible. When a full **Write** rewri
 #### Learn Proven Design Patterns
 - **Multi-step processes**: See references/workflows.md
 - **Output formats/quality standards**: See references/output-patterns.md
+- **House presentation (required for JJ's skills)**: every new skill gets a filled-in `<presentation>` block (banner, report, `github.com/doublej` signature) per `$HOME/dev/_management/claude-skills/PRESENTATION.md`
 
 #### Update SKILL.md
 
