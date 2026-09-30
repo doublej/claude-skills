@@ -1,70 +1,39 @@
-#!/bin/bash
-# Run codex exec to generate an image, then copy result to CWD/tmp/
+#!/usr/bin/env bash
 set -euo pipefail
 
-PROMPT="${1:?Usage: generate.sh \"<image prompt>\" [dest_dir] [input_image]}"
+PROMPT="${1:?Usage: generate.sh <brief> [dest_dir] [input_image...]}"
 DEST_DIR="${2:-$(pwd)/tmp}"
-INPUT_IMAGE="${3:-}"
-
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+command -v codex >/dev/null
+command -v python3 >/dev/null
 mkdir -p "$DEST_DIR"
+WORKDIR="$(mktemp -d)"
+LAST_MSG="$WORKDIR/result.json"
+trap 'rm -rf "$WORKDIR"' EXIT
 
-LAST_MSG=$(mktemp)
-# Codex is an autonomous agent: given the project as its working root it will
-# happily `git commit` and drop stray assets into it. Hand it an empty scratch
-# dir instead — nothing of the user's repo is reachable as its workspace.
-WORKDIR=$(mktemp -d)
-trap 'rm -rf "$LAST_MSG" "$WORKDIR"' EXIT
-
-# Generate mode (text-to-image) or edit mode (image-to-image, when an input image is given)
-CODEX_ARGS=(-C "$WORKDIR" -s danger-full-access --skip-git-repo-check --ephemeral -o "$LAST_MSG")
-# CODEX_MODEL overrides config.toml, e.g. when its model is refused for the account
-[ -n "${CODEX_MODEL:-}" ] && CODEX_ARGS+=(-m "$CODEX_MODEL")
-if [ -n "$INPUT_IMAGE" ]; then
-  [ -f "$INPUT_IMAGE" ] || { echo "ERROR: input image not found: $INPUT_IMAGE"; exit 1; }
-  # absolute: the agent's working root is $WORKDIR, not the caller's cwd
-  # -i takes several values, so the prompt needs the -- below to stay a prompt
-  CODEX_ARGS+=(-i "$(cd "$(dirname "$INPUT_IMAGE")" && pwd)/$(basename "$INPUT_IMAGE")")
-  INSTRUCTION="Edit the provided image with this instruction: $PROMPT"
-  echo "▶ Launching Codex image edit..."
-else
-  INSTRUCTION="Generate an image with this prompt: $PROMPT"
-  echo "▶ Launching Codex image generation..."
+CODEX_ARGS=(-C "$WORKDIR" -s read-only --skip-git-repo-check --json
+  --output-schema "$SCRIPT_DIR/../assets/image-result.schema.json" -o "$LAST_MSG")
+[ -z "${CODEX_MODEL:-}" ] || CODEX_ARGS+=(-m "$CODEX_MODEL")
+if [ "$#" -gt 2 ]; then
+  shift 2
+  for INPUT_IMAGE in "$@"; do
+    [ -f "$INPUT_IMAGE" ] || { printf 'Input image missing: %s\n' "$INPUT_IMAGE" >&2; exit 1; }
+    CODEX_ARGS+=(-i "$(cd "$(dirname "$INPUT_IMAGE")" && pwd -P)/$(basename "$INPUT_IMAGE")")
+  done
 fi
 
-codex exec "${CODEX_ARGS[@]}" -- \
-  "$INSTRUCTION
+INSTRUCTION="Create or edit one image according to this visual brief:
+$PROMPT
 
-Use the image_gen tool only. Do not run git. Do not create, move or modify any file yourself — leave the image where image_gen writes it.
+Use only the built-in image generation tool. Attached images have the roles
+specified in the brief; inspect local edit targets before editing. Follow the
+actual tool schema. Do not silently substitute API calls, models, or drawings.
+Do not run git or create, move, or modify files through shell tools. Leave the
+image where the built-in tool saves it. Report the exact generated file path.
+Return JSON matching the output schema: image_path is the absolute path and
+error is null on success. If blocked, image_path is null and error explains why."
 
-After generating, print ONLY the absolute file path of the generated image on a single line prefixed with IMAGE_PATH: — nothing else after that line."
-
-echo "▶ Codex finished. Extracting image path..."
-
-IMAGE_PATH=""
-
-# Try to extract path from last message
-if [ -s "$LAST_MSG" ]; then
-  IMAGE_PATH=$(grep -oE 'IMAGE_PATH: .+' "$LAST_MSG" | head -1 | sed 's/IMAGE_PATH: //')
-fi
-
-# Fallback: find most recent image in codex generated_images
-if [ -z "$IMAGE_PATH" ] || [ ! -f "$IMAGE_PATH" ]; then
-  CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
-  IMAGE_PATH=$(find "$CODEX_HOME/generated_images" -type f \( -name "*.png" -o -name "*.webp" -o -name "*.jpg" \) -newer "$LAST_MSG" 2>/dev/null | sort | tail -1)
-
-  # If no newer files, get the most recently modified
-  if [ -z "$IMAGE_PATH" ] || [ ! -f "$IMAGE_PATH" ]; then
-    IMAGE_PATH=$(find "$CODEX_HOME/generated_images" -type f \( -name "*.png" -o -name "*.webp" -o -name "*.jpg" \) -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
-  fi
-fi
-
-if [ -z "$IMAGE_PATH" ] || [ ! -f "$IMAGE_PATH" ]; then
-  echo "ERROR: Could not locate generated image"
-  exit 1
-fi
-
-FILENAME=$(basename "$IMAGE_PATH")
-FINAL="$DEST_DIR/$FILENAME"
-cp "$IMAGE_PATH" "$FINAL"
-
-echo "IMAGE_RESULT: $FINAL"
+bash "$SCRIPT_DIR/../../codex-launch/scripts/run_monitored.sh" "Codex image" \
+  codex exec "${CODEX_ARGS[@]}" -- "$INSTRUCTION" >&2
+[ -s "$LAST_MSG" ] || { printf 'Codex returned no structured image result.\n' >&2; exit 1; }
+python3 "$SCRIPT_DIR/copy_result.py" "$LAST_MSG" "$DEST_DIR"

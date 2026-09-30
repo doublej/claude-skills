@@ -1,151 +1,110 @@
 ---
 name: codex-image
-description: "Generate images via Codex CLI's built-in image_gen tool and return the local file path. Use when user wants to generate an image and get the result back into this Claude session. Triggers on '/codex-image', 'generate an image with codex', 'codex image'. Requires codex CLI installed."
+description: "Generate or edit raster images using Codex, with a visible live session monitor and saved local results. Use for /codex-image, image generation through Codex, reference-based images, or image edits. Includes current image-model selection, image briefs, and self-contained Codex session briefs. Requires Codex CLI for calls from Claude; use the native image tool directly inside Codex."
 ---
 
-# codex-generate-image
+# Codex images
 
-Generate images using Codex's built-in `image_gen` tool. Unlike `codex-launch`, this captures the result back — the generated image path is returned to the current Claude session.
+Verified against official documentation on **2026-09-30**. Review the sources
+again when asked for current models; model availability depends on account,
+client, sign-in method, and rollout.
 
-<usage>
+## Choose the execution path
 
-```
-/codex-image <prompt>
-```
+- **Inside Codex:** use the available built-in `image_gen`/imagegen tool directly.
+  Follow its actual schema. Do not spawn another Codex process just to generate.
+- **From Claude:** use the bundled wrapper below. It starts Codex in an empty
+  scratch directory, opens a visible live monitor, and returns a saved result.
+- **Explicit API/model controls:** read [API controls](references/api-controls.md).
+  Use this path only when the user requested it or approved the API fallback.
+  A paid API call is separate from Codex's built-in tool and requires API access.
 
-Output lands in `CWD/tmp/` by default.
+The **session model** (`codex -m`) reasons about the request. The **image model**
+renders the pixels. Setting `CODEX_MODEL=gpt-6.1-sol` does not select an image
+model. Never claim Flare/Sunburst was used unless the tool/API reports it.
 
-</usage>
+## Required references
 
-<workflow>
+- Choosing models: read [current models](references/models.md), then name the
+  session model and the image model or state that the renderer is not exposed.
+- Drafting an image brief: read [briefing](references/briefing.md), then produce
+  the visual brief and explicit change/preserve constraints for edits.
+- Briefing a Codex session: read [session briefs](references/session-briefs.md),
+  then include the goal, inputs, tool constraints, outputs, and success criteria.
+- Every Claude-to-Codex run: follow
+  [live monitoring](../codex-launch/references/live-monitor.md). The wrapper
+  already opens the monitor; do not double-wrap it.
 
-1. Run the generate script:
-   ```bash
-   scripts/generate.sh "<prompt>" "<dest_dir>" "<input_image>"
-   ```
-   - `prompt` — the image description (required)
-   - `dest_dir` — output directory (default: `$(pwd)/tmp`)
-   - `input_image` — optional. Omit for **generate** mode (text→image). Pass a path for **edit** mode (image→image): the script forwards it to Codex via `codex exec -i`.
+## Prompt handling
 
-2. Script runs `codex exec` non-interactively with the image prompt.
+Use **Raw** when the user requests verbatim forwarding. Use **Polish** for light
+clarification without inventing subjects, branding, copy, colors, or exclusions.
+Use **Director** when asked to interpret project context: inspect relevant brand
+tokens, assets, and intended placement before drafting.
+Infer the mode from the user's request; do not add a mandatory mode picker or
+approval round to an already authorized generation. Show a proposed brief first
+when requested or when resolving a material creative ambiguity.
 
-   Codex is an autonomous agent, and pointed at a git repo it will make commits
-   of its own (an empty "checkpoint" plus whatever assets it decided to add).
-   `generate.sh` therefore runs it with `-C <empty temp dir>` so the user's repo
-   is not its working root, and tells it not to run git or touch files. **Never
-   invoke `codex exec` for image generation from the project directory** — and if
-   you ever do, check `git log`/`git status` afterwards and surface anything it
-   created before reporting the result.
+Keep exact text verbatim. Avoid generic filler such as “high quality, detailed.”
+State observable composition, lighting, materials, and acceptance criteria.
 
-3. Script locates the generated image in `~/.codex/generated_images/`, copies it to dest, and prints `IMAGE_RESULT: <path>`.
-
-4. Report the final path to the user. Use `Read` to display the image inline if desired.
-
-</workflow>
-
-<batch_usage>
-
-**Multi-image jobs must run sequentially — never in parallel.**
-
-When `codex exec` doesn't echo the `IMAGE_PATH:` line, the script falls back to picking the most-recently-modified file in `~/.codex/generated_images/`. That fallback is process-global, so two concurrent invocations can cross-wire and copy each other's output. For a batch of N images, loop one call at a time:
+## Generate or edit from Claude
 
 ```bash
-for prompt in "${prompts[@]}"; do
-  scripts/generate.sh "$prompt" "$dest"
-done
+bash ~/.claude/skills/codex-image/scripts/generate.sh \
+  "A matte ceramic mug in soft daylight, product photograph." "$PWD/tmp"
+
+# Edit one or more images; label their roles in the brief, in argument order.
+bash ~/.claude/skills/codex-image/scripts/generate.sh \
+  "Image 1 is the target. Replace only its background; preserve the product." \
+  "$PWD/tmp" "$PWD/product.png"
 ```
 
-Do not background the calls or fan them out across subagents.
+Arguments: brief, optional output directory (default `$PWD/tmp`), then zero or
+more input-image paths. Set `CODEX_MODEL` only to override the session model.
+Quote arguments; never interpolate an untrusted brief into executable shell text.
+For long briefs, pass `"$(cat "$brief_file")"` with a trusted local file path.
 
-</batch_usage>
+The wrapper opens a dedicated iTerm2 observer before starting Codex, streams
+its output to stderr, and prints one final JSON object on stdout containing
+`image_path`. It uses structured final output; it never searches for a global
+“latest image.” A missing result fails clearly instead of returning an old asset.
 
-<prompt_mode>
+The scratch working directory avoids project-local instructions and accidental
+repo changes; the read-only sandbox limits shell writes. It is not a security
+boundary against all readable files or inherited user configuration. Inputs
+remain attached through `codex exec -i`; the built-in tool saves its own output.
 
-Before generating, determine how the user wants their prompt handled. Use `consult-user-mcp ask` with a pick dialog:
+Run distinct assets sequentially by default so each can be inspected. Request
+one asset per invocation. Supply earlier output as the next edit input. Save
+selected project assets in the consuming workspace, not only in Codex's cache.
+Existing files are never silently overwritten.
 
-**Skipping the pick is allowed** when the user already supplied fully-structured prompts (scene, style, composition, palette — i.e. they did the Director pass themselves): infer the mode from what they wrote and don't make them re-answer. What is *not* optional is the confirmation — show the exact final prompt strings and get an OK before writing a batch script or calling `generate.sh`. Say which mode you inferred when you do.
+## Native tool guidance inside Codex
 
-```
-title: "Prompt mode"
-body: "How should I handle your prompt?"
-type: pick
-choices:
-  - "Raw — pass my prompt exactly as-is to Codex"
-  - "Polish — light cleanup, add style/medium if missing"
-  - "Director — full rewrite into an optimal gpt-image-2 prompt using project context"
-descriptions:
-  - "No interpretation. Your words, verbatim."
-  - "Minor augmentation: style, quality, constraints. No invented content."
-  - "I'll study the project (colors, brand, assets, purpose), then craft a detailed structured prompt. You review before I generate."
-```
+- Brand-new image: omit image-reference arguments.
+- Local edit targets: inspect with `view_image` first, then use
+  `referenced_image_paths` when every target has a local path.
+- Conversation-only targets: use the smallest `num_last_images_to_include`
+  covering all targets, at most 5. Never combine the two mechanisms.
+- For transparency, set `transparent_background: true`; preserve existing alpha
+  in edits unless instructed otherwise. Use only fields exposed by this session.
+- Model, quality, size, compression, masks, and `n` are API controls unless the
+  actual native schema also exposes them. Describing size in prose is a request,
+  not a guaranteed API setting. Verify the generated dimensions and alpha.
+- Follow the tool's long-running call/wait instructions and render its returned
+  image through the supported image-result mechanism. Keep progress visible.
 
-### Raw mode
+## Inspect and deliver
 
-Pass the user's prompt string directly to the script unchanged. No augmentation, no rewrites.
+Inspect the image before reporting success: subject, framing, text, labels,
+reference identity, unchanged areas, dimensions, and alpha when required.
+Report the final saved path, execution path, final brief, and any unmet requirement.
+Report the actual renderer only when available. Iterate with one targeted edit.
+Generated “vector-like” artwork is still raster; diagrams need factual checks.
 
-### Polish mode
-
-Light-touch augmentation:
-- Add style/medium if not specified (e.g., "digital illustration", "photograph")
-- Add "high quality, detailed" if the prompt is bare
-- Append "no watermark, no text" unless text was explicitly requested
-- Keep augmentation minimal — don't invent content the user didn't ask for
-
-### Director mode
-
-Full prompt engineering pass. Before writing the prompt:
-
-1. **Gather project context** — scan for: brand colors (CSS variables, design tokens, tailwind config), existing assets/logos, README/package.json for project purpose, any style guides or design system files.
-
-2. **Craft a structured prompt** using the gpt-image-2 schema:
-   ```
-   Use case: <taxonomy slug from list below>
-   Asset type: <where this image will be used>
-   Primary request: <user's core intent, expanded>
-   Scene/backdrop: <environment>
-   Subject: <main subject with specifics>
-   Style/medium: <photo/illustration/3D/vector-style/etc>
-   Composition/framing: <layout, camera angle, spacing>
-   Lighting/mood: <lighting + atmosphere>
-   Color palette: <derived from project or user request>
-   Constraints: <must-haves>
-   Avoid: <negative constraints>
-   ```
-
-3. **Show the crafted prompt** to the user via `consult-user-mcp ask` (type: confirm) before generating. Let them approve or request changes.
-
-Use-case taxonomy slugs: `photorealistic-natural`, `product-mockup`, `ui-mockup`, `infographic-diagram`, `logo-brand`, `illustration-story`, `stylized-concept`, `ads-marketing`, `scientific-educational`, `productivity-visual`, `historical-scene`.
-
-</prompt_mode>
-
-<gpt_image_2_parameters>
-
-Parameters accepted by gpt-image-2 (passed via prompt instructions to Codex):
-
-| Parameter | Values | Notes |
-|-----------|--------|-------|
-| `prompt` | string (required) | Image description |
-| `n` | 1–10 | Number of images to generate |
-| `size` | `auto`, `1024x1024`, `1536x1024`, `1024x1536`, `2048x2048`, `2048x1152`, `3840x2160`, `2160x3840`, or custom WxH | Max edge ≤ 3840px, both edges multiples of 16px, ratio ≤ 3:1, total pixels 655,360–8,294,400 |
-| `quality` | `low`, `medium`, `high`, `auto` | `low` = fast drafts; `high` = final assets |
-| `output_format` | `png`, `webp`, `jpeg` | PNG for transparency-ready; webp for smaller size |
-| `output_compression` | 0–100 | Percentage, only for webp/jpeg |
-| `moderation` | `auto`, `low` | Content filter strictness |
-
-**Not supported on gpt-image-2:**
-- `background` (transparent) — gpt-image-1.5 only
-- `input_fidelity` — always high fidelity for image inputs
-
-**Edit-specific parameters** (when modifying existing images):
-- `image` — input image(s) to edit. Pass via the script's third arg, which forwards it as `codex exec -i` (see workflow step 1).
-- `mask` — mask for inpainting (white = edit area)
-
-</gpt_image_2_parameters>
-
-<error_handling>
-
-- If `codex` is not installed: tell user to run `npm i -g @openai/codex`
-- If image generation fails: surface the error from Codex output
-- If image not found after exec: check `~/.codex/generated_images/` manually
-
-</error_handling>
+If Codex or the image tool is unavailable, surface the concrete error. Check
+`codex --version`, `codex exec --help`, login, and account tool availability.
+Do not substitute shell-drawn placeholders or a different model silently.
+If exact model/parameter control is required and absent, use the user-authorized
+API route or explain the limitation before generation.

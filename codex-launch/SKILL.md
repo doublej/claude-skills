@@ -1,111 +1,93 @@
 ---
 name: codex-launch
-description: "Spawn a Codex session visibly for the user — either in the Codex desktop app (`:app`) or live in their frontmost terminal (`:cli`). Use when the user wants to hand a task to Codex, see Codex run something side-by-side, get a Codex second opinion in a separate window, or 'open this in Codex'. Triggers on '/codex-launch', 'launch in codex', 'open codex', 'fire up codex', 'kick off codex', 'codex this', 'send this to codex'. The user watches the session run; this skill does not capture Codex's output back into Claude."
+description: "Launch Codex with a visible live session, or add a live monitor to any Claude-to-Codex call, including images, exec, rescue, review, plugins, and background jobs. Use for /codex-launch, opening Codex, task handoffs, and monitoring Codex from Claude. Supports interactive app/terminal sessions and monitored result capture."
 ---
 
-# codex-launch
+# Launch and monitor Codex
 
-Hand a task off to a Codex session the user can see and steer. Two variants:
+**Every Claude-to-Codex session gets a visible live monitor automatically.**
+This includes image generation, exec, rescue, review, plugin/app-server jobs,
+background work, and resumed sessions. Do not ask whether JJ wants a monitor.
+A hidden tool call, progress notification, or final result alone is insufficient.
 
-- `:app` — opens the **Codex desktop app**, prompt prefilled on clipboard (user pastes).
-- `:cli` — keystrokes `codex "<prompt>"` into the **frontmost terminal** (user watches it run).
+Read [live monitoring](references/live-monitor.md) and name the chosen observer
+surface before dispatch. Use one actual session; do not create a second run to
+watch the first. Preserve result capture when Claude needs Codex's answer.
 
-This is a fire-and-forget handoff. Codex's output stays with the user. Do not try to scrape it back unless the user explicitly asks for that follow-up.
+## Choose the launch path
 
-<when_to_use>
+| Intent | Path |
+| --- | --- |
+| Claude needs to capture and use the result | Shared monitored command wrapper |
+| User wants to interact in a terminal | `launch_cli.sh`; actual TUI is the monitor |
+| User explicitly wants the desktop app | `launch_app.sh`; app is the monitor once the task is submitted |
+| Plugin/rescue/review call | Preserve plugin dispatch; main Claude thread opens the exact job's log |
+| Image generation from Claude | Use `codex-image`; its wrapper already opens the monitor |
 
-- User says "open this in Codex", "let Codex handle this", "kick off codex", "second opinion from codex"
-- User wants Codex working in parallel while Claude continues
-- A long task where the user prefers to watch Codex live rather than have Claude relay results
+If the user did not choose a surface, use a dedicated iTerm2 tab by default.
+Use an explicitly targeted existing terminal pane when available and preferred.
+Do not type executable text into an unknown frontmost application.
 
-**Skip** if the user wants Claude to *call* Codex and *use* its answer — that's the `codex:rescue` subagent, not this skill.
-
-</when_to_use>
-
-<picking_a_variant>
-
-| User signal | Use |
-|---|---|
-| "in the app", "Codex desktop", "in the GUI" | `:app` |
-| "in the terminal", "in this shell", "right here", or already in iTerm/Ghostty/cmux | `:cli` |
-| Ambiguous | Ask which one — one short pick. Do not guess. |
-
-</picking_a_variant>
-
-<variant_app>
-
-## `:app` — Codex desktop app
+## Capture a result with a live monitor
 
 ```bash
-scripts/launch_app.sh "<prompt>"
+bash ~/.claude/skills/codex-launch/scripts/run_monitored.sh "Codex review" \
+  codex exec -C "$PWD" -s read-only --json -- "Review the current changes."
 ```
 
-What it does:
-1. Copies prompt to clipboard (`pbcopy`)
-2. `open -a "Codex"` — brings the desktop app to the front
-3. Notifies the user to paste with ⌘V
+The wrapper opens iTerm2 before running, streams a unique retained log, and
+returns the command's exit code. It preserves stdout for result capture; stderr
+also appears in the log. Keep its Bash/tool job handle if launched in background.
+Closing the observer does not cancel Codex. See the reference for plugin jobs.
 
-After running, tell the user one line: *"Codex app opened — prompt is on your clipboard, ⌘V to paste."* Do not wait for output.
-
-</variant_app>
-
-<variant_cli>
-
-## `:cli` — frontmost terminal
+## Interactive terminal
 
 ```bash
-scripts/launch_cli.sh "<prompt>" [extra codex flags]
+bash ~/.claude/skills/codex-launch/scripts/launch_cli.sh \
+  "Review the current changes; report concrete defects." -C "$PWD" -s read-only
 ```
 
-What it does:
-1. Builds `codex "<prompt>"` (with optional flags like `-a full-auto`)
-2. Uses `osascript` + System Events to keystroke it into whatever app is currently frontmost
-3. Presses Return
+Opens a dedicated iTerm2 session running Codex with safely quoted prompt
+and flags. Capture the printed launch-file path; verify the terminal actually
+shows the intended Codex session. If verification is unavailable, say the
+launch was requested, rather than claiming Codex is running.
 
-The user must have a terminal window focused. If unsure, ask: *"Make sure your terminal is the frontmost window — ready?"*
+Check the installed `codex --help` before choosing flags. Current CLI 0.159.2:
 
-**Extra flags** pass straight through to `codex`:
+- `-C <path>` sets the working directory; a path in prose does not change it.
+- `-m <session-model>` selects the agent model, not the image renderer.
+- `-s read-only` / `workspace-write` sets filesystem sandbox behavior.
+- `-a on-request` / `never` selects approval policy where supported.
+- `--json` is for non-interactive `codex exec` event capture.
+
+`-q` and `-a suggest`, `auto-edit`, `full-auto` are obsolete. Do not add permission
+bypass flags as boilerplate. Preserve the user's authorized scope.
+
+## Desktop app
 
 ```bash
-scripts/launch_cli.sh "fix the failing tests" -a full-auto
-scripts/launch_cli.sh "review this PR" -a suggest
+bash ~/.claude/skills/codex-launch/scripts/launch_app.sh "<self-contained brief>"
 ```
 
-Common flags worth offering:
-- `-a suggest` — read-only (default, safe)
-- `-a auto-edit` — can edit files, asks before shell
-- `-a full-auto` — sandboxed, no approvals
-- `-m <model>` — override model
+Copies the brief to the clipboard and opens the Codex app. Report that the
+handoff is **pending**: JJ must paste and submit it in the intended project.
+Opening an app is not proof that a session started. Once submitted, keep the
+actual conversation visible. Do not launch a duplicate terminal session.
 
-</variant_cli>
+## Briefing and completion
 
-<prompt_construction>
+Include goal, verified working directory, inputs, allowed changes, constraints,
+checks, and output contract. Codex has none of Claude's conversation context.
+For image-model selection and image/session brief templates, read
+`~/.claude/skills/codex-image/references/models.md` and
+`~/.claude/skills/codex-image/references/session-briefs.md`.
 
-Before launching, shape the prompt so Codex starts well:
+Report observer location, session/job ID when exposed, retained log, and final
+status. For handoffs, leave the user in control. For captured work, collect and
+inspect the result before incorporating it. Surface launch failures directly.
 
-- Include the **goal**, not just the trigger ("fix the failing auth tests in `apps/api/tests/auth.test.ts`" beats "fix tests")
-- Include the **working directory** if the user's terminal might be elsewhere — Codex picks up CWD from where it's launched
-- Keep it one paragraph; Codex's TUI handles long pastes fine but the keystroke path (`:cli`) is faster with shorter prompts
+Activate the monitor rule for all Claude projects with:
 
-If the user gave a vague handoff ("send this to codex"), summarize the conversation context into a self-contained prompt — Codex has none of Claude's context.
-
-</prompt_construction>
-
-<accessibility_permission>
-
-`:cli` requires macOS Accessibility permission for whichever process invokes `osascript` (Terminal, iTerm2, Claude Code's harness, etc.). If the keystroke silently no-ops:
-
-> System Settings → Privacy & Security → Accessibility → enable the relevant app.
-
-Surface this once if `:cli` appears to do nothing — do not retry blindly.
-
-</accessibility_permission>
-
-<anti_patterns>
-
-- **Don't** try to read Codex's output back into Claude. This skill is a handoff, not a pipe. For a programmatic Codex call, use `codex:rescue` or `codex -q` directly.
-- **Don't** chain multiple launches without checking the first worked. If `:cli` keystroked into the wrong window, the user needs to know.
-- **Don't** invent codex flags. If a flag isn't documented in `codex --help`, ask first.
-- **Don't** assume the desktop app accepts URL schemes or CLI args — at time of writing, clipboard paste is the reliable path.
-
-</anti_patterns>
+```bash
+bash ~/.claude/skills/codex-launch/scripts/install_monitor_rule.sh
+```

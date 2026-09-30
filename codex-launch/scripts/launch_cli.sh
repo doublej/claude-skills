@@ -1,36 +1,19 @@
-#!/bin/bash
-# Spawn `codex "<prompt>"` in whatever terminal is currently frontmost.
-# Works across iTerm2, Ghostty, Terminal.app, Warp, etc. — uses System Events
-# to keystroke into the focused window. The user sees Codex start live.
-#
-# Usage: launch_cli.sh "<prompt text>" [extra codex flags...]
+#!/usr/bin/env bash
+set -euo pipefail
 
-set -e
-
-PROMPT="${1:?prompt required}"
-shift || true
-EXTRA_FLAGS="$*"
-
-# Escape double quotes and backslashes for shell-safe single-line keystroke.
-ESCAPED=$(printf '%s' "$PROMPT" | sed 's/\\/\\\\/g; s/"/\\"/g')
-
-if [ -n "$EXTRA_FLAGS" ]; then
-  CMD="codex $EXTRA_FLAGS \"$ESCAPED\""
-else
-  CMD="codex \"$ESCAPED\""
-fi
-
-# Identify the frontmost app so we can report it back.
-FRONT_APP=$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true')
-
-# AppleScript-escape the command for the keystroke call.
-APPLESCRIPT_CMD=$(printf '%s' "$CMD" | sed 's/\\/\\\\/g; s/"/\\"/g')
-
-osascript <<EOF
-tell application "System Events"
-  keystroke "$APPLESCRIPT_CMD"
-  key code 36
-end tell
-EOF
-
-echo "✓ Sent codex command to frontmost app: $FRONT_APP"
+PROMPT="${1:?Usage: launch_cli.sh <prompt> [codex flags...]}"
+shift
+CODEX_BIN="$(command -v codex)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd -P)"
+RUN_DIR="$(mktemp -d "${TMPDIR:-/tmp}/codex-interactive.XXXXXX")"
+COMMAND_FILE="$RUN_DIR/codex.command"
+{
+  printf '#!/usr/bin/env bash\nset -euo pipefail\n'
+  printf 'cd %q\n' "$PWD"
+  printf 'exec %q ' "$CODEX_BIN"
+  printf '%q ' "$@" -- "$PROMPT"
+  printf '\n'
+} > "$COMMAND_FILE"
+chmod 700 "$COMMAND_FILE"
+SESSION_ID="$(bash "$SCRIPT_DIR/launch_iterm.sh" "$COMMAND_FILE" "Codex: $(basename "$PWD")")"
+printf 'Interactive Codex launched in iTerm2 session %s: %s\n' "$SESSION_ID" "$COMMAND_FILE"

@@ -182,7 +182,7 @@ For slash commands, include the proposed save path in Assumptions so the invocat
 | AGENTS.md | Markdown hierarchy, cascading | Merges down directory tree; `AGENTS.override.md` replaces parent rules |
 | Slash command | Markdown template, `$ARGUMENTS` | Single purpose; `description:` frontmatter drives autocomplete |
 | CLI (`claude -p`) | Single string or piped input | No follow-up; must carry facts, scope, done-when, and permission mode |
-| Codex CLI / exec | Single string, flags (`-q`, `-a`) | Non-interactive execution; declare approval mode, sandbox bounds, and JSON schema |
+| Codex CLI / exec | Prompt argument or stdin, `codex exec --json` | Self-contained task contract; sandbox, structured result, and visible live monitor |
 | System prompt / API | XML-structured | Parsed programmatically; role, boundaries, output contract |
 | Skill SKILL.md | Frontmatter + markdown | Description is the trigger; body under 500 lines; required reads produce an output that proves the read |
 | Dispatch prompt / agent brief | XML task + constraints, one mission per agent | Self-contained (the agent has no history); every path verified; return conclusions, not file dumps |
@@ -215,7 +215,7 @@ Output (reply, inside the prompt fence): a complete Markdown template beginning 
 
 For inspection commands, specify the candidate set, evidence that includes or excludes a candidate, read-only boundaries, missing-access behaviour, empty-result text, and the final list shape. Discover the future repo's test configuration and tests wherever configured, not only beside source files. Distinguish confirmed zero coverage from no identified test association; imports, shared test helpers, integration tests, and differently named test files can invalidate filename-only guesses. Report inconclusive cases separately and avoid silently omitting files.
 
-For CLI prompts, deliver a safely quoted invocation or stdin text. It must carry its inputs, scope, done-when, and blocked-result behaviour because there may be no follow-up. For Claude Code (`claude -p`), specify `--permission-mode` (`acceptEdits` or `plan`) and scope tools via `--allowedTools`; never add `--permission-mode bypassPermissions` without isolated sandboxing. For Codex CLI (`codex -q` or `codex exec`), declare approval mode (`-a suggest`, `auto-edit`, or `full-auto`), sandbox boundaries (`--cd`, `--add-dir`), and structured `--json` extraction. Do not add permission-bypass flags as boilerplate.
+For CLI prompts, deliver a safely quoted invocation or stdin text. It must carry its inputs, scope, done-when, and blocked-result behaviour because there may be no follow-up. For Claude Code (`claude -p`), specify `--permission-mode` (`acceptEdits` or `plan`) and scope tools via `--allowedTools`; never add `--permission-mode bypassPermissions` without isolated sandboxing. For Codex, check the installed `codex --help` and `codex exec --help`; use `-C`, `-s`, and `--json`/`--output-schema` as needed. Approval policy and sandbox are separate controls; obsolete `-q` and `-a suggest/auto-edit/full-auto` are not valid guidance. Every Claude-to-Codex execution must use the visible live-monitor workflow in `~/.claude/skills/codex-launch/references/live-monitor.md`. For image work, distinguish the session model from the renderer and use the briefs in `~/.claude/skills/codex-image/references/session-briefs.md`. Do not add permission-bypass flags as boilerplate.
 </slash_command>
 
 <xml_reference>
