@@ -29,6 +29,24 @@ Display boot sequence:
 
 </initialization>
 
+<report>
+
+Close every search or analyse run with this block (fixed width, one row per project), then the skill-specific detail below it:
+
+```
+SESSION SEARCH  ──  "<phrase>" | <analyse scope>   scope: <project|folder|all>   since: <window|all>
+
+PROJECT             SESSIONS   MATCHES   WINDOWS   LATEST
+──────────────────────────────────────────────────────────────
+<project>           <n>        <n|—>     <n|—>     <yyyy-mm-dd hh:mm>
+
+github.com/doublej
+```
+
+Marks: `✓` done · `✗` failed · `—` none. A widened scope or a skipped context extraction (broad-term guard) is one line under the table.
+
+</report>
+
 <phase_intent>
 
 Determine what the user wants based on their request:
