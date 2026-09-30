@@ -5,6 +5,20 @@ description: Audit a Linear team's labels and report stale ones. Generates a tie
 
 You are a label-staleness auditor for Linear teams. Your job is to produce a clear cleanup report so a team lead can decide which labels to retire. **This skill is read-only — do not delete or modify any labels.**
 
+## Presentation
+
+Open with this banner; close with the report in Step 6.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   STALE LABELS                                               ║
+║   Linear label staleness audit, read-only                    ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
 ## Step 1 — Resolve the team
 
 The user names a team (e.g. "Rider app", "sre"). Call `mcp__claude_ai_Linear__list_teams` with `query: "<name>"` to confirm it resolves to exactly one team. If multiple match, ask the user to disambiguate.
@@ -56,37 +70,27 @@ Today's date for staleness math: use the current date the user is operating in (
 
 ## Step 6 — Render the report
 
-Output a markdown report directly in chat. **Do not write to a file.** Structure:
+Output the report directly in chat. **Do not write to a file.** Structure:
 
 ```
-# Stale label report — <Team name>
+STALE LABELS  ──  <Team name>   generated: <today's ISO date>   scanned: <N>
+thresholds  low-use < <LOW_USE_MAX> issues · stale ≥ <STALE_DAYS> days · legacy ≥ <LEGACY_DAYS> days
+totals      <U> unused · <S> low-use & stale · <L> legacy · <A> active
 
-**Generated:** <today's ISO date>
-**Thresholds:** low-use < <LOW_USE_MAX> issues · stale ≥ <STALE_DAYS> days · legacy ≥ <LEGACY_DAYS> days
-**Totals:** <N> labels scanned · <U> unused · <S> low-use & stale · <L> legacy · <A> active
+TIER             LABEL              COUNT   LAST APPLIED          MOST RECENT ISSUE
+────────────────────────────────────────────────────────────────────────────────────
+unused           <label>            0       —                     —
+low-use/stale    <label>            <n>     YYYY-MM-DD (Nd ago)   LIN-### — title
+legacy           <label>            <n>     YYYY-MM-DD (Nd ago)   LIN-### — title
 
-## 🔴 Unused (<U>)
-One-line list, alphabetical. No table needed — these have no data.
+github.com/doublej
+```
 
-`label-a` · `label-b` · `label-c` · …
+Rows: Unused first (alphabetical), then Low-use & stale, then Legacy, each sorted by **last applied ascending** (most stale first). Active labels appear only in `totals`. An empty tier gets no rows.
 
-## 🟠 Low-use & stale (<S>)
-Table sorted by **last applied ascending** (most stale first):
-
-| Label | Count | Last applied | Most recent issue |
-|---|---|---|---|
-| ... | ... | YYYY-MM-DD (Nd ago) | LIN-### — title |
-
-## 🟡 Legacy (<L>)
-Table sorted by **last applied ascending**:
-
-| Label | Count | Last applied | Most recent issue |
-|---|---|---|---|
-
-## Recommendation
-- 1-2 sentences naming the highest-confidence candidates (typically obvious-looking off-team labels in Unused, plus the oldest Legacy ones).
+After the block, as short prose:
+- **Recommendation:** 1-2 sentences naming the highest-confidence candidates (typically obvious-looking off-team labels in Unused, plus the oldest Legacy ones).
 - Do NOT recommend mass deletion. Flag anything that looks load-bearing despite being stale (e.g. compliance/security labels like `SOC 2 Audit`, `Vulnerability Report`) for the team lead's manual review.
-```
 
 ## Guardrails
 

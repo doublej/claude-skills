@@ -10,6 +10,12 @@ metadata:
 
 Automatically tracks skill invocations within the claude-skills project for usage analysis and optimization.
 
+<presentation>
+
+Reference skill: no banner, no report. The hook's welcome message keeps its own format (see `<welcome_message_format>`). When invoked directly and the answer is the main output, end with: — skill-usage-tracker · github.com/doublej
+
+</presentation>
+
 <features>
 
 - 📊 Real-time tracking via PostToolUse hook

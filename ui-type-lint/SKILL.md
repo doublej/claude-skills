@@ -12,6 +12,31 @@ measure, letter-spacing, and leading, clusters the sizes, and flags problems
 with locations. It judges what was actually rendered — not what the CSS claims.
 </overview>
 
+<presentation>
+Print the banner once, first in the response. Close each lint run with the report (one row per finding, message quoted as the script printed it), then show the annotated overlay.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   UI TYPE LINT                                               ║
+║   Pixel-analysis typography linter for screenshots           ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+```
+UI TYPE LINT  ──  <screenshot>   scale: <n>   clusters: <n>   result: ✓ clean | ✗ <high> high, <warn> warn
+
+FINDING             SEVERITY   MESSAGE
+──────────────────────────────────────────────────────────────
+<id>                <sev>      <measured message>
+
+github.com/doublej
+```
+With zero findings, drop the table and give the cluster table as aligned `size  lines` rows.
+</presentation>
+
 <usage>
 ```bash
 uv run ~/.claude/skills/ui-type-lint/scripts/typelint.py <screenshot.png> [flags]

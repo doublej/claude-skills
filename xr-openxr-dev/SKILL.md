@@ -5,6 +5,10 @@ description: "Runtime/layer implementation, extension authoring, Vulkan bindings
 
 # OpenXR Development
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — xr-openxr-dev · github.com/doublej
+</presentation>
+
 <before_writing>
 
 ## Before Writing Code

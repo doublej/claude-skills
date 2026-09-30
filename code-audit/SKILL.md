@@ -9,6 +9,32 @@ Automated code quality analysis powered by code-map's PageRank call graph. Detec
 
 </intro>
 
+<presentation>
+Open the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE AUDIT                                                 ║
+║   Dead code, duplicates & smells via call graph              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close it with this block in chat (one row per detector: deprecated, conventions, deadcode, duplicates); the `<output_format>` report file stays as specified below:
+```
+CODE AUDIT  ──  <repo>   issues: <n>   report: <repomap-analysis.md|--json>
+
+DETECTOR      ISSUES   TOP FINDING
+──────────────────────────────────────────────────────────────
+<detector>    <n|—>    <file:line – message|—>
+
+github.com/doublej
+```
+
+Marks: `✓` done · `✗` failed · `—` none. A failed run (e.g. code-map missing) is a row with its cause; high-severity follow-ups go after the block as short prose.
+</presentation>
+
 <prerequisites>
 
 Requires the **code-map** skill installed alongside this skill (uses its bundled repomap).

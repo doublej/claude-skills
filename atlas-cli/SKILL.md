@@ -3,6 +3,10 @@ name: atlas-cli
 description: "Find an existing project or start a new one with the `atlas` CLI — search/jump/info, scaffold via `atlas new`, branch flow, ports. Use whenever the question is \"where does this project live?\", \"do we already have X?\", or \"create a new project\"."
 ---
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — atlas-cli · github.com/doublej
+</presentation>
+
 <when>
 
 Trigger on any of:

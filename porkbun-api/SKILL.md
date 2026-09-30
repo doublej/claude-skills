@@ -7,6 +7,31 @@ description: "Domain and DNS management: records, nameservers, SSL, URL forwardi
 
 Manage domains and DNS through the Porkbun API.
 
+<presentation>
+Open a run with this banner once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   PORKBUN API                                                ║
+║   Domains, DNS, nameservers, forwarding, SSL                 ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close it with one row per record, domain, or change (API `status` → `✓` SUCCESS, `✗` ERROR with its `message` as the cause):
+
+```
+PORKBUN API  ──  <domain | all domains>   command: <domains|check|dns|ns|forward|ssl|pricing>   changed: <n>
+
+DOMAIN              TYPE    NAME       CONTENT                 STATUS
+────────────────────────────────────────────────────────────────────
+<domain>            <A|—>   <name|@>   <content|id>            ✓
+
+github.com/doublej
+```
+</presentation>
+
 <setup>
 Credentials come from onenv (1Password) — never `export`, never a `.env` file.
 The `porkbun` namespace holds `PORKBUN_API_KEY` and `PORKBUN_SECRET_KEY`.

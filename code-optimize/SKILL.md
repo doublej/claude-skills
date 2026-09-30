@@ -11,6 +11,21 @@ arguments (`/code-optimize smells logging`); zero arguments = all dimensions.
 The run starts with an intake, gets one approval for one merged plan, then
 fixes dimension by dimension. Each fix is verified, committed, and ratcheted.
 
+<presentation>
+Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE OPTIMIZE                                              ║
+║   Whole-codebase improvement dispatcher                      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+The run closes with the report in `<output_format>`. Plans, commit messages and
+files written to the repo stay free of box art and signature.
+</presentation>
+
 <dimension_registry>
 
 | Dimension | Owner | Scan command |
@@ -215,39 +230,32 @@ After the last dimension, once per run:
 
 <output_format>
 
-After all dimensions complete, summarise:
+After all dimensions complete, close with this block (fixed width, one row per
+dimension, skipped ones included), then the commit list as short prose below it:
 
 ```
-## Code Optimize — Complete
+CODE OPTIMIZE  ──  <root>   mode: <repo mode>   branch: <branch>   flow: <policy>
 
-Intake: <type · runner · gates · repo mode · branch · commit style>
+DIMENSION     BEFORE   AFTER   FIXES                          COMMITS   NOTE
+──────────────────────────────────────────────────────────────────────────────────
+structure     —        —       <n> files moved, <n> dirs      <n>       ✓
+practices     <n>      <n>     <rules fixed>                  <n>       ✓
+smells        <n>      <n>     <n> dead code blocks removed   <n>       ✓
+simplify      <n>      <n>     <n> files simplified (−<n> ln) <n>       ✓
+perf:<name>   <n>      <n>     wall-clock <before> → <after>  <n>       <n> runs
+<dimension>   —        —       —                              —         skipped: <zero findings|no scanner|not installed|foreign repo|user deselected>
 
-### Dimensions run
-- structure: [N] files moved, [N] dirs merged
-- practices: count [before] → [after] ([rules fixed])
-- smells: count [before] → [after], [N] dead code blocks removed
-- simplify: count [before] → [after], [N] files simplified ([−N] lines)
-- perf:<name>: count [before] → [after], wall-clock [before] → [after] ([N] runs)
-- ...
+intake     <type · runner · gates · repo mode · branch · commit style>
+blind      <dimension>: <exts> unscanned | —
+verify     gates <✓ | baseline-red: <gate>, no new failures>   build <✓ | regression reverted>
+smoke      https://<slug>.atlas.local.jurrejan.com → <code> | not a served project
+ratchet    `ratchet.py <root> check` exit <code>; wired into gates: <yes: where | offered, declined>
+worktree   <path, remove with `git worktree remove <path>`> | —
 
-### Blind spots
-- [dimension]: [exts] unscanned
-
-### Verify
-Gates: [green / baseline-red: <gate>, no new failures] · Build: [ok / regression reverted]
-Smoke: https://<slug>.atlas.local.jurrejan.com → [code] (or: not a served project)
-
-### Ratchet
-`ratchet.py <root> check` exit [code]; wired into gates: [yes: where / offered, declined]
-
-### Commits created
-- refactor(structure): ...
-
-### Skipped
-- [dimension]: [reason — zero findings / no scanner / not installed / foreign repo / user deselected]
-
-Branch: <branch> · Flow: <policy> · Worktree: <path, remove with `git worktree remove <path>`>
+github.com/doublej
 ```
+
+Marks: `✓` done · `✗` failed · `—` none · `…` still running.
 
 </output_format>
 

@@ -15,6 +15,30 @@ description: "Scan all git worktrees for orphaned (unmerged) work against main/d
   detailed report.
 </arguments>
 
+<presentation>
+Print once, first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   WORKTREE ORPHANAGE                                         ║
+║   Unmerged worktree work finder                              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+The phase-2 summary table and the phase-3 summary table take this shape (ranked most-important-first in phase 3; per-worktree detail and full paths follow as prose):
+
+```
+WORKTREE ORPHANAGE  ──  <repo>   targets: <main,develop>   orphaned: <n>/<total>
+
+WORKTREE    BRANCH     AHEAD      CHERRY   ABSORBED   UNMERGED   DIRTY   STASH   LAST_ACTIVITY   CLASS     ACTION
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+<~/path>    <branch>   <t:n,…>    <n|—>    <n|—>      <n|—>      <n|—>   <n|—>   <date>          <class>   <merge|finish|archive|delete|—>
+
+github.com/doublej
+```
+</presentation>
+
 <phase_1_scan>
 Cheap and deterministic — one script, git plumbing only, no file reads, no
 agents, no session-search.
@@ -50,7 +74,7 @@ Columns with `,`-separated values follow the target order printed in AHEAD.
 </phase_1_scan>
 
 <phase_2_gate>
-Render the script's TSV as a one-screen markdown table (shorten paths to
+Render the script's TSV as the one-screen `<presentation>` report table (shorten paths to
 `~`-relative). Then:
 
 - All worktrees clean or likely-merged with zero unmerged/dirty → report

@@ -14,6 +14,31 @@ allowed-tools:
 
 Work with the machines on the JJ home network (`192.168.178.0/24`).
 
+## Presentation
+
+Open the first response with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   HOMENETWORK                                                ║
+║   SSH access and admin for the JJ home network               ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close every run with this block, one row per machine touched:
+```
+HOMENETWORK  ──  <task>   machines: <n>   docs: <updated|—>
+
+MACHINE           ACTION               RESULT   DOC UPDATED
+───────────────────────────────────────────────────────────
+<machine>         <what was done>      <✓|✗>    <machines/x.md ✓|—>
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed (cause on one line under the table) · `—` none.
+Doc updates follow "After Making Changes" below.
+
 ## When to Use
 
 - SSH into a home network machine

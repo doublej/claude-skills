@@ -7,6 +7,31 @@ description: "Bump versions, releases, git tags, changelogs. Python/Node/Rust/Go
 
 Comprehensive versioning for all project types with four progressive patterns: simple (VERSION file), standard (package manager + automation), advanced (multi-component tracking), and automated (full CI/CD).
 
+<presentation>
+Print this banner once, first in the response; close every init, bump, or validate run with the report below.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   VERSION MANAGER                                            ║
+║   Version bumps, tags, changelogs, releases                  ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+VERSION MANAGER  ──  <project> <old> → <new>   pattern: <simple|standard|advanced|automated>   tag: <vX.Y.Z|—>
+
+TARGET                  VERSION     STATUS
+──────────────────────────────────────────────────────
+<target>                <x.y.z|—>   <✓|✗ cause>
+
+github.com/doublej
+```
+
+One row per target: VERSION or manifest, synced files, CHANGELOG.md, git tag, hooks. A failed check is a `✗` row with its cause; the next step (push, publish) goes after the block as one line.
+</presentation>
+
 <quick_start>
 
 **Initialize versioning in a project:**

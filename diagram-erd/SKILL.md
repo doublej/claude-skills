@@ -7,6 +7,32 @@ description: "Generate ERD diagrams from Python data models (Pydantic, dataclass
 
 Generate entity relationship diagrams from Python data model classes using Graphviz.
 
+<presentation>
+Print this banner once at the start:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DIAGRAM ERD                                                ║
+║   Entity relationship diagrams from Python models            ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with this report, one row per output file (image, `.dot`, inline Mermaid `erDiagram`):
+```
+DIAGRAM ERD  ──  <root model>   source: <python|mirror of <lang>>   format: <png|svg|pdf|dot>
+
+OUTPUT                   MODELS   EDGES   RENDERED
+───────────────────────────────────────────────────
+<path|inline mermaid>    <n>      <n|—>   <✓|✗>
+
+github.com/doublej
+```
+
+A failed render (missing Graphviz, import error) is a `✗` row with its cause on one line under the table.
+</presentation>
+
 <supported_frameworks>
 
 - Pydantic V2 / V1

@@ -7,6 +7,20 @@ description: "Research skills/MCP servers from GitHub, mcp.so, Smithery with deb
 
 Research and evaluate skills from multiple sources with structured debate-style analysis.
 
+## Presentation
+
+Open with this banner; close with the report in **Output Format**.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   SKILL RESEARCHER                                           ║
+║   Skill and MCP server research with debate eval             ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
 ## Workflow
 
 ```
@@ -103,30 +117,26 @@ Prompt: "Given advocate and critic perspectives on <topic> skills, synthesize a 
 
 ## Output Format
 
-```markdown
-## Skill Research: <topic>
-
-### Top Recommendations
-1. **[name](url)** - ⭐ stars | Source: GitHub/mcp.so/Smithery | Confidence: HIGH/MEDIUM/LOW
-   - Why: <1-2 sentences>
-   - Concerns: <brief>
-   - Install: `<command or link>`
-
-### Source Coverage
-| Source | Results Found | Top Pick |
-|--------|---------------|----------|
-| GitHub | N repos | ... |
-| mcp.so | N servers | ... |
-| Smithery | N servers | ... |
-
-### Debate Summary
-- Advocate highlights: ...
-- Critic concerns: ...
-- Synthesizer verdict: ...
-
-### Raw Data
-<collapsible with full search results per source>
 ```
+SKILL RESEARCHER  ──  <topic>   candidates: <n>   debate: <run|skipped>
+
+#   NAME                  STARS   SOURCE                     CONFIDENCE          INSTALL
+────────────────────────────────────────────────────────────────────────────────────────────
+1   <name>                <n|—>   <GitHub|mcp.so|Smithery>   <HIGH|MEDIUM|LOW>   <command|link>
+
+SOURCE     RESULTS           TOP PICK
+──────────────────────────────────────────
+GitHub     <n> repos         <name|—>
+mcp.so     <n|— skipped>     <name|—>
+Smithery   <n|— skipped>     <name|—>
+
+github.com/doublej
+```
+
+After the block, as short prose:
+- **Per pick:** `[name](url)`, Why (1-2 sentences), Concerns (brief).
+- **Debate Summary:** advocate highlights, critic concerns, synthesizer verdict — or the skip reason (e.g. `replaced by direct file inspection`).
+- **Raw Data:** collapsible with full search results per source.
 
 ## Self-Improvement
 

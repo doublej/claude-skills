@@ -10,6 +10,30 @@ Spawns named **teammate** agents (not disposable subagents) from preset blueprin
 
 For raw primitives (SendMessage, plan approval, modes) see `references/primitives.md`. This skill sits on top: it adds presets, safety gates, merge orchestration, and a bundle of opinionated role definitions.
 
+<presentation>
+Print once, first thing on a spawn run:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   TEAMS                                                      ║
+║   Agent Team Orchestrator                                    ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close the run (after synthesis/merge) with one row per member, then the deliverable or findings as short prose. Marks: `✓` done · `✗` failed · `—` none · `…` still running. A blocked gate or merge conflict is one line under the table.
+```
+TEAMS  ──  <team-name>   preset: <preset>   snapshot: <tag|—>
+
+MEMBER            ROLE            MODEL    WORKTREE        DELIVERED   MERGED
+──────────────────────────────────────────────────────────────────────────────
+<member>          <role>          <model>  <branch|—>      <✓|✗|…>     <✓|✗|—>
+
+github.com/doublej
+```
+</presentation>
+
 <decision_flow>
 
 1. Is work parallelizable? If no → don't use this skill.

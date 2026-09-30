@@ -9,6 +9,30 @@ description: "Lyric-synced HTML5 video pages with CSS animations from timed text
 Generates a self-contained HTML5 lyric video. Audio plays in browser; lyrics animate on beat using CSS keyframes + JavaScript timing.
 </description>
 
+<presentation>
+Start with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   LYRIC VIDEO MAKER                                          ║
+║   Timed lyrics to a self-contained HTML5 video page          ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+End with this report. Marks: `✓` done · `✗` failed · `—` none.
+```
+LYRIC VIDEO MAKER  ──  <track>   style: <boom-bap|terminal|graffiti>   bpm: <n>
+
+OUTPUT              LYRICS   LABELS   OVERLAYS   AUDIO   GENERATED
+──────────────────────────────────────────────────────────────────
+<lyric_video.html>  <n>      <n|—>    <n|—>      <✓|✗>   <✓|✗>
+
+github.com/doublej
+```
+</presentation>
+
 <input_format>
 
 ```json

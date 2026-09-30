@@ -19,6 +19,21 @@ conviction visible. A grid of cells, a keyboard, a few hundred glyphs,
 maybe color. Everything that ships here ships because it earned the cell.
 </intro>
 
+<presentation>
+Print once, first in the response; close with the report in Output Discipline.
+The banner frames this response only — the TUI you build still ships without one.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   TUI MONOSPACE                                              ║
+║   Terminal interfaces that earn the cell                     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+</presentation>
+
 <manifesto>
 
 ## The Manifesto
@@ -239,8 +254,23 @@ Four artifacts, in order, no exceptions.
 4. **The keybind footer text.** Matches the contract from the brief.
    Every advertised key is bound.
 
-No "let me know if you'd like X." No three options. Ship the four.
-Stop.
+No "let me know if you'd like X." No three options. Ship the four,
+then close with this block and stop. Code and footer text stay free of it.
+
+```
+TUI MONOSPACE  ──  <app>   library: <lib>   floor: 80×24   rubric: <n>/16
+
+ARTIFACT            PATH                    OK
+──────────────────────────────────────────────
+Cell Brief          <inline|path>           ✓
+Tokens file         <path>                  ✓
+Code at floor       <path>                  <✓|✗>
+Keybind footer      <inline|path>           ✓
+
+github.com/doublej
+```
+
+A failed rubric check is one line under the table: number, name, cause.
 
 </output_discipline>
 

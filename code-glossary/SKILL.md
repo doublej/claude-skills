@@ -9,6 +9,30 @@ Curate the **ubiquitous language** of a project — the single shared vocabulary
 
 This is Domain-Driven Design's most practical idea: if the team calls it a "Wall Decoration" but the code calls it `Product` and the design doc calls it "Wallpaper", everyone wastes cycles translating. Agents amplify the cost — they will happily invent a fourth word.
 
+<presentation>
+Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE GLOSSARY                                              ║
+║   Ubiquitous language curator                                ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close every run with this report (fixed width, one row per canonical term defined or changed), then detail as short prose below it:
+```
+CODE GLOSSARY  ──  <project root>   mode: <bootstrap|update>   tier: <inline|file|split|per-context>
+
+TERM              REJECTED SYNONYMS          USES   VIOLATIONS
+──────────────────────────────────────────────────────────────
+<term>            <synonym, synonym|—>       <n>    <n|—>
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed · `—` none. `GLOSSARY.md`, the `<vocabulary>` block and `GLOSSARY-violations.md` stay free of box art and signature.
+</presentation>
+
 <core_principle>
 One concept → one canonical term. Used everywhere: spoken, docs, code identifiers, commit messages, PR titles, agent prompts.
 </core_principle>

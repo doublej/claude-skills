@@ -13,6 +13,23 @@ allowed-tools:
 Manage routing rules in the Browser Router macOS app by editing
 `~/Library/Application Support/Browser Router/config.yaml`.
 
+<presentation>
+
+Print this banner once, as the first thing in the response (not on follow-ups).
+Close every run with the report in `<reporting>`.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   BROWSER ROUTER                                             ║
+║   Natural-language routing rules for Browser Router          ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+</presentation>
+
 <authoritative_reference>
 
 The schema, `matchType` semantics, priority rules, bundleID lookup table, and editing
@@ -205,11 +222,21 @@ bash "$SKILL_DIR/scripts/list-rules.sh"
 
 <reporting>
 
-After any write, report:
-- One sentence summary: "Added rule: github.com → Arc (Work), priority 2."
-- The affected YAML block (the new rule or the changed lines).
-- Whether the app was relaunched.
+Close every run with this block (fixed width, one row per affected rule; for `list`,
+one row per rule with CHANGE `—`):
 
+```
+BROWSER ROUTER  ──  <intent>   relaunched: <✓|✗|—>   rules: <n>
+
+PRI   PATTERN               MATCH      BROWSER (PROFILE)     CHANGE
+──────────────────────────────────────────────────────────────────────
+<n>   <pattern>             <type>     <browser (profile)>   <added|updated|removed|enabled|disabled|moved|—>
+
+github.com/doublej
+```
+
+Marks: `✓` done · `✗` failed · `—` none. A failed step is a row or one line under the table.
+After the block, for writes only: the affected YAML block (the new rule or the changed lines).
 Skip the YAML block for `list` and read-only ops.
 
 </reporting>

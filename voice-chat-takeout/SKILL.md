@@ -10,6 +10,31 @@ You are the **project agent**. Hand the user a voice-friendly brief and
 *kind* (return channel) and a *shape* (content structure) — see *Flavors*
 and *Shape* below.
 
+## Presentation
+
+Print this banner once, first in the response; step 6 closes with the report below.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   VOICE CHAT TAKEOUT                                         ║
+║   Voice-ready briefs, with an optional return channel        ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+VOICE CHAT TAKEOUT  ──  <slug>   kind: <CLAUDE_VOICE|REMINDERS>   shape: <decision|reference|interview>
+
+brief      ~/.claude/voice-takeouts/<YYYYMMDD-HHMM>-<slug>.md
+channel    <clipboard ✓|_rb_voice_<slug>>
+nav        <on|off|—>
+
+github.com/doublej
+```
+
+The deliverables (the brief and the kick-start) stay free of box art and signature.
+
 ## The rule that governs everything: the voice agent is detached
 
 The voice agent has no memory of this session and, by default, no view of
@@ -415,7 +440,7 @@ composing; shape cannot. `for <subject>` ⇒ interview.
      interview brief, and walk me through the questions"), since speech
      destroys slugs and paths.
 
-6. **Tell the user** what you produced. Keep it terse:
+6. **Tell the user** what you produced, as the *Presentation* report block. Keep it terse:
    - File path of the saved brief.
    - For REMINDERS: list name + `read` command (from `rbridge` stdout).
    - For CLAUDE_VOICE: confirmation that the brief is on the clipboard.

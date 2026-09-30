@@ -9,6 +9,10 @@ Separate audio sources using Meta's Segment Anything Audio model. Focus on integ
 
 </intro>
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — audio-sam · github.com/doublej
+</presentation>
+
 <when_to_use>
 
 - Separating vocals, instruments, or sound effects from audio files

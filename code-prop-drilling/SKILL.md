@@ -9,6 +9,21 @@ Scan component trees or call chains to find props, parameters, and injected memb
 
 Pure analysis skill — uses Glob, Grep, Read. No scripts.
 
+<presentation>
+Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE PROP DRILLING                                         ║
+║   Prop and parameter threading detector                      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+The report opens with the block in Phase 4 "Summary table". Per-chain detail and
+the action plan follow it as markdown, free of box art and signature.
+</presentation>
+
 <scope>
 ## When to use
 
@@ -240,14 +255,22 @@ Output a markdown report with these sections:
 
 ### Summary table
 
-```markdown
-| Severity | Count | Language | Deepest chain |
-|----------|-------|----------|---------------|
-| CRITICAL | N     | C++      | A → B → C → D → E |
-| HIGH     | N     | ...      | ...           |
-| MEDIUM   | N     | ...      | ...           |
-| LOW      | N     | ...      | ...           |
+Fixed width, one row per severity × language, in a plain code block:
+
 ```
+CODE PROP DRILLING  ──  <root>   families: <A|B|A+B>   chains: <n>   systemic: <n|—>
+
+SEVERITY   COUNT   LANGUAGE   DEEPEST CHAIN
+──────────────────────────────────────────────────────────────
+CRITICAL   <n>     C++        A → B → C → D → E
+HIGH       <n>     <lang>     <chain|—>
+MEDIUM     <n>     <lang>     <chain|—>
+LOW        <n>     <lang>     <chain|—>
+
+github.com/doublej
+```
+
+`—` marks none. A chain on a realtime path gets one line under the block.
 
 ### Per-chain detail
 

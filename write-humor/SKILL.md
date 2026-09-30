@@ -18,6 +18,30 @@ Craft skill for constructing humor deliberately. The premise is the engine, the
 connector is the hinge, and final position is load-bearing — most "this isn't
 landing" problems are mechanical, not mysterious.
 
+<presentation>
+Print once, first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   WRITE HUMOR                                                ║
+║   Premise-first joke craft and linter                        ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+After the delivered versions, close with this report. The jokes, bits, and copy themselves stay free of box art and signature.
+```
+WRITE HUMOR  ──  <topic|draft>   mode: <construct|inject|diagnose>   lint: <✓|✗>
+
+VERSION   DEVICE              ERRORS   WARNS KEPT   PICK
+────────────────────────────────────────────────────────
+<n>       <device>            <n|—>    <n|—>        <✓|—>
+
+github.com/doublej
+```
+Warn overrides (rule, where, test result) and the one-line recommendation follow as prose.
+</presentation>
+
 <mode_detection>
 
 Pick one. If genuinely ambiguous, ask once, then commit.

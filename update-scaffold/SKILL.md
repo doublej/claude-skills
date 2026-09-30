@@ -9,6 +9,31 @@ Bring a project generated from the cookiecutter-templates repo up to date with i
 
 The classification + diffing logic already lives in the templates repo at `tools/update_scaffold.py`. This skill does NOT reimplement it — it locates the project, runs that script, and walks the user through the result safely.
 
+## Presentation
+
+Print this banner once, first in the response; close the run with the report below.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   UPDATE SCAFFOLD                                            ║
+║   Upstream template updates, applied without bulldozing      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+UPDATE SCAFFOLD  ──  <template> <local> → <upstream>   mode: <safe|force|bump only|none>
+
+FILE                    BUCKET             ACTION
+──────────────────────────────────────────────────────────────
+<path>                  <bucket>           <overwritten|merged|sidecar|moved in|trashed>
+
+github.com/doublej
+```
+
+A sidecar still awaiting review is a row marked `…`; an AFK/cancelled choice is one line under the table.
+
 ## When this runs
 
 - The SessionStart hook prints `[template-update] … <template> <local> -> <upstream>` (the deployed `check_template_update.py`).

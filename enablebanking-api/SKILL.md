@@ -13,6 +13,10 @@ PSD2 aggregation API: read European bank accounts, balances, transactions; initi
 - **Official samples** (Python/JS/Go/C#/PHP/Ruby/Postman): https://github.com/enablebanking/enablebanking-api-samples
 - **Reference docs**: https://enablebanking.com/docs/api/reference/
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — enablebanking-api · github.com/doublej
+</presentation>
+
 ## Setup (one-time)
 
 1. Generate RSA keypair:

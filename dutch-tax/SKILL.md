@@ -9,6 +9,10 @@ Opinionated for **ZZP (eenmanszaak)** and **BV / DGA** scenarios. VOF mentioned 
 
 **All numeric thresholds are 2026** unless explicitly tagged otherwise. Verify against `references/05-rules-2026/` before applying.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: `— dutch-tax · github.com/doublej` (after the hard-rule 4 disclaimer).
+</presentation>
+
 ## Hard rules (read before answering anything tax-numerical)
 
 1. **Never invent numbers.** If a 2026 threshold is not in `references/05-rules-2026/`, say "not in skill — verify against Belastingdienst.nl" and stop.

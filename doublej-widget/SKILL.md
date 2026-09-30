@@ -8,6 +8,30 @@ description: "Set up, deploy, and embed the DoubleJ project-linking widget. Use 
 Embeddable corner widget with path-based profile matching. Lives at:
 `~/Documents/development/web/doublej-project-linking`
 
+<presentation>
+Print this banner once at the start:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DOUBLEJ WIDGET                                             ║
+║   Project-linking widget: profiles, rules, deploy            ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with this report, one row per profile touched:
+```
+DOUBLEJ WIDGET  ──  <slug|all>   action: <add|remove|edit|deploy|embed>   domain: <domain>
+
+PROFILE           RULE                        PRIORITY   PUSHED   PAGES
+─────────────────────────────────────────────────────────────────────
+<slug>            <domain><pathPattern>       <n>        <✓|✗|—>  <✓|✗|…|—>
+
+github.com/doublej
+```
+</presentation>
+
 <tech_stack>
 
 SvelteKit 5 + Svelte 5, Bun, Vite. Deployed to GitHub Pages via GitHub Actions.

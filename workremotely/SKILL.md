@@ -7,6 +7,12 @@ description: Toggle transparent SSH forwarding for Bash commands in a chosen dir
 
 Session-scoped remote Bash execution. Toggled on/off by creating or deleting a `.workremotely` marker file in the directory whose subtree should run remotely. A PreToolUse hook walks upward from each Bash call's cwd to find the marker; if found, the command is rewritten as `ssh <host> bash -lc '<cmd>'` before Claude Code sends it.
 
+<presentation>
+Mode skill: no banner, no report. After enable or disable, print one activation line:
+`workremotely on  host=<host>  scope=<dir>  — workremotely · github.com/doublej`
+(or `workremotely off  scope=<dir>  — workremotely · github.com/doublej`).
+</presentation>
+
 <setup>
 
 ## First-time setup

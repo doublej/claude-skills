@@ -18,6 +18,20 @@ Provenance: claims below marked [judgment] are heuristics calibrated in one audi
 observed live.
 </overview>
 
+<presentation>
+Print once, first in the response; close with the report block in `<reporting>`.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   UI ALIGN                                                   ║
+║   Measure, fix and prove live-DOM text alignment             ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+</presentation>
+
 <diagnostic_order>
 Diagnose in this order. Skipping ahead produces nudge-hacks that paper over real
 layout bugs.
@@ -137,6 +151,20 @@ text. Under ~0.25px spread reads as coherent.
 </verification_protocol>
 
 <reporting>
+Close every audit with this block (one row per defect or checked relationship), then the prose below it:
+
+```
+UI ALIGN  ──  <selector>   cap-mid spread: <before>px → <after>px   proof: <enlarge|—>
+
+ELEMENT             RELATIONSHIP    DELTA     ACTION             FIXED
+──────────────────────────────────────────────────────────────────────
+<text|icon>         <baseline|ink>  <n>px     <fix|note|ignore>  <✓|✗|—>
+
+github.com/doublej
+```
+
+Not-fixed rows keep `—` in FIXED with the reason (cost, blast radius, below threshold) in ACTION or on one line under the table.
+
 - Lead with the defect in plain language, then the numbers.
 - State deltas against a **named reference line** ("baseline 27.30 shared by A, B, C").
 - Headline result: **before → after cap-mid spread**.

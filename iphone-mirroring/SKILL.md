@@ -20,6 +20,31 @@ verify (re-capture, re-parse, check goal)
    ↺ loop until goal or max steps
 ```
 
+## Presentation
+
+Print the banner once when a run starts; close every run with the report (one row per trajectory step).
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   IPHONE MIRRORING                                           ║
+║   Vision agent for the mirrored iPhone                       ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+IPHONE MIRRORING  ──  "<goal>"   backend: <gemma|claude>   steps: <n>/<max>
+
+STEP   ACTION        ELEMENT            SCREEN CHANGED   RESULT
+──────────────────────────────────────────────────────────────────
+<n>    <tap|swipe…>  <id> <label|—>     <✓|✗>            <✓|✗|…>
+
+github.com/doublej
+```
+
+Goal reached or not, the trajectory path (`/tmp/iphone-mirror/run-<ts>/`) and any blocker go on one line under the table.
+
 ## When to use
 
 The user wants Claude to **drive their actual iPhone** — open apps, tap, type, swipe, navigate. This is **not** the iOS Simulator (use `martingeidobler/ios-mcp-server` for that) and **not** Xcode/Appium device automation.

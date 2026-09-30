@@ -11,6 +11,29 @@ Treat CLAUDE.md as **context architecture**, not just rules. The goal is to leav
 
 The best outcome is not "lots of Claude files." It is that when Claude enters a subtree, it receives the same orientation a senior engineer would give before saying: "now make the change."
 
+## Presentation
+
+Print this banner once, as the first thing in the response (not on follow-ups):
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CLAUDE MD TREE                                             ║
+║   CLAUDE.md context packets across a codebase                ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close the run with this block, one row per file proposed or touched (the deliverables in "What to deliver" follow it as detail). KIND is claude-md, glossary, rule or skill; ACTION is added, edited, proposed or `—`. Marks: `✓` loaded in `/memory` · `✗` failed · `—` not applicable. A stop at the Gate is one line under the table.
+```
+CLAUDE MD TREE  ──  <repo>   candidates: <n>   written: <n>   glossary: <✓|✗|—>
+
+FILE                          KIND              ACTION       VERIFIED
+──────────────────────────────────────────────────────────────────────────
+<path>                        <kind>            <action>     <✓|✗|—>
+
+github.com/doublej
+```
+
 ## When to use this skill
 
 Trigger on requests like:

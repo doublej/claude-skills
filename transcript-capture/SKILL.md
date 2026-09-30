@@ -7,6 +7,31 @@ description: "Extract session transcripts from JSONL files for making-of content
 
 Reads Claude Code session JSONL files and extracts conversation content into structured text for downstream use (video content, documentation, logging).
 
+<presentation>
+Print once, first in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   TRANSCRIPT CAPTURE                                         ║
+║   Session JSONL to clean transcript text                     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close each capture with this block. The transcript file or stdout stays clean: no box art, no signature inside it.
+
+```
+TRANSCRIPT CAPTURE  ──  <project>   source: <jsonl|clipboard>   role: <role>   format: <plain|video>
+
+SESSION                 ENTRIES    OUTPUT                 OK
+────────────────────────────────────────────────────────────
+<uuid.jsonl|clipboard>  <n|—>      <path|stdout>          ✓
+
+github.com/doublej
+```
+</presentation>
+
 <session_location>
 
 ```

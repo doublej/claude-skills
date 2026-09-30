@@ -7,6 +7,32 @@ description: "Scan style files for font-family declarations, generate Mermaid fl
 
 Scan project styles and output a deterministic Mermaid flowchart of all font-family declarations, rooted at body/html/:root.
 
+<presentation>
+Print this banner once at the start:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DIAGRAM FONTS                                              ║
+║   Font-family tree of a project's styles                     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with this report, one row per graph node (root first):
+```
+DIAGRAM FONTS  ──  <project-dir>   saved: font-family-tree.md   nodes: <n>
+
+SELECTOR          FONT STACK                 LOCATION
+──────────────────────────────────────────────────────
+<root selector>   <font1, font2, …|not set>  <file:line|—>
+
+github.com/doublej
+```
+
+No declarations found is one line under an empty table.
+</presentation>
+
 <usage>
 
 Run the bundled script and save the output as a markdown file in the project root:

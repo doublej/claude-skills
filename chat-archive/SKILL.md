@@ -9,14 +9,35 @@ Search exported ChatGPT and Claude.ai conversations via SQLite full-text search.
 
 ## Initialization
 
+Print once, as the first thing in the response (not on follow-ups):
+
 ```
-╔══════════════════════════════════════════════╗
-║  CHAT ARCHIVE v1.0                           ║
-║  Conversation Search Engine (SQLite FTS5)    ║
-╚══════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CHAT ARCHIVE v1.0                                          ║
+║   Conversation search engine (SQLite FTS5)                   ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
 ```
 
 DB location: `~/.chat-archive/conversations.db`
+
+## Report
+
+Close every import or search with this block (one row per conversation; an import or stats run uses aligned `key  value` lines: imported, skipped, conversations, messages):
+
+```
+CHAT ARCHIVE  ──  "<query>"   platform: <chatgpt|claude|all>   showing: <n> of <m>
+
+#    TITLE                          PLATFORM   DATE         MATCHES   ID
+──────────────────────────────────────────────────────────────────────────
+<n>  <title>                        <platform> <yyyy-mm-dd> <n>       <id>
+
+github.com/doublej
+```
+
+Marks: `✓` done · `✗` failed · `—` none. An active `--limit` is one line under the table. Snippets go after the block.
 
 <context_budget>
 ## Context Budget Rules

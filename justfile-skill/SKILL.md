@@ -7,6 +7,31 @@ description: "Create and manage Justfiles for project task automation and dev en
 
 Create Justfiles that match the user's established conventions. Skill is grounded in official just documentation + tested patterns from 40+ projects.
 
+<presentation>
+Print the banner once when a run starts; close with the report (one row per recipe group, from `just --list`).
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   JUSTFILE SKILL                                             ║
+║   House-convention Justfiles, verified with just --list      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+```
+JUSTFILE SKILL  ──  <project>/Justfile   stack: <detected>   mode: <created|updated>
+
+GROUP       RECIPES                      CHECKED
+──────────────────────────────────────────────────
+<group>     <recipe>, <recipe>, …        <✓|✗|—>
+
+github.com/doublej
+```
+
+A failed Verification Checklist item is one line under the table with its cause.
+</presentation>
+
 <foundation>
 ## Foundation: Official Just Manual
 

@@ -7,6 +7,30 @@ description: "Generate architecture docs, API references, onboarding guides from
 
 Generate comprehensive technical documentation from source code by analyzing project structure, detecting frameworks, and creating architecture guides, API references, and onboarding documentation.
 
+## Presentation
+
+Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODEBASE DOCUMENTER                                        ║
+║   Architecture, API and onboarding docs                      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close every run with this report (one row per doc in the Decision Framework), then detail as short prose below it:
+```
+CODEBASE DOCUMENTER  ──  <project>   stack: <frameworks>   structure: <single|monorepo|multi-package>
+
+DOC               PATH                    LINES   STATUS
+──────────────────────────────────────────────────────────────
+ARCHITECTURE      docs/ARCHITECTURE.md    <n>     <created|updated|skipped: why>
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed · `—` none. The generated docs stay free of box art and signature.
+
 ## When to Use
 
 Trigger this skill when:

@@ -9,6 +9,31 @@ Invoked as `memo-transcribe <folder>` where `<folder>` is a Voice Memos folder n
 
 For each unprocessed recording: pull Apple's built-in transcript out of the audio file, transcribe the same audio with the local parakeet server, write both to one markdown file. Idempotent — a second run writes nothing unless new memos exist or a previous run failed.
 
+<presentation>
+Start with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   MEMO TRANSCRIBE                                            ║
+║   Voice Memos folder to markdown via parakeet + Apple        ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+End with this report, one row per `wrote`/`failed`/`missing` line the script printed. Marks: `✓` wrote · `✗` failed or missing.
+```
+MEMO TRANSCRIBE  ──  <folder>   new: <N>   skipped: <M>   failed: <K>
+
+FILE                                        RESULT   CAUSE
+──────────────────────────────────────────────────────────────────────
+<YYYY-MM-DD-HHMM-slug.md|missing audio>     <✓|✗>    <error|missing|—>
+
+github.com/doublej
+```
+The script's `output: <dir>` goes on one line after the block.
+</presentation>
+
 <run>
 
 ```bash
@@ -21,7 +46,7 @@ python3 scripts/transcribe_memos.py --self-check               # parser assertio
 ```
 
 The script prints one line per memo and ends with `N new, M skipped, K failed`.
-Report exactly those three counts back to the user, one line each.
+Report exactly those three counts back to the user, in the report header (`<presentation>`).
 
 </run>
 

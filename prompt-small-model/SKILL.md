@@ -7,6 +7,29 @@ description: "Prompts and configs for small 8B models (Llama 3.1), Ollama/llama.
 
 Write prompts that actually work on 8B models. These models are capable but unforgiving — they need clear, constrained prompts with no ambiguity.
 
+<presentation>
+Deliverable tier. Print the banner once at the start; close with the report after the config block. The yaml config from `<output_format>` stays clean: no box art and no signature inside it.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   PROMPT SMALL MODEL                                         ║
+║   Prompt + sampling config for 8B models (Llama 3.1)         ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+PROMPT SMALL MODEL  ──  <task>   type: <instruction|extraction|creative|classification>   model: <llama3.1:8b>
+
+system prompt   <n> words
+temperature     <value>
+num_predict     <value>
+one-shot        ✓|—
+
+github.com/doublej
+```
+</presentation>
+
 <core_constraint>
 
 ## The 8B Reality

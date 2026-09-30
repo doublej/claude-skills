@@ -5,6 +5,10 @@ description: "Video-over-UDP for VR: packet sharding, FEC, adaptive bitrate, ALV
 
 # Low-Latency UDP Streaming
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — stream-udp · github.com/doublej
+</presentation>
+
 <core_constraints>
 
 VR streaming has unique requirements that differ from standard video streaming:

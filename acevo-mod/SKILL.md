@@ -8,6 +8,11 @@ description: Modding Assetto Corsa EVO (AC EVO / ACE) — official Car Editor SD
 AC EVO is a **different game and a different pipeline** from Assetto Corsa (2014). Almost every
 tutorial on the internet is AC1. Applying AC1 knowledge here is the #1 source of wasted afternoons.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output,
+end with: — acevo-mod · github.com/doublej
+</presentation>
+
 <state>
 Verified 2026-08-09. AC EVO is in Steam Early Access (appid 3058630, Windows-only), so this moves.
 

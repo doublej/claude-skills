@@ -14,6 +14,30 @@ Read [live monitoring](references/live-monitor.md) and name the chosen observer
 surface before dispatch. Use one actual session; do not create a second run to
 watch the first. Preserve result capture when Claude needs Codex's answer.
 
+## Presentation
+
+Open the first response with this banner (once), close each launch with the report:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODEX LAUNCH                                               ║
+║   Visible, monitored Codex sessions from Claude              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+CODEX LAUNCH  ──  <task>   path: <monitored|cli|app|plugin>   cwd: <dir>
+
+OBSERVER            SESSION/JOB ID     LOG                     STATUS
+──────────────────────────────────────────────────────────────────────
+<iTerm2 tab|pane>   <id|—>             <log path|—>            <✓|✗|…|pending>
+
+github.com/doublej
+```
+
+`pending` = app handoff not yet submitted. A launch failure is a row with its cause.
+
 ## Choose the launch path
 
 | Intent | Path |
@@ -83,7 +107,7 @@ For image-model selection and image/session brief templates, read
 `~/.claude/skills/codex-image/references/session-briefs.md`.
 
 Report observer location, session/job ID when exposed, retained log, and final
-status. For handoffs, leave the user in control. For captured work, collect and
+status in the Presentation report. For handoffs, leave the user in control. For captured work, collect and
 inspect the result before incorporating it. Surface launch failures directly.
 
 Activate the monitor rule for all Claude projects with:

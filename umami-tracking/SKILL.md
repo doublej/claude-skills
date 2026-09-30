@@ -7,6 +7,20 @@ description: "Add Umami analytics tracking to any website project"
 
 Add Umami analytics to any website. Automatically registers the site in the Umami dashboard and injects the tracking snippet with the real website ID.
 
+<presentation>
+Print this banner once, first in the response. Close with the report under Post-Injection.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   UMAMI TRACKING                                             ║
+║   Register a site and inject Umami analytics                 ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+</presentation>
+
 <defaults>
 
 - **Umami URL**: `https://umami-inky-two.vercel.app`
@@ -66,7 +80,17 @@ python3 <skill_dir>/scripts/inject_tracking.py <project_dir> <website_id> [--aut
 
 ## Post-Injection
 
-Notify the user: "Tracking added for **<site-name>**. View stats at https://umami-inky-two.vercel.app/websites"
+Report to the user with this block, one row per file touched, then the dashboard link on one line under it: "View stats at https://umami-inky-two.vercel.app/websites"
+
+```
+UMAMI TRACKING  ──  <site-name>   domain: <domain>   website id: <uuid>   framework: <name|static>
+
+FILE                              SNIPPET
+──────────────────────────────────────────────────────────────
+<path>                            ✓ added | — already present
+
+github.com/doublej
+```
 
 The inject script is idempotent — files already containing the snippet are skipped.
 

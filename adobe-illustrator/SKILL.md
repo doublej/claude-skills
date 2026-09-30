@@ -7,6 +7,10 @@ description: "ExtendScript (.jsx) automation via osascript on macOS"
 
 Automate your local Illustrator installation via scripts triggered from the terminal. No cloud API or licence needed.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — adobe-illustrator · github.com/doublej
+</presentation>
+
 <overview>
 ## Bundled CLI (`tools/ai`)
 

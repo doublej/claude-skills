@@ -14,6 +14,30 @@ allowed-tools:
 Deploy applications to a QNAP NAS running Caddy.
 </description>
 
+<presentation>
+Open the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DEPLOY NAS                                                 ║
+║   Static sites and Node/Python apps to NAS Caddy             ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close it with this report, one row per site/app deployed:
+```
+DEPLOY NAS  ──  <subdomain>.jurrejan.com   type: <static|node|python|lan-proxy>   mount: <smb|ssh>
+
+SITE                     STAGED   SWITCHED   CADDY APPLIED   HTTP   ROLLBACK
+────────────────────────────────────────────────────────────────────────────
+<subdomain>.jurrejan.com ✓        ✓          <✓|✗|—>         200    <.old|build.old|—>
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed (cause in the row) · `—` not applicable (e.g. apply skipped on an unchanged `.caddy`, nothing staged for a LAN proxy). After the block: the live URL, and for a LAN proxy the host-side deploy handed to **homenetwork**.
+</presentation>
+
 <when_to_use>
 
 - Deploying static frontend sites to NAS

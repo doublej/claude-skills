@@ -7,6 +7,30 @@ description: "Importance-ranked repo maps via Tree-sitter parsing and PageRank. 
 
 Generate a structural map of any codebase ranked by importance. Uses Tree-sitter for code parsing and PageRank for ranking file/symbol significance.
 
+<presentation>
+Only when the user invoked this skill directly. When another skill runs it for context, print neither block. Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE MAP                                                   ║
+║   Importance-ranked repo map                                 ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+After the map, close with this report (top-ranked files, at most 10 rows):
+```
+CODE MAP  ──  <root>   files: <analysed>   ranked: <n>   tokens: ~<n>
+
+RANK    FILE                          KEY SYMBOLS
+──────────────────────────────────────────────────────────────
+<score> <path>                        <symbol, symbol|—>
+
+github.com/doublej
+```
+The raw map output (see `<output_format>`) stays unchanged.
+</presentation>
+
 <setup>
 Auto-installs on first run. All code is bundled in `scripts/repomap/`.
 </setup>

@@ -9,6 +9,30 @@ Audit log call sites across a codebase. Fix three classes of issue: **wrong leve
 
 Scanner does mechanical extraction. Claude does semantic judgment.
 
+<presentation>
+Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE LOGGING                                               ║
+║   Log level, message and gap auditor                         ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close every run with this report (one row per batch; audit-only: one row per category, `—` in BATCH/GATES/COMMIT), then the Phase 6 notify and reverted-batch detail:
+```
+CODE LOGGING  ──  <root>   mode: <audit|apply>   issues: <before> → <after|—>   branch: <branch|—>
+
+BATCH   CATEGORY   FILE                     CHANGES   RISK     GATES   COMMIT
+─────────────────────────────────────────────────────────────────────────────
+<n>     <RELEVEL>  <path>                   <n>       <risk>   <✓|✗>   <sha|reverted>
+
+github.com/doublej
+```
+Marks: `✓` passed · `✗` failed · `—` none. `LOGGING_AUDIT_REPORT.md` and the notify text stay free of box art and signature.
+</presentation>
+
 <pipeline>
 ```
 Phase 1: SCOPE      run scan_logging.py, detect loggers in use

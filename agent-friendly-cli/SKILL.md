@@ -10,6 +10,31 @@ Build CLIs that minimize agent memory burden, token usage, and repair loops.
 For the full briefed checklist of every area to focus on, read
 `references/focus-areas.md`. The map below is the index into it.
 
+<presentation>
+Print once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   AGENT FRIENDLY CLI                                         ║
+║   Design, refactor and audit CLIs for agents                 ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close every build, refactor or audit with (one row per focus area, scored 0-2 per `references/evaluation-rubric.md`):
+```
+AGENT FRIENDLY CLI  ──  <cli>   mode: <build|refactor|audit>   score: <n>/20
+
+AREA                      SCORE   PRI   GAP
+──────────────────────────────────────────────────────────────
+<Output & formatting>     <0-2>   <n|—> <one-line gap|—>
+
+github.com/doublej
+```
+Findings detail and the next step go after the block as short prose. Code and the CLI's own output stay free of box art and signature.
+</presentation>
+
 <core_properties>
 An agent-friendly CLI is:
 

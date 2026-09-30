@@ -7,6 +7,31 @@ description: Audit and upgrade a FastAPI app's auto-generated docs from "thin Sw
 
 Transform a FastAPI project's docs from default Swagger UI + ReDoc into a polished, fully-described, multi-UI API reference — in one sweep.
 
+<presentation>
+Print once, first thing in the response (before the Phase 0 plan):
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   FASTAPI DOCS UPGRADE                                       ║
+║   Thin Swagger to rich API reference, Scalar at /docs        ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close after Phase 7 with one row per phase; a skipped phase is `—` with why in CHANGES:
+```
+FASTAPI DOCS UPGRADE  ──  <project>   ui: <scalar /docs[, extras]>   commits: <n>
+
+PHASE              CHANGES                     COMMIT     STATUS
+──────────────────────────────────────────────────────────────────
+<1 app metadata>   <n routes / fields / why>   <sha|—>    <✓|✗|—>
+7 verify           <routes 200: docs, redoc>   —          <✓|✗>
+
+github.com/doublej
+```
+</presentation>
+
 <when_to_use>
 User invokes `/fastapi-docs-upgrade` or asks to make their FastAPI docs richer, more professional, more detailed, or to add Scalar / RapiDoc / Stoplight Elements.
 </when_to_use>

@@ -7,6 +7,20 @@ description: "Read-only audit of every page in a SvelteKit app, producing one co
 
 Audit every page of a SvelteKit app and build one component inventory that would make the UI fully consistent. This is an assessment. Write the report file and change no other file. The fixes come later, from the report.
 
+<presentation>
+Print this banner once, as the first thing in the response. The reply closes with the block in `<reply>`. The report file itself stays plain markdown: no box art, no signature.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   UI INVENTORY                                               ║
+║   Page-by-page SvelteKit component inventory                 ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+</presentation>
+
 <arguments>
 - App directory: the argument if one is given, otherwise the nearest directory at or above cwd that has `svelte.config.js` or `svelte.config.ts`. All paths below are relative to it. If there is no SvelteKit app, reply `No SvelteKit app found at <path>` and stop.
 - Report path: `docs/ui-component-inventory.md` unless the user names another one.
@@ -47,10 +61,17 @@ Before you reply, count the Pages rows plus the Not inspected rows. The total mu
 </report>
 
 <reply>
-Reply with:
-- the report path
-- `<rows> of <N> pages covered` (plus the Not inspected count, if any)
-- the five changes that would harmonize the most pages, ranked by how many pages each one clears, each with its page count.
+Reply with this block: the report path, `<rows> of <N>` pages covered (plus the Not inspected count), and one row per change for the five changes that would harmonize the most pages, ranked by how many pages each one clears.
+
+```
+UI INVENTORY  ──  <app dir>   pages: <rows> of <N>   not inspected: <n|—>   report: <path>
+
+#   CHANGE                              ENTRY            PAGES
+──────────────────────────────────────────────────────────────
+1   <extend/new/replace hand-rolled>    <entry>          <n>
+
+github.com/doublej
+```
 
 Done when every page file from setup step 1 appears in the Pages table or under Not inspected. Stop there. Do not start fixing pages.
 </reply>

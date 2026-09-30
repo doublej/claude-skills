@@ -11,6 +11,10 @@ description: Reference for OpenClaw — the self-hosted personal AI assistant (g
 **Name conventions.** `OpenClaw` in prose/headings. `openclaw` for the CLI binary, npm package, paths, config keys. Don't confuse with `pjasicek/OpenClaw` — that's a C++ remake of the 1997 Captain Claw platformer, unrelated.
 </intro>
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — openclaw · github.com/doublej
+</presentation>
+
 <when_to_use>
 
 ## When to use this skill

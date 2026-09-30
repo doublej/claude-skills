@@ -13,6 +13,31 @@ description: >
 High-density, one-page summary of a design system, made to be ingested by
 agents (like Claude Code) or used as the source of truth for frontend work.
 
+<presentation>
+Open the run with this banner, once, above the sheet:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DESIGN SHEET                                               ║
+║   One-page design system: tokens, type, signature motif      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+After the sheet and the JSON write, close with this report:
+```
+DESIGN SHEET  ──  <project>   source: <code|description|design-sheet.json>   themes: <n>
+
+OUTPUT                        STATUS   INFERRED VALUES
+──────────────────────────────────────────────────────
+Markdown sheet (7 sections)   <✓|✗>    <n|—>
+design-sheet.json             <✓|✗>    <n|—>
+
+github.com/doublej
+```
+The Markdown sheet itself stays clean: no box art and no signature inside its block.
+</presentation>
+
 <workflow>
 1. If the target project root already has a `design-sheet.json`, read it first
    and treat it as source of truth; only extract from code to fill its gaps.

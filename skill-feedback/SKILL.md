@@ -9,6 +9,22 @@ arguments: "<skillname> <feedback>"
 Report feedback (bugs, improvements, ideas) on any skill — from whatever project you're in.
 Hands off to a new Claude session in the skills project, then resumes yours.
 
+<presentation>
+
+Open with this banner; close with the report in step 5.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   SKILL FEEDBACK                                             ║
+║   Hand skill feedback to a fresh session                     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+</presentation>
+
 <path_resolution>
 
 Resolve the skills project root from this skill's install symlink:
@@ -63,10 +79,20 @@ bash "$SKILLS_ROOT/skill-feedback/scripts/handoff.sh" \
 
 ### 5. Inform user
 
-After launching the handoff script, tell the user:
+After launching the handoff script, tell the user with this block:
 
-> Feedback session launched in a new iTerm2 tab. Your current session continues normally.
-> When the feedback is processed, a completion message will be sent to this session.
+```
+SKILL FEEDBACK  ──  <skillname>   handoff: <✓|✗>
+
+feedback    <first line of feedback>
+session     new iTerm2 tab in $SKILLS_ROOT
+current     continues normally
+completion  message sent to this session when processed
+
+github.com/doublej
+```
+
+A failed handoff is `handoff: ✗` with the script's error on one line under the block.
 
 </workflow>
 

@@ -11,6 +11,29 @@ Always use `bunx` instead of `npx` for running wrangler commands.
 
 Default Cloudflare account: `jurrejan@gmail.com` (Account ID: `e26bfba81a629fb8b4dcd538b1f73781`). Dashboard: https://dash.cloudflare.com/e26bfba81a629fb8b4dcd538b1f73781
 
+<presentation>
+Open the first response with the banner (once), close each run with the report.
+A setup-only run lists wrangler config, Justfile recipes and `wrangler whoami` as rows.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DEPLOY CLOUDFLARE                                          ║
+║   Pages and Workers deploys through Wrangler                 ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+DEPLOY CLOUDFLARE  ──  <project>   type: <pages|worker|combined>   account: <account>
+
+TARGET          BRANCH        DEPLOYED   URL                        VERIFIED
+────────────────────────────────────────────────────────────────────────────
+<pages|worker>  <branch|—>    <✓|✗>      <*.pages.dev|domain|—>     <✓|✗|—>
+
+github.com/doublej
+```
+A failure is a row; its cause (e.g. `code 10000`) goes on one line under the table.
+</presentation>
+
 <accounts>
 Other available accounts:
 - `Jrs@haist.one` — `ed64021ce50096c7eb065bb773a34be8`

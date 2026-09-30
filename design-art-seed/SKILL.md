@@ -9,6 +9,30 @@ Convert dense source material into prompts an external image-gen tool (Midjourne
 
 </intro>
 
+<presentation>
+Open the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DESIGN ART SEED                                            ║
+║   Source to fragments, variations, editorial brief           ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close the run (after the hand-off line) with this report, one row per stage:
+```
+DESIGN ART SEED  ──  <topic-slug>   register: <warm|wry|…>   stages: <1|2|3|all>
+
+STAGE   DELIVERABLE                                 STATUS
+──────────────────────────────────────────────────────────────
+1       tmp/<topic-slug>-seed-for-art.md            <✓|—>
+
+github.com/doublej
+```
+Marks: `✓` written · `✗` failed · `—` not run. The seed, variations and brief files, and any prompt meant for pasting into an image tool, stay clean: no box art and no signature inside them.
+</presentation>
+
 <rationale>
 
 Going `data → image` produces AI slop. Going `data → philosophy → motif → brief` strips literalism at every step. The canonical run (see `references/example-orac.md`) turned a 5-year, 157-email municipal complaint into 5 published editorial illustrations the user describes as "amazing".

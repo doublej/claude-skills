@@ -11,6 +11,10 @@ description: "Manage iTerm2 via it2 CLI - create/close tabs, split panes,
 
 Control iTerm2 via the `it2` CLI.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — iterm2 · github.com/doublej
+</presentation>
+
 Shared driver discipline (send vs run, capture-after-settle, explicit pane targeting — with the it2/tmux/cmux command table): see `~/.claude/skills/tmux/references/terminal-driver-core.md`.
 
 <prerequisites>

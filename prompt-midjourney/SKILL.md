@@ -15,6 +15,28 @@ want generation driven from the session.
 
 </intro>
 
+<presentation>
+Deliverable tier. Print the banner once at the start; close the step 6 handoff with the report. The prompt line stays clean: no box art and no signature inside it. Programmatic (JSON) calls get neither.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   PROMPT MIDJOURNEY                                          ║
+║   Midjourney V8 prompts: construct, lint, score, iterate     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+PROMPT MIDJOURNEY  ──  <target>   approach: <prompt-only|sref|oref|hybrid|sref random>   model: <V8.2>
+
+PROMPT          WORDS   LINT   WARNINGS KEPT   LOWEST DIMENSION
+─────────────────────────────────────────────────────────────────
+<#1|member>     <n>     ✓|✗    <n|—>           <dimension 0.xx|—>
+
+github.com/doublej
+```
+</presentation>
+
 <version_check>
 
 **V8.2 is the default model (since 2026-07-24). Midjourney shipped three minor versions in four months.**

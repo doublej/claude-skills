@@ -5,6 +5,10 @@ description: "VR headset decode: MediaCodec H.264/H.265/AV1, decode-to-texture, 
 
 # Video Decode Pipeline (VR/XR)
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — stream-decode · github.com/doublej
+</presentation>
+
 <before_writing>
 
 ## Before Writing Code

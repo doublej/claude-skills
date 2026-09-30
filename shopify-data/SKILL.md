@@ -7,6 +7,10 @@ description: "Product data architecture: variants, metafields, collections, filt
 
 Architect product data models using Shopify's native mechanisms correctly.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — shopify-data · github.com/doublej
+</presentation>
+
 <four_layers>
 
 | Layer | Mechanisms | Answers |

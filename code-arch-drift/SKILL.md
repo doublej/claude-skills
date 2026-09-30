@@ -11,6 +11,32 @@ the database", "services depend on repos, not the other way round") become
 executable checks. **No LLM in the hot path** — the checker is deterministic
 import-graph matching. Part of the `code-*` family (see Related skills).
 
+## Presentation
+
+Open the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE ARCH DRIFT                                            ║
+║   Layer & dependency boundary checker                        ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close it with this block, one row per violation; severity is `forbidden`, `layer`, `cycle`, or `observed` (scan-only):
+```
+CODE ARCH DRIFT  ──  <repo>   blueprint: <file|none: assumed layers>   violations: <n>
+
+SEVERITY    SOURCE [LAYER]              TARGET [LAYER]              RULE
+──────────────────────────────────────────────────────────────────────────────
+<severity>  <src_file> [<layer>]        <target> [<layer>]          <rule|—>
+
+github.com/doublej
+```
+
+No violations after a real check: one row `✓  no drift`. With no blueprint, name the assumed layer split on one line under the table; fix-or-refine decisions follow as short prose.
+
 ## When to use
 
 - Auditing a repo for boundary violations before a refactor or release

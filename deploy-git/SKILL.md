@@ -5,6 +5,27 @@ description: Git protocol when a commit or push exists only to deploy — tempor
 
 # Deployment git protocol
 
+<presentation>
+Open the first response with the banner (once), close the deploy with the report:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DEPLOY GIT                                                 ║
+║   Deploy-only commits from a temporary worktree              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+DEPLOY GIT  ──  <target>   ref: <deploy/target|existing sha>   force: <no|asked>
+
+REPO              COMMIT      CHECKS   PUSHED   WORKTREE
+────────────────────────────────────────────────────────────
+<repo>            <sha|—>     <✓|✗>    <✓|✗>    <removed|kept: why>
+
+github.com/doublej
+```
+</presentation>
+
 When Git is only required to deploy:
 
 - Prefer pushing an existing commit.

@@ -7,6 +7,30 @@ description: "Route MCP servers to dedicated agents to reduce token bloat in mai
 
 Offload MCP servers from primary session to dedicated agents. Each agent owns specific MCP servers and handles tasks on behalf of the main session.
 
+## Presentation
+
+Start with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   MCP AGENT ROUTER                                           ║
+║   MCP servers routed to dedicated agents, lean main context  ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+End with this report, one row per agent created or removed. Marks: `✓` done · `✗` failed · `—` n/a.
+```
+MCP AGENT ROUTER  ──  <project>   agents: <n>   via: <mcpick-plus|manual>
+
+AGENT          SERVERS              MODEL    AGENT FILE   .MCP.JSON   CLAUDE.MD ROW
+───────────────────────────────────────────────────────────────────────────────────
+<name>         <server,server>      <model>  <✓|✗>        <✓|✗|—>     <✓|✗>
+
+github.com/doublej
+```
+
 ## Why
 
 Each MCP server adds 1k-10k+ tokens of tool descriptions to every turn. Loading gmail, notion, github, etc. directly wastes context when you only need them occasionally. Instead: create a project-level agent per MCP domain that the primary session delegates to via Task tool.

@@ -9,6 +9,30 @@ description: Intelligently split oversized files into focused, single-responsibi
 Split oversized files into focused modules by analyzing responsibility boundaries, dependency graphs, and consumer imports.
 </description>
 
+<presentation>
+Print this banner once, as the first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODE MODULARIZE                                            ║
+║   Oversized file splitter                                    ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close every run with this report (one row per scanned candidate; a file left whole says why in NEW MODULES), then detail as short prose below it:
+```
+CODE MODULARIZE  ──  <target>   threshold: <n> lines   split: <n> files
+
+FILE                    LINES   NEW MODULES                 IMPORTS   CHECKS
+──────────────────────────────────────────────────────────────────────────
+<path>                  <n>     <module, module|kept: why>  <n|—>     <✓|✗|—>
+
+github.com/doublej
+```
+Marks: `✓` passed · `✗` failed · `—` none. The Phase 3 split proposal keeps its own format.
+</presentation>
+
 <scripts>
 
 All scripts are in `~/.claude/skills/code-modularize/scripts/`.

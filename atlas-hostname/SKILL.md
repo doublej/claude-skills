@@ -11,6 +11,31 @@ Two jobs, nothing else:
 Mechanics live in project-atlas (`atlas-api/src/lib/caddyDev.ts`, `ports.ts`, `scanner.ts`). CLI surface lives in the `atlas-cli` skill. Do not restate either here.
 </scope>
 
+<presentation>
+Print this banner once, first; close the run with the report (hostname, never localhost; a failure's cause goes on one line under the table).
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   ATLAS HOSTNAME                                             ║
+║   Expose a dev server on its atlas LAN hostname              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+ATLAS HOSTNAME  ──  https://<slug>.atlas.local.jurrejan.com   port: <N>   nas: <synced|not synced>   claude.md: <✓|—>
+
+STEP                 RESULT   DETAIL
+────────────────────────────────────────────────────────────
+dev server           <✓|✗>    <devCommand|none: stopped>
+port · bind          <✓|✗>    <N> on 0.0.0.0 (<unchanged|was <old>>)
+GET hostname         <✓|✗>    <http code>
+origin · API base    <✓|✗|—>  <POST/CORS result|n/a>
+
+github.com/doublej
+```
+</presentation>
+
 <ground_truth>
 - Hostname label is `atlas`: `<slug>.atlas.local.jurrejan.com` (LAN), `<slug>.atlas.remote.jurrejan.com` (WAN, basic auth unless `.atlas` has `devPublic: true`). project-atlas's own CLAUDE.md still says `.dev.`; it is stale.
 - Only `atlas run`, the web console run buttons and `atlas hostnames assign` register a hostname (`ensureRoute`). Raycast run and `atlas jump --run` register nothing.

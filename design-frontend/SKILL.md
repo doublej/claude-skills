@@ -14,6 +14,30 @@ description: >
 
 Creates distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implements real working code with exceptional attention to aesthetic details and creative choices.
 
+<presentation>
+Open the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DESIGN FRONTEND                                            ║
+║   Distinctive, production-grade frontend interfaces          ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close it with this report, one row per file built or restyled:
+```
+DESIGN FRONTEND  ──  <page|component>   direction: <tone>   system: <existing|new>
+
+FILE                          CHANGE     FONTS              MOTION
+──────────────────────────────────────────────────────────────────
+<path>                        <new|edit> <display / body>   <✓|—>
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed (cause in the row) · `—` none. The code itself stays free of box art and signature.
+</presentation>
+
 <design_thinking>
 
 **FIRST, check for an existing design system.** If the project already defines one (CSS variables/token files, an established font stack, set color palette, existing motion patterns), discover those constraints first and treat working cohesively within them AS the aesthetic direction — do NOT impose new fonts, palettes, or motion over an existing system. When a project-specific design-system skill already covers this app, prefer it over this skill rather than layering a bold new direction on top. The guidance below applies to greenfield work where you set the direction.

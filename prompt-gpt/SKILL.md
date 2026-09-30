@@ -7,6 +7,11 @@ description: "Optimize prompts for OpenAI GPT-5.x models (GPT-5.1 and GPT-5.2): 
 
 Refine and optimize prompts for OpenAI's GPT-5.x models. GPT-5.2 is the flagship for professional knowledge work and long-running agents; GPT-5.1 remains in use for existing deployments. Guidance below targets GPT-5.2 by default — GPT-5.1 deviations are collected in the `<gpt51_differences>` section.
 
+<presentation>
+Reference tier: no banner, no report. When invoked directly and the answer is the main output, end with: — prompt-gpt · github.com/doublej
+A rewritten prompt handed to the user stays free of that footer.
+</presentation>
+
 <key_differences>
 ## Key Differences from GPT-5.1
 

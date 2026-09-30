@@ -7,6 +7,29 @@ description: "Write social posts for X.com, Threads, Reddit, and Substack launch
 
 Write promotional social content for applications, tools, and products across X.com (Twitter), Threads, Reddit, and Substack.
 
+<presentation>
+Print once, first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   WRITE SOCIAL                                               ║
+║   Social posts for X, Threads, Reddit, Substack              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+After the `<step_deliver>` variants, close with this report. The posts themselves stay free of box art and signature.
+```
+WRITE SOCIAL  ──  <product>   goal: <launch|update|campaign>   vault: <✓|—>
+
+PLATFORM        ANGLE               LENGTH     PILLARS   STATUS
+────────────────────────────────────────────────────────────────
+<platform>      <angle>             <chars>    <✓|✗>     <draft|written: file>
+
+github.com/doublej
+```
+</presentation>
+
 <workflow>
 
 ```

@@ -16,6 +16,31 @@ description: >-
 
 Write loops, not prompts. The user gives one messy sentence; this skill returns a run they can launch and walk away from. Never make them explain the process — the process lives here.
 
+<presentation>
+Print the banner once when a run starts; the Run Card (`<step_6_deliver>`) is the report. The launch line and contract block stay clean: no box art and no signature inside them.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   LOOP BRIEF                                                 ║
+║   One-line intent to a launchable autonomous run             ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+```
+LOOP BRIEF  ──  "<intent>"   type: <turn|goal|time|proactive|no loop>   tier: <light|standard|heavy>   strength: <x>/10
+
+CHECK                        STATUS   NOTE
+──────────────────────────────────────────────────────────
+<step_4 check>                <✓|✗>    <what is missing|—>
+
+github.com/doublej
+```
+
+Launch line, contract paths, stop conditions, safety briefing and the three next-step lines follow the block as prose.
+</presentation>
+
 <non_negotiables>
 A run is only as safe as its weakest of three parts. Never ship a run missing any one:
 
@@ -101,7 +126,7 @@ Standard/heavy rules:
 </step_5_tiers>
 
 <step_6_deliver>
-Deliver a **Run Card**:
+Deliver a **Run Card**, opened with the `<presentation>` report block:
 
 1. **Type + one-line justification** (or "no loop — simpler fix: …")
 2. **Brief Strength: x/10** (with remaining assumptions if shipped before 10)

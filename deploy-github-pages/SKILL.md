@@ -8,6 +8,30 @@ allowed-tools: [Bash, Read, Write, Glob, Grep, Edit]
 
 Generates polished, animated, **multi-page** GitHub Pages documentation sites using the proven structure of the reference site `https://doublej.github.io/flt/`. The bundled scaffold ships the exact design system, a sticky `Nav`, and an animated `Terminal` demo component, then deploys via GitHub Actions.
 
+<presentation>
+Open the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DEPLOY GITHUB PAGES                                        ║
+║   flt-style SvelteKit docs site, deployed via Actions        ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close it with this report, one row per page built:
+```
+DEPLOY GITHUB PAGES  ──  <owner>/<repo>   build: <✓|✗>   pushed: <✓|✗>
+
+PAGE              PRERENDERED   TERMINAL DEMOS   IN NAV
+──────────────────────────────────────────────────────────
+/features         ✓             <n|—>            ✓
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed (cause in the row) · `—` none. After the block: the live URL `https://<owner>.github.io/<REPO_NAME>/` and the open post-deploy reminders (Pages source, Umami id).
+</presentation>
+
 <reference_site>
 The canonical "good" output is **flt** (`https://doublej.github.io/flt/`): sticky blurred nav, a hero with a run/install/agent toggle, an animated `Terminal` demo carousel, a features grid, command reference, and a CTA — across multiple pages.
 

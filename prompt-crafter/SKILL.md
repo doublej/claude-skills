@@ -11,6 +11,29 @@ Optional argument (`$ARGUMENTS`): target model. Default: `generic`. In `/prompt-
 
 The test for every deliverable: a fresh model, given only the prompt, produces the wanted output without a correction turn. Every step below names its output. Outputs marked *reply* appear in the selected path's output format; the rest are internal artifacts, not narrated reasoning. The authoring reply always includes the Target header, Assumptions, Facts, fenced prompt, Cuts, and Test it line. Writing a command means delivering its template, not executing its task or installing it unless requested.
 
+<presentation>
+Deliverable tier. Print the banner once, above the `Target:` header, and close with the report below the last line (`Test it:` or the final finding). "First line" and "last line" in this skill mean the reply between them. The fenced prompt stays clean: no box art and no signature inside it. Skip both when Step 0 exits.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   PROMPT CRAFTER                                             ║
+║   Prompts and instruction files that work on the first run   ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+PROMPT CRAFTER  ──  <deliverable kind>   target: <model>   path: <authoring|lint|feedback>
+
+reference   references/<file>
+overlay     <research profile|—>
+checks      <n PASS · n WARN · n FAIL | n findings | —>
+cuts        <n|—>
+
+github.com/doublej
+```
+</presentation>
+
 <scope>
 ## Step 0 — Scope gate
 

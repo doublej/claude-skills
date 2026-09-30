@@ -7,6 +7,31 @@ description: Scan text for AI copywriting tells and rewrite them out — the del
 
 Scan → fix → verify loop for de-AI-ing copy. The scanner is deterministic; the fix is a rewrite pass you perform guided by the catalog.
 
+<presentation>
+Print once, first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   WRITE DESLOP                                               ║
+║   AI-tell scanner and copy rewriter                          ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close the run with this report (it carries the required before/after scores). The rewritten copy itself stays free of box art and signature.
+```
+WRITE DESLOP  ──  <file|inline text>   channel: <email|social|sales|general>   passes: <n>
+
+SCAN        VERDICT        DENSITY/1K   CRITICAL   FINDINGS
+──────────────────────────────────────────────────────────────
+before      <verdict>      <score>      <n>        <n>
+after       <verdict>      <score>      <n|—>      <n|—>
+
+github.com/doublej
+```
+Kept findings (`kept: reason`) and out-of-scope notes follow as short prose.
+</presentation>
+
 <scope>
 This skill rewrites already-written copy so it stops reading as AI-written. Nothing else. In scope: the words on the page, and edits to them.
 

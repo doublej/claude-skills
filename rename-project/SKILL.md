@@ -9,6 +9,31 @@ Rename a project across all its roots — folder, GitHub repo, git remote, manif
 
 </intro>
 
+<presentation>
+Start the run with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   RENAME PROJECT                                             ║
+║   Folder, repo, remote, manifests, imports, venv             ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+End the run (after Phase 3 and the commit) with this report, one row per action from the plan:
+```
+RENAME PROJECT  ──  <old-name> → <new-name>   path: <new-path>   commit: <sha|—>
+
+#   ACTION                   TARGET                 RESULT
+──────────────────────────────────────────────────────────────
+<n> <action_type>            <file|repo|dir>        <✓|✗|— skipped>
+
+github.com/doublej
+```
+
+A failed step is a `✗` row with its cause; the remaining rows are `—`. The manual follow-ups from `<post_rename>` go after the block as short prose.
+</presentation>
+
 <scripts>
 
 All scripts are in `~/.claude/skills/rename-project/scripts/`.

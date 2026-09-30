@@ -5,6 +5,30 @@ description: "Change or check default application for file extensions on macOS"
 
 Change default file extension associations on macOS using `duti` and LaunchServices.
 
+<presentation>
+Print once, first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   FILE ASSOC                                                 ║
+║   Default app for a file extension on macOS                  ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with one row per extension touched; a failure (app not found, duti missing) is a `✗` row with its cause on one line under the table:
+```
+FILE ASSOC  ──  <.ext …>   action: <set|get|list|uti|id>
+
+EXTENSION   APP               BUNDLE ID              STATUS
+──────────────────────────────────────────────────────────────
+<.ext>      <App Name|—>      <com.example.app|—>    <✓|✗>
+
+github.com/doublej
+```
+</presentation>
+
 <workflow>
 
 1. Ask the user for the file extension and desired application name (use consult-user-mcp if available)

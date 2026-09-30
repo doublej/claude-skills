@@ -9,6 +9,10 @@ description: "Generate and process PDFs. ReportLab 4.x (Canvas API, Platypus lay
 Three branches. Pick the right one, or combine.
 </overview>
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — pdf · github.com/doublej
+</presentation>
+
 ## Which Branch?
 
 | Task | Branch |

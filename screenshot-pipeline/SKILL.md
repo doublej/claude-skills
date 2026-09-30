@@ -9,6 +9,30 @@ Produce polished, platform-optimized promotional screenshots from any project ty
 
 </intro>
 
+<presentation>
+Print once, as the first thing in the response, before the plan table:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   SCREENSHOT PIPELINE                                        ║
+║   Capture, frame and export promo screenshots                ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+In REVIEW, print this block above the images and the adjustment offers (one row per exported file; the `<output>` layout still applies):
+```
+SCREENSHOT PIPELINE  ──  <project>   method: <playwright|screencapture|simctl|faux>   manifest: <✓|✗|—>
+
+FILE                  PLATFORM    SIZE        FRAME / BG             STATUS
+────────────────────────────────────────────────────────────────────────────
+<file>.png            <platform>  <w×h>       <frame> / <background>  <✓|✗ cause>
+
+github.com/doublej
+```
+</presentation>
+
 <initial_planning>
 
 Before doing any work, present the user with a plan overview. Scan the project to determine:

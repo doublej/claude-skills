@@ -7,6 +7,10 @@ description: "Build VST/AU plugins with JUCE, NIH-plug, iPlug2, and DSP"
 
 Build professional audio effect processors as VST3, AU, AAX, and CLAP plugins.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — audio-effects · github.com/doublej
+</presentation>
+
 <when_to_use>
 - Building VST/AU audio plugins
 - Implementing DSP algorithms (filters, delays, reverbs, dynamics)

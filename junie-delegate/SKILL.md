@@ -8,6 +8,31 @@ description: Plan and manage a coding task while JetBrains Junie (gemini-3.8-fla
 Claude plans, scopes, reviews and verifies. Junie writes the code. The split is the point:
 Claude never edits implementation files in this mode, and Junie never decides scope.
 
+<presentation>
+Print once, first thing when the task starts:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   JUNIE DELEGATE                                             ║
+║   Claude plans and reviews, Junie writes the code            ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close the task with this block (one row per work order; cost is the session total from `<costs>`):
+
+```
+JUNIE DELEGATE  ──  <project>   baseline: <sha>   model: <model>   cost: $<total>
+
+ORDER   GOAL                  FILES   ROUNDS   DONE-WHEN   SCOPE   RESULT
+──────────────────────────────────────────────────────────────────────────
+<n>     <one-line goal>       <n>     <0-2>    <✓|✗>       <✓|✗>   <accepted|reverted|…>
+
+github.com/doublej
+```
+</presentation>
+
 <roles>
 Claude (planner/manager) — owns and never delegates:
 - Reading the codebase, deciding the approach, splitting work into orders.

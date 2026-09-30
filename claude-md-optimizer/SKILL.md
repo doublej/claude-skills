@@ -12,6 +12,29 @@ metadata:
 
 Analyze and improve the user's global CLAUDE.md file using current best practices.
 
+<presentation>
+Print this banner once, as the first thing in the response (not on follow-ups):
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CLAUDE MD OPTIMIZER v2.0                                   ║
+║   Global CLAUDE.md review against current practice           ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close the run (after changes are confirmed, or when the user declines) with this block, one row per recommendation. Marks: `✓` applied · `✗` failed · `—` declined or skipped. A stale-skill warning is one line under the table.
+```
+CLAUDE MD OPTIMIZER  ──  ~/.claude/CLAUDE.md   skill age: <n weeks>   applied: <n>/<m>
+
+PRIORITY   CATEGORY             CHANGE                          APPLIED
+──────────────────────────────────────────────────────────────────────────
+<H|M|L>    <focus area>         <recommended change>            <✓|✗|—>
+
+github.com/doublej
+```
+</presentation>
+
 <age_awareness>
 Run the age check script first and show results to the user:
 

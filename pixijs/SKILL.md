@@ -9,6 +9,22 @@ description: "Build, optimize, and debug PixiJS apps. Development (sprites, text
 Three branches. Pick the right one, or combine.
 </overview>
 
+<presentation>
+Development answers are reference: when invoked directly and the answer is the main output, end with: — pixijs · github.com/doublej
+
+Performance reviews and Debugging runs open with this banner once and close with the report in `<output>` (Debugging branch):
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   PIXIJS                                                     ║
+║   Build, profile and debug PixiJS apps                       ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+</presentation>
+
 ## Which Branch?
 
 | Task | Branch |
@@ -362,7 +378,19 @@ mcp__claude-in-chrome__javascript_tool({
 <output>
 ### Output Format
 
-Present results clearly:
+Close a performance review or debug run with this block (one row per checked metric or finding, targets from Performance Targets):
+
+```
+PIXIJS  ──  <app url | files reviewed>   renderer: <webgl|webgpu|—>   fps: <avg|—>
+
+CHECK               TARGET       VALUE        STATUS   FIX
+──────────────────────────────────────────────────────────────────
+<frame time>        < 16.67ms    <ms|—>       ✓|✗      <fix|—>
+
+github.com/doublej
+```
+
+Per-command detail goes after the block:
 - **stats**: Table of node types and counts
 - **rendering**: Config summary (type, size, resolution)
 - **benchmark**: FPS and frame time percentiles (avg/min/max/p95)

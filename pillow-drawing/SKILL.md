@@ -11,6 +11,10 @@ Create professional-looking graphics programmatically. Requires `pillow` (`uv ad
 For image manipulation, format conversion, and batch processing, see `references/image-operations.md`.
 </overview>
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — pillow-drawing · github.com/doublej
+</presentation>
+
 <rules>
 ## Rule #1: Anti-Alias Everything
 

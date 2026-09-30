@@ -7,6 +7,28 @@ description: "Display a compact table of all available skills and descriptions"
 
 Display all SKILL.md files in a compact table format.
 
+## Presentation
+
+Open with the banner, then wrap the script's table in the report.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   SKILL OVERVIEW                                             ║
+║   Compact table of every installed skill                     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+SKILL OVERVIEW  ──  <skills dir>   skills: <n>
+
+SKILL                     DESCRIPTION
+──────────────────────────────────────────────────────────────
+<skill-name>              <truncated description|—>
+
+github.com/doublej
+```
+
 ## Usage
 
 Run the script with the skills directory as argument:

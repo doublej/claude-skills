@@ -10,6 +10,22 @@ One skill, two halves over the same beads queue (`source:auto-analysis`):
 - **Collector (producer, hook-driven — never user-invoked):** two Claude Code hooks capture per-skill feedback automatically and file beads tickets.
 - **Optimizer (consumer — what runs when you invoke `/skill-feedback-loop`):** drains the backlog one ticket per invocation. Safe to run in `/loop` for autopilot.
 
+<presentation>
+
+Open an optimizer run with this banner (not in `/loop` mode with an empty backlog, which stays silent). Close with the report in step 7.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   SKILL FEEDBACK LOOP                                        ║
+║   Auto-analysis backlog drain, one ticket per run            ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+</presentation>
+
 <architecture>
 
 ```
@@ -118,11 +134,19 @@ bd close <id> -r "Fixed in commit <sha>. <one-line summary of change>."
 
 ### 7. Report back
 
-Tell the user:
-- Which ticket was worked
-- What changed
-- The commit sha
-- Whether more tickets remain (`bd ready --label source:auto-analysis --json | jq length`)
+Close with this block (remaining count from `bd ready --label source:auto-analysis --json | jq length`):
+
+```
+SKILL FEEDBACK LOOP  ──  bd-<id>   skill: <skill>   kind: <kind>
+
+ticket      <title>
+result      <✓ fixed | — closed stale | ✗ skipped: reason>
+change      <one-line summary of what changed>
+commit      <sha|—>
+remaining   <n> tickets
+
+github.com/doublej
+```
 
 </optimizer_workflow>
 

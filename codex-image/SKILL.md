@@ -9,6 +9,30 @@ Verified against official documentation on **2026-09-30**. Review the sources
 again when asked for current models; model availability depends on account,
 client, sign-in method, and rollout.
 
+## Presentation
+
+Open the first response with this banner (once), close each run with the report:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CODEX IMAGE                                                ║
+║   Image generation and edits through Codex                   ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+CODEX IMAGE  ──  <new|edit>   path: <inside codex|claude wrapper|api>   renderer: <model|not exposed>
+
+IMAGE PATH                      SIZE        ALPHA    INSPECTED   UNMET
+──────────────────────────────────────────────────────────────────────
+<saved path>                    <w×h>       <✓|—>    <✓|✗>       <requirement|—>
+
+github.com/doublej
+```
+
+The final brief goes after the block as prose. Marks: `✓` done · `✗` failed · `—` none.
+
 ## Choose the execution path
 
 - **Inside Codex:** use the available built-in `image_gen`/imagegen tool directly.
@@ -99,7 +123,8 @@ Existing files are never silently overwritten.
 
 Inspect the image before reporting success: subject, framing, text, labels,
 reference identity, unchanged areas, dimensions, and alpha when required.
-Report the final saved path, execution path, final brief, and any unmet requirement.
+Report the final saved path, execution path, final brief, and any unmet requirement
+in the Presentation report.
 Report the actual renderer only when available. Iterate with one targeted edit.
 Generated “vector-like” artwork is still raster; diagrams need factual checks.
 

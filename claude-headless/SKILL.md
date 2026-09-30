@@ -7,6 +7,23 @@ description: "Run Claude Code in headless mode (claude -p) for non-interactive a
 
 You are operating in **Claude Code headless mode** - a non-interactive automation mode for hands-off task execution.
 
+<presentation>
+
+Print this banner once, as the first thing in the response (not on follow-ups).
+Close every run with the report in `<output_format>`.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CLAUDE HEADLESS                                            ║
+║   Non-interactive Claude Code runs (claude -p)               ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+</presentation>
+
 <prerequisites>
 Before using this skill, ensure Claude Code CLI is installed and configured:
 
@@ -306,22 +323,17 @@ For all other decisions, proceed autonomously using best judgment.
 Always conclude with a structured summary:
 
 ```text
-✓ Task completed successfully
+CLAUDE HEADLESS  ──  <task>   status: <✓|✗>   mode: <permission-mode>   files: <n>
 
-Changes made:
-- [List of files modified/created]
-- [Key code changes]
+FILE                          CHANGE                           VERIFIED
+──────────────────────────────────────────────────────────────────────
+<path>                        <created|modified: key change>   <✓|✗|—>
 
-Results:
-- [Metrics: lines changed, files affected, tests run]
-- [What now works that didn't before]
-
-Verification:
-- [Tests run, checks performed]
-
-Next steps (if applicable):
-- [Suggestions for follow-up tasks]
+github.com/doublej
 ```
+
+Marks: `✓` done or passed · `✗` failed · `—` none · `…` still running. An error is a row, with its cause in the last column or on one line under the table.
+After the block, as short prose: results (lines changed, tests run, what now works that didn't before), verification (tests run, checks performed), and next steps if any.
 </output_format>
 
 <example_scenarios>

@@ -11,6 +11,22 @@ Make a website cited by AI engines. Three planes: discoverability (crawlers can 
 
 Wrap [`geo-optimizer-skill`](https://github.com/Auriti-Labs/geo-optimizer-skill) (305⭐, Princeton/AutoGEO-backed) for the heavy lifting. Add Princeton method table, framework patterns, and codebase-fix prompts inline.
 
+## Presentation
+
+Print once, as the first thing in the response:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   AEO GEO                                                    ║
+║   Answer and generative engine optimization                  ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with the report under Output convention. Generated files (llms.txt, robots.txt, JSON-LD, rewritten content) stay free of box art and signature.
+
 ## When to use
 
 - User wants their site to appear in ChatGPT Search / Perplexity / Claude / Gemini answers
@@ -154,13 +170,19 @@ Snippets for each: `references/framework-integration.md`.
 When asked to "improve AEO/GEO" on a codebase, produce a fix list ordered by impact:
 
 ```
-1. [CRITICAL] robots.txt blocks ClaudeBot — remove line 12
-2. [HIGH]     no llms.txt at /llms.txt — generated, write to public/
-3. [MEDIUM]   missing FAQPage JSON-LD on /faq — patch added
-4. [LOW]      no <html lang> on layout — set "en"
+AEO GEO  ──  <site>   score: <before> → <after|—>   band: <critical|foundation|good|excellent>
+
+PRI        FINDING                            FIX                              STATUS
+────────────────────────────────────────────────────────────────────────────────────
+CRITICAL   robots.txt blocks ClaudeBot        remove line 12                   ✓
+HIGH       no llms.txt at /llms.txt           generated, write to public/      ✓
+MEDIUM     missing FAQPage JSON-LD on /faq    patch added                      ✓
+LOW        no <html lang> on layout           set "en"                         —
+
+github.com/doublej
 ```
 
-Ship as a PR-style diff list, not prose.
+Ship as a PR-style diff list, not prose. Marks: `✓` applied, `✗` failed (cause under the table), `—` not applied.
 
 ## References
 

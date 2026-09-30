@@ -5,6 +5,10 @@ description: "Native Quest VR with OpenXR: swapchains, timewarp, foveated, NDK, 
 
 # Quest / Android VR Client
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — xr-quest-client · github.com/doublej
+</presentation>
+
 <prerequisites>
 ## Before Writing Code
 

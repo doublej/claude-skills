@@ -9,6 +9,22 @@ description: "Organize messy notes: rename, merge, split files, restructure into
 Organize messy note folders into clean, structured markdown — both the file system and the content within each file.
 </description>
 
+<presentation>
+
+Start with this banner, once. Close with the report in Step 6: DELIVER.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   NOTE REFINER                                               ║
+║   Messy note folders into clean, structured markdown         ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+</presentation>
+
 <workflow>
 
 ```
@@ -138,12 +154,21 @@ Preserve all original information. Never delete content the user wrote — restr
 
 ## Step 6: DELIVER
 
-Output a summary of all changes:
-- Files renamed (count and examples)
-- Files moved (count and target folders)
-- Files merged (count and what was combined)
-- Files split (count and what was separated)
-- Files refined (count and refinement level applied)
+Output a summary of all changes as this report, one row per change type. Marks: `✓` done · `✗` failed · `—` none.
+
+```
+NOTE REFINER  ──  <folder>   level: <structure|light|full>   files: <n>
+
+CHANGE     COUNT   DETAIL
+──────────────────────────────────────────────────────────────
+renamed    <n|—>   <examples: old → new>
+moved      <n|—>   <target folders>
+merged     <n|—>   <what was combined>
+split      <n|—>   <what was separated>
+refined    <n|—>   <refinement level applied>
+
+github.com/doublej
+```
 
 If the folder is inside a git repo, use `ask_confirmation`:
 - "These files are in a git repo. Want me to commit the changes?"

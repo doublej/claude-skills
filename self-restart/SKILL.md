@@ -7,6 +7,29 @@ description: "Restart the current Claude Code session in its own terminal pane a
 
 One script restarts the session. It finds the `claude` process, reads its exact launch argv, and spawns a detached watcher. After `--delay` seconds the watcher sends SIGTERM and waits for the exit. It then types `cd <cwd> && claude <same flags> --resume <session-id> '<prompt>'` into the same iTerm2 session or tmux pane. The first prompt of the original launch and any `--resume`/`--continue`/`--session-id` flags are dropped.
 
+<presentation>
+Nothing prints after the restart, so banner and report together replace the one-line notice in step 2, written before the script call (session id from `$CLAUDE_CODE_SESSION_ID`):
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   SELF RESTART                                               ║
+║   Relaunch this session in its pane and resume it            ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+SELF RESTART  ──  <session-id>   pane: <iterm2|tmux>   delay: <n>s
+
+WHY       <the one-line reason: what needs a restart to load>
+PROMPT    <resume prompt | default | idle>
+
+github.com/doublej
+```
+
+On `error: not in iTerm2 or tmux`, print the block with `pane: ✗` and the relaunch command under it.
+</presentation>
+
 <workflow>
 1. Finish or checkpoint the work in flight. The restart ends this turn, and a running tool call or subagent dies with the process.
 2. Tell the user in one line that you are restarting and why. Text written after the script call can be cut off.

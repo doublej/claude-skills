@@ -9,6 +9,30 @@ description: "Create and render Mermaid diagrams: flowcharts, sequence, ER, gant
 Create diagrams from text using Mermaid syntax and present them visually.
 </description>
 
+<presentation>
+Print this banner once at the start, then the diagram, then the report:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   DIAGRAM MERMAID                                            ║
+║   Mermaid diagrams, previewed or rendered                    ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+The Mermaid source is the deliverable: its own fenced block, free of banner box and signature.
+```
+DIAGRAM MERMAID  ──  <subject>   type: <flowchart|sequence|er|gantt|…>   theme: <theme>
+
+OUTPUT            METHOD                                     RESULT
+───────────────────────────────────────────────────────────────────
+<file|url>        <source|mermaid.live|local|kroki|render>   <✓|✗>
+
+github.com/doublej
+```
+</presentation>
+
 <quick_methods>
 
 ## Quick Presentation Methods

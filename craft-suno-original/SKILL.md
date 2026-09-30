@@ -9,6 +9,31 @@ Turn a plain request into an original Suno song with its own identity. No
 reference exists, so the risk is the median: generic pop, piano and strings,
 adjectives passed straight through. Commit to specific choices instead.
 
+<presentation>
+Order: banner (first response only), anchor line, fields, report, alternative direction.
+The fields and the saved Markdown stay clean: no box art and no signature inside them.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CRAFT SUNO ORIGINAL                                        ║
+║   Original Suno songs from plain requests                    ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+CRAFT SUNO ORIGINAL  ──  "<title>"   mode: <full|instrumental|style|lyrics|revision>   page: <url|—>
+
+FIELD       SENT     CHECK
+──────────────────────────────────────────────────────
+LYRICS      <✓|—>    lyric-craft audit <✓|✗|—>
+STYLE       <✓|—>    <n> words, ending + fidelity tail <✓|✗>
+EXCLUDE     <✓|—>    guard + <n> drift risks
+SETTINGS    <✓|—>    <model> · Variety <n>% · validator <✓|✗>
+
+github.com/doublej
+```
+</presentation>
+
 <shared_toolkit>
 This skill reuses the craft-suno-songs toolkit. Resolve it once:
 `SUNO=~/.claude/skills/craft-suno-songs`

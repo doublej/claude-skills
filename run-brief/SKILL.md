@@ -15,6 +15,22 @@ description: >-
 
 One messy sentence in, one launchable run out. The user never explains the process — the process lives here. This is the **one-shot** half of the pair; `loop-brief` owns anything that cycles.
 
+<presentation>
+Print once, as the first thing in the response (not again on follow-ups):
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   RUN BRIEF                                                  ║
+║   One-line intent in, one launchable hands-off run out       ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with the Run Card report in `<step_6_deliver>`. The deliverable (the contract block and the launch line the user pastes) stays clean: no box art and no signature inside it.
+</presentation>
+
 <non_negotiables>
 A hands-off run is only as safe as its weakest of four parts. Never ship one missing any:
 
@@ -101,14 +117,26 @@ For standard/heavy, adapt the templates in `~/.claude/skills/loop-brief/referenc
 </step_5_tiers>
 
 <step_6_deliver>
-Deliver a **Run Card**:
+Deliver a **Run Card** as this fixed-width block:
 
-1. **Shape + one-line justification** (or "no run needed — I just did it", or "this repeats → loop-brief")
-2. **Brief Strength: x/10** with remaining assumptions
-3. **The contract** — light: one copy-paste block; standard/heavy: files written, with paths
-4. **Launch line, verbatim** — the exact `/orchestrate …`, `/orchestrate-sessions …`, or prompt to paste. One thing, then walk away.
-5. **Done-when / abandon-when / per-item policy / budget**
-6. **Three plain lines** — what it will do, how it checks itself, what the user sees on return
+```
+RUN BRIEF  ──  <intent>   shape: <shape|none|→ loop-brief>   tier: <light|standard|heavy>   strength: <x>/10
+
+WHY          <one-line shape justification | no run needed — I just did it | this repeats → loop-brief>
+DONE WHEN    <provable finish line>
+ABANDON      <abandon-when>
+PER ITEM     <per-item policy | —>
+BUDGET       <agents / wall-clock / turn cap>
+
+github.com/doublej
+```
+
+Then, after the block, as plain copy-paste text:
+
+1. **Remaining assumptions** behind the strength score
+2. **The contract** — light: one copy-paste block; standard/heavy: files written, with paths
+3. **Launch line, verbatim** — the exact `/orchestrate …`, `/orchestrate-sessions …`, or prompt to paste. One thing, then walk away.
+4. **Three plain lines** — what it will do, how it checks itself, what the user sees on return
 
 Safety briefing (standard/heavy, ~4 lines):
 - Nothing outward-facing inside the run: no deploy, publish, send, spend, delete.

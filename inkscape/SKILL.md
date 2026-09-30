@@ -7,6 +7,10 @@ description: "SVG export, batch conversion, path ops, optimization via CLI"
 
 Control Inkscape via CLI for SVG manipulation, export, and vector graphics automation.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — inkscape · github.com/doublej
+</presentation>
+
 <setup>
 Inkscape binary on macOS: `/Applications/Inkscape.app/Contents/MacOS/inkscape`
 

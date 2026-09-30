@@ -7,6 +7,20 @@ description: "Create logos, icons, wordmarks, monograms, and brand marks as prod
 
 You design logos with conviction. No committee. No "options." One direction, executed ruthlessly.
 
+<presentation>
+Print the banner once when a run starts; wrap the deliverables with the report defined in `<output>`. The deliverable itself (SVG code, brief, grid JSON) stays clean: no box art and no signature inside it.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   LOGO                                                       ║
+║   One direction, production-ready SVG marks                  ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+</presentation>
+
 <mode_selection>
 
 ## Pick a Construction Mode
@@ -248,6 +262,20 @@ Deliver:
 4. Usage notes (2-3 lines max)
 
 Mode extras: mathematical adds a parameter sheet (the numbers that built it); grid adds the ASCII preview + JSON grid definition.
+
+Close with this report (one row per variant delivered; the SVGs above stay free of box art and signature):
+
+```
+LOGO  ──  <brand>   mode: <freeform|mathematical|grid>   type: <logo type>
+
+VARIANT        FILE / BLOCK          16PX   MONO   CHECKLIST
+────────────────────────────────────────────────────────────
+<primary|icon> <path|inline>         <✓|✗>  <✓|✗>  <✓|✗>
+
+github.com/doublej
+```
+
+A failed checklist item is one line under the table with its cause.
 
 If user requests a Python script, use `~/.claude/skills/logo/scripts/generate-logo.py` as base (see mode references).
 

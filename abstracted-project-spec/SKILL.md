@@ -9,6 +9,22 @@ description: Extract an implementation-free product specification from an existi
 
 Read a project, throw away how it was built, and write down only what it does for whoever uses it. The output must be reimplementable in any stack by someone who never sees this code.
 
+## Presentation
+
+Print once, as the first thing in the response:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   ABSTRACTED PROJECT SPEC                                    ║
+║   Implementation-free product spec from a codebase           ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+
+Close with the report under Output. The `-SPEC.md` file itself stays free of box art and signature.
+
 ## The one rule
 
 **Every line of the spec survives a rewrite of the entire codebase.** If a sentence would become false after swapping the framework, database, file layout, or language, it is implementation and does not belong.
@@ -114,5 +130,18 @@ Write to the session scratchpad directory named in the system prompt, as
 this is a derived artefact, not project documentation. No scratchpad in the system
 prompt → `/tmp/<project-name>-SPEC.md`.
 
-Then send the file with SendUserFile and report inline: absolute path, action count,
-and the Unresolved questions (those need an answer, not a file).
+Then send the file with SendUserFile and report inline:
+
+```
+ABSTRACTED PROJECT SPEC  ──  <project>   actions: <n>   unresolved: <n>
+
+SECTION                      ITEMS   STATUS
+──────────────────────────────────────────────
+<What a user can do|…>       <n|—>   <✓|— dropped: empty>
+
+spec: <absolute path to -SPEC.md>
+github.com/doublej
+```
+
+One row per template section. After the block, list the Unresolved questions as short
+prose (those need an answer, not a file).

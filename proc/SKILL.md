@@ -9,6 +9,29 @@ Scan, monitor, and kill processes on macOS: stale Claude Code processes, orphane
 
 All scripts are in `~/.claude/skills/proc/scripts/`. Process enumeration lives in one place: `scan.py` — the kill scripts get their PIDs from it.
 
+<presentation>
+Print once at the start of a scan, cleanup, or monitor run:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   PROC                                                       ║
+║   Scan, monitor and kill macOS processes                     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+Close the run with this block, one row per process shown, flagged, or killed (it carries the PID, CPU%, MEM%, command from the workflow):
+```
+PROC  ──  <scan|cleanup|monitor>   killed: <n|—>   ports freed: <list|—>
+
+PID      CATEGORY          CPU%   MEM%   COMMAND              RESULT
+────────────────────────────────────────────────────────────────────
+<pid>    <claude|mcp|dev>  <n>    <n>    <command>            ✓ killed | — kept | ✗ <cause>
+
+github.com/doublej
+```
+</presentation>
+
 <scan>
 ## Scan
 

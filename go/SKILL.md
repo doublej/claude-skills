@@ -7,6 +7,31 @@ description: Front door for any task. Turns a one-line ask into a grounded brief
 
 One input: the ask after `/go`. One output: the finished work, shipped, plus a report.
 
+<presentation>
+Open the first response with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   GO                                                         ║
+║   Front door: one-line ask to shipped work                   ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+The `<closeout>` report in the final message uses this block, one row per repo touched:
+```
+GO  ──  <ask, short>   shape: <intent>   owner: <sonnet|opus|fable>
+
+REPO              BRANCH        GATES   COMMIT    MERGED   DEPLOYED   WORKTREE
+──────────────────────────────────────────────────────────────────────────────
+<repo>            <branch>      <✓|✗>   <sha|—>   <✓|✗|—>  <✓|✗|—>    <removed|kept: why|—>
+
+github.com/doublej
+```
+Marks: `✓` done · `✗` failed (cause on one line under the table) · `—` n/a. After the block,
+short prose: outcome, what is verified and how, what is open, what needs JJ.
+</presentation>
+
 <context>
 I'm JJ. Roughly 400 sessions started with a bare task line and I spent the first turns
 supplying the same context: which repo, which branch, what "done" means, which budget,

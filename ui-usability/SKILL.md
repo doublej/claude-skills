@@ -5,6 +5,10 @@ description: "Nielsen heuristics, Laws of UX, and Norman principles for reviewin
 
 # Usability Fundamentals: Design-Aware UX Principles
 
+<presentation>
+When invoked directly and the answer is the main output, end with: — ui-usability · github.com/doublej
+</presentation>
+
 <philosophy>
 
 ## Philosophy: Beautiful AND Usable

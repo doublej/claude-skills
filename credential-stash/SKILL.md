@@ -15,6 +15,28 @@ Scans the session transcript (`~/.claude/projects/<cwd>/<session>.jsonl`) for cr
 Script: `python3 ~/.claude/skills/credential-stash/scripts/stash.py`
 </overview>
 
+<presentation>
+Open the first response with the banner (once); step 5 closes the run with the report.
+Never put a secret in either: titles, masked ids, and URLs only.
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   CREDENTIAL STASH                                           ║
+║   Session credentials into 1Password and onenv               ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+
+CREDENTIAL STASH  ──  <session|last <n>h>   found: <n>   stashed: <n>
+
+TITLE                 CATEGORY          VAULT               URL            PLAINTEXT
+─────────────────────────────────────────────────────────────────────────────────────
+<service role>        <Login|API Cred>  <Private|onenv:ns>  <url|—>        <removed: file|kept: demo|—>
+
+github.com/doublej
+```
+</presentation>
+
 <workflow>
 1. **Scan** the current session (default `$CLAUDE_CODE_SESSION_ID`):
    ```bash
@@ -43,7 +65,7 @@ Script: `python3 ~/.claude/skills/credential-stash/scripts/stash.py`
 
 4. **Clean the source** only for real secrets. If a production/API credential also lives in a plaintext file the session wrote (`.env`, a script, a note), replace it with an `op://<vault>/<title>/<field>` reference or an `onenv` lookup and say which file changed. Demo/seed passwords stay where they are (the app needs them); transcripts are left alone.
 
-5. **Report**: one line per item: title, category, vault, URL, and where the plaintext was removed. Delete the findings file: `rm "$TMPDIR/credential-stash.json"`.
+5. **Report** with the `<presentation>` report: one row per item: title, category, vault, URL, and where the plaintext was removed. Delete the findings file: `rm "$TMPDIR/credential-stash.json"`.
 </workflow>
 
 <rules>

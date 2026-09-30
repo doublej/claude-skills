@@ -7,6 +7,31 @@ description: "Draft/rewrite text: blog posts, Slack/Email/WhatsApp messages, Dut
 
 Write text that says something real, says it clearly, and respects the reader's time.
 
+<presentation>
+Print once, first thing in the response:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   WRITER                                                     ║
+║   Blog posts, messages, rewrites, Dutch                      ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+The report is the only text after the deliverable; it carries the clean.py relay. The copyable text itself stays free of box art and signature.
+```
+WRITER  ──  <piece>   mode: <blog|message|rewrite|dutch>   platform: <platform|—>
+
+CHECK             RESULT
+──────────────────────────────────────────
+banned words      <✓|✗>
+clean.py          <stderr summary|— when nothing removed>
+register          <casual|friendly|professional|—>
+
+github.com/doublej
+```
+</presentation>
+
 <mode_routing>
 
 Detect the mode from the user's request:

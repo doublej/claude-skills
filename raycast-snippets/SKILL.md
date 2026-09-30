@@ -3,6 +3,31 @@ name: raycast-snippets
 description: Create Raycast snippets for code expansion and text templates. Use when the user wants to create keyboard shortcuts, code snippets, boilerplate expansions, or text macros for Raycast. Outputs importable JSON files.
 ---
 
+<presentation>
+Start with this banner, once:
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   RAYCAST SNIPPETS                                           ║
+║   Importable text-expansion snippet collections              ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+After saving the JSON, close with this report, one row per snippet:
+```
+RAYCAST SNIPPETS  ──  <file>.json   snippets: <n>
+
+NAME                  KEYWORD      PLACEHOLDERS
+──────────────────────────────────────────────────
+<name>                <!keyword|—> <cursor, argument…|—>
+
+github.com/doublej
+```
+
+The JSON file itself is the deliverable: no box art and no signature inside it.
+</presentation>
+
 <output_format>
 
 Create importable snippet collections for Raycast's text expansion feature.

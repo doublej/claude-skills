@@ -7,6 +7,10 @@ Orchestrate multi-agent work using the tools below. Pick the simplest pattern th
 
 **Scope:** disposable subagents + task DAGs within one session. For named persistent teammates that message each other (TeamCreate, `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`), use the **teams** skill instead — spawning "teammates" without that flow silently gives you subagents.
 
+<presentation>
+Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — agent-orchestrator · github.com/doublej
+</presentation>
+
 <decision>
 ## Decision: which pattern
 

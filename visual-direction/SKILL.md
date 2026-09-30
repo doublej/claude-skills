@@ -24,6 +24,31 @@ medium (site, deck, packaging, app) — presented as a rendered direction
 board. The convergence verdict doubles as a diagnostic: a sharp packet
 forces agreement; a vague one exposes ambiguity in the brief.
 
+<presentation>
+Print this banner once, first in the response; step 6 opens with the report below.
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║                                                              ║
+║   VISUAL DIRECTION                                           ║
+║   Isolated design deciders, judged, reconciled to tokens     ║
+║   github.com/doublej                                         ║
+║                                                              ║
+╚══════════════════════════════════════════════════════════════╝
+```
+```
+VISUAL DIRECTION  ──  <subject>   model: <model>   convergence: <strong|weak>
+
+DOMAIN          DIRECTION WORD      JUDGE OVERRIDE
+──────────────────────────────────────────────────────────────
+<domain>        <direction_word>    <override|—>
+
+github.com/doublej
+```
+
+One row per decider (8). A gate abort replaces the table with its issues. The board keeps its own credits line (github.com/doublej); `direction-tokens.json` stays free of box art and signature.
+</presentation>
+
 <architecture>
 - 1 input gate (chosen model, medium effort): validates the packet before the
   fan-out — brand context only (subject facts, audience, real content,
@@ -111,7 +136,7 @@ forces agreement; a vague one exposes ambiguity in the brief.
    the filled SVG directly and re-render for small issues; an empty drawing
    slot means the board agent skipped a demonstration — re-run it. Also write
    the reconciled token system to `<scratchpad>/direction-tokens.json`.
-6. **Report.** Lead with the convergence verdict (the per-domain
+6. **Report.** Print the `<presentation>` report block, then lead with the convergence verdict (the per-domain
    direction_words and whether the packet forced agreement), then conflicts
    and overrides the judge made. Send the board PNG (SendUserFile, display
    render) together with `direction-tokens.json`. Frame the token system as
