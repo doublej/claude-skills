@@ -133,5 +133,6 @@ Before answering, verify:
 - Style ends with the fidelity tail, stays at or under 120 words, and
   Exclude carries the guard plus nearby drift risks;
 - title, lyrics, Style, and anchor describe the same song;
-- `validate_output.py` exits 0.
+- `validate_output.py` exits 0 and prints no `WARN` lines (a missing
+  fidelity tail only warns).
 </quality_gate>
