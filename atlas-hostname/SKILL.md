@@ -63,7 +63,7 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    Read the dev script `atlas info` names.
    - Single command (`vite dev`, `next dev`, `uvicorn …`, `flask run`): `atlas run` injects `--host 0.0.0.0` and `--port`, but pin them in the script anyway so `bun run dev` / `just dev` behave the same. Vite may use `server.host: true` in `vite.config.*` instead.
    - Fan-out wrapper (`concurrently`, `turbo`, `npm-run-all`, `honcho`, `foreman`, `pm2`, `overmind`): atlas injects **nothing**. Every sub-command that listens needs its own `--host 0.0.0.0 --port <its port>`.
-   Per-stack defaults: Vite family, uvicorn, flask → loopback only: `atlas run` then routes it through atlas's NAS-only bridge after ~10s (it prints a note), so it works; binding all interfaces stays the direct route. Next.js, node-api, Go `":"+port` → already all interfaces.
+   Per-stack defaults: Vite family (`[::1]`), uvicorn, flask (`127.0.0.1`) → loopback only: atlas routes it through its NAS-only bridge, which reaches either family, so it works (`atlas run` prints a note). `atlas run` settles on a lone loopback port after ~10s, but waits the full 60s for a LAN bind while the command holds several (wrangler + its inspector). Binding all interfaces stays the direct route. Next.js, node-api, Go `":"+port` → already all interfaces.
 
 4. **Slug — settle it before the first registration.**
    Ugly or ambiguous default → write `"slug": "<short>"` into `.atlas` (it is slugified). `atlas run` and `atlas hostnames assign` re-read `.atlas` right before registering, so no rescan is needed; still print the hostname you expect before running either. `atlas hostnames check <slug>` says free · taken by … · invalid; a wrong slug is fixed with `atlas set slug <new>` (or the console's settings dialog), which moves the route.
@@ -79,7 +79,7 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    ```
    curl -sS -o /dev/null -w '%{http_code}\n' https://<slug>.atlas.local.jurrejan.com/
    ```
-   200 → GET passes. 502 with a loopback-only listener → no bridge covers it (started outside `atlas run`): rerun through `atlas run`, or step 3. 502 without a listener → server died, read the log. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
+   200 → GET passes. 502 with a loopback-only listener → the bridge is not up yet: the service sync bridges every routed port within 60s, whoever started the server; `atlas services sync` does it now. Still 502 → `atlas hostnames assign --json` re-bridges and names the failure in `error`; step 3 skips the bridge. 502 without a listener → server died, read the log. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
    **A 200 is not done when the app talks to anything else.** Caddy rewrites `Host` but not `Origin`, and a browser on another device is not this Mac:
    - Own origin allowlist (better-auth `trustedOrigins`, Auth.js, Django `CSRF_TRUSTED_ORIGINS`, Rails `config.hosts`, Sanctum stateful domains; SvelteKit's `csrf.checkOrigin` is fine): POST once with `-X POST -H 'Origin: https://<slug>.atlas.local.jurrejan.com'` to an auth endpoint. 403 / `INVALID_ORIGIN` → add the hostname to that list.
    - Separate backend: the frontend's baked API base must be the API's hostname, not `127.0.0.1:<port>` (on a phone that is the phone). `curl -sS https://<ui>/ | grep -o '<api-host>'` shows what is baked; `curl -sS -i -X OPTIONS https://<api>/<route> -H 'Origin: https://<ui>' | grep -i allow-origin` shows whether CORS admits it. Put the hostname in `.env.development`, never `.env`; `vite build` reads `.env` and ships it.
@@ -111,7 +111,7 @@ Exceptions, stated out loud when they apply:
 
 <failure_modes>
 Check these before reporting success; each has cost a debugging session.
-- **Registered but 502** → nothing listens, or a loopback bind no bridge covers (a server started outside `atlas run`). Always run the curl in step 5.
+- **Registered but 502** → nothing listens, a loopback bind the 60s service sync has not bridged yet (`atlas services sync`), or a bridge that failed (`atlas hostnames assign --json` → `error`). Always run the curl in step 5.
 - **Registered, dead port** → an older dev server still holds the port and the new one moved to port+1. `atlas run` stops the project's own listeners first, including one started by hand in a terminal, but a launchd daemon on the same port respawns; `lsof -nP -iTCP:<port> -sTCP:LISTEN` tells which.
 - **Stale registry path** → registry paths are normalised to the `~/dev` realpath (the `~/Documents/development` rows were migrated 2026-10-01); `atlas hostnames doctor` reports any `stale-path` row.
 - **Folder renamed** → through atlas (console rename/move, `/api/rename`, `/api/move`) the route follows: same slug keeps it, a new slug moves it (`moveRoute`). Renamed outside atlas → the old `<old-slug>-atlas.caddy` stays until `atlas hostnames doctor` lists it and `--fix` releases it.
