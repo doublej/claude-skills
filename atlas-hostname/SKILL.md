@@ -39,8 +39,8 @@ github.com/doublej
 <ground_truth>
 - Hostname label is `atlas`: `<slug>.atlas.local.jurrejan.com` (LAN), `<slug>.atlas.remote.jurrejan.com` (WAN, basic auth unless `.atlas` has `devPublic: true`). project-atlas's own CLAUDE.md still says `.dev.`; it is stale.
 - Only `atlas run`, the web console run buttons and `atlas hostnames assign` register a hostname (`ensureRoute`). Raycast run and `atlas jump --run` register nothing.
-- `ensureRoute` writes `<slug>-atlas.caddy` to the NAS over SSH, reloads Caddy, records `~/dev/.atlas-hostnames.json`. No-op when slug, port and `devPublic` are unchanged. NAS unreachable → returns null, caller falls back to localhost, **no error raised**.
-- Every registration costs two ACME certificates plus a Caddy reload. Register on demand only. Never loop over projects.
+- `ensureRoute` writes `<slug>-atlas.caddy` to the NAS over SSH, reloads Caddy, records `~/dev/.atlas-hostnames.json`. No-op when slug, port and `devPublic` are unchanged. NAS unreachable → the row stays `nasSynced: false` with a retry (console pill, `atlas hostnames doctor --fix`), caller falls back to localhost. A slug another project or a service holds → 409 naming the holder; `atlas hostnames check <slug>` asks first.
+- Every registration reloads the shared NAS Caddy. Since 2026-10-01 a DNS-01 wildcard (`sites/atlas-wildcard.caddy`) covers `*.atlas.local` / `*.atlas.remote`, so no new certificate — but still register on demand only and never loop over projects.
 - Default slug is `slugify(<path relative to ~/dev>)`: `web/eink` → `web-eink`. `.atlas` `slug` overrides it.
 - Caddy rewrites `Host` to `localhost` on the proxy hop, so Vite's host allowlist is already satisfied. Never add `allowedHosts`.
 - HMR works over the hostname (verified 2026-09-21 on web/eink): Vite injects `hmrPort = null`, the browser opens `wss://<hostname>/` on the page origin, Caddy upgrades it (101). No `server.hmr` config needed.
@@ -63,23 +63,23 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    Read the dev script `atlas info` names.
    - Single command (`vite dev`, `next dev`, `uvicorn …`, `flask run`): `atlas run` injects `--host 0.0.0.0` and `--port`, but pin them in the script anyway so `bun run dev` / `just dev` behave the same. Vite may use `server.host: true` in `vite.config.*` instead.
    - Fan-out wrapper (`concurrently`, `turbo`, `npm-run-all`, `honcho`, `foreman`, `pm2`, `overmind`): atlas injects **nothing**. Every sub-command that listens needs its own `--host 0.0.0.0 --port <its port>`.
-   Per-stack defaults: Vite family, uvicorn, flask → loopback only, fix needed. Next.js, node-api, Go `":"+port` → already all interfaces.
+   Per-stack defaults: Vite family, uvicorn, flask → loopback only: `atlas run` then routes it through atlas's NAS-only bridge after ~10s (it prints a note), so it works; binding all interfaces stays the direct route. Next.js, node-api, Go `":"+port` → already all interfaces.
 
 4. **Slug — settle it before the first registration.**
-   Ugly or ambiguous default → write `"slug": "<short>"` into `.atlas` (it is slugified). `atlas run` and `atlas hostnames assign` re-read `.atlas` right before registering, so no rescan is needed; still print the hostname you expect before running either, because a wrong slug costs two certificates to register and two more to fix (`atlas hostnames rm`, re-register).
-   Print the hostname: `https://<slug>.atlas.local.jurrejan.com`. Say plainly: moving or renaming the folder changes the slug and orphans the old NAS file; run `atlas hostnames rm` (bare: current folder) before a move.
+   Ugly or ambiguous default → write `"slug": "<short>"` into `.atlas` (it is slugified). `atlas run` and `atlas hostnames assign` re-read `.atlas` right before registering, so no rescan is needed; still print the hostname you expect before running either. `atlas hostnames check <slug>` says free · taken by … · invalid; a wrong slug is fixed with `atlas set slug <new>` (or the console's settings dialog), which moves the route.
+   Print the hostname: `https://<slug>.atlas.local.jurrejan.com`. Say plainly: renaming or moving the folder through atlas (console, `/api/rename`, `/api/move`) moves or keeps the route; a move outside atlas leaves the old route behind until `atlas hostnames doctor --fix` releases it.
 
 5. **Register and verify.**
    Server should start → `atlas run` (the daemon spawns it detached, stops the project's previous listeners, waits 60s for the bind, prints the hostname; works from an agent tool shell). No server wanted → `atlas hostnames assign` (bare = current folder). Then `lsof -nP -iTCP:<port> -sTCP:LISTEN`: the listener must exist before curling, so a dead server and a loopback bind stay distinguishable.
    Registration is a Caddy route to a port. It survives the server dying; a 502 later means the port is empty or loopback-bound, never "re-register".
    Read the output, do not assume:
-   - `lanReachable: false` / "binds localhost only" → step 3 was missed; fix and rerun.
-   - "NAS push failed, not synced" (`nasSynced: false`) → NAS unreachable (off-LAN, VPN, NAS down); report it, hand out localhost as stated fallback.
+   - `lanReachable: false` / "binds localhost only" → the hostname goes through atlas's bridge; it works, and step 3 gives the direct route.
+   - "NAS push failed, not synced" (`nasSynced: false`) → NAS unreachable (off-LAN, VPN, NAS down); report it, hand out localhost as stated fallback, retry later (`atlas hostnames doctor --fix`).
    Then one real request:
    ```
    curl -sS -o /dev/null -w '%{http_code}\n' https://<slug>.atlas.local.jurrejan.com/
    ```
-   200 → GET passes. 502 with a listener → loopback bind, back to step 3. 502 without a listener → server died, read the log. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
+   200 → GET passes. 502 with a loopback-only listener → no bridge covers it (started outside `atlas run`): rerun through `atlas run`, or step 3. 502 without a listener → server died, read the log. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
    **A 200 is not done when the app talks to anything else.** Caddy rewrites `Host` but not `Origin`, and a browser on another device is not this Mac:
    - Own origin allowlist (better-auth `trustedOrigins`, Auth.js, Django `CSRF_TRUSTED_ORIGINS`, Rails `config.hosts`, Sanctum stateful domains; SvelteKit's `csrf.checkOrigin` is fine): POST once with `-X POST -H 'Origin: https://<slug>.atlas.local.jurrejan.com'` to an auth endpoint. 403 / `INVALID_ORIGIN` → add the hostname to that list.
    - Separate backend: the frontend's baked API base must be the API's hostname, not `127.0.0.1:<port>` (on a phone that is the phone). `curl -sS https://<ui>/ | grep -o '<api-host>'` shows what is baked; `curl -sS -i -X OPTIONS https://<api>/<route> -H 'Origin: https://<ui>' | grep -i allow-origin` shows whether CORS admits it. Put the hostname in `.env.development`, never `.env`; `vite build` reads `.env` and ships it.
@@ -104,25 +104,25 @@ Where it leaks:
 
 Exceptions, stated out loud when they apply:
 - Not registered yet, or `nasSynced: false` → say that, then give localhost as the named fallback.
-- `lanReachable: false` → fix the bind (step 3); do not quietly fall back.
+- `lanReachable: false` → bridged; say so, and fix the bind (step 3) when you touch the dev config anyway.
 - Machine-facing config stays on localhost: test runners, Playwright `baseURL`, health probes, `curl` inside scripts. TLS and the NAS hop buy nothing there.
 - `atlas.remote` is password-gated and crosses the WAN. Offer it only when the user is off the LAN or `.atlas` has `devPublic: true`.
 </output_rule>
 
 <failure_modes>
 Check these before reporting success; each has cost a debugging session.
-- **Registered but 502** → loopback bind. The most common outcome. Always run the curl in step 5.
+- **Registered but 502** → nothing listens, or a loopback bind no bridge covers (a server started outside `atlas run`). Always run the curl in step 5.
 - **Registered, dead port** → an older dev server still holds the port and the new one moved to port+1. `atlas run` stops the project's own listeners first, including one started by hand in a terminal, but a launchd daemon on the same port respawns; `lsof -nP -iTCP:<port> -sTCP:LISTEN` tells which.
-- **Stale registry path** → entries from before the `~/Documents/development` → `~/dev` move still carry the old path. Match `.atlas-hostnames.json` on slug, never on path.
-- **Folder renamed** → new slug, new hostname, orphaned `<old-slug>-atlas.caddy` on the NAS. Nothing cleans it up. `atlas hostnames rm` before the move.
-- **NAS unreachable** → no hostname, no error. Read `nasSynced` / the "not synced" line.
+- **Stale registry path** → registry paths are normalised to the `~/dev` realpath (the `~/Documents/development` rows were migrated 2026-10-01); `atlas hostnames doctor` reports any `stale-path` row.
+- **Folder renamed** → through atlas (console rename/move, `/api/rename`, `/api/move`) the route follows: same slug keeps it, a new slug moves it (`moveRoute`). Renamed outside atlas → the old `<old-slug>-atlas.caddy` stays until `atlas hostnames doctor` lists it and `--fix` releases it.
+- **NAS unreachable** → the row stays `nasSynced: false` and shows a retry in the settings dialog and the doctor. Read `nasSynced` / the "not synced" line.
 - **Host header** → already handled by Caddy. Do not add `allowedHosts`.
 - **Vite dies with SIGTRAP on the first request** → `bun run dev` ran Vite under Bun because `node` was not on the daemon's PATH (fixed 2026-09-21 in the atlas-api launchd plist). Binds first, dies on request one, so `lsof` right after the bind passes. `lsof` output naming `bun` instead of `node` on the port is the tell.
 - **UI hostname 200, app dead** → API base or CORS still points at localhost. Step 5's second check.
 </failure_modes>
 
 <non_goals>
-- No bulk registration (certificate cost).
+- No bulk registration (each push reloads the shared NAS Caddy; without the wildcard file every name costs two certificates again).
 - No hand edits to the NAS Caddyfile or `etc/sites/`; `ensureRoute` owns them.
 - No new config file, wrapper script or abstraction over `atlas run`.
 - No restating the `atlas` CLI: see the `atlas-cli` skill and `.claude/rules/atlas.md` where present.
