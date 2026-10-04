@@ -57,7 +57,7 @@ Read the relevant machine doc before working on a host:
 - `machines/ubuntu-server.md` — Ubuntu server
 - `machines/qnap-nas.md` — QNAP NAS
 - `machines/fractal-pc.md` — Windows gaming PC
-- `machines/macbook-pro-old.md` — old MacBook (offline)
+- `machines/macbook-pro-old.md` — mbp-15-server (old MacBook, runs Jellyfin)
 
 ## Quick Reference
 
@@ -69,7 +69,7 @@ Read the relevant machine doc before working on a host:
 | **Ubuntu Server** | `192.168.178.121` | `ssh ubuntu-server` | `jurrejan` | Ubuntu 24.04 | **no** |
 | **QNAP NAS** | `192.168.178.100` | `ssh admin@192.168.178.100` | `admin` | QTS 5.2.6 | yes (container, `/opt/bin/claude`) |
 | **Fractal PC** | `192.168.178.197` | `ssh fractal` (alias `ssh pc`) | `user` (Windows home `C:\Users\jurre`) | Windows 11 Pro | yes (`C:\Users\jurre\.local\bin\claude.exe`) |
-| **Old MacBook** | unknown | `ssh macserver` | `jurrejan` | macOS (offline) | unknown (offline) |
+| **mbp-15-server** (old MacBook) | `192.168.178.120` | `ssh mbp-server` (or `mbp15`, `macserver`, `mbp`) | `jurrejan` | macOS 12.6 | **no** |
 
 **M2 Pro**, **Fractal** and the **NAS** can run `claude` — spawn remote workers there, no capability probe needed. The NAS runs it in a container (`homenetwork/services/claude-nas/`); its home is `/share/CACHEDEV1_DATA/.claude-nas-home`, not `/root`, and one-shot commands need the **full path** `/opt/bin/claude` because `ssh nas '<cmd>'` does not read `/root/.profile`.
 
@@ -81,7 +81,7 @@ Read the relevant machine doc before working on a host:
 - **Fractal PC (paths):** the SSH login user is `user`, but the Windows home folder is **`C:\Users\jurre`** — they differ. Never derive a path from the SSH user: `C:\Users\jurre\...` (WSL: `/mnt/c/Users/jurre/...`).
 - **Fractal PC (scp):** `scp` cannot handle Windows paths containing spaces, quoting does not help (`No such file or directory`). Copy the file to a space-free path first, then scp from there:
   `ssh fractal 'Copy-Item "C:\Program Files (x86)\...\app.exe" C:\dev\_sandbox\app.exe'` then `scp fractal:C:/dev/_sandbox/app.exe .`
-- **Old MacBook:** Currently offline/unreachable
+- **mbp-server:** no passwordless `sudo` — system changes need the login password. Its services are launch agents (`launchctl list | grep -E 'jellyfin|jjnas'`), not systemd.
 - **All SSH keys** are managed via 1Password SSH Agent on M2
 
 ### Key Services
@@ -90,7 +90,7 @@ Read the relevant machine doc before working on a host:
 |---|---|---|
 | Coolify (PaaS) | Ubuntu | `http://192.168.178.121:8000` |
 | Traefik dashboard | Ubuntu | `http://192.168.178.121:8080` |
-| Jellyfin | Ubuntu | `http://192.168.178.121:8096` |
+| Jellyfin | mbp-server | `http://192.168.178.120:8096` (manual: `services/jellyfin/`) |
 | Samba shares | Ubuntu | `smb://192.168.178.121` |
 | QTS Web UI | NAS | `https://192.168.178.100` |
 | Plex | NAS | via QNAP package |
@@ -117,8 +117,6 @@ docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 df -h /
 # Check Coolify
 docker logs coolify --tail 20
-# Check Jellyfin
-sudo systemctl status jellyfin
 ```
 
 ### QNAP NAS
