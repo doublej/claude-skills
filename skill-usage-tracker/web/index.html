@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Skill Usage Dashboard</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff; --fg: #1a1a1a; --muted: #6b7280; --border: #e5e7eb;
+    --row-hover: #f6f7f9; --accent: #2563eb; --danger: #b91c1c; --danger-bg: #fef2f2;
+    --nominated-bg: #fff7ed; --nominated-border: #fdba74; --pill-bg: #f1f5f9;
+    --hide-bg: #eff6ff; --hide-border: #60a5fa;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #15171c; --fg: #e6e8eb; --muted: #9aa2ab; --border: #2b2f37;
+      --row-hover: #1c1f26; --accent: #60a5fa; --danger: #f87171; --danger-bg: #2a1414;
+      --nominated-bg: #2a220f; --nominated-border: #a86a1f; --pill-bg: #1f232b;
+      --hide-bg: #16223a; --hide-border: #5b9bf5;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 2rem; background: var(--bg); color: var(--fg);
+    font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  h1 { font-size: 1.25rem; margin: 0 0 .25rem; }
+  .sub { color: var(--muted); margin: 0 0 1.5rem; font-size: .85rem; }
+  .toolbar { display: flex; gap: .75rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+  input[type="search"] {
+    flex: 1; min-width: 180px; padding: .45rem .6rem; border: 1px solid var(--border);
+    border-radius: 6px; background: var(--bg); color: var(--fg);
+  }
+  select {
+    padding: .45rem .6rem; border: 1px solid var(--border); border-radius: 6px;
+    background: var(--bg); color: var(--fg);
+  }
+  button {
+    font: inherit; cursor: pointer; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg); color: var(--fg); padding: .4rem .7rem;
+  }
+  button:hover { background: var(--row-hover); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.danger { color: var(--danger); }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; }
+  table { width: 100%; border-collapse: collapse; min-width: 720px; }
+  th, td { text-align: left; padding: .55rem .7rem; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .02em; }
+  th.sortable { padding: 0; }
+  .sort-btn {
+    all: unset; cursor: pointer; display: flex; align-items: center; gap: .3rem;
+    width: 100%; padding: .55rem .7rem; box-sizing: border-box; color: inherit; font: inherit;
+    text-transform: inherit; letter-spacing: inherit;
+  }
+  .sort-btn:hover { color: var(--fg); }
+  .sort-indicator { display: inline-block; width: 1em; opacity: .6; }
+  tbody tr:hover { background: var(--row-hover); }
+  tr.nominated-delete { background: var(--nominated-bg); }
+  tr.nominated-delete:hover { background: var(--nominated-bg); }
+  tr.nominated-hide { background: var(--hide-bg); }
+  tr.nominated-hide:hover { background: var(--hide-bg); }
+  .skill-name { font-weight: 500; }
+  .pill { display: inline-block; padding: .1rem .5rem; border-radius: 999px; background: var(--pill-bg); font-size: .75rem; color: var(--muted); }
+  .note-input {
+    width: 140px; padding: .3rem .45rem; border: 1px solid var(--border); border-radius: 5px;
+    background: var(--bg); color: var(--fg); font-size: .8rem;
+  }
+  .actions { display: flex; gap: .35rem; align-items: center; flex-wrap: wrap; }
+  .badge-nominated {
+    border-radius: 999px; padding: .1rem .5rem; font-size: .72rem; font-weight: 600;
+  }
+  .badge-nominated.delete { border: 1px solid var(--nominated-border); color: var(--nominated-border); }
+  .badge-nominated.hide { border: 1px solid var(--hide-border); color: var(--hide-border); }
+  button.small { padding: .3rem .55rem; font-size: .78rem; }
+  .muted { color: var(--muted); }
+  body.compact-view .stat-col { display: none; }
+  .toggle-pill {
+    border-radius: 999px; padding: .25rem .7rem; font-size: .78rem; font-weight: 600;
+    border: 1px solid var(--border);
+  }
+  .toggle-pill.installed { border-color: var(--accent); color: var(--accent); }
+  .toggle-pill.hidden { border-color: var(--hide-border); color: var(--hide-border); background: var(--hide-bg); }
+  footer { margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: .8rem; }
+</style>
+</head>
+<body>
+
+<h1>Skill Usage Dashboard</h1>
+<p class="sub" id="subtitle">Loading…</p>
+
+<div class="toolbar">
+  <input type="search" id="search" placeholder="Filter skills… (press / to focus)">
+  <select id="filter">
+    <option value="all">All skills</option>
+    <option value="nominated">Nominated (hide or delete)</option>
+    <option value="nominated-hide">Nominated: hide</option>
+    <option value="nominated-delete">Nominated: delete</option>
+    <option value="hidden">Currently hidden</option>
+    <option value="low-usage">Low usage (&lt; 3 uses, all-time)</option>
+    <option value="unused">Never used</option>
+  </select>
+  <button id="copy-btn">Copy delete list</button>
+  <button id="toggle-details">Show details</button>
+  <button id="hide-all-btn" class="danger">Hide all</button>
+  <button id="show-all-btn">Show all</button>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th class="sortable" scope="col"><button class="sort-btn" data-sort="name">Skill<span class="sort-indicator"></span></button></th>
+        <th class="sortable stat-col" scope="col"><button class="sort-btn" data-sort="total_uses">Total uses<span class="sort-indicator"></span></button></th>
+        <th class="sortable stat-col" scope="col"><button class="sort-btn" data-sort="uses_30d">Last 30d<span class="sort-indicator"></span></button></th>
+        <th class="sortable stat-col" scope="col"><button class="sort-btn" data-sort="last_used">Last used<span class="sort-indicator"></span></button></th>
+        <th class="sortable stat-col" scope="col"><button class="sort-btn" data-sort="description_tokens">Description tokens<span class="sort-indicator"></span></button></th>
+        <th class="sortable stat-col" scope="col"><button class="sort-btn" data-sort="skill_md_tokens">SKILL.md tokens<span class="sort-indicator"></span></button></th>
+        <th scope="col">Removal</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<footer>
+  <span id="count-summary"></span>
+  <span id="generated-at"></span>
+</footer>
+
+<script>
+let DATA = [];
+let sortKey = 'total_uses';
+let sortDir = 1;
+let detailsVisible = false;
+
+function fmtDate(ms) {
+  if (!ms) return '—';
+  const d = new Date(ms);
+  return d.toISOString().slice(0, 10);
+}
+
+async function loadData() {
+  const res = await fetch('/api/data');
+  const json = await res.json();
+  DATA = json.skills;
+  document.getElementById('generated-at').textContent =
+    'Generated ' + new Date(json.generated_at).toLocaleString();
+  render();
+}
+
+function currentRows() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const filter = document.getElementById('filter').value;
+
+  let rows = DATA.filter(s => !q || s.name.toLowerCase().includes(q));
+
+  if (filter === 'nominated') rows = rows.filter(s => s.nomination);
+  if (filter === 'nominated-hide') rows = rows.filter(s => s.nomination?.level === 'hide');
+  if (filter === 'nominated-delete') rows = rows.filter(s => s.nomination?.level === 'delete');
+  if (filter === 'hidden') rows = rows.filter(s => s.installed === false);
+  if (filter === 'low-usage') rows = rows.filter(s => s.total_uses < 3);
+  if (filter === 'unused') rows = rows.filter(s => s.total_uses === 0);
+
+  rows.sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (sortKey === 'name') { av = av.toLowerCase(); bv = bv.toLowerCase(); }
+    if (av == null) av = -1;
+    if (bv == null) bv = -1;
+    if (av < bv) return -1 * sortDir;
+    if (av > bv) return 1 * sortDir;
+    return 0;
+  });
+
+  return rows;
+}
+
+function render() {
+  const rows = currentRows();
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '';
+
+  for (const s of rows) {
+    const tr = document.createElement('tr');
+    if (s.nomination) tr.className = 'nominated-' + s.nomination.level;
+
+    const nameCell = document.createElement('td');
+    nameCell.innerHTML = `<span class="skill-name">${s.name}</span>` +
+      (s.in_repo ? '' : ' <span class="pill">not in repo</span>') +
+      (s.installed === false ? ' <span class="pill">hidden</span>' : '');
+    tr.appendChild(nameCell);
+
+    const totalCell = document.createElement('td');
+    totalCell.className = 'stat-col';
+    totalCell.textContent = s.total_uses;
+    tr.appendChild(totalCell);
+
+    const d30Cell = document.createElement('td');
+    d30Cell.className = 'stat-col';
+    d30Cell.textContent = s.uses_30d;
+    tr.appendChild(d30Cell);
+
+    const lastUsedCell = document.createElement('td');
+    lastUsedCell.className = 'stat-col';
+    lastUsedCell.textContent = fmtDate(s.last_used);
+    tr.appendChild(lastUsedCell);
+
+    const descTokensCell = document.createElement('td');
+    descTokensCell.className = 'stat-col';
+    descTokensCell.textContent = s.description_tokens == null ? '—' : s.description_tokens.toLocaleString();
+    tr.appendChild(descTokensCell);
+
+    const tokensCell = document.createElement('td');
+    tokensCell.className = 'stat-col';
+    tokensCell.textContent = s.skill_md_tokens == null ? '—' : s.skill_md_tokens.toLocaleString();
+    tr.appendChild(tokensCell);
+
+    const actionCell = document.createElement('td');
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+
+    if (!detailsVisible && s.in_repo) {
+      const pill = document.createElement('button');
+      pill.className = 'toggle-pill ' + (s.installed ? 'installed' : 'hidden');
+      pill.textContent = s.installed ? 'Installed' : 'Hidden';
+      pill.setAttribute('aria-label', `${s.name}: ${s.installed ? 'installed, click to hide' : 'hidden, click to show'}`);
+      pill.onclick = () => (s.installed ? applyHide(s.name) : applyUnhide(s.name));
+      actions.appendChild(pill);
+      actionCell.appendChild(actions);
+      tr.appendChild(actionCell);
+      tbody.appendChild(tr);
+      continue;
+    }
+
+    if (s.nomination) {
+      const level = s.nomination.level;
+      const badge = document.createElement('span');
+      badge.className = 'badge-nominated ' + level;
+      badge.textContent = level + (s.nomination.note ? ': ' + s.nomination.note : '');
+      actions.appendChild(badge);
+
+      if (level === 'hide' && s.in_repo) {
+        const applyBtn = document.createElement('button');
+        applyBtn.className = 'small';
+        if (s.installed) {
+          applyBtn.textContent = 'Uninstall now';
+          applyBtn.setAttribute('aria-label', `Uninstall ${s.name} (hide its description from context)`);
+          applyBtn.onclick = () => applyHide(s.name);
+        } else {
+          applyBtn.textContent = 'Reinstall';
+          applyBtn.setAttribute('aria-label', `Reinstall ${s.name} (restore its description to context)`);
+          applyBtn.onclick = () => applyUnhide(s.name);
+        }
+        actions.appendChild(applyBtn);
+      }
+
+      const undoBtn = document.createElement('button');
+      undoBtn.className = 'danger small';
+      undoBtn.textContent = 'Un-nominate';
+      undoBtn.setAttribute('aria-label', `Un-nominate ${s.name}`);
+      undoBtn.onclick = () => unnominate(s.name);
+      actions.appendChild(undoBtn);
+    } else {
+      const noteInput = document.createElement('input');
+      noteInput.className = 'note-input';
+      noteInput.placeholder = 'reason (optional)';
+      noteInput.setAttribute('aria-label', `Reason for nominating ${s.name}`);
+      noteInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') nominate(s.name, noteInput.value, 'delete');
+      });
+      const hideBtn = document.createElement('button');
+      hideBtn.className = 'small';
+      hideBtn.textContent = 'Nominate: hide';
+      hideBtn.title = 'Flag for review — uninstalling later stops its description from loading into context, without touching repo files';
+      hideBtn.onclick = () => nominate(s.name, noteInput.value, 'hide');
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'danger small';
+      deleteBtn.textContent = 'Nominate: delete';
+      deleteBtn.title = 'Flag for manual removal from the repo — nothing is deleted automatically';
+      deleteBtn.onclick = () => nominate(s.name, noteInput.value, 'delete');
+      actions.appendChild(noteInput);
+      actions.appendChild(hideBtn);
+      actions.appendChild(deleteBtn);
+    }
+
+    actionCell.appendChild(actions);
+    tr.appendChild(actionCell);
+
+    tbody.appendChild(tr);
+  }
+
+  const hideCount = DATA.filter(s => s.nomination?.level === 'hide').length;
+  const deleteCount = DATA.filter(s => s.nomination?.level === 'delete').length;
+  const hiddenCount = DATA.filter(s => s.installed === false).length;
+  document.getElementById('count-summary').textContent =
+    `${rows.length} shown · ${DATA.length} total · ${hiddenCount} hidden · ${hideCount} nominated to hide · ${deleteCount} nominated to delete`;
+  document.getElementById('subtitle').textContent = detailsVisible
+    ? `${DATA.length} skills tracked. "Hide" nominations can be applied (uninstalls the symlink, keeps repo files); "delete" nominations are a flag only — nothing is deleted automatically.`
+    : `${DATA.length} skills. Click a pill to toggle installed/hidden. "Show details" reveals usage stats and token counts.`;
+}
+
+async function nominate(skill, note, level) {
+  await fetch('/api/nominate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skill, note, level }),
+  });
+  await loadData();
+}
+
+async function unnominate(skill) {
+  await fetch('/api/unnominate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skill }),
+  });
+  await loadData();
+}
+
+async function applyHide(skill) {
+  await fetch('/api/apply-hide', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skill }),
+  });
+  await loadData();
+}
+
+async function applyUnhide(skill) {
+  await fetch('/api/apply-unhide', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ skill }),
+  });
+  await loadData();
+}
+
+function updateDetailsToggle() {
+  document.body.classList.toggle('compact-view', !detailsVisible);
+  document.getElementById('toggle-details').textContent = detailsVisible ? 'Compact view' : 'Show details';
+}
+
+document.getElementById('toggle-details').addEventListener('click', () => {
+  detailsVisible = !detailsVisible;
+  updateDetailsToggle();
+  render();
+});
+updateDetailsToggle();
+
+document.getElementById('hide-all-btn').addEventListener('click', async () => {
+  const installedCount = DATA.filter(s => s.installed).length;
+  if (!installedCount) return;
+  if (!confirm(`Uninstall all ${installedCount} installed skills? Their descriptions stop loading into context; repo files are untouched. You can restore individually or with "Show all".`)) return;
+  await fetch('/api/apply-hide-all', { method: 'POST' });
+  await loadData();
+});
+
+document.getElementById('show-all-btn').addEventListener('click', async () => {
+  const hiddenCount = DATA.filter(s => s.installed === false).length;
+  if (!hiddenCount) return;
+  if (!confirm(`Reinstall all ${hiddenCount} hidden skills?`)) return;
+  await fetch('/api/apply-unhide-all', { method: 'POST' });
+  await loadData();
+});
+
+const sortButtons = document.querySelectorAll('.sort-btn');
+
+function applySort(key) {
+  if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+  updateSortIndicators();
+  render();
+}
+
+function updateSortIndicators() {
+  sortButtons.forEach(btn => {
+    const active = btn.dataset.sort === sortKey;
+    btn.closest('th').setAttribute('aria-sort', active ? (sortDir === 1 ? 'ascending' : 'descending') : 'none');
+    btn.querySelector('.sort-indicator').textContent = active ? (sortDir === 1 ? '▲' : '▼') : '';
+  });
+}
+
+sortButtons.forEach(btn => {
+  btn.addEventListener('click', () => applySort(btn.dataset.sort));
+});
+updateSortIndicators();
+
+document.getElementById('search').addEventListener('input', render);
+document.getElementById('filter').addEventListener('change', render);
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+    e.preventDefault();
+    document.getElementById('search').focus();
+  }
+});
+
+document.getElementById('copy-btn').addEventListener('click', async () => {
+  const names = DATA.filter(s => s.nomination?.level === 'delete').map(s => s.name).join('\n');
+  await navigator.clipboard.writeText(names || '(none nominated for delete)');
+  const btn = document.getElementById('copy-btn');
+  const original = btn.textContent;
+  btn.textContent = 'Copied!';
+  setTimeout(() => { btn.textContent = original; }, 1200);
+});
+
+loadData();
+</script>
+</body>
+</html>
