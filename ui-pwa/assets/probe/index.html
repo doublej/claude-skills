@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PWA Probe">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icon-180.png">
+<title>PWA Probe</title>
+<style>
+  :root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+    --bg: #0b1020;
+    --fg: #e6edf7;
+    --dim: #8899b3;
+    --ok: #3ddc84;
+    --no: #ff6b6b;
+    --accent: #4c8dff;
+    --panel: #141b30;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Safe-area visualisation: red bands are exactly the reported insets. */
+  .inset { position: fixed; background: rgba(255,80,80,.35); z-index: 50; pointer-events: none; }
+  .inset.t { top: 0; left: 0; right: 0; height: var(--sat); }
+  .inset.b { bottom: 0; left: 0; right: 0; height: var(--sab); }
+  .inset.l { top: 0; bottom: 0; left: 0; width: var(--sal); }
+  .inset.r { top: 0; bottom: 0; right: 0; width: var(--sar); }
+
+  header {
+    position: sticky; top: 0; z-index: 20;
+    padding: calc(var(--sat) + 10px) calc(var(--sar) + 14px) 10px calc(var(--sal) + 14px);
+    background: color-mix(in oklab, var(--panel) 90%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #26314d;
+  }
+  h1 { margin: 0; font-size: 15px; letter-spacing: .02em; }
+  #status { color: var(--dim); font-size: 11px; margin-top: 2px; }
+
+  main { padding: 12px calc(var(--sar) + 14px) calc(var(--sab) + 90px) calc(var(--sal) + 14px); }
+  section { margin: 0 0 18px; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--accent); margin: 0 0 6px; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 2px 0; vertical-align: top; border-bottom: 1px solid #1d2740; }
+  td:first-child { color: var(--dim); padding-right: 10px; white-space: nowrap; }
+  td:last-child { text-align: right; font-variant-numeric: tabular-nums; word-break: break-all; }
+  .y { color: var(--ok); } .n { color: var(--no); }
+
+  footer {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+    padding: 8px calc(var(--sar) + 14px) calc(var(--sab) + 8px) calc(var(--sal) + 14px);
+    background: var(--panel); border-top: 1px solid #26314d;
+    display: flex; gap: 8px;
+  }
+  button, input {
+    font: inherit; padding: 9px 12px; border-radius: 9px; border: 1px solid #2f3d61;
+    background: #1b2540; color: var(--fg); min-height: 44px; flex: 1;
+  }
+  input { font-size: 16px; } /* 16px prevents iOS focus zoom */
+  button { background: var(--accent); border-color: var(--accent); color: #04102b; font-weight: 600; }
+
+  /* Probes for viewport units — measured, never displayed. */
+  #vu { position: fixed; top: 0; left: 0; width: 0; visibility: hidden; pointer-events: none; }
+  #vu div { width: 1px; }
+  .h-vh  { height: 100vh; }  .h-svh { height: 100svh; }
+  .h-lvh { height: 100lvh; } .h-dvh { height: 100dvh; }
+  .w-vw  { height: 100vw; }  .w-svw { height: 100svw; }
+  .w-lvw { height: 100lvw; } .w-dvw { height: 100dvw; }
+  #si { position: fixed; visibility: hidden; top: 0; left: 0; width: 0; height: 0;
+        padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+  #ki { position: fixed; visibility: hidden; top: 0; left: 0; width: 0; height: 0;
+        padding: env(keyboard-inset-top, 0px) 0 env(keyboard-inset-bottom, 0px) 0; }
+</style>
+</head>
+<body>
+<div class="inset t"></div><div class="inset b"></div><div class="inset l"></div><div class="inset r"></div>
+<div id="vu">
+  <div class="h-vh"></div><div class="h-svh"></div><div class="h-lvh"></div><div class="h-dvh"></div>
+  <div class="w-vw"></div><div class="w-svw"></div><div class="w-lvw"></div><div class="w-dvw"></div>
+</div>
+<div id="si"></div><div id="ki"></div>
+
+<header>
+  <h1>PWA Probe</h1>
+  <div id="status">measuring…</div>
+</header>
+<main id="out"></main>
+<footer>
+  <input id="kb" type="text" inputmode="text" enterkeyhint="done" placeholder="focus me: keyboard test">
+  <button id="send">Re-send</button>
+</footer>
+
+<script>
+const px = n => (n == null ? null : Math.round(n * 100) / 100);
+const h = sel => px(document.querySelector(sel)?.getBoundingClientRect().height);
+
+function insets() {
+  const s = getComputedStyle(document.getElementById('si'));
+  return { top: parseFloat(s.paddingTop), right: parseFloat(s.paddingRight),
+           bottom: parseFloat(s.paddingBottom), left: parseFloat(s.paddingLeft) };
+}
+function keyboardInsets() {
+  const s = getComputedStyle(document.getElementById('ki'));
+  return { top: parseFloat(s.paddingTop), bottom: parseFloat(s.paddingBottom) };
+}
+const mq = q => window.matchMedia(q).matches;
+const supports = (p, v) => { try { return CSS.supports(p, v); } catch { return false; } };
+
+async function imgOK(type, data) {
+  return new Promise(r => { const i = new Image();
+    i.onload = () => r(i.width > 0); i.onerror = () => r(false); i.src = data; });
+}
+
+async function collect() {
+  const vv = window.visualViewport;
+  const so = screen.orientation || {};
+  let storage = {};
+  try { storage = await navigator.storage.estimate(); } catch {}
+  let persisted = null;
+  try { persisted = await navigator.storage.persisted(); } catch {}
+
+  return {
+    ts: new Date().toISOString(),
+    ua: navigator.userAgent,
+    platform: navigator.platform,
+    vendor: navigator.vendor,
+    maxTouchPoints: navigator.maxTouchPoints,
+    deviceMemory: navigator.deviceMemory ?? null,
+    hardwareConcurrency: navigator.hardwareConcurrency,
+    languages: navigator.languages,
+
+    screen: {
+      width: screen.width, height: screen.height,
+      availWidth: screen.availWidth, availHeight: screen.availHeight,
+      colorDepth: screen.colorDepth,
+      orientationType: so.type ?? null, orientationAngle: so.angle ?? null,
+      dpr: window.devicePixelRatio,
+      physicalPx: [screen.width * devicePixelRatio, screen.height * devicePixelRatio],
+    },
+
+    window: {
+      innerWidth: window.innerWidth, innerHeight: window.innerHeight,
+      outerWidth: window.outerWidth, outerHeight: window.outerHeight,
+      clientWidth: document.documentElement.clientWidth,
+      clientHeight: document.documentElement.clientHeight,
+      scrollHeight: document.documentElement.scrollHeight,
+      bodyClientWidth: document.body.clientWidth,
+    },
+
+    visualViewport: vv ? {
+      width: px(vv.width), height: px(vv.height),
+      offsetLeft: px(vv.offsetLeft), offsetTop: px(vv.offsetTop),
+      pageLeft: px(vv.pageLeft), pageTop: px(vv.pageTop), scale: vv.scale,
+    } : null,
+
+    viewportUnits: {
+      vh: h('.h-vh'), svh: h('.h-svh'), lvh: h('.h-lvh'), dvh: h('.h-dvh'),
+      vw: h('.w-vw'), svw: h('.w-svw'), lvw: h('.w-lvw'), dvw: h('.w-dvw'),
+    },
+
+    safeAreaInsets: insets(),
+    keyboardInsets: keyboardInsets(),
+
+    displayMode: {
+      browser: mq('(display-mode: browser)'),
+      minimalUI: mq('(display-mode: minimal-ui)'),
+      standalone: mq('(display-mode: standalone)'),
+      fullscreen: mq('(display-mode: fullscreen)'),
+      windowControlsOverlay: mq('(display-mode: window-controls-overlay)'),
+      navigatorStandalone: navigator.standalone ?? null,
+    },
+
+    mediaFeatures: {
+      colorScheme: mq('(prefers-color-scheme: dark)') ? 'dark' : 'light',
+      reducedMotion: mq('(prefers-reduced-motion: reduce)'),
+      reducedTransparency: mq('(prefers-reduced-transparency: reduce)'),
+      contrastMore: mq('(prefers-contrast: more)'),
+      hoverHover: mq('(hover: hover)'), anyHover: mq('(any-hover: hover)'),
+      pointerCoarse: mq('(pointer: coarse)'), anyPointerFine: mq('(any-pointer: fine)'),
+      dynamicRangeHigh: mq('(dynamic-range: high)'),
+      orientationPortrait: mq('(orientation: portrait)'),
+      scriptingEnabled: mq('(scripting: enabled)'),
+      // 120Hz / ProMotion hint
+      updateFast: mq('(update: fast)'),
+    },
+
+    cssSupport: {
+      dvh: supports('height', '100dvh'),
+      svh: supports('height', '100svh'),
+      envSafeArea: supports('padding-top', 'env(safe-area-inset-top)'),
+      envKeyboardInset: supports('padding-top', 'env(keyboard-inset-top)'),
+      has: supports('selector(:has(a))'),
+      nesting: supports('selector(&)'),
+      containerQueries: supports('container-type', 'inline-size'),
+      containerUnits: supports('height', '10cqh'),
+      subgrid: supports('grid-template-columns', 'subgrid'),
+      anchorPositioning: supports('anchor-name', '--a'),
+      popover: HTMLElement.prototype.hasOwnProperty('popover'),
+      dialog: typeof HTMLDialogElement !== 'undefined',
+      startingStyle: (() => { try { return CSS.supports('@starting-style', '') || 'unknown'; } catch { return 'unknown'; } })(),
+      lightDark: supports('color', 'light-dark(#000,#fff)'),
+      colorMix: supports('color', 'color-mix(in oklab, red, blue)'),
+      oklch: supports('color', 'oklch(0.5 0.1 200)'),
+      p3: supports('color', 'color(display-p3 1 0 0)'),
+      backdropFilter: supports('backdrop-filter', 'blur(4px)') || supports('-webkit-backdrop-filter', 'blur(4px)'),
+      contentVisibility: supports('content-visibility', 'auto'),
+      overscrollBehavior: supports('overscroll-behavior', 'contain'),
+      scrollbarGutter: supports('scrollbar-gutter', 'stable'),
+      textWrapPretty: supports('text-wrap', 'pretty'),
+      scrollSnap: supports('scroll-snap-type', 'y mandatory'),
+      scrollTimeline: supports('animation-timeline', 'scroll()'),
+      fieldSizing: supports('field-sizing', 'content'),
+      touchAction: supports('touch-action', 'manipulation'),
+      safeAreaMaxInset: supports('padding-top', 'env(safe-area-max-inset-top)'),
+      titlebarArea: supports('padding-top', 'env(titlebar-area-height)'),
+      dynamicViewportKeyboard: supports('height', '100dvh'),
+      transition3d: supports('transform', 'translate3d(0,0,0)'),
+      viewTransitionName: supports('view-transition-name', 'a'),
+    },
+
+    jsApis: {
+      serviceWorker: 'serviceWorker' in navigator,
+      swControlled: !!navigator.serviceWorker?.controller,
+      caches: 'caches' in window,
+      pushManager: 'PushManager' in window,
+      notification: 'Notification' in window,
+      notificationPermission: (typeof Notification !== 'undefined') ? Notification.permission : null,
+      setAppBadge: 'setAppBadge' in navigator,
+      share: 'share' in navigator,
+      canShareFiles: (() => { try { return navigator.canShare?.({ files: [new File([''], 'a.txt', {type:'text/plain'})] }) ?? false; } catch { return false; } })(),
+      clipboardWrite: !!navigator.clipboard?.write,
+      wakeLock: 'wakeLock' in navigator,
+      vibrate: 'vibrate' in navigator,
+      getUserMedia: !!navigator.mediaDevices?.getUserMedia,
+      geolocation: 'geolocation' in navigator,
+      bluetooth: 'bluetooth' in navigator,
+      usb: 'usb' in navigator,
+      nfc: 'NDEFReader' in window,
+      credentials: 'credentials' in navigator,
+      publicKeyCredential: 'PublicKeyCredential' in window,
+      paymentRequest: 'PaymentRequest' in window,
+      applePaySession: 'ApplePaySession' in window,
+      backgroundSync: 'SyncManager' in window,
+      periodicSync: 'PeriodicSyncManager' in window,
+      backgroundFetch: 'BackgroundFetchManager' in window,
+      fileSystemAccess: 'showOpenFilePicker' in window,
+      launchQueue: 'launchQueue' in window,
+      beforeInstallPrompt: 'onbeforeinstallprompt' in window,
+      virtualKeyboard: 'virtualKeyboard' in navigator,
+      viewTransitions: 'startViewTransition' in document,
+      navigationApi: 'navigation' in window,
+      deviceOrientationPermission: (typeof DeviceOrientationEvent !== 'undefined') && typeof DeviceOrientationEvent.requestPermission === 'function',
+      fullscreenEnabled: !!(document.fullscreenEnabled || document.webkitFullscreenEnabled),
+      elementRequestFullscreen: !!(Element.prototype.requestFullscreen || Element.prototype.webkitRequestFullscreen),
+      screenOrientationLock: !!(screen.orientation && screen.orientation.lock),
+      contactPicker: 'contacts' in navigator,
+      idleDetector: 'IdleDetector' in window,
+      webCodecs: 'VideoEncoder' in window,
+      webgpu: 'gpu' in navigator,
+      offscreenCanvas: 'OffscreenCanvas' in window,
+      speechRecognition: 'SpeechRecognition' in window || 'webkitSpeechRecognition' in window,
+      pictureInPicture: 'pictureInPictureEnabled' in document,
+    },
+
+    storage: {
+      quotaBytes: storage.quota ?? null,
+      usageBytes: storage.usage ?? null,
+      quotaGB: storage.quota ? px(storage.quota / 1e9) : null,
+      persisted,
+      localStorage: (() => { try { localStorage.setItem('_p','1'); localStorage.removeItem('_p'); return true; } catch { return false; } })(),
+      indexedDB: 'indexedDB' in window,
+    },
+
+    images: {
+      avif: await imgOK('avif', 'data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUIAAADybWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAeaWxvYwAAAABEAAABAAEAAAABAAABGgAAAB0AAAAoaWluZgAAAAAAAQAAABppbmZlAgAAAAABAABhdjAxQ29sb3IAAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAAAEAAAABAAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgQAMAAAAABNjb2xybmNseAACAAIABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAAACVtZGF0EgAKCBgABogQEDQgMgkQAAAAB8dSLfI='),
+      webp: await imgOK('webp', 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA='),
+    },
+  };
+}
+
+function render(d) {
+  const rows = (obj, prefix = '') => Object.entries(obj).map(([k, v]) => {
+    if (v && typeof v === 'object' && !Array.isArray(v)) return rows(v, prefix + k + '.');
+    const cls = v === true ? 'y' : v === false ? 'n' : '';
+    const val = Array.isArray(v) ? v.join(' × ') : String(v);
+    return `<tr><td>${prefix}${k}</td><td class="${cls}">${val}</td></tr>`;
+  }).join('');
+
+  document.getElementById('out').innerHTML = Object.entries(d)
+    .filter(([k]) => !['ts'].includes(k))
+    .map(([k, v]) => typeof v === 'object' && v !== null
+      ? `<section><h2>${k}</h2><table>${rows(v)}</table></section>`
+      : `<section><h2>${k}</h2><table><tr><td>value</td><td>${v}</td></tr></table></section>`)
+    .join('');
+}
+
+let lastTag = 'load';
+async function report(tag) {
+  const d = await collect();
+  d.tag = tag || lastTag;
+  render(d);
+  try {
+    const r = await fetch('/report', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(d) });
+    document.getElementById('status').textContent = `${d.tag} · sent ${r.status} · ${d.window.innerWidth}×${d.window.innerHeight} @${d.screen.dpr}x · dvh ${d.viewportUnits.dvh} svh ${d.viewportUnits.svh} lvh ${d.viewportUnits.lvh}`;
+  } catch (e) {
+    document.getElementById('status').textContent = `${d.tag} · POST failed: ${e.message}`;
+  }
+}
+
+addEventListener('load', () => report('load'));
+addEventListener('orientationchange', () => setTimeout(() => report('orientationchange'), 400));
+addEventListener('resize', () => { clearTimeout(window._t); window._t = setTimeout(() => report('resize'), 300); });
+visualViewport?.addEventListener('resize', () => { clearTimeout(window._v); window._v = setTimeout(() => report('vv-resize'), 300); });
+document.getElementById('kb').addEventListener('focus', () => setTimeout(() => report('keyboard-open'), 700));
+document.getElementById('kb').addEventListener('blur', () => setTimeout(() => report('keyboard-closed'), 700));
+document.getElementById('send').addEventListener('click', () => report('manual'));
+
+// Register SW so installability + swControlled can be probed.
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+</script>
+</body>
+</html>
