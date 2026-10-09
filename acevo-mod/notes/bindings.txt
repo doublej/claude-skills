@@ -1,0 +1,286 @@
+================================================================================
+              ASSETTO CORSA EVO - COMPLETE KEYBOARD BINDINGS
+                        Captured from v0.4 - Car Tab
+================================================================================
+
+## DRIVING CONTROLS
+Steer Left                          = D
+Steer Right                         = W
+Throttle                            = S
+Brakes                              = DOWN ARROW
+Handbrake                           = 1
+Clutch                              = 3
+
+## GEAR CONTROLS
+Paddle Gear Up                      = 4
+Paddle Gear Down                    = 5
+Shifter Gear 1                      = A
+Shifter Gear 2                      = 5
+Shifter Gear 3                      = K
+Shifter Gear 4                      = L
+Shifter Gear 5                      = SHIFT+L
+Shifter Gear 6                      = CTRL+1
+Shifter Gear 7                      = CTRL+2
+Shifter Gear 8                      = CTRL+3
+Shifter Gear 9                      = CTRL+5
+Shifter Gear Reverse                = CTRL+6
+
+## LIGHTS
+Light Cycle 1                       = 8
+Light Cycle 2                       = CTRL+0
+Light Stage 1                       = CTRL+9
+Light Stage 2                       = F
+Light Stage 3                       = SHIFT+F
+Light Stage 4                       = Z
+Light Stage 5                       = W
+Light Stage 6                       = H
+Light Stage 7                       = SHIFT+H
+Light Stage 8                       = I
+Light Stage 9                       = P
+Light Stage 10                      = T
+Flashing Lights                     = S
+Rain Lights                         = 4
+Left Direction Indicator            = SHIFT+CTRL+1
+Right Direction Indicator           = SHIFT+CTRL+2
+Hazard Lights                       = 7
+Retractable Headlights Toggle       = SHIFT+CTRL+4
+
+## IGNITION & STARTER
+Toggle Ignition                     = SHIFT+CTRL+5
+Starter                             = SHIFT+CTRL+6
+Pit Limiter Toggle                  = SHIFT+CTRL+7
+
+## TRACTION CONTROL
+TC Setting Decrease                 = SHIFT+CTRL+8
+TC Setting Increase                 = DOWN ARROW
+Traction Control 0                  = DOWN ARROW
+Traction Control 1                  = SHIFT+CTRL+E
+Traction Control 2                  = CTRL+T
+Traction Control 3                  = SHIFT+CTRL+T
+Traction Control 4                  = SHIFT+E
+Traction Control 5                  = F2
+Traction Control 6                  = DOWN ARROW
+Traction Control 7                  = F6
+Traction Control 8                  = UP ARROW
+Traction Control 9                  = F8
+Traction Control 10                 = F9
+Traction Control 11                 = F10
+Traction Control 12                 = F11
+Traction Control 13                 = DOWN ARROW
+Traction Control 14                 = DOWN ARROW
+
+## TRACTION CONTROL CUT
+TC Cut Cycle 1                      = 9
+TC Cut Cycle 2                      = DOWN ARROW
+Traction Control Cut 0              = DOWN ARROW
+Traction Control Cut 1              = SHIFT+F7
+Traction Control Cut 2              = SHIFT+F8
+Traction Control Cut 3              = SHIFT+F9
+Traction Control Cut 4              = SHIFT+F10
+Traction Control Cut 5              = SHIFT+F11
+Traction Control Cut 6              = DOWN ARROW
+Traction Control Cut 7              = CTRL+F2
+Traction Control Cut 8              = CTRL+F3
+Traction Control Cut 9              = CTRL+F6
+Traction Control Cut 10             = M
+Traction Control Cut 11             = SHIFT+M
+Traction Control Cut 12             = CTRL+F7
+Traction Control Cut 13             = CTRL+F8
+Traction Control Cut 14             = CTRL+F11
+
+## ABS
+ABS Setting Decrease                = CTRL+F12
+ABS Setting Increase                = SHIFT+CTRL+F1
+ABS Stage 0                         = SHIFT+CTRL+F2
+ABS Stage 1                         = SHIFT+CTRL+F3
+ABS Stage 2                         = SHIFT+CTRL+F4
+ABS Stage 3                         = UP ARROW
+ABS Stage 4                         = DOWN ARROW
+ABS Stage 5                         = CTRL+E
+ABS Stage 6                         = SHIFT+E
+ABS Stage 7                         = SHIFT+CTRL+F8
+ABS Stage 8                         = DOWN ARROW
+ABS Stage 9                         = SHIFT+CTRL+F8
+ABS Stage 10                        = SHIFT+CTRL+F9
+ABS Stage 11                        = SHIFT+CTRL+F10
+ABS Stage 12                        = SHIFT+CTRL+F11
+ABS Stage 13                        = CTRL+A
+ABS Stage 14                        = CTRL+B
+
+## ENGINE MAP
+Engine Map Setting Decrease         = CTRL+C
+Engine Map Setting Increase         = CTRL+D
+Engine Map Stage 1                  = K
+Engine Map Stage 2                  = UP ARROW
+Engine Map Stage 3                  = CTRL+K
+Engine Map Stage 4                  = SHIFT+CTRL+K
+Engine Map Stage 5                  = CTRL+A
+Engine Map Stage 6                  = O
+Engine Map Stage 7                  = SHIFT+O
+Engine Map Stage 8                  = CTRL+O
+Engine Map Stage 9                  = SHIFT+O
+Engine Map Stage 10                 = SHIFT+CTRL+F
+
+## BRAKE BIAS
+Brake Bias Rear                     = SHIFT+CTRL+G
+Brake Bias Front                    = DOWN ARROW
+
+## ESC (Electronic Stability Control)
+ESC Setting Decrease                = SHIFT+CTRL+L
+ESC Setting Increase                = CTRL+W
+ESC 0                               = SHIFT+CTRL+N
+ESC 1                               = CTRL+M
+ESC 2                               = SHIFT+CTRL+N
+ESC 3                               = J
+ESC 4                               = CTRL+2
+ESC 5                               = CTRL+J
+ESC 6                               = SHIFT+CTRL+U
+ESC 7                               = SHIFT+CTRL+8
+ESC 8                               = SHIFT+CTRL+9
+ESC 9                               = SHIFT+CTRL+Y
+
+## TURBO
+Turbo Level Decrease                = DOWN ARROW
+Turbo Level Increase                = SHIFT+CTRL+Y
+
+## ERS / HYBRID
+ERS Recharging Map Setting Decrease = DOWN ARROW
+ERS Recharging Map Setting Increase = SHIFT+N
+ERS Deployment Map Setting Decrease = CTRL+N
+ERS Deployment Map Setting Increase = CTRL+O
+MGU-Heat Mode Toggle                = P
+ERS Overtake                        = CTRL+Q
+DRS Activate                        = CTRL+R
+
+## PERFORMANCE MODE
+Performance Mode Previous           = CTRL+S
+Performance Mode Next               = CTRL+U
+Performance Mode 1                  = CTRL+V
+Performance Mode 2                  = CTRL+W
+Performance Mode 3                  = CTRL+Y
+Performance Mode 4                  = CTRL+Z
+Performance Mode 5                  = SHIFT+Z
+Performance Mode 6                  = SHIFT+X
+Performance Mode 7                  = SHIFT+V
+Performance Mode 8                  = SHIFT+W
+Performance Mode 9                  = SHIFT+A
+Performance Mode 10                 = SHIFT+O
+
+## DISPLAY DEVICE
+Display Device Cycle 1              = V
+Display Device Cycle 2              = Y
+Display Device 1                    = SHIFT+Y
+Display Device 2                    = SHIFT+Q
+Display Device 3                    = SHIFT+R
+Display Device 4                    = DOWN ARROW
+Display Device 5                    = SHIFT+3
+Display Device 6                    = SHIFT+4
+Display Device 7                    = SHIFT+5
+Display Device 8                    = SHIFT+6
+Display Device 9                    = SHIFT+7
+Display Device 10                   = SHIFT+9
+
+## DISPLAY PAGE
+Display Page Cycle 1                = SHIFT+CTRL+M
+Display Page Cycle 2                = SHIFT+0
+Display Page 1                      = CTRL+UP ARROW
+Display Page 2                      = CTRL+DOWN ARROW
+Display Page 3                      = CTRL+LEFT ARROW
+Display Page 4                      = CTRL+RIGHT ARROW
+Display Page 5                      = SHIFT+UP ARROW
+Display Page 6                      = SHIFT+DOWN ARROW
+Display Page 7                      = SHIFT+LEFT ARROW
+Display Page 8                      = SHIFT+RIGHT ARROW
+Display Page 9                      = SHIFT+CTRL+UP ARROW
+Display Page 10                     = SHIFT+CTRL+DOWN ARROW
+
+## COCKPIT LIGHT
+Cockpit Light Cycle 1               = 0
+Cockpit Light Cycle 2               = CTRL+F
+Cockpit Light Stage 1               = SHIFT+CTRL+LEFT ARROW
+Cockpit Light Stage 2               = SHIFT+CTRL+Q
+Cockpit Light Stage 3               = CTRL+I
+Cockpit Light Stage 4               = CTRL+L
+Cockpit Light Stage 5               = CTRL+M
+Cockpit Light Stage 6               = LEFT ARROW
+Cockpit Light Stage 7               = RIGHT ARROW
+Cockpit Light Stage 8               = DOWN ARROW
+Cockpit Light Stage 9               = PGDN
+Cockpit Light Stage 10              = -
+
+## SPECIAL LIGHT
+Special Light Cycle 1               = -
+Special Light Cycle 2               = SHIFT+PGUP
+Special Light Stage 1               = SHIFT+PGDN
+Special Light Stage 2               = SHIFT+-
+Special Light Stage 3               = 9
+Special Light Stage 4               = SHIFT+8
+Special Light Stage 5               = CTRL+PGUP
+Special Light Stage 6               = CTRL+PGDN
+Special Light Stage 7               = CTRL+-
+Special Light Stage 8               = CTRL+8
+Special Light Stage 9               = CTRL+S
+Special Light Stage 10              = -
+
+## DAMPER CONTROLS
+Damper Front Bump Cycle 1           = 0
+Damper Front Bump Cycle 2           = (unbound)
+Damper Front Rebound Cycle 1        = 8
+Damper Front Rebound Cycle 2        = UP ARROW
+Damper Rear Bump Cycle 1            = U
+Damper Rear Bump Cycle 2            = V
+Damper Rear Rebound Cycle 1         = W
+Damper Rear Rebound Cycle 2         = V
+
+## EBB MAP
+EBB Map Cycle 1                     = Y
+EBB Map Cycle 2                     = Z
+
+## DIFFERENTIAL
+Differential Power Cycle 1          = F11
+Differential Power Cycle 2          = SHIFT+A
+Differential Coast Cycle 1          = Z
+Differential Coast Cycle 2          = SHIFT+C
+
+## WIPERS
+Wiper Cycle 1                       = SHIFT+D
+Wiper Cycle 2                       = 4
+Wipers Stage 1                      = SHIFT+F
+Wipers Stage 2                      = SHIFT+Y
+Wipers Stage 3                      = SHIFT+W
+Wipers Stage 4                      = 8
+Wipers Stage 5                      = SHIFT+J
+Wipers Stage 6                      = SHIFT+Z
+Wipers Stage 7                      = SHIFT+9
+Wipers Stage 8                      = SHIFT+Z
+Wipers Stage 9                      = CTRL+C
+Wipers Stage 10                     = CTRL+D
+
+## VISIBILITY
+Cycle Nameplate Visibility          = Y
+
+## MIRROR CONTROLS
+Cycle Mirror 1                      = CTRL+E
+Cycle Mirror 2                      = CTRL+F
+Pitch Mirror 1                      = SHIFT+G
+Pitch Mirror 2                      = SHIFT+F
+Yaw Mirror 1                        = SHIFT+D
+Yaw Mirror 2                        = SHIFT+D
+FOV Mirror 1                        = SHIFT+8
+FOV Mirror 2                        = SHIFT+A
+Toggle Virtual Mirror               = F8
+
+## FORCE FEEDBACK
+FFB Gain Decrease                   = 1
+FFB Gain Increase                   = 2
+
+## OPTIONAL ANIMATIONS
+Optional Animation 1                = 3
+Optional Animation 2                = 4
+Optional Animation 3                = 8
+Optional Animation 4                = 6
+Optional Animation 5                = 7
+
+================================================================================
+                              END OF BINDINGS
+================================================================================
