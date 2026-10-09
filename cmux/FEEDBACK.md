@@ -37,3 +37,10 @@ issues" entries.
              `references/workspace-spec.md` and in any new SKILL.md section that
              mentions session paths. Reference `session-search` as the
              canonical implementation.
+
+---
+
+## Addressed
+
+### Harvest 2026-07-12
+- (no clusters with 2+ entries this run; 2 singletons observed, left untouched)
