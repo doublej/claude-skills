@@ -71,6 +71,26 @@ The user wants Claude to **drive their actual iPhone** — open apps, tap, type,
 
 `scripts/preflight.sh` runs all checks (local tools + remote Fractal Ollama) and exits non-zero if anything is missing.
 
+## Device Hub mode (deterministic, no vision model)
+
+Xcode 27's **Device Hub** (`com.apple.dt.Devices`, window owner "Device Hub") screen-shares a USB/Wi-Fi paired device and forwards mouse as touch. `scripts/devicehub.py` drives it with no model in the loop:
+
+- **Screen**: each capture locates the phone screen by its black bezel, so all coordinates are screen-relative (0..1) and survive window resize, moves and display switches.
+- **Recognition**: Apple Vision OCR (text + boxes). Pages are matched by text anchors in `PAGES`; text-less controls live as screen-relative points (`FEELD`).
+- **Overlay**: `devicehub.py overlay` (run detached) draws a click-through HUD over the window: screen outline, OCR boxes (green = matched), page + status, finger/swipe trail. Scales with the window.
+- Look with Claude vision only once per unknown text-less control (e.g. a close ×), then store the point.
+
+```bash
+uv run scripts/devicehub.py ocr | page | selftest
+uv run scripts/devicehub.py tap --text Likes        # or --rel 0.40 0.918
+uv run scripts/devicehub.py swipe left --rel-y 0.37
+nohup uv run scripts/devicehub.py overlay >/tmp/iphone-mirror/overlay.log 2>&1 &
+uv run scripts/devicehub.py feeld-likes             # names on the Likes tab
+uv run scripts/devicehub.py feeld-hunt --max 40     # pass Discover cards until a Likes name shows
+```
+
+Gotchas: drags that start on a tappable card become taps (Feeld opens its paywall), so scroll in the empty right margin (`scroll.lane`); add `hold_ms` to stop scroll fling; cliclick needs `=-123` for negative coords (displays left of/above main); some drags don't register, so "end of list" needs two unchanged frames.
+
 ## Workflow
 
 ### 1. Capture
