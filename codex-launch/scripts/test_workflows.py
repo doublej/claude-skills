@@ -136,6 +136,20 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn("final answer", result.stdout)
         self.assertIn("exit 0", result.stdout)
 
+    def test_observer_renders_json_events(self):
+        log = self.root / "log"
+        events = [{"type": "item.started", "item": {"type": "command_execution", "command": "/bin/zsh -lc \"ls -a\""}},
+                  {"type": "item.completed", "item": {"type": "agent_message", "text": "All clear."}}]
+        log.write_text("plain line\n" + "".join(json.dumps(e) + "\n" for e in events))
+        status = self.root / "exit"
+        status.write_text("0\n")
+        result = subprocess.run(["python3", str(LAUNCH / "follow_log.py"), str(log), str(status)],
+                                capture_output=True, text=True, timeout=3)
+        self.assertIn("plain line", result.stdout)
+        self.assertIn("$ ls -a", result.stdout)
+        self.assertIn("All clear.", result.stdout)
+        self.assertNotIn('"type"', result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

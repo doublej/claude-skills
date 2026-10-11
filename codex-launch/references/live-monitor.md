@@ -20,7 +20,9 @@ label and an explicit iTerm2 session ID; the finished output stays visible.
 The observer displays the end status without owning or cancelling the job.
 Use a background Bash/tool job when Claude must keep working, and retain its
 handle for completion and cancellation. Do not launch a second Codex run for
-the monitor. Raw `--json` events remain available for result capture.
+the monitor. The observer renders `--json` events as a readable feed
+(messages, commands, exit codes, searches, edits, token usage); the log file
+keeps the raw events for result capture.
 
 `codex-image` opens this observer itself. For an interactive TUI or desktop app,
 the actual visible Codex session satisfies the requirement. Use an explicitly
