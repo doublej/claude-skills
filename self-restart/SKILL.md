@@ -43,6 +43,7 @@ On `error: not in iTerm2 or tmux`, print the block with `pane: ✗` and the rela
 
 <options>
 - `--dry-run --json`: print pid, argv, target and the exact relaunch command without restarting. Use it first when unsure what will be relaunched.
+- `--env KEY=VAL` (repeatable): set an env var on the relaunched `claude`. The pane's shell keeps the env and hooks it started with, so a changed rc file does not reach the relaunch. Example: `--env CLAUDE_CONFIG_DIR=$HOME/.claude-pimpelmees` after a zshrc account switch.
 - `--delay N`: seconds before SIGTERM (default 5). Raise it only if the end of the last message gets cut.
 - The watcher log is at `$TMPDIR/self-restart/<session-id>.log`, and the script prints its path.
 </options>

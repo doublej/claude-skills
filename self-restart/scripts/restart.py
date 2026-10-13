@@ -106,6 +106,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--prompt", default=DEFAULT_PROMPT, help="first message after resume; '' resumes idle")
     parser.add_argument("--delay", type=float, default=5, help="seconds before SIGTERM, so the current turn can end")
+    parser.add_argument("--env", action="append", default=[], metavar="KEY=VAL", help="set on the relaunched claude")
     parser.add_argument("--dry-run", action="store_true", help="print the plan, do not restart")
     parser.add_argument("--json", action="store_true", help="machine-readable output")
     opts = parser.parse_args()
@@ -117,7 +118,8 @@ def main():
     if "-p" in flags or "--print" in flags:
         sys.exit("self-restart: headless (-p) session, there is no pane to restart in")
     command = ["claude", *flags, "--resume", session_id] + ([opts.prompt] if opts.prompt else [])
-    line = f"cd {shlex.quote(read_cwd(pid))} && {shlex.join(command)}"
+    env = "".join(f"{k}={shlex.quote(v)} " for k, v in (e.split("=", 1) for e in opts.env))
+    line = f"cd {shlex.quote(read_cwd(pid))} && {env}{shlex.join(command)}"
     target, send = build_send_command(line)
 
     log = Path(os.environ.get("TMPDIR", "/tmp")) / "self-restart" / f"{session_id}.log"
