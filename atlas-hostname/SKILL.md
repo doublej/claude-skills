@@ -51,6 +51,9 @@ github.com/doublej
 <procedure>
 Run in order. Each step: check → fix → evidence. Stop at the first step that says stop.
 
+Target is the project the user means, not necessarily the cwd: `atlas info`, `atlas run` and `atlas hostnames assign` all take a path.
+Already registered (`atlas hostnames --json` has its slug, `nasSynced: true`) → steps 1–4 only confirm; never rename its slug unprompted (it moves the route), mention `atlas set slug` as an option. Go to step 5's `lsof` + curl; `ensureRoute` short-circuits, so `~/dev/.atlas-hostnames.json` mtime stays put.
+
 1. **Something serves a browser?**
    `atlas info --json` → `devCommand`, `justRecipes`, `runner`, `type`. The scanner only reads `package.json` `dev`/`start`/`serve`, so a missing `devCommand` proves nothing on its own:
    - `devCommand` set, and not `build` → continue.
@@ -63,7 +66,7 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
 
 2. **Port in range.**
    Read `.atlas` `port`. Must be 4100–4999, and it must be the port a **browser** opens. A root `.atlas` in a multi-stack project often carries the API port; the UI is a separate child (step 1). Missing or outside (3000, 5173, 8000 are the usual offenders) →
-   `curl -s localhost:47891/api/ports/allocate` → `{"port":N}`; write `"port": N` into `.atlas`; pin the same N where the project already pins ports (`package.json` dev script, Justfile recipe, uvicorn/flask args, Go `PORT` default).
+   `curl -s localhost:47891/api/ports/allocate` → `{"port":N}`; write `"port": N` into `.atlas` (no `.atlas` yet → create it as a JSON object holding only the fields you set); pin the same N where the project already pins ports (`package.json` dev script, Justfile recipe, uvicorn/flask args, Go `PORT` default).
 
 3. **Bind address.**
    Read the dev script `atlas info` names.
@@ -76,7 +79,7 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    Print the hostname: `https://<slug>.atlas.local.jurrejan.com`. Say plainly: renaming or moving the folder through atlas (console, `/api/rename`, `/api/move`) moves or keeps the route; a move outside atlas leaves the old route behind until `atlas hostnames doctor --fix` releases it.
 
 5. **Register and verify.**
-   Server should start → `atlas run` (the daemon spawns it detached, stops the project's previous listeners, waits 60s for the bind, prints the hostname; works from an agent tool shell). No server wanted → `atlas hostnames assign` (bare = current folder). Then `lsof -nP -iTCP:<port> -sTCP:LISTEN`: the listener must exist before curling, so a dead server and a loopback bind stay distinguishable.
+   Server should start → `atlas run` (the daemon spawns it detached, stops the project's previous listeners, waits 60s for the bind, prints the hostname; works from an agent tool shell). No server wanted, or one `atlas run` cannot start (step 1) → `atlas hostnames assign` (bare = current folder). `atlas run` writes the port the server really bound back into `.atlas` (a taken port pushes it to N+1), so re-read `.atlas` before trusting N. Then `lsof -nP -iTCP:<port> -sTCP:LISTEN`: the listener must exist before curling, so a dead server and a loopback bind stay distinguishable.
    Registration is a Caddy route to a port. It survives the server dying; a 502 later means the port is empty or loopback-bound, never "re-register".
    Read the output, do not assume:
    - `lanReachable: false` / "binds localhost only" → the hostname goes through atlas's bridge; it works, and step 3 gives the direct route.
@@ -85,16 +88,14 @@ Run in order. Each step: check → fix → evidence. Stop at the first step that
    ```
    curl -sS -o /dev/null -w '%{http_code}\n' https://<slug>.atlas.local.jurrejan.com/
    ```
-   200 → GET passes. 502 with a loopback-only listener → the bridge is not up yet: the service sync bridges every routed port within 60s, whoever started the server; `atlas services sync` does it now. Still 502 → `atlas hostnames assign --json` re-bridges and names the failure in `error`; step 3 skips the bridge. 502 without a listener → server died, read the log. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
+   200 → GET passes. 502 with a loopback-only listener → the bridge is not up yet: the service sync bridges every routed port within 60s, whoever started the server; `atlas services sync` does it now. Still 502 → `atlas hostnames assign --json` re-bridges and names the failure in `error`; step 3 skips the bridge. 502 without a listener → server died, read the log. `000` → curl never reached Caddy (DNS, NAS down, off-LAN); `nasSynced` records the last push, not reachability now. Anything else → report the code plus `tail -20 ~/dev/.atlas-logs/<slug>.log`.
    **A 200 is not done when the app talks to anything else.** Caddy rewrites `Host` but not `Origin`, and a browser on another device is not this Mac:
-   - Own origin allowlist (better-auth `trustedOrigins`, Auth.js, Django `CSRF_TRUSTED_ORIGINS`, Rails `config.hosts`, Sanctum stateful domains; SvelteKit's `csrf.checkOrigin` is fine): POST once with `-X POST -H 'Origin: https://<slug>.atlas.local.jurrejan.com'` to an auth endpoint. 403 / `INVALID_ORIGIN` → add the hostname to that list.
+   - Own origin allowlist (better-auth `trustedOrigins`, Auth.js, Django `CSRF_TRUSTED_ORIGINS`, Rails `config.hosts`, Sanctum stateful domains; SvelteKit's `csrf.checkOrigin` is fine under `vite dev`, but an adapter-node build needs `ORIGIN=https://<slug>.atlas.local.jurrejan.com` in its environment): POST once with `-X POST -H 'Origin: https://<slug>.atlas.local.jurrejan.com'` to an auth endpoint. 403 / `INVALID_ORIGIN` → add the hostname to that list.
    - Separate backend: the frontend's baked API base must be the API's hostname, not `127.0.0.1:<port>` (on a phone that is the phone). `curl -sS https://<ui>/ | grep -o '<api-host>'` shows what is baked; `curl -sS -i -X OPTIONS https://<api>/<route> -H 'Origin: https://<ui>' | grep -i allow-origin` shows whether CORS admits it. Put the hostname in `.env.development`, never `.env`; `vite build` reads `.env` and ships it.
 
 6. **Record it.** One line in the project's CLAUDE.md:
    `Dev: \`atlas run\` → https://<slug>.atlas.local.jurrejan.com (port <N>).`
-   Existing `.claude/rules/atlas.md` already covers the mechanics; the CLAUDE.md line only names this project's hostname and port.
-
-Second run on the same project is a no-op: steps 1–4 pass, `atlas run` prints the hostname, `ensureRoute` short-circuits. Confirm `~/dev/.atlas-hostnames.json` mtime did not change if asked.
+   Existing `.claude/rules/atlas.md` already covers the mechanics; the CLAUDE.md line only names this project's hostname and port. A `just dev` / dev script that starts servers without printing an address can `echo` the hostname too.
 </procedure>
 
 <output_rule>
