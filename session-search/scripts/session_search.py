@@ -392,6 +392,7 @@ def is_system_noise(content: str) -> bool:
         "<local-command-stdout>", "<command-name>/", "<command-message>",
         "<system-reminder>", "<task-notification", "<agent-message",
         "Base directory for this skill:", "Stop hook feedback:",
+        "Another Claude session sent a message:", "[Image: source:",
     )
     if any(content.startswith(p) for p in prefixes):
         return True

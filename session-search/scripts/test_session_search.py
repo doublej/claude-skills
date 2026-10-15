@@ -119,9 +119,12 @@ def test_dash_prefixed_query_needs_separator() -> None:
 
 def test_noise_prefixes() -> None:
     for noisy in ("<agent-message from=x>hi", "<task-notification>x",
-                  "Stop hook feedback: x", "<command-message>x"):
+                  "Stop hook feedback: x", "<command-message>x",
+                  "Another Claude session sent a message:\n<cross-session-message>",
+                  "[Image: source: /tmp/1.png]"):
         assert S.is_system_noise(noisy), noisy
     assert not S.is_system_noise("please fix the serif fallback")
+    assert not S.is_system_noise("[Image #1] why is this button clipped?")
 
 
 def test_folder_includes_root_and_symlink_alias() -> None:

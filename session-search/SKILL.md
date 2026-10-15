@@ -86,7 +86,7 @@ Parse scope from the user's request. Apply these rules:
 **Time conversion:** "past hour" = `--since 60`, "today" = `--since 1440`, "this week" = `--since 10080`
 
 **`--folder` takes a real filesystem path**, not the encoded project directory name. When the user names a group of projects ("the simsync projects", "these projects"), pass the real path prefix:
-- "in the simsync projects" → `--folder ~/Documents/development/multi-stack/simsync`
+- "in the simsync projects" → `--folder ~/dev/multi-stack/simsync`
 - "in this folder" → `--folder $(pwd)`
 
 Never `ls`/`grep ~/.claude/projects/` by project name — directory names are URL-encoded (`-Users-jurrejan-...`, with `/` and `_` both collapsed to `-`) and will not match a plain name.
@@ -103,7 +103,9 @@ python3 {SKILL_DIR}/scripts/session_search.py search "<phrase>" [scope flags] -o
 
 The script outputs a summary box, timeline, and JSON.
 
-**Phrases starting with `--`** (e.g. `--allow-live`) are parsed as flags no matter how they are quoted. Put scope flags first and end the flag list with a bare `--`: `search -p <path> -o .session-search -- "--allow-live" "--only"`.
+**Every flag goes before the phrases.** Scope flags (`-p`, `--folder`, `--since`, `-o`) and search flags (`--any`, `-t`, `-m`, `-g`, `--context-limit`) alike: anything after a bare `--` is a query term, so a trailing `--any` silently becomes a phrase. Phrases starting with `--` (e.g. `--allow-live`) need that `--`: `search -p <path> -o .session-search --any -- "--allow-live" "--only"`. Phrases held in a shell variable go in an array — `P=(one two "three four"); ... search "${P[@]}" --any` — a plain string `$P` arrives as one phrase.
+
+**Wide scans can outlast the 120 s Bash timeout** (`--all-projects`, many `--any` phrases, long `--since`): narrow to `--folder`, or launch with `run_in_background: true` and wait for completion with Monitor.
 
 **Zero matches on a phrase you are sure exists?** Search covers message text *and* `tool_use` bodies (Write content, Bash commands, Edit strings) — a match found there is tagged `matched_in: "tool_use"` and its preview is prefixed `[tool_use]`. Two blind spots remain:
 - **Full tool bodies are not in `context_messages.json`** (they would balloon it). To read the surrounding body, `grep -rl "<phrase>" ~/.claude/projects/` and read that JSONL line directly.
@@ -111,13 +113,13 @@ The script outputs a summary box, timeline, and JSON.
 
 ### Step 2: Present results
 
-Show the summary box and timeline from stdout. **Never truncate or parse that stream.** It is a summary box, then per-project timelines, then a JSON blob: `tail` drops the box, `head -N` cuts off the later projects' timelines, and a JSON parser chokes on the leading text. Whenever you need the full match list or just a match count, run the search with stdout discarded and read `search_index.json`.
+Show the summary box and timeline from stdout. **Never truncate or parse that stream** — no `tail`, `head -N`, `head -c` or any other cut. It is a summary box, then per-project timelines, then a JSON blob: `tail` drops the box, `head` cuts off later projects' timelines and the JSON, and a JSON parser chokes on the leading text. Let it run to completion; when it is too large to show, or you need the full match list or a count, run the search with stdout sent to `/dev/null` and read `search_index.json`.
 
 **If matches exceed ~50–100**, the per-window browsing flow below is impractical. Instead: re-run `search` with a more specific phrase, add `--since`/`--folder` scope to narrow, or switch to the **ANALYSE flow** (extract + categorise) for a thematic summary.
 
 **Synonymous phrases: one `--any` run, never parallel processes.** `search "phrase one" "phrase two" --any` matches any of the phrases in a single corpus pass. Do NOT launch multiple concurrent `search` processes for synonyms — each process re-reads the entire session corpus (multi-GB), and parallel copies multiply I/O and CPU until the machine crawls.
 
-**Broad-term guard:** when total matches exceed `--context-limit` (default 500), the script automatically skips context extraction and the timeline — counts, windows, and match previews in `search_index.json` stay complete, and stdout prints a notice. This is the signal the query is too broad: narrow it rather than overriding. `--context-limit 0` forces full extraction when the user explicitly wants everything (can write very large files).
+**Broad-term guard:** when total matches exceed `--context-limit` (default 500), the script automatically skips context extraction and the timeline — counts, windows, and match previews in `search_index.json` stay complete, and stdout prints a notice. This is the signal the query is too broad: narrow it rather than overriding — unless the previews in `search_index.json` already answer the question, then use them. `--context-limit 0` forces full extraction when the user explicitly wants everything (can write very large files).
 
 Then proactively surface the top matches by reading `search_index.json` — each `projects[*].matches[]` entry has `{timestamp, type, session_id, preview}`. Show the top ~10 (timestamp, role, preview) so the user sees content, not just window boundaries.
 
@@ -126,24 +128,25 @@ Then proactively surface the top matches by reading `search_index.json` — each
 - **Few matches (≤ ~15)** — the timeline already shows every window; a surfacing pass adds latency and nothing else.
 - **Synthesis wanted** — research-style phrasing, no single quoted term, several parallel searches to merge, or > ~100 matches across many sessions.
 
-**Very large context (> ~2000 messages): delegate, do not load inline.** The output files persist on disk — hand a subagent the *absolute* paths to `context_messages.json` and `search_index.json` with a targeted synthesis prompt, and keep the raw messages out of your own context.
+**Very large context (> ~2000 messages or `context_messages.json` > ~400 KB): delegate, do not load inline.** The output files persist on disk — hand a subagent the *absolute* paths to `context_messages.json` and `search_index.json` with a targeted synthesis prompt, and keep the raw messages out of your own context.
 
 **Filter noise matches first.** These are user-turn messages in the JSONL but not things a human typed, and common terms (design words like "serif", flag names) hit them heavily via injected system prompts and agent payloads. Skip any match whose `preview` starts with:
 
-`Base directory for this skill:` · `<task-notification` · `<agent-message` · `<system-reminder>` · `<local-command-stdout>` · `<command-message>` · `<command-name>/` · `Stop hook feedback:` · `This session is being continued from` · `Caveat: The messages below were generated`
+`Base directory for this skill:` · `<task-notification` · `<agent-message` · `<system-reminder>` · `<local-command-stdout>` · `<command-message>` · `<command-name>/` · `Stop hook feedback:` · `Another Claude session sent a message:` · `[Image: source:` · `This session is being continued from` · `Caveat: The messages below were generated`
 
 Apply it in the snippet itself, not just by eye — the filter is what gets forgotten when you write an ad-hoc surfacing pass:
 
 ```python
 NOISE = ("Base directory for this skill:", "<task-notification", "<agent-message",
          "<system-reminder>", "<local-command-stdout>", "<command-message>",
-         "<command-name>/", "Stop hook feedback:", "This session is being continued from")
+         "<command-name>/", "Stop hook feedback:", "Another Claude session sent a message:",
+         "[Image: source:", "This session is being continued from", "Caveat: The messages below were generated")
 real = [m for m in ms if not m["preview"].startswith(NOISE)]
 ```
 
 The same list is the filter to apply when bulk-extracting human-typed messages from `context_messages.json` (`type == "user"`) for pattern distillation — do not rediscover it by trial and error. `is_system_noise()` in `session_search.py` holds the canonical list and already applies it to `scan`/`extract`; `search` results are deliberately unfiltered so nothing is hidden.
 
-**Also filter the current session.** Matches whose `session_id` is this live session are the skill's own SKILL.md text, indexed as it loaded. Get the current `session_id` from the session-directory name in your scratchpad path (`.../<project>/<session_id>/scratchpad`); failing that, treat any match whose window overlaps the last few minutes as a candidate.
+**Also filter the current session's self-hits.** Matches in this live session whose preview is noise (above) or this SKILL.md's own wording are the skill text, indexed as it loaded — drop those, but keep the user's own messages from this session; they can be the very evidence asked for. Get the current `session_id` from the session-directory name in your scratchpad path (`.../<project>/<session_id>/scratchpad`); failing that, treat any match whose window overlaps the last few minutes as a candidate.
 
 **If filtering leaves nothing, widen before reporting zero.** All-hits-are-current-session means the single-project scope missed the real history. Re-run with `--folder <parent of cwd>` automatically, and say in the summary that the scope was widened.
 
@@ -165,7 +168,9 @@ The same list is the filter to apply when bulk-extracting human-typed messages f
 python3 {SKILL_DIR}/scripts/session_search.py scan [scope flags]
 ```
 
-`scan` stdout is mixed the same way: human-readable boxes first, then the JSON. Do not `tail` it, and do not feed it to a JSON parser. `scan` accepts `-o` but writes no file, so to consume it programmatically redirect stdout to a file and slice from the first `[`. Guard for nulls — `oldest`/`newest` are `null` for projects with no messages, and an unguarded sort on them raises `TypeError`.
+`scan` stdout is mixed the same way: human-readable boxes first, then the JSON. Do not `head` or `tail` it (`head` drops the JSON, `tail` the boxes), and do not feed it to a JSON parser. `scan` accepts `-o` but writes no file, so to consume it programmatically redirect stdout to a file and slice from the first `[`. Guard for nulls — `oldest`/`newest` are `null` for projects with no messages, and an unguarded sort on them raises `TypeError`.
+
+**A fresh write-up may already answer it.** If the repo holds a recent report covering the scope (e.g. `.orchestrate/report.md`, a committed incident or session summary), present that first and mine sessions only for what it lacks.
 
 **If the question needs data this skill does not hold** — correlating history with a project database, `git log`, a ticket store — use `scan` for the session-side baseline and then stop: the correlation is out of scope, so handle it with ad-hoc tooling rather than forcing it through the extract → analyse → present pipeline.
 
@@ -293,6 +298,6 @@ session_search.py list [scope]
 - Extracts full conversation context (user + assistant + speak MCP dialogs), plus `tool_use` inputs for `search` only
 - **Not covered:** subagent transcripts under `<session_id>/subagents/agent-*.jsonl` and top-level `agent-*.jsonl` — grep those directly (see Phase 3a Step 1)
 
-**Troubleshooting — a scope returns 0:** the script depends on no index at any level. If a scope genuinely yields nothing it prints `Error: No projects found for scope` and exits non-zero. Verify the `--folder` argument is a real filesystem path prefix (see Phase 2), or widen the scope. If one project inside a `--folder` scan shows 0 sessions while its project dir clearly holds `*.jsonl` files, re-run that path alone with `extract -p <path>` and report the discrepancy — the on-disk fallback should make this impossible.
+**Troubleshooting — a scope returns 0:** the script depends on no index at any level. If a scope genuinely yields nothing it prints `Error: No projects found for scope` and exits non-zero. Verify the `--folder` argument is a real filesystem path prefix (see Phase 2), or widen the scope. If one project inside a `--folder` scan shows 0 sessions while its project dir clearly holds `*.jsonl` files, re-run that path alone with `extract -p <path>` and report the discrepancy — the on-disk fallback should make this impossible. A `--folder` run that drops a project dir whose encoded name sits under the path prints `Warning: N project dir(s) ... were not scanned` on stderr: re-run each with `-p` and name them under the report table.
 
 </phase_intent>
