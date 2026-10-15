@@ -37,8 +37,8 @@ returns it) and pass it on every subsequent call. Commands that default to
 | Control keys | `it2 send -s "$SID" $'\x03'` (Ctrl-C) | `send-keys -t tgt C-c` |
 | Settle before read | `sleep 1` | `sleep` or `wait-for-text.sh` (poll pattern) |
 | Capture output | `it2 session read -s "$SID" -n 200` | `capture-pane -p -J -t tgt -S -200` |
-| Explicit target | `-s <session-id>` (from `$ITERM_SESSION_ID` / split output) | `-S "$SOCKET"` + `-t session:win.pane` |
-| Capture new-pane ID | `SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 \| grep -oE '[A-F0-9-]{36}')` | pane target is deterministic: `session:0.0` |
+| Explicit target | `-s <session-id>` (bare UUID: `${ITERM_SESSION_ID#*:}` — env carries a `w4t2p0:` prefix — or split output) | `-S "$SOCKET"` + `-t session:win.pane` |
+| Capture new-pane ID | `SID=$(it2 vsplit -s "${ITERM_SESSION_ID#*:}" 2>&1 \| grep -oE '[A-F0-9-]{36}')` | pane target is deterministic: `session:0.0` |
 
 ## Where the detail lives
 
