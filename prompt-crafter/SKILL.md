@@ -71,10 +71,11 @@ Resolution order:
 | `opus-4-8` | Claude Opus 4.8 | `references/lint-opus-4-8.md` | 0–15 |
 | `opus-4-7` | Claude Opus 4.7 | `references/lint-opus-4-7.md` | 0–15 |
 | `sonnet-4-6` | Claude Sonnet 4.6 | `references/lint-sonnet-4-6.md` | 0–12 |
+| `haiku-4-5`, `claude-haiku-4-5`, `claude-haiku-4-5-<date>` | Claude Haiku 4.5 (no dedicated file) | `references/lint-generic.md` | 1–8 |
 | `generic` / unspecified | Model-agnostic | `references/lint-generic.md` | 1–8 |
 | `deep-research`, `chatgpt-deep-research`, `o3-deep-research`, `o4-mini-deep-research`, `claude-research`, `gemini-deep-research`, `deep-research-preview-04-2026`, `perplexity`, `sonar` | Research product (the product fixes the model) | `references/lint-generic.md` + `<deep_research>` overlay | 1–8, then DR items |
 
-Bare `opus` resolves to Opus 5.5; bare `sonnet` to Sonnet 5. Model IDs may carry a context suffix (`claude-opus-5-5[1m]`); strip it before matching. Older models need the version suffix. GPT-5.1 / 5.2: hand off to the `prompt-gpt` skill.
+Bare `opus` resolves to Opus 5.5; bare `sonnet` to Sonnet 5. Model IDs may carry a context suffix (`claude-opus-5-5[1m]`); strip it before matching. Match the full version: `opus-5.5` / `claude-opus-5-5` is its own row, never the shorter `opus-5` row. A model with a row never borrows a neighbouring row's file; a model with no row routes to `generic`, and the header names that route, not a "closest route". Older models need the version suffix. GPT-5.1 / 5.2: hand off to the `prompt-gpt` skill.
 
 **Multi-model systems** (orchestrator on one model, subagents on another): resolve each component separately and apply that profile to that component's instructions only. Forks inherit the parent model and cannot be overridden.
 
