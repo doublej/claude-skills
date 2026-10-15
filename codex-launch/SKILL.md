@@ -57,12 +57,14 @@ Do not type executable text into an unknown frontmost application.
 
 ```bash
 bash ~/.claude/skills/codex-launch/scripts/run_monitored.sh "Codex review" \
-  codex exec -C "$PWD" -s read-only --json -- "Review the current changes."
+  codex exec -C "$PWD" -s read-only --json -- "Review the current changes." < /dev/null
 ```
 
 The wrapper opens the monitor window before running, streams a unique retained log, and
 returns the command's exit code. It preserves stdout for result capture; stderr
-also appears in the log. Keep its Bash/tool job handle if launched in background.
+also appears in the log. `codex exec` appends piped stdin to the prompt, so close it
+(`< /dev/null`) unless you pipe input on purpose; otherwise it waits on stdin.
+Keep its Bash/tool job handle if launched in background.
 Closing the observer does not cancel Codex. See the reference for plugin jobs.
 
 ## Interactive terminal

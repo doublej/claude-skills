@@ -10,7 +10,7 @@ Use the shared wrapper, preserving arguments as separate shell words:
 
 ```bash
 bash ~/.claude/skills/codex-launch/scripts/run_monitored.sh "Codex review" \
-  codex exec -C "$PWD" -s read-only --json -- "Review the current changes."
+  codex exec -C "$PWD" -s read-only --json -- "Review the current changes." < /dev/null
 ```
 
 The wrapper opens a dedicated window in tmux session `codex` before running the command,
