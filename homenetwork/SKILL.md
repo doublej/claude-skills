@@ -50,7 +50,7 @@ Doc updates follow "After Making Changes" below.
 ## Documentation
 
 Full network documentation lives at:
-`/Users/jurrejan/Documents/development/_management/homenetwork/`
+`~/dev/_management/homenetwork/`
 
 Read the relevant machine doc before working on a host:
 - `machines/m2-pro.md` — this machine (daily driver)
@@ -65,23 +65,25 @@ Read the relevant machine doc before working on a host:
 
 | Machine | IP | SSH Command | User | OS | `claude` CLI |
 |---|---|---|---|---|---|
-| **M2 Pro** (this machine) | `192.168.178.145` | — (local) | `jurrejan` | macOS Tahoe | yes (`~/.local/bin/claude`) |
-| **Ubuntu Server** | `192.168.178.121` | `ssh ubuntu-server` | `jurrejan` | Ubuntu 24.04 | **no** |
+| **M2 Pro** (this machine) | `192.168.178.180` | — (local) | `jurrejan` | macOS Tahoe | yes (`~/.local/bin/claude`) |
+| **Ubuntu Server** | `192.168.178.121` | `ssh ubuntu-server` (alias `ssh ubuntu`) | `jurrejan` | Ubuntu 24.04 | yes (`~/.local/bin/claude`) |
 | **QNAP NAS** | `192.168.178.100` | `ssh admin@192.168.178.100` | `admin` | QTS 5.2.6 | yes (container, `/opt/bin/claude`) |
 | **Fractal PC** | `192.168.178.197` | `ssh fractal` (alias `ssh pc`) | `user` (Windows home `C:\Users\jurre`) | Windows 11 Pro | yes (`C:\Users\jurre\.local\bin\claude.exe`) |
 | **mbp-15-server** (old MacBook) | `192.168.178.120` | `ssh mbp-server` (or `mbp15`, `macserver`, `mbp`) | `jurrejan` | macOS 12.6 | **no** |
 
-**M2 Pro**, **Fractal** and the **NAS** can run `claude` — spawn remote workers there, no capability probe needed. The NAS runs it in a container (`homenetwork/services/claude-nas/`); its home is `/share/CACHEDEV1_DATA/.claude-nas-home`, not `/root`, and one-shot commands need the **full path** `/opt/bin/claude` because `ssh nas '<cmd>'` does not read `/root/.profile`.
+**M2 Pro**, **Ubuntu Server**, **Fractal** and the **NAS** can run `claude` — spawn remote workers there, no capability probe needed. On Ubuntu `~/.local/bin` is not in the non-interactive PATH, so `ssh ubuntu '<cmd>'` needs the full path `~/.local/bin/claude`. The NAS runs it in a container (`homenetwork/services/claude-nas/`); its home is `/share/CACHEDEV1_DATA/.claude-nas-home`, not `/root`, and one-shot commands need the **full path** `/opt/bin/claude` because `ssh nas '<cmd>'` does not read `/root/.profile`.
 
 ### SSH Gotchas
 
 - **NAS:** `jongserve.local` mDNS does not resolve — always use IP `192.168.178.100`
 - **Fractal PC:** **always use the `ssh fractal` / `ssh pc` alias**, never the bare IP. The alias config has `IdentitiesOnly yes`; the bare `ssh user@192.168.178.197` hits the catch-all `Host *` rule, so the 1Password agent offers every key and the server drops the connection with **"Too many authentication failures"**.
-- **Fractal PC (shell):** default SSH shell is **PowerShell**, not bash. Inline `$variables` in `ssh fractal "..."` get eaten by the outer PowerShell, and `&` is **not** a command separator (fails with `AmpersandNotAllowed`). Put logic in a script file, or run bash via `ssh fractal "wsl -d Ubuntu -e bash -s" < script.sh`.
+- **Fractal PC (shell):** default SSH shell is **PowerShell**, not bash. Inline `$variables` in `ssh fractal "..."` get eaten by the outer PowerShell, and `&` is **not** a command separator (fails with `AmpersandNotAllowed`). Put logic in a script file, or run bash via `ssh fractal "wsl -d Ubuntu -e bash -s" < script.sh`. Every extra layer multiplies the quoting: `ssh → PowerShell → adb shell → sh -c '...'` collapses — flatten to one plain `adb shell <cmd>` or push a script file and run that. Don't chain local pipes (`| grep`) into the same string as embedded PowerShell either — capture the output first, filter in a separate command.
+- **Fractal PC (banner):** every connection prints a three-line `** WARNING: connection is not using a post-quantum key exchange algorithm` banner on **stderr**. Cosmetic, not an error — ignore it or add `2>/dev/null` when parsing.
 - **Fractal PC (paths):** the SSH login user is `user`, but the Windows home folder is **`C:\Users\jurre`** — they differ. Never derive a path from the SSH user: `C:\Users\jurre\...` (WSL: `/mnt/c/Users/jurre/...`).
 - **Fractal PC (scp):** `scp` cannot handle Windows paths containing spaces, quoting does not help (`No such file or directory`). Copy the file to a space-free path first, then scp from there:
   `ssh fractal 'Copy-Item "C:\Program Files (x86)\...\app.exe" C:\dev\_sandbox\app.exe'` then `scp fractal:C:/dev/_sandbox/app.exe .`
 - **mbp-server:** no passwordless `sudo` — system changes need the login password. Its services are launch agents (`launchctl list | grep -E 'jellyfin|jjnas'`), not systemd.
+- **Keepalive:** only the NAS host stanzas set `ServerAliveInterval 15` / `ServerAliveCountMax 4`. For long-running commands on Ubuntu or Fractal pass `-o ServerAliveInterval=15 -o ServerAliveCountMax=4` so a frozen session dies in ~60s instead of hanging.
 - **All SSH keys** are managed via 1Password SSH Agent on M2
 
 ### Key Services
@@ -92,7 +94,9 @@ Read the relevant machine doc before working on a host:
 | Traefik dashboard | Ubuntu | `http://192.168.178.121:8080` |
 | Jellyfin | mbp-server | `http://192.168.178.120:8096` (manual: `services/jellyfin/`) |
 | Samba shares | Ubuntu | `smb://192.168.178.121` |
-| QTS Web UI | NAS | `https://192.168.178.100` |
+| QTS Web UI | NAS | `http://192.168.178.100:8080` (80/443 belong to Caddy, not QTS) |
+| Caddy reverse proxy | NAS | 80/443 — container `caddy-porkbun` (`restart=always`), ingress for every NAS-hosted `*.jurrejan.com` site; stopping it takes them all offline. An explicit `docker stop` sticks until the NAS reboots |
+| qBittorrent | NAS | `http://192.168.178.100:6363` (`qbittorrent-nox`) |
 | Plex | NAS | via QNAP package |
 | WireGuard VPN | NAS | QVPN package |
 | RDP | Fractal | `mstsc /v:192.168.178.197` |
@@ -102,7 +106,7 @@ Read the relevant machine doc before working on a host:
 ### Router
 
 - Gateway: `192.168.178.1` (Ziggo ISP)
-- All IPs are DHCP — no static reservations configured
+- All IPs are DHCP — no static reservations configured, so the table IPs can drift. Verify before trusting them (`ipconfig getifaddr en0` locally, `HostName` in `~/.ssh/config` for the aliases)
 - DNS: Google DNS (`8.8.8.8`, `8.8.4.4`)
 
 ## Working on a Machine
@@ -131,13 +135,16 @@ ls /share/CACHEDEV1_DATA/
 DOCKER=/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker; "$DOCKER" ps
 # Check installed packages
 ls /share/CACHEDEV1_DATA/.qpkg/
+# qBittorrent: live config is .qpkg/qBittorrent/.config/qBittorrent/qBittorrent.conf
+# (/root/.config/qBittorrent/ is an empty decoy). Stop before editing — it rewrites the
+# file on shutdown: /etc/init.d/qBittorrent.sh stop|start
 # NOTE: ps is BusyBox — GNU flags like `--sort` are unsupported.
 # Use `top -b -n 1 | head -30` for process inspection.
 ```
 
 ### Fractal PC (Windows)
 
-**Development work goes in `C:\dev`** — this is the development root on Fractal, deliberately mirroring the structure of `~/Documents/development` on the M2 Pro (same language/domain folder grouping). Clone and work on projects there, not scattered across the disk.
+**Development work goes in `C:\dev`** — this is the development root on Fractal, deliberately mirroring the structure of `~/dev` on the M2 Pro (same language/domain folder grouping). Clone and work on projects there, not scattered across the disk.
 
 ```bash
 ssh fractal   # use the alias, never the bare IP (see SSH Gotchas)
@@ -160,7 +167,7 @@ and the raw UNC path fail (`UnauthorizedAccessException`), because no NAS creden
 (`cmdkey /list:192.168.178.100` → none). To reach NAS files over SSH, store the credential first:
 `cmdkey /add:192.168.178.100 /user:admin /pass:<pw>` — otherwise go via `ssh admin@192.168.178.100`.
 
-**Claude config/history sync:** `~/Documents/development/_management/claude-sync/claude-sync` syncs Claude Code config (skills, agents, commands, CLAUDE.md) and per-project session history between the M2 Pro and Fractal (rsync via `wsl rsync` — no native rsync on Windows). Project pairs (Mac path ↔ `C:\dev\...` path) live in its `config.json`; `claude-sync status` dry-runs, `claude-sync sync` merges two-way. See its README.
+**Claude config/history sync:** `~/dev/_management/claude-sync/claude-sync` syncs Claude Code config (skills, agents, commands, CLAUDE.md) and per-project session history between the M2 Pro and Fractal (rsync via `wsl rsync` — no native rsync on Windows). Project pairs (Mac path ↔ `C:\dev\...` path) live in its `config.json`; `claude-sync status` dry-runs, `claude-sync sync` merges two-way. See its README.
 
 ### This Machine (M2 Pro)
 
