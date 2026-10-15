@@ -193,7 +193,7 @@ Cuts: <removed rules and reasons, at most five; or none>
 Test it: <exact invocation or message and the expected observable result; label as proposed unless actually run>
 ````
 
-When the prompt is also written to disk (a brief file, a SKILL.md via skill-creator), the fence still holds its full final text and the path goes in Assumptions; a file reference never replaces the fence. For slash commands, include the proposed save path in Assumptions so the invocation is usable. Test it describes a concrete acceptance run, including setup if needed, without requiring the author to execute the generated task. A filename heuristic alone cannot prove code has no coverage; reflect that distinction in the prompt and its test.
+When the prompt is also written to disk (a brief file, a SKILL.md via skill-creator), the fence still holds its full final text and the path goes in Assumptions; a file reference never replaces the fence. For slash commands, include the proposed save path in Assumptions so the invocation is usable. Test it describes a concrete acceptance run, including setup if needed, without requiring the author to execute the generated task. A brief with `RUN_SHAPE=long-horizon autonomous` is tested headless (`claude -p --permission-mode acceptEdits|plan`, per `<slash_command>`), not in an interactive session. Test it never cites a session-scoped path (scratchpad, `/tmp`): use a durable save path or "paste the fenced prompt". A filename heuristic alone cannot prove code has no coverage; reflect that distinction in the prompt and its test.
 </output_contract>
 
 <surfaces>
