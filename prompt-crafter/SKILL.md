@@ -130,7 +130,7 @@ Output (reply): header and Assumptions, then the routed file's four sections. Th
 
 1. **Resolve inputs** → Output (internal): supplied draft and values for every placeholder in the opened file. A draft embedded in a file or diff is extracted first (its current text) and used as `<<PROMPT>>`. Repo-specific names, paths, and tool references in the draft are verified as authoring step 2 prescribes; unverified ones become WARN items. Output (reply): one `Assumptions:` line under the header; label unknown capabilities rather than inventing them.
 2. **Evaluate** → Output (reply): Summary verdict and Checklist results. Include every numbered item in the routed range, in order: PASS, WARN, FAIL, or `n/a` with a concrete reason. Unknown configuration is not evidence of a passing configuration check.
-3. **Repair** → Output (reply): Minimal rewritten prompt in one fence, or `No changes needed`. Preserve user scope; config findings stay outside the prompt unless configuration is itself the deliverable.
+3. **Repair** → Output (reply): Minimal rewritten prompt in one fence, or `No changes needed`. Preserve user scope; a scope change the user names in this conversation is the scope, so apply it rather than keep the original constraint. Config findings stay outside the prompt unless configuration is itself the deliverable.
 4. **Record evidence** → Output (reply): Change evidence, at most five bullets mapping changed clauses to checklist items and a concrete acceptance observation. Do not claim a trial ran unless it did. Stop after section 4; no extra self-review phase or literal STOP token.
 </lint_path>
 
