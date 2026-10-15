@@ -1,6 +1,6 @@
 ---
 name: deploy-cloudflare
-description: "Pages/Workers with Wrangler: D1/KV/R2 bindings, wrangler.toml"
+description: "Pages/Workers with Wrangler: D1/KV/R2 bindings, Containers, wrangler.toml"
 ---
 
 # Cloudflare
@@ -73,6 +73,9 @@ Serves static assets + optional server-side functions (SSR).
 ```bash
 # Create project
 bunx wrangler pages project create <project-name> --production-branch production
+# If <project-name>.pages.dev is taken globally, Cloudflare appends a random suffix
+# (e.g. <project-name>-1cn.pages.dev). Read the URL from the create output (or
+# `wrangler pages project list`) before hardcoding it in a Justfile or config.
 
 # Deploy
 bunx wrangler pages deploy <output-dir> --project-name <project-name>
@@ -132,7 +135,7 @@ compatibility_flags = ["nodejs_compat"]
 }
 ```
 
-See `references/wrangler-config.md` for bindings, environments, and advanced config.
+See `references/wrangler-config.md` for bindings (incl. Containers), environments, and advanced config.
 </workflow>
 
 <justfile_recipes>
@@ -235,6 +238,11 @@ TOKEN=$(grep '^oauth_token' ~/.wrangler/config/default.toml | cut -d'"' -f2)
 
 Use that as the bearer token for the domains calls. Deploys themselves keep working with the
 scoped token — only the domains API needs the fallback.
+
+`status: active` on the domain only means Cloudflare accepted it. If the zone is **not** in
+Cloudflare (e.g. `jurrejan.com` lives at Porkbun), nothing resolves until you add a CNAME
+`<subdomain> → <project>.pages.dev` at the registrar (Porkbun: `porkbun-api` skill). A wildcard
+record there (`*.jurrejan.com`) keeps answering for the subdomain until that explicit record exists.
 
 Adding a new zone assigns it its own nameserver pair — it is *not* the pair the account's
 existing zones use. Pointing the registrar at the familiar pair leaves the zone Pending

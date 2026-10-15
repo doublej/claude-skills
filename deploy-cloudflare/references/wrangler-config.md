@@ -43,6 +43,39 @@ tag = "v1"
 new_sqlite_classes = ["SessionDO"]
 ```
 
+### Containers (`@cloudflare/containers`)
+
+A container is a Durable Object class with an image. Declare the class under `exports`
+(new apps) or legacy `migrations` — never both in one config.
+
+```jsonc
+"containers": [
+  { "class_name": "MyContainer", "image": "./Dockerfile", "max_instances": 10,
+    "instance_type": "lite" }   // lite (default) | basic | standard-1 … standard-4
+],
+"durable_objects": { "bindings": [{ "name": "MY_CONTAINER", "class_name": "MyContainer" }] },
+"exports": { "MyContainer": { "type": "durable-object", "storage": "sqlite" } }
+```
+
+```ts
+import { Container, ContainerProxy } from "@cloudflare/containers";
+export { ContainerProxy };            // required, or outbound interception silently does nothing
+
+export class MyContainer extends Container {
+  defaultPort = 8080;
+  sleepAfter = "10m";
+  envVars = { API_KEY: this.env.API_KEY };   // secrets: `wrangler secret put` / `secret bulk`, then pass in here
+  enableInternet = false;                    // block public internet
+  allowedHosts = ["api.example.com"];        // deny-by-default allowlist
+}
+// Intercept egress in the Worker (inject credentials the container never sees):
+MyContainer.outboundByHost = { "api.example.com": async (request, env, ctx) => fetch(request) };
+```
+
+HTTPS egress is only intercepted with `interceptHttps = true`, and the image must trust
+`/etc/cloudflare/certs/cloudflare-containers-ca.crt`. Docs:
+https://developers.cloudflare.com/containers/platform-details/outbound-traffic/
+
 ### Static Assets (Worker with dashboard)
 
 ```toml
