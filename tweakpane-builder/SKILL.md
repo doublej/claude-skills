@@ -168,6 +168,6 @@ pane.addButton({ title: 'Reset' }).on('click', () => {
 
 <reference_files>
 
-See `references/` for API documentation.
+`references/api-docs.md` — Tweakpane v4 API: Pane class, binding auto-detection, input/monitor bindings, folders/tabs, blades, the essentials and camerakit plugins, events. Read it before writing binding or blade code instead of fetching npm or online docs.
 
 </reference_files>
