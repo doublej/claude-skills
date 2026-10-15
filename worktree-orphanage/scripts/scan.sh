@@ -40,11 +40,12 @@ done
 [ ${#targets[@]} -eq 0 ] && { echo "NO_TARGET_BRANCH (tried: ${cand[*]})" >&2; exit 2; }
 
 # --- reverse-apply check: is a patch already present in target's tree? -----
-tmpidx=$(mktemp); trap 'rm -f "$tmpidx"' EXIT
-patch_in_target() { # $1=target, $2=patch text
-  [ -z "$2" ] && return 0                          # empty patch: no content to lose
+tmpidx=$(mktemp); tmppatch=$(mktemp); trap 'rm -f "$tmpidx" "$tmppatch"' EXIT
+patch_in_target() { # $1=target; patch on stdin (a file, not $(...): patches can hold NUL bytes)
+  cat >"$tmppatch"
+  [ -s "$tmppatch" ] || return 0                   # empty patch: no content to lose
   GIT_INDEX_FILE=$tmpidx git read-tree "$1" 2>/dev/null || return 1
-  printf '%s\n' "$2" | GIT_INDEX_FILE=$tmpidx git apply --cached --check --reverse 2>/dev/null
+  GIT_INDEX_FILE=$tmpidx git apply --cached --check --reverse "$tmppatch" 2>/dev/null
 }
 
 stash_count() { # $1=branch
@@ -61,7 +62,7 @@ bucket() {
     if [ "$ahead" -gt 0 ]; then
       any_ahead=1
       # squash-merge defense: whole branch diff already in target's tree?
-      if patch_in_target "$T" "$(git diff "$T...$sha" 2>/dev/null)"; then
+      if git diff "$T...$sha" 2>/dev/null | patch_in_target "$T"; then
         absorbed=$ahead
       else
         local plus=()
@@ -75,7 +76,7 @@ bucket() {
         i=0
         for p in "${plus[@]:-}"; do
           [ -z "$p" ] && continue
-          if [ $i -lt 20 ] && patch_in_target "$T" "$(git show "$p" --format= --patch 2>/dev/null)"; then
+          if [ $i -lt 20 ] && git show "$p" --format= --patch 2>/dev/null | patch_in_target "$T"; then
             absorbed=$((absorbed+1))
           else
             unmerged=$((unmerged+1))
