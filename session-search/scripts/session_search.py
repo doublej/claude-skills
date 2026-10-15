@@ -91,6 +91,31 @@ def project_path_from_sessions(project_dir: Path) -> str:
     return ""
 
 
+def in_folder(project_path: str, norm_folder: str) -> bool:
+    """True when project_path is norm_folder or below it. Resolves symlinks so an
+    index that still records an old alias (~/Documents/development → ~/dev) matches."""
+    if not project_path:
+        return False
+    p = str(Path(project_path).resolve())
+    return p == norm_folder or p.startswith(norm_folder.rstrip("/") + "/")
+
+
+def warn_omitted_projects(folder: str, results: list[dict]) -> None:
+    """Warn on stderr about project dirs whose encoded name says they sit under
+    folder but that discovery dropped — never let a scope shrink silently."""
+    prefix = encode_project_path(str(Path(folder).resolve()))
+    found = {r["project_dir"].name for r in results}
+    omitted = sorted(
+        d.name for d in PROJECTS_DIR.iterdir()
+        if d.is_dir() and d.name.startswith(prefix) and d.name not in found
+        and any(d.glob("*.jsonl"))
+    )
+    if omitted:
+        print(f"Warning: {len(omitted)} project dir(s) look like they are under {folder} "
+              f"but were not scanned (projectPath mismatch); re-run each with -p <path>: "
+              + ", ".join(omitted), file=sys.stderr)
+
+
 def discover_projects(
     folder: str | None = None,
     since_minutes: int | None = None,
@@ -123,7 +148,7 @@ def discover_projects(
         if data and data.get("entries"):
             entries = data["entries"]
             project_path = data.get("originalPath") or entries[0].get("projectPath", "")
-            if norm_folder and not project_path.startswith(norm_folder):
+            if norm_folder and not in_folder(project_path, norm_folder):
                 continue
             if cutoff_ms:
                 kept = [e for e in entries if e.get("fileMtime", 0) >= cutoff_ms]
@@ -150,7 +175,7 @@ def discover_projects(
             if not session_files:
                 continue
             project_path = project_path_from_sessions(project_dir)
-            if norm_folder and not project_path.startswith(norm_folder):
+            if norm_folder and not in_folder(project_path, norm_folder):
                 continue
             if cutoff_ms:
                 session_files = [
@@ -176,10 +201,11 @@ def resolve_projects(args: argparse.Namespace) -> list[dict]:
             since_minutes=getattr(args, "since", None),
         )
     if args.folder:
-        return discover_projects(
-            folder=args.folder,
-            since_minutes=getattr(args, "since", None),
-        )
+        since = getattr(args, "since", None)
+        results = discover_projects(folder=args.folder, since_minutes=since)
+        if not since:  # --since drops projects legitimately
+            warn_omitted_projects(args.folder, results)
+        return results
     # single project
     project_dir = find_project_dir(args.project)
     if not project_dir:

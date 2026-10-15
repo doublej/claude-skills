@@ -124,6 +124,22 @@ def test_noise_prefixes() -> None:
     assert not S.is_system_noise("please fix the serif fallback")
 
 
+def test_folder_includes_root_and_symlink_alias() -> None:
+    """--folder must keep the project at exactly PATH, also when its index records
+    an old symlink alias of PATH, and must not leak sibling prefixes (bd-qxbh)."""
+    with tempfile.TemporaryDirectory() as tmp:
+        real = Path(tmp).resolve() / "dev" / "mono"
+        real.mkdir(parents=True)
+        alias = Path(tmp).resolve() / "Documents"
+        alias.symlink_to(real.parent)
+        folder = str(real)
+        assert S.in_folder(folder, folder)
+        assert S.in_folder(str(real / "sub"), folder)
+        assert S.in_folder(str(alias / "mono"), folder)
+        assert not S.in_folder(folder + "-sibling", folder)
+        assert not S.in_folder("", folder)
+
+
 if __name__ == "__main__":
     for name, fn in sorted(globals().items()):
         if name.startswith("test_"):
