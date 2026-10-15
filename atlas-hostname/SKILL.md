@@ -8,6 +8,8 @@ Two jobs, nothing else:
 1. Make this project reachable on `https://<slug>.atlas.local.jurrejan.com` — check the four conditions, fix what fails, prove it with one request.
 2. From then on, hand the user the hostname, never `http://localhost:<port>`.
 
+Routes reach servers on **this Mac** only. Out of scope: a server on another machine (WSL, Fractal: hand out that machine's address; a temporary `ssh -N -g -L <port>:127.0.0.1:<port> <host>` makes the hostname work while it lives, then skip step 6), a scratch server outside the catalog (`/tmp/…`), and borrowing a registered project's port or hostname for unrelated content (it blocks that project's dev server). The Stop hook `~/.claude/hooks/atlas-localhost-guard.py` loads this skill whenever a reply names localhost inside an atlas project; when that localhost URL is one of these cases, say so in one line and stop.
+
 Mechanics live in project-atlas (`atlas-api/src/lib/caddyDev.ts`, `ports.ts`, `scanner.ts`). CLI surface lives in the `atlas-cli` skill. Do not restate either here.
 </scope>
 
