@@ -31,7 +31,7 @@ CODEX LAUNCH  ──  <task>   path: <monitored|cli|app|plugin>   cwd: <dir>
 
 OBSERVER            SESSION/JOB ID     LOG                     STATUS
 ──────────────────────────────────────────────────────────────────────
-<iTerm2 tab|pane>   <id|—>             <log path|—>            <✓|✗|…|pending>
+<tmux codex|iTerm2|pane> <id|—>             <log path|—>            <✓|✗|…|pending>
 
 github.com/doublej
 ```
@@ -48,7 +48,8 @@ github.com/doublej
 | Plugin/rescue/review call | Preserve plugin dispatch; main Claude thread opens the exact job's log |
 | Image generation from Claude | Use `codex-image`; its wrapper already opens the monitor |
 
-If the user did not choose a surface, use a dedicated iTerm2 tab by default.
+If the user did not choose a surface, use a dedicated window in tmux session `codex`
+(created on first use; iTerm2 tab when tmux session `main` is not up).
 Use an explicitly targeted existing terminal pane when available and preferred.
 Do not type executable text into an unknown frontmost application.
 
@@ -59,7 +60,7 @@ bash ~/.claude/skills/codex-launch/scripts/run_monitored.sh "Codex review" \
   codex exec -C "$PWD" -s read-only --json -- "Review the current changes."
 ```
 
-The wrapper opens iTerm2 before running, streams a unique retained log, and
+The wrapper opens the monitor window before running, streams a unique retained log, and
 returns the command's exit code. It preserves stdout for result capture; stderr
 also appears in the log. Keep its Bash/tool job handle if launched in background.
 Closing the observer does not cancel Codex. See the reference for plugin jobs.
@@ -71,7 +72,7 @@ bash ~/.claude/skills/codex-launch/scripts/launch_cli.sh \
   "Review the current changes; report concrete defects." -C "$PWD" -s read-only
 ```
 
-Opens a dedicated iTerm2 session running Codex with safely quoted prompt
+Opens a dedicated `codex` tmux window (or iTerm2 tab) running Codex with safely quoted prompt
 and flags. Capture the printed launch-file path; verify the terminal actually
 shows the intended Codex session. If verification is unavailable, say the
 launch was requested, rather than claiming Codex is running.

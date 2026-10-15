@@ -24,6 +24,6 @@ for ATTEMPT in {1..50}; do
   [ ! -f "$READY_FILE" ] || break
   sleep 0.1
 done
-[ -f "$READY_FILE" ] || { printf 'iTerm2 observer did not start.\n' >&2; exit 1; }
-printf 'Codex live monitor in iTerm2: %s\nSession: %s\nLog: %s\n' \
+[ -f "$READY_FILE" ] || { printf 'Monitor observer did not start.\n' >&2; exit 1; }
+printf 'Codex live monitor (tmux session codex): %s\nSession: %s\nLog: %s\n' \
   "$LABEL" "$SESSION_ID" "$LOG_FILE" >&2

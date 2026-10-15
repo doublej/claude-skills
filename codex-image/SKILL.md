@@ -89,7 +89,7 @@ more input-image paths. Set `CODEX_MODEL` only to override the session model.
 Quote arguments; never interpolate an untrusted brief into executable shell text.
 For long briefs, pass `"$(cat "$brief_file")"` with a trusted local file path.
 
-The wrapper opens a dedicated iTerm2 observer before starting Codex, streams
+The wrapper opens a dedicated observer window in tmux session `codex` before starting Codex, streams
 its output to stderr, and prints one final JSON object on stdout containing
 `image_path`. It uses structured final output; it never searches for a global
 “latest image.” A missing result fails clearly instead of returning an old asset.

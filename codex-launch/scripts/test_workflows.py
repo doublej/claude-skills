@@ -51,7 +51,9 @@ class WorkflowTests(unittest.TestCase):
         self.env = {**os.environ, "PATH": f"{self.bin}:{os.environ['PATH']}",
                     "CODEX_HOME": str(self.root / "codex"), "IMAGE_FILE": str(self.image),
                     "OPEN_FILE": str(self.root / "opened"), "CALL_FILE": str(self.root / "call")}
-        for name, content in {"codex": MOCK_CODEX, "it2": MOCK_IT2}.items():
+        # tmux reports no server, so tests take the it2 path and open no real windows.
+        mocks = {"codex": MOCK_CODEX, "it2": MOCK_IT2, "tmux": "#!/bin/sh\nexit 1\n"}
+        for name, content in mocks.items():
             path = self.bin / name
             path.write_text(content)
             path.chmod(0o700)

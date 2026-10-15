@@ -13,10 +13,10 @@ bash ~/.claude/skills/codex-launch/scripts/run_monitored.sh "Codex review" \
   codex exec -C "$PWD" -s read-only --json -- "Review the current changes."
 ```
 
-The wrapper opens a dedicated iTerm2 tab before running the command,
+The wrapper opens a dedicated window in tmux session `codex` before running the command,
 streams stdout/stderr into a unique retained log, and returns Codex's exit code.
-It verifies that the observer started before Codex runs. Each tab has a task
-label and an explicit iTerm2 session ID; the finished output stays visible.
+It verifies that the observer started before Codex runs. Each window has a task
+label and an explicit tmux pane ID; the finished output stays visible.
 The observer displays the end status without owning or cancelling the job.
 Use a background Bash/tool job when Claude must keep working, and retain its
 handle for completion and cancellation. Do not launch a second Codex run for
@@ -27,7 +27,7 @@ keeps the raw events for result capture.
 `codex-image` opens this observer itself. For an interactive TUI or desktop app,
 the actual visible Codex session satisfies the requirement. Use an explicitly
 targeted existing terminal surface when available; the bundled CLI launcher
-otherwise opens a dedicated iTerm2 tab rather than typing into unknown focus.
+otherwise opens a dedicated `codex` tmux window rather than typing into unknown focus.
 Verify the session started. A clipboard handoff is pending until the user submits it.
 
 ## Codex plugin / rescue / app-server jobs
@@ -65,13 +65,16 @@ session requires a real observer; `resume` is a control session, not a passive t
 
 ## Failure and installation
 
-Requires iTerm2 with its Python API enabled, `it2`, `python3`, and `timeout`.
-The launcher creates a dedicated tab, resolves its session ID from the tab ID,
-and names/focuses only that session. Each `it2` call has a 20-second timeout.
-For diagnosis, use `timeout 20 it2 session read -s "$session_id" -n 200`.
+With tmux session `main` up, the launcher adds a named window to tmux session `codex`
+(created on first use, kept out of `main`) and prints its pane ID. Tell JJ to view it
+with `tmux switch-client -t codex` or `tmux attach -t codex`. For diagnosis, use
+`tmux capture-pane -p -t "$pane_id" -S -200`.
+Without tmux it falls back to a dedicated iTerm2 tab: requires the Python API, `it2`,
+`python3` and `timeout`; each `it2` call has a 20-second timeout; diagnose with
+`timeout 20 it2 session read -s "$session_id" -n 200`.
 Do not send commands into the active session without an explicit ID.
 
-If the iTerm2 launcher fails, stop before a direct run starts and report the error.
+If the launcher fails, stop before a direct run starts and report the error.
 For an already dispatched plugin job, explain the observer failure immediately
 and restore a visible observer; do not silently leave the job hidden.
 The fallback command is `tail -n +1 -f "$job_log"` in JJ's visible terminal.
