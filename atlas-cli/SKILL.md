@@ -28,7 +28,9 @@ atlas info --json        # path, type, framework, runner, git, scripts, deploy, 
 atlas scan               # force a rescan when a folder is missing from results
 ```
 
-Search prints `name  category/path`, relative to `~/dev`. Empty output = no match; widen the query before concluding it doesn't exist.
+Search prints `name  category/path`, relative to `~/dev`. It matches a substring of the folder name, not keywords: `atlas personal-homepage` finds `personal-homepage-simple`, `atlas "personal simple"` finds nothing. No match prints `No projects matching …` and exits 1; retry with one word of the name before concluding it doesn't exist.
+
+A query that is also a subcommand (`disk`, `info`, `scan`, `flow`, `ports`, `tags` — full list in `atlas help`) runs that command instead. Use `atlas search <query>` for those, and in scripts generally.
 
 **Telling the user how to get there:** `atlas jump <query>` (alias `pj`) cds *their* shell — suggest it as `pj <query>`, don't run it yourself (a child process can't cd the parent). To run something in a project without cd-ing, use `atlas jump <query> --run '<cmd>'`.
 
@@ -48,8 +50,8 @@ atlas new typescript/sveltekit --name foo --var key=val      # extra cookiecutte
 Order of work:
 
 1. `atlas search <name>` first — confirm it doesn't already exist.
-2. `atlas templates` — pick the family/name that matches the stack. Deeper template detail lives in the `cookiecutter-templates` skill.
-3. `--category <dir>` picks the depth-1 folder under `~/dev` (e.g. `web`, `python`, `rust`). Pick from what's already there; don't invent a category, and never `ai/`, `vr/`, or `sim/`.
+2. `atlas templates` — pick the family/name that matches the stack. STATUS `warns` (currently on every template) is template-authoring lint such as y/n choice order or a template missing from `shared/templates.json`; it says nothing about the generated project, so use the template. Deeper template detail lives in the `cookiecutter-templates` skill.
+3. `--category <dir>` picks the depth-1 folder under `~/dev` (e.g. `web`, `python`, `rust`). Pick from what's already there (`ls ~/dev` is the category index; that one-level `ls` is fine); don't invent a category, and never `ai/`, `vr/`, or `sim/`.
 4. `atlas new` creates the repo, the scaffold commit, and `develop` — the project is born on the flow and appears in atlas immediately. Don't `git init` or `mkdir` by hand.
 
 </creating>
