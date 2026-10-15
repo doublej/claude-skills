@@ -103,6 +103,7 @@ docs/
     lib/theme.ts                   # the project's plate colour (auto-picked from REPO_NAME)
     lib/components/Nav.svelte       # sticky blurred nav, base-aware links, active state
     lib/components/Terminal.svelte  # titled terminal; lines print in on mount
+    lib/components/Screenshot.svelte # framed app screenshot from static/screens/ (GUI apps)
     routes/+layout.svelte           # imports global.css, injects the plate, renders <Nav/>
     routes/+layout.ts               # prerender = true
     routes/+page.svelte             # home (starter to fill in)
@@ -132,8 +133,15 @@ This is the bulk of the work. Replace the starter placeholders with real content
 - Edit the `links` array to match the pages you actually create. Keep the GitHub link last and external.
 - Add more routes (e.g. a `prime`/usage page) by creating `docs/src/routes/<name>/+page.svelte` and a matching nav link.
 
-### 3.4 Content rules
-- Use the `Terminal` component for **every** command demo — never inline `<pre>` for CLI output. One direct child per line; start commands with `<span class="t-prompt"></span>`.
+### 3.4 GUI / native apps
+For a macOS, desktop or web app the demo is a **screenshot tour**, not a terminal: use
+`<Screenshot file="today.webp" alt="…" title="Today" />` (files in `docs/static/screens/`)
+in place of `Terminal` for each step and feature block. Section order, the comparison table
+and the features page structure stay the same. Put the image files in place (real captures,
+or placeholders until they exist) **before** the production build — see Troubleshooting.
+
+### 3.5 Content rules
+- Use the `Terminal` component for **every** command demo (GUI apps: `Screenshot`, see 3.4) — never inline `<pre>` for CLI output. One direct child per line; start commands with `<span class="t-prompt"></span>`.
 - `obliterate` is already wired in the home page's `onMount`; add any new long-paragraph selectors to its `selectors` list.
 - Respect the design tokens in `global.css`; don't introduce new colors/fonts. All colour comes from the plate hue.
 - Sentence case, no all-caps labels, no arrows appended to links (see `references/design-patterns.md`).
@@ -162,7 +170,7 @@ Site goes live at `https://<owner>.github.io/<REPO_NAME>/`.
 
 ```bash
 cd docs
-NODE_ENV=production bun run build   # must succeed (adapter-static, strict)
+NODE_ENV=production bun run build   # must succeed (adapter-static, strict); a 404 on an image = see Troubleshooting
 bun run preview                     # spot-check locally
 ```
 
@@ -191,6 +199,17 @@ Then consider these follow-up skills: `frontend-design` (aesthetics), `mobile-we
 ## Troubleshooting
 
 **Build fails** — check Bun/Node present; `bun install` ran; no Svelte syntax errors. `strict: true` fails the build if a linked page can't prerender, so ensure every nav link points at a real route.
+
+**Build fails with `Error: 404 /<repo>/screens/x.webp (linked from …)`** — the prerender crawler follows every `<img src>`, and a missing static file fails the strict build. Add the file (a placeholder is fine) to `docs/static/screens/`. Only if the images genuinely come later, ignore those 404s in `svelte.config.js` under `kit`:
+```js
+prerender: {
+  handleHttpError: ({ path, message }) => {
+    if (path.includes('/screens/')) return   // screenshots not captured yet
+    throw new Error(message)
+  }
+}
+```
+Remove it once the files exist, so real broken links fail the build again.
 
 **Pages 404 / unstyled** — base path in `svelte.config.js` must equal the repo name; Pages Source must be **GitHub Actions**; check the Actions run succeeded.
 
