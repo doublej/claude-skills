@@ -14,7 +14,7 @@ Mechanics live in project-atlas (`atlas-api/src/lib/caddyDev.ts`, `ports.ts`, `s
 </scope>
 
 <presentation>
-Print this banner once, first; close the run with the report (hostname, never localhost; a failure's cause goes on one line under the table).
+Print this banner as plain text in your first reply, before any tool call; close the run with the report (hostname, never localhost; a failure's cause goes on one line under the table). A field the run never reached (stopped before step 5) shows `—`, never `not synced`.
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
@@ -25,7 +25,7 @@ Print this banner once, first; close the run with the report (hostname, never lo
 ╚══════════════════════════════════════════════════════════════╝
 ```
 ```
-ATLAS HOSTNAME  ──  https://<slug>.atlas.local.jurrejan.com   port: <N>   nas: <synced|not synced>   claude.md: <✓|—>
+ATLAS HOSTNAME  ──  https://<slug>.atlas.local.jurrejan.com   port: <N|—>   nas: <synced|not synced|—>   claude.md: <✓|—>
 
 STEP                 RESULT   DETAIL
 ────────────────────────────────────────────────────────────
