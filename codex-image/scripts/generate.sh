@@ -34,6 +34,6 @@ Return JSON matching the output schema: image_path is the absolute path and
 error is null on success. If blocked, image_path is null and error explains why."
 
 bash "$SCRIPT_DIR/../../codex-launch/scripts/run_monitored.sh" "Codex image" \
-  codex exec "${CODEX_ARGS[@]}" -- "$INSTRUCTION" >&2
+  codex exec "${CODEX_ARGS[@]}" -- "$INSTRUCTION" < /dev/null >&2
 [ -s "$LAST_MSG" ] || { printf 'Codex returned no structured image result.\n' >&2; exit 1; }
 python3 "$SCRIPT_DIR/copy_result.py" "$LAST_MSG" "$DEST_DIR"

@@ -72,7 +72,7 @@ CODEX_MODEL=gpt-6.1-sol bash ~/.claude/skills/codex-image/scripts/generate.sh \
 # General captured task; pick effort supported by the selected session model.
 bash ~/.claude/skills/codex-launch/scripts/run_monitored.sh "Codex task" \
   codex exec -C "$PWD" -s read-only -m gpt-6-luna \
-  -c 'model_reasoning_effort="high"' --json -- "<self-contained task brief>"
+  -c 'model_reasoning_effort="high"' --json -- "<self-contained task brief>" < /dev/null
 ```
 
 Image-model selection is separate: use the Image API `model` field or the
