@@ -85,8 +85,12 @@ query({
     maxTurns: 10,
     resume: sessionId,
     mcpServers: { ... },
+    strictMcpConfig: true,                  // only mcpServers, ignore other MCP config
     hooks: { ... },
     agents: { ... },
+    effort: "high",                         // low | medium | high | xhigh | max
+    thinking: { type: "adaptive" },         // or { type: "enabled", budget_tokens }, { type: "disabled" }
+    outputFormat: { type: "json_schema", schema },  // result message .structured_output
   }
 })
 ```
@@ -105,8 +109,12 @@ ClaudeAgentOptions(
     max_turns=10,
     resume=session_id,
     mcp_servers={ ... },
+    strict_mcp_config=True,                 # only mcp_servers, ignore other MCP config
     hooks={ ... },
     agents={ ... },
+    effort="high",                          # low | medium | high | xhigh | max
+    thinking={"type": "adaptive"},          # or {"type": "enabled", "budget_tokens": N}, {"type": "disabled"}
+    output_format={"type": "json_schema", "schema": schema},  # ResultMessage.structured_output
 )
 ```
 
@@ -202,7 +210,7 @@ Or: `CLAUDECODE= CLAUDE_CODE_ENTRYPOINT= bun src/index.ts`
 
 ### Version Pinning
 
-Pin your version — breaking changes occur between releases. TS SDK is on **0.2.x**, Python on **0.1.x**. Check changelogs before upgrading.
+Pin your version — breaking changes occur between releases. TS SDK is on **0.3.x**, Python on **0.2.x** (checked 2026-10-16). Check changelogs before upgrading.
 
 ### Claude Code Features
 
@@ -212,7 +220,7 @@ With `settingSources: ["project"]`, agents get access to:
 </gotchas>
 
 <resources>
-- **Docs**: https://platform.claude.com/docs/en/agent-sdk/overview
+- **Docs**: https://code.claude.com/docs/en/agent-sdk/overview (structured outputs: `.../agent-sdk/structured-outputs`)
 - **TS GitHub**: https://github.com/anthropics/claude-agent-sdk-typescript
 - **Python GitHub**: https://github.com/anthropics/claude-agent-sdk-python
 - **Examples**: https://github.com/anthropics/claude-agent-sdk-demos
