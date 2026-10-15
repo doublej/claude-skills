@@ -24,6 +24,7 @@ Open with this banner; close with the report in **Output Format**.
 ## Workflow
 
 ```
+0. INSTALLED CHECK → ls ~/.claude/skills and the session's MCP/plugin tools for overlap with the topic before any search; if the user already owns one, frame the output as an upgrade comparison
 1. SEARCH → GitHub is the required source; add web directories only as fallback
 2. COLLECT → Gather metadata, deduplicate results
 3. DEBATE → 3 parallel agents evaluate findings (skippable — see When to skip debate)
