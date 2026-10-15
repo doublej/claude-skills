@@ -11,7 +11,7 @@ Read a project, throw away how it was built, and write down only what it does fo
 
 ## Presentation
 
-Print once, as the first thing in the response:
+Print once, as the first thing in the response, before any tool call or prose:
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
@@ -47,14 +47,16 @@ Borderline: a constraint counts as user-facing only if the user could discover i
 
 ## Process
 
-1. **Find the surfaces.** Locate every way a human enters the system: screens/routes, CLI commands, API consumers, scheduled jobs the user sees results of, config the user edits.
+1. **Find the surfaces.** Locate every way a human enters the system: screens/routes, CLI commands, API consumers, scheduled jobs the user sees results of, config the user edits. Sign-in, onboarding, first-run screens, and feature gates are surfaces too. If you had to get past one in a way a real user would not (mock data, seeded local state, developer mode), say so under Unresolved.
 2. **Delegate the reading.** Send subagents per surface (UI, CLI, API, background/data) with the brief: *report user-visible capabilities only — what a user triggers, what happens for them, what rules bind it. Do not report file names, function names, or libraries.* Conclusions come back, not code. Keep the brief to that: no asks for page layouts, section order, UI copy, internal state names, friction, or what ships separately, because the scrub cannot reliably undo them. Theme and design-token files (colours, type scales, spacing) are implementation; skip them. If the user actually wants a design brief or a friction audit, that is a different deliverable: say so before dispatching instead of bending this template.
-3. **Also read what users were told.** README, help text, error messages, onboarding copy, marketing pages. Intent lives there.
+3. **Also read what users were told.** While the subagents run, read the README, help text, error messages, onboarding copy, marketing pages. Intent lives there. Do not start drafting without this.
 4. **Draft to the template below.**
-5. **Scrub.** Grep the draft for stack leakage before delivering — see Scrub pass.
+5. **Scrub.** Run the Scrub pass on the draft before the Write call; write the file only once it is clean.
 6. **Flag the gaps.** Anything found in code whose *purpose* was not inferable goes under Unresolved, phrased as a question. Never invent a rationale.
 
-Skip subagents only for a project under ~20 source files; read it directly then.
+Skip subagents only below 20 source files (count code files; config, lockfiles, and assets do not count). At 20 or more, delegate.
+
+No readable source (closed-source binary, installed app): step 3 becomes the primary source, adding wikis, community guides, and the running app itself. Asset extraction or reflection is supporting evidence only. Claims resting on one weak source go under Unresolved.
 
 ## Template
 
