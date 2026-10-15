@@ -7,8 +7,7 @@ description: Design, refactor, or audit CLIs optimized for LLM/agent consumption
 
 Build CLIs that minimize agent memory burden, token usage, and repair loops.
 
-For the full briefed checklist of every area to focus on, read
-`references/focus-areas.md`. The map below is the index into it.
+The map below indexes `references/focus-areas.md`, the full briefed checklist; open it for any area you score below 2.
 
 <presentation>
 Print once, as the first thing in the response:
@@ -32,7 +31,7 @@ AREA                      SCORE   PRI   GAP
 
 github.com/doublej
 ```
-Findings detail and the next step go after the block as short prose. Code and the CLI's own output stay free of box art and signature.
+Each GAP quotes the first unchecked `- [ ]` line of that area in `references/evaluation-rubric.md`, so a score cannot be written without the rubric open. Findings detail and the next step go after the block as short prose. Code and the CLI's own output stay free of box art and signature.
 </presentation>
 
 <core_properties>
