@@ -262,6 +262,10 @@ Show content structure while loading.
 - **Why it works:** Perceived performance improves; layout doesn't shift
 - **Design-friendly:** Elegant alternative to spinners
 
+### Real-Time Collaboration
+Shared editing (Docs/Figma-style) adds presence, conflict and sync-status failure modes.
+- **Read:** [Collaborative UX](references/collaborative-ux.md) before reviewing or building multiplayer features
+
 ### Empty States
 Design the zero-data state thoughtfully.
 - **Why it works:** New users aren't confused; provides guidance
@@ -339,6 +343,7 @@ Compare variants with real users.
 - **[Heuristics Guide](references/heuristics-guide.md)** — Detailed Nielsen's heuristics with evaluation questions
 - **[Laws of UX](references/laws-of-ux.md)** — Complete psychological principles reference
 - **[Evaluation Checklist](references/evaluation-checklist.md)** — Comprehensive usability review checklist
+- **[Collaborative UX](references/collaborative-ux.md)** — Multiplayer/real-time editing: presence, optimistic input, caret stability, per-user undo, conflicts, sync status
 
 </key_takeaways>
 
