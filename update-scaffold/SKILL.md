@@ -56,7 +56,7 @@ A conflict still awaiting the user is a row marked `…` with the one-line quest
 
 The 3-way merge is what makes this quiet:
 - The template did not change the file → left alone, whatever your edits.
-- You never edited it → upstream copy (`[updated]`). New in the template → `[added]`. You deleted it → stays deleted.
+- You never edited it → upstream copy (`[updated]`). New in the template → `[added]`. You deleted it → stays deleted. Exception: a deleted `mergeable` file (`.atlas`) is re-created; if `git status --short` shows it untracked and the project has no `.atlas` on purpose (e.g. a monorepo subdirectory), `trash` it.
 - Both changed it in different places → merged cleanly (`[merged]`).
 - Both changed the same lines → git conflict markers in the file (`[conflict]`), listed at the end of the output.
 
@@ -72,11 +72,13 @@ python3 "$REPO/tools/update_scaffold.py" --apply .
 
 `just update-scaffold --apply` does the same if the project's Justfile has the recipe; on "Justfile does not contain recipe 'update-scaffold'" use the script call directly.
 
-1. **Check git.** If the working tree has uncommitted changes in files the update touches, commit them first or stop and say so. The merge writes in place, and git is the undo button. Do not ask for permission: merging is the safe default.
+1. **Check git.** If the working tree has uncommitted changes in files the update touches, commit them first or stop and say so. The merge writes in place, and git is the undo button. Do not ask for permission: merging is the safe default. Run `just check` once now, so a failure in step 5 can be told apart from one that was already there.
 2. **Apply.** Run with `--apply`. If it prints "Up to date", say so and stop.
-3. **Resolve conflicts yourself.** For each file under "Left N file(s) with git conflict markers", read the `<<<<<<< yours` / `||||||| template (old)` / `>>>>>>> template (new)` hunks and write the combination that keeps both intents: the local customization and the template's improvement. That is almost always possible (for example, a renamed recipe plus a local tweak to it, or a new dependency next to a local pin). Only `ask` (consult-user-mcp) when the two sides really are mutually exclusive, with one question per conflict that names both options. AFK/cancelled → keep the local side, and list the conflict as pending.
+3. **Resolve conflicts yourself.** For each file under "Left N file(s) with git conflict markers", read the `<<<<<<< yours` / `||||||| template (old)` / `>>>>>>> template (new)` hunks and write the combination that keeps both intents: the local customization and the template's improvement. That is almost always possible (for example, a renamed recipe plus a local tweak to it, or a new dependency next to a local pin). Only `ask` (consult-user-mcp) when the two sides really are mutually exclusive, with one question per conflict that names both options. The tool is often deferred: load it with `ToolSearch("select:mcp__consult-user-mcp__ask")` first. AFK/cancelled, or the tool cannot be loaded → keep the local side, and list the conflict as pending. An `ask` moved to the background is not AFK: leave that file's markers in place, finish the other files, and wait for the notification before committing.
+
+   An `[added]` file that breaks a project rule (a `.quality.json` directory cap, a documented architecture decision) is not a conflict: keep the project's rule, `trash` the addition, and report it as `dropped (<rule>)`. Ask instead only when the addition is a feature the user is likely to want.
 4. **Sidecars (no-base fallback only).** Merge each `<file>.upstream` into `<file>` the same way, keeping both intents, then `trash` the sidecar (a safe-rm hook blocks `rm -f`; `trash` prints nothing on success).
-5. **Verify and commit.** `grep -rn '^<<<<<<< yours' .` must be empty, then run `just check`. Commit as `chore: update scaffold to <template> <version>`.
+5. **Verify and commit.** `grep -rn '^<<<<<<< yours' .` must be empty, then run `just check`. A recipe that also failed in step 1 is pre-existing: report it, do not fix it. Commit as `chore: update scaffold to <template> <version>`.
 
 Bump only (edit `template_version` by hand and change nothing else) is still an option, but only when the user asks for it.
 
