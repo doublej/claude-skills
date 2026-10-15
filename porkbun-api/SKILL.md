@@ -178,6 +178,7 @@ data = {
 | A | IPv4 address | `192.168.1.1` |
 | AAAA | IPv6 address | `2001:db8::1` |
 | CNAME | Alias | `target.example.com` |
+| ALIAS | Apex CNAME-equivalent (bare domain → hostname, e.g. `<project>.pages.dev`) | `target.example.com` |
 | MX | Mail server | `mail.example.com` (+ prio) |
 | TXT | Text/verification | `v=spf1 ...` |
 | NS | Nameserver | `ns1.example.com` |
