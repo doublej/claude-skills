@@ -38,8 +38,10 @@ else fail "uv missing — curl -LsSf https://astral.sh/uv/install.sh | sh"
 fi
 
 # 6. OmniParser server
-if curl -fsS --max-time 1 http://127.0.0.1:8765/health >/dev/null 2>&1; then
+if curl -fsS --max-time 1 http://127.0.0.1:8765/health 2>/dev/null | grep -q OmniParser; then
   say "$OK" "OmniParser server up at :8765"
+elif lsof -nP -iTCP:8765 -sTCP:LISTEN >/dev/null 2>&1; then
+  fail ":8765 taken by another service (likely Parakeet) — launchctl bootout gui/$(id -u)/com.jurrejan.parakeet"
 else
   say "$WARN" "OmniParser server down — bash scripts/serve_omniparser.sh"
 fi

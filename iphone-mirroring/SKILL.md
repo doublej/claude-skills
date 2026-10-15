@@ -61,7 +61,7 @@ The user wants Claude to **drive their actual iPhone** — open apps, tap, type,
    ```bash
    bash scripts/serve_omniparser.sh   # binds 127.0.0.1:8765
    ```
-   Health check: `curl -fsS http://127.0.0.1:8765/health`.
+   Health check: `curl -fsS http://127.0.0.1:8765/health` must mention `OmniParser`. Parakeet ASR uses the same port and also answers `/health`; both scripts detect it and stop. Free the port (`launchctl bootout gui/$(id -u)/com.jurrejan.parakeet`) or move OmniParser with `OMNI_PORT` + matching `OMNI_URL`.
 6. **Gemma 4 on Fractal** — Ollama lives on the Windows gaming PC (`192.168.178.197:11434`), reached over the home LAN. Health + model check:
    ```bash
    curl -fsS http://192.168.178.197:11434/v1/models | jq '.data[].id'
