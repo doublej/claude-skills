@@ -1,13 +1,15 @@
 ---
 name: worktree-orphanage
-description: "Scan all git worktrees for orphaned (unmerged) work against main/develop or given target branches; summarize, estimate progress and importance, and recommend merge/finish/archive per worktree. Use when the user runs /worktree-orphanage, asks 'what's in my worktrees', 'unmerged worktree work', 'stale worktrees', or 'which worktrees can I delete'."
+description: "Scan all git worktrees for orphaned (unmerged) work against main/develop or given target branches; summarize, estimate progress and importance, and recommend merge/finish/archive per worktree. Read-only: it reports and prints removal commands, never removes, prunes or merges anything itself. Use when the user runs /worktree-orphanage, asks 'what's in my worktrees', 'unmerged worktree work', 'stale worktrees', or 'which worktrees can I delete'."
 ---
 
 <arguments>
 `/worktree-orphanage [target-branch...] [--branches] [--yes]`
 
 - `target-branch...` — merge targets to check against. Default: auto-detect
-  main, master, develop (every one that exists locally or on origin).
+  main, master, develop (every one that exists locally or on origin) plus
+  the branch the main worktree has checked out (the line the project
+  actually integrates on, e.g. `feature/cloudflare`).
 - `--branches` / `-b` — also scan local branches that aren't checked out in
   any worktree folder (shown as `(no worktree)` rows). Pass it through to
   the script.
@@ -49,9 +51,20 @@ Run from the repo (pass any target-branch args through):
 <skill-dir>/scripts/scan.sh [--branches] [target-branch...]
 ```
 
-If cwd is not a repo (script exits 2 with `NOT_A_REPO`): scan immediate
-subdirectories for git repos, run the script in each that has extra
-worktrees, and tell the user you did so.
+The script is the whole of phase 1: no `find`, `git worktree list` or `du`
+of your own before or instead of it. Script missing or erroring → report
+the error and stop; never improvise a replacement.
+
+Scope is the repo at cwd, even when it contains nested repos. Sweep
+several repos only when cwd is not a repo (`NOT_A_REPO`) or the user
+explicitly asks for a folder / all repos — then run the script once per
+repo root and tell the user you did so:
+
+```bash
+find <dir> -maxdepth 3 -type d -name .git -not -path '*/node_modules/*' | while read -r g; do
+  d=${g%/.git}; [ "$(git -C "$d" worktree list | wc -l)" -gt 1 ] && (cd "$d" && <skill-dir>/scripts/scan.sh [args])
+done
+```
 
 The script buckets each worktree's ahead-of-target commits with three
 defenses against false "unmerged" verdicts — plain `target..HEAD` overcounts
@@ -63,17 +76,21 @@ because cherry-picked and squash-merged work has different shas:
    whole-branch squashes via the cumulative branch diff)
 3. **unmerged** — genuinely absent from target
 
-Classes (a worktree is judged against ALL targets):
-- **clean** — nothing ahead, nothing dirty
-- **likely-merged** — ahead by shas, but every commit is cherry/absorbed and
-  the tree is clean; an educated guess, present it as such
-- **orphaned** — genuinely unmerged commits vs any target, and/or dirty tree
+Classes (work that landed in ANY one target counts as landed — in
+branch-flow repos main may trail develop, and that alone is not orphaned):
+- **clean** — not ahead of at least one target, nothing dirty
+- **likely-merged** — ahead by shas, but every commit is cherry/absorbed in
+  some target and the tree is clean; an educated guess, present it as such
+- **orphaned** — unmerged commits vs every target, and/or dirty tree
 - **detached / broken** — detached HEAD, prunable, or missing directory
 
 Columns with `,`-separated values follow the target order printed in AHEAD.
 </phase_1_scan>
 
 <phase_2_gate>
+Mandatory stop. Phase 3 never starts without a "yes" from this gate or an
+explicit `--yes`; running autonomously is not a yes.
+
 Render the script's TSV as the one-screen `<presentation>` report table (shorten paths to
 `~`-relative). Then:
 
@@ -86,7 +103,8 @@ Render the script's TSV as the one-screen `<presentation>` report table (shorten
   (session history + progress estimate)?" — body: phase 3 reads git logs and
   searches past Claude sessions per worktree to reconstruct intent and
   estimate progress/importance.
-- Declined or cancelled → the summary table IS the deliverable; stop.
+- Declined, cancelled, AFK, or no consult-user-mcp → the summary table IS
+  the deliverable; stop.
 </phase_2_gate>
 
 <phase_3_report>
@@ -94,8 +112,10 @@ Orphaned worktrees only. Per worktree:
 
 1. `git log --stat <target>..HEAD` (never full diffs) + the dirty-file list
    → infer what the work is.
-2. Run the `session-search` skill scoped to the worktree's path/branch →
-   original intent and where the last session left off. Nothing found → say
+2. Invoke the `session-search` skill (Skill tool) before writing any
+   estimate: `search "<branch>"` with `-p <worktree path>`, widening to
+   `--folder <repo parent>` if empty → original intent and where the last
+   session left off. Nothing found → say
    "no session history found" and estimate from git evidence alone; never
    fabricate intent.
 3. Estimate, explicitly labeled as estimates:
@@ -115,6 +135,11 @@ per-worktree detail below, full worktree paths bundled at the bottom.
 
 <constraints>
 - Read-only: never merge, rebase, prune, delete, or stash — only recommend.
+  Recommended deletions end the report as a copy-paste block
+  (`git worktree remove <path>` / `git branch -d <branch>`) for the user to
+  run. A later "clean them up" is a new task outside this skill: run only
+  the exact list the user confirms, never `--force` and never on an
+  orphaned or dirty worktree.
 - Phase 1 = the script, nothing else.
 - "likely-merged" and all phase-3 numbers are educated guesses — label them.
 - No caching, config files, or report persistence.
