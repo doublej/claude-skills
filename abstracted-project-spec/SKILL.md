@@ -48,7 +48,7 @@ Borderline: a constraint counts as user-facing only if the user could discover i
 ## Process
 
 1. **Find the surfaces.** Locate every way a human enters the system: screens/routes, CLI commands, API consumers, scheduled jobs the user sees results of, config the user edits.
-2. **Delegate the reading.** Send subagents per surface (UI, CLI, API, background/data) with the brief: *report user-visible capabilities only — what a user triggers, what happens for them, what rules bind it. Do not report file names, function names, or libraries.* Conclusions come back, not code.
+2. **Delegate the reading.** Send subagents per surface (UI, CLI, API, background/data) with the brief: *report user-visible capabilities only — what a user triggers, what happens for them, what rules bind it. Do not report file names, function names, or libraries.* Conclusions come back, not code. Keep the brief to that: no asks for page layouts, section order, UI copy, internal state names, friction, or what ships separately, because the scrub cannot reliably undo them. Theme and design-token files (colours, type scales, spacing) are implementation; skip them. If the user actually wants a design brief or a friction audit, that is a different deliverable: say so before dispatching instead of bending this template.
 3. **Also read what users were told.** README, help text, error messages, onboarding copy, marketing pages. Intent lives there.
 4. **Draft to the template below.**
 5. **Scrub.** Grep the draft for stack leakage before delivering — see Scrub pass.
