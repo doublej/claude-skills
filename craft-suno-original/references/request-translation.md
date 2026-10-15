@@ -76,6 +76,7 @@ the thing; put unwanted elements in Exclude.
 | video intro, jingle | short form, hook immediately, clean ending, instrumental unless asked |
 | road trip, driving | mid-up tempo, steady motorik or rock pulse, open chorus |
 | gift or tribute song | vocal-forward, lyrics built from the details given, sincere not saccharine |
+| for kids, family, children's book | child-scale register at the front: simple singable motif, bright mid-high range, storybook timbres (glockenspiel, ukulele, pizzicato), gentle humour; Exclude adult drift (meditation, spa ambient, art-house drone) |
 
 A scene sets the space and palette: "rainy café" means dry close room, brushes,
 upright bass; "summer rooftop" means bright, wide, percussive, open air.
@@ -113,4 +114,5 @@ fields:
 
 Every revision works against this anchor, the way a reference anchors
 craft-suno-songs. When feedback moves the song, update the anchor first, then
-rebuild the fields from it.
+rebuild the fields from it. The use constraint (audience above all) stays in
+the anchor through every revision; mood moves never trade it away.
