@@ -144,6 +144,10 @@ Use `--mode instrumental|style|lyrics` to match the output. Pass the same
 actions, and its feedback panel belong to craft-suno-songs; its daemons and
 feedback routing are documented there. When files cannot be created, return
 the Markdown output directly.
+
+`--open` already opens the page: report that it opened, not the URL the
+server prints. A `127.0.0.1` URL in the reply trips the atlas localhost
+guard in atlas projects.
 </present>
 
 <quality_gate>
