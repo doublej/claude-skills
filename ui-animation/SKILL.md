@@ -1,6 +1,6 @@
 ---
 name: ui-animation
-description: "Easing functions and timing: ease-out, bounce, elastic, spring for UI motion"
+description: "Easing functions and timing: ease-out, bounce, elastic, spring for UI motion, in CSS and SwiftUI"
 ---
 
 # Animation Easing: Theory & Practice
@@ -15,6 +15,8 @@ The skill covers:
 - **Real-world examples** from production interfaces (Apple, Google, Stripe, Figma)
 - **Best practices** for responsive, accessible animations
 - **Decision trees** to help choose the right easing for your specific use case
+
+Code samples are CSS. For SwiftUI/AppKit/UIKit (`withAnimation`, springs, `accessibilityReduceMotion`, motion tokens) read **[SWIFTUI](references/swiftui.md)** before editing Swift files.
 </overview>
 
 <presentation>
@@ -255,6 +257,7 @@ Always implement `prefers-reduced-motion` support:
 
 ### For Implementation Guidance
 - **[BEST PRACTICES](references/best-practices.md)** - Timing guidelines, platform adjustments, stagger patterns, implementation checklist
+- **[SWIFTUI](references/swiftui.md)** - CSS→SwiftUI curve mapping, springs, reduce motion, motion tokens
 - [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function) - CSS easing reference
 - [Material Design Motion](https://m1.material.io/motion/duration-easing.html) - Google's motion standards
 
