@@ -40,8 +40,12 @@ def validate_skill(skill_path: str | Path) -> tuple[bool, str]:
     except yaml.YAMLError as e:
         return False, f"Invalid YAML in frontmatter: {e}"
 
-    # Define allowed properties
-    ALLOWED_PROPERTIES = {'name', 'description', 'license', 'allowed-tools', 'metadata'}
+    # Define allowed properties: Agent Skills spec + Claude Code extensions
+    ALLOWED_PROPERTIES = {
+        'name', 'description', 'license', 'allowed-tools', 'metadata',
+        'user-invocable', 'disable-model-invocation', 'argument-hint',
+        'model', 'context', 'agent', 'hooks',
+    }
 
     # Check for unexpected properties
     unexpected_keys = set(frontmatter.keys()) - ALLOWED_PROPERTIES
