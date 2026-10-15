@@ -477,20 +477,17 @@ Key structure:
 - `tmux-restart` — kill + dev
 - `tmux-logs-<pane>` — capture last 50 lines from pane
 - `tmux-status` — show session and pane info
-- `_attach-window` — private helper that auto-detects iTerm / Ghostty / fallback
+- `_attach-window` — private helper that attaches through tmux itself
 
-### Terminal auto-detection (CRITICAL — do not hardcode iTerm)
+### Attaching (CRITICAL — tmux only, never spawn terminal windows)
 
-`tmux-dev` must open a new window using the **user's current terminal**, not a hardcoded `osascript "iTerm"` call. Detect at runtime via `$TERM_PROGRAM`:
+`_attach-window` never opens a terminal app window (`osascript "iTerm"`, `open -na Ghostty`, Terminal.app): new profile windows crash iTerm 3.7.4, and under iTerm's tmux integration tmux already draws its windows as tabs. Instead:
 
-| Value of `$TERM_PROGRAM` | Spawn command |
+| Situation | Action |
 |---|---|
-| `iTerm.app` | `osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t SESSION"'` |
-| `ghostty` | `open -na Ghostty --args --command="tmux attach -t SESSION"` |
-| `Apple_Terminal` | `osascript -e 'tell application "Terminal" to do script "tmux attach -t SESSION"'` |
-| anything else | print `→ Attach manually: tmux attach -t SESSION` and exit 0 |
-
-Also check `$TMUX` first — if already inside tmux, use `tmux switch-client -t SESSION` instead of opening a new window.
+| `$TMUX` set (inside tmux) | `tmux switch-client -t SESSION` |
+| stdin is a terminal | `tmux attach -t SESSION` |
+| anything else (agent, CI) | print `→ Attach: tmux attach -t SESSION` and exit 0 |
 
 Use a shebang recipe (`#!/usr/bin/env bash`) for the dispatch — line-continuation `\` chains get unreadable fast with `case` statements.
 
@@ -516,21 +513,17 @@ tmux-dev:
     fi
     just _attach-window
 
-# Open a terminal window attached to {{ _session }} (auto-detects iTerm/Ghostty/Terminal)
+# Attach to {{ _session }} through tmux (switch, attach, or print the command)
 [private]
 _attach-window:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -n "${TMUX:-}" ]; then
         tmux switch-client -t {{ _session }}
-    elif [ "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
-        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{ _session }}"'
-    elif [ "${TERM_PROGRAM:-}" = "ghostty" ]; then
-        open -na Ghostty --args --command="tmux attach -t {{ _session }}"
-    elif [ "${TERM_PROGRAM:-}" = "Apple_Terminal" ]; then
-        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{ _session }}"'
+    elif [ -t 0 ]; then
+        tmux attach -t {{ _session }}
     else
-        echo "→ Attach manually: tmux attach -t {{ _session }}"
+        echo "→ Attach: tmux attach -t {{ _session }}"
     fi
 
 [group('develop')]

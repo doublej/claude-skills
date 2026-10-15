@@ -1,6 +1,6 @@
 ---
 name: skill-feedback-loop
-description: "Closed-loop skill quality: a hook-driven collector watches every Skill invocation, runs Sonnet over the transcript, and files disconnects/improvements as beads tickets (label source:auto-analysis); invoking this skill works that backlog — pick the highest-priority ticket, apply the fix to the affected skill, install, commit, close. Designed for one-shot or /loop use (e.g. /loop 30m /skill-feedback-loop). The collector half is hook-based and never user-invoked. Distinct from skill-feedback, which is an interactive iTerm2 handoff. Triggers: /skill-feedback-loop, 'work the skill feedback backlog', 'drain auto-analysis tickets'."
+description: "Closed-loop skill quality: a hook-driven collector watches every Skill invocation, runs Sonnet over the transcript, and files disconnects/improvements as beads tickets (label source:auto-analysis); invoking this skill works that backlog — pick the highest-priority ticket, apply the fix to the affected skill, install, commit, close. Designed for one-shot or /loop use (e.g. /loop 30m /skill-feedback-loop). The collector half is hook-based and never user-invoked. Distinct from skill-feedback, which is an interactive tmux handoff. Triggers: /skill-feedback-loop, 'work the skill feedback backlog', 'drain auto-analysis tickets'."
 ---
 
 # Skill Feedback Loop

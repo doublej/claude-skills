@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Opens an iTerm2 split pane to process skill feedback via Claude,
+# Opens a tmux split pane to process skill feedback via Claude,
 # leaving the current session untouched.
 #
-# Usage: handoff.sh SKILLS_ROOT ORIG_DIR ITERM_SESSION_ID SKILL_NAME FEEDBACK
+# Usage: handoff.sh SKILLS_ROOT ORIG_DIR TMUX_PANE SKILL_NAME FEEDBACK
 
 SKILLS_ROOT="$1"
 ORIG_DIR="$2"
-# Strip w0t0p0: prefix from ITERM_SESSION_ID — it2 CLI expects bare UUID
-RAW_SESSION_ID="${3##*:}"
+ORIG_PANE="$3"
 SKILL_NAME="$4"
 FEEDBACK="$5"
 
@@ -31,13 +30,6 @@ Instructions:
 7. Exit when done — the handoff script will notify the original session that feedback was processed
 PROMPT
 
-# --- Split pane next to source session ---
-PANE_ID=$(it2 vsplit -s "$RAW_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
-if [ -z "$PANE_ID" ]; then
-  echo "Failed to create split pane" >&2
-  exit 1
-fi
-
 # --- Write the command to run in the split pane ---
 CONT_SCRIPT="$(mktemp)"
 cat > "$CONT_SCRIPT" <<SCRIPT
@@ -54,23 +46,23 @@ echo "Feedback processed. Notifying original session..."
 echo ""
 
 # Notify the original session
-it2 send -s "$RAW_SESSION_ID" $'\x03'
+tmux send-keys -t "$ORIG_PANE" C-c
 sleep 1
-it2 send -s "$RAW_SESSION_ID" $'/exit\n'
+tmux send-keys -t "$ORIG_PANE" -l '/exit'
+tmux send-keys -t "$ORIG_PANE" Enter
 sleep 2
-it2 send -s "$RAW_SESSION_ID" $'echo "Skill feedback for $SKILL_NAME has been processed."\n'
+tmux send-keys -t "$ORIG_PANE" -l 'echo "Skill feedback for $SKILL_NAME has been processed."'
+tmux send-keys -t "$ORIG_PANE" Enter
 sleep 1
-it2 send -s "$RAW_SESSION_ID" $'claude --resume\n'
+tmux send-keys -t "$ORIG_PANE" -l 'claude --resume'
+tmux send-keys -t "$ORIG_PANE" Enter
 
+# The pane closes when this script exits
 rm -f "$CONT_SCRIPT"
-
-# Close this feedback pane
-sleep 1
-it2 session close -s "$PANE_ID" -f
 SCRIPT
 chmod +x "$CONT_SCRIPT"
 
-# --- Run the feedback session in the split pane ---
-it2 run -s "$PANE_ID" "bash $CONT_SCRIPT"
+# --- Run the feedback session in a split pane next to the source pane ---
+tmux split-window -h -t "$ORIG_PANE" -c "$SKILLS_ROOT" "bash $CONT_SCRIPT"
 
 echo "Feedback session launched in split pane."

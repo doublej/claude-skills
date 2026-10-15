@@ -68,20 +68,20 @@ Add `--force` for immediate SIGKILL.
 <monitor>
 ## Monitor Daemon
 
-Background monitoring: saves a resource snapshot and sends a reminder to the configured iTerm tab every 5 minutes.
+Background monitoring: saves a resource snapshot and sends a reminder to the configured tmux pane every 5 minutes.
 
 ```bash
 python3 ~/.claude/skills/proc/scripts/daemon.py start      # start in background
 python3 ~/.claude/skills/proc/scripts/daemon.py stop
 python3 ~/.claude/skills/proc/scripts/daemon.py status
 python3 ~/.claude/skills/proc/scripts/daemon.py snapshot   # one-off snapshot, prints JSON
-python3 ~/.claude/skills/proc/scripts/daemon.py target <tab-name>   # which iTerm tab gets reminders
-python3 ~/.claude/skills/proc/scripts/daemon.py list       # list iTerm session names
+python3 ~/.claude/skills/proc/scripts/daemon.py target <pane-id|session:window>   # which tmux pane gets reminders
+python3 ~/.claude/skills/proc/scripts/daemon.py list       # list tmux panes
 ```
 
-Manual message injection into a terminal (for testing):
+Manual message injection into a tmux pane (for testing; default target `$TMUX_PANE`):
 ```bash
-python3 ~/.claude/skills/proc/scripts/inject_message.py "your message here"
+python3 ~/.claude/skills/proc/scripts/inject_message.py [-t <pane-id>] "your message here"
 ```
 </monitor>
 
@@ -118,7 +118,7 @@ Runtime artifacts:
 - `~/.claude/proc-monitor.pid` - daemon PID
 - `~/.claude/proc-monitor.log` - daemon log
 - `~/.claude/proc-monitor-snapshot.json` - latest resource snapshot
-- `~/.claude/proc-monitor-target.txt` - iTerm tab name for reminders
+- `~/.claude/proc-monitor-target.txt` - tmux target (pane id or session:window) for reminders
 
 Legacy `~/.claude/process-monitor.*` files (pre-rename) are migrated automatically: on startup, daemon.py and scan.py rename any old file to its new name if the new one doesn't exist yet.
 </files>

@@ -59,8 +59,8 @@ ls -d "$SKILLS_ROOT"/*/SKILL.md 2>/dev/null | xargs -I{} dirname {} | xargs -I{}
 
 ### 3. Validate environment
 
-Check that `$ITERM_SESSION_ID` is set. If empty, abort with:
-> "ITERM_SESSION_ID not set — this skill requires iTerm2."
+Check that `$TMUX_PANE` is set. If empty, abort with:
+> "TMUX_PANE not set — this skill requires tmux."
 
 ### 4. Hand off
 
@@ -70,7 +70,7 @@ Run the handoff script:
 bash "$SKILLS_ROOT/skill-feedback/scripts/handoff.sh" \
   "$SKILLS_ROOT" \
   "$PWD" \
-  "$ITERM_SESSION_ID" \
+  "$TMUX_PANE" \
   "<skillname>" \
   "<feedback>"
 ```
@@ -85,7 +85,7 @@ After launching the handoff script, tell the user with this block:
 SKILL FEEDBACK  ──  <skillname>   handoff: <✓|✗>
 
 feedback    <first line of feedback>
-session     new iTerm2 tab in $SKILLS_ROOT
+session     tmux split pane in $SKILLS_ROOT
 current     continues normally
 completion  message sent to this session when processed
 

@@ -23,7 +23,7 @@ Reference skill: no banner, no report. The monitor-command print in `<visibility
 ### One-command bootstrap (recommended)
 
 ```bash
-# Creates session, waits for shell, splits visible iTerm2 pane next to agent
+# Creates session, waits for shell, splits a visible tmux pane next to agent
 eval "$(./scripts/tmux-init.sh --name claude-py | python3 -c "import json,sys; d=json.load(sys.stdin); [print(f'{k.upper()}={v!r}') for k,v in d.items()]")"
 
 # Send commands with one call
@@ -53,15 +53,15 @@ tmux -S "$SOCKET" kill-session -t "$SESSION"                   # clean up
 
 <visibility>
 
-When iTerm2 is available (macOS), **always open tmux sessions in a visible iTerm2 pane**. The easiest way is `tmux-init.sh` which handles this automatically:
+When the agent runs inside tmux, **always open tmux sessions in a visible pane**. The easiest way is `tmux-init.sh` which handles this automatically:
 
 ```bash
 ./scripts/tmux-init.sh --name claude-py  # splits pane next to agent, attaches tmux
 ```
 
-This uses the `it2` CLI to split next to the calling session (`it2 vsplit -s "$ITERM_SESSION_ID"`), then attaches tmux in the new pane via `it2 run`. Use `--no-split` to skip; the script also falls back to no-split automatically when `it2` or `$ITERM_SESSION_ID` is unavailable.
+This splits the caller's pane (`tmux split-window -t "$TMUX_PANE"`) and attaches the agent socket in it. Use `--no-split` to skip; the script also falls back to no-split automatically when `$TMUX_PANE` is unset.
 
-**Fallback** (non-iTerm2 or remote): print a monitor command for the user to copy-paste:
+**Fallback** (not inside tmux, or remote): print a monitor command for the user to copy-paste:
 
 ```
 To monitor this session yourself:
@@ -170,21 +170,21 @@ tmux -S "$SOCKET" new -d -s "$SESSION" -n shell
 
 <helpers>
 
-`./scripts/tmux-init.sh` bootstraps a complete tmux session in one call. Creates the session, waits for shell ready, and optionally splits a visible iTerm2 pane next to the agent.
+`./scripts/tmux-init.sh` bootstraps a complete tmux session in one call. Creates the session, waits for shell ready, and optionally splits a visible tmux pane next to the agent.
 
 ```bash
 ./scripts/tmux-init.sh --name claude-py
-# → {"socket":"/.../claude-py.sock","session":"claude-py","target":"claude-py:0.0","monitor_cmd":"tmux -S ... attach -t claude-py","iterm2_session_id":"..."}
+# → {"socket":"/.../claude-py.sock","session":"claude-py","target":"claude-py:0.0","monitor_cmd":"tmux -S ... attach -t claude-py","pane_id":"%12"}
 ```
 
 | Option | Description |
 |--------|-------------|
 | `-n`/`--name` | Session name (required, slug-like) |
 | `-S`/`--socket` | Socket path (default: `$SOCKET_DIR/<name>.sock`) |
-| `--no-split` | Skip iTerm2 pane splitting |
+| `--no-split` | Skip pane splitting |
 | `--direction h\|v` | Split direction (default: v) |
 
-Cross-skill: uses the `it2` CLI (see the iterm2 skill). Falls back to `--no-split` mode when `it2` or `$ITERM_SESSION_ID` is unavailable.
+Falls back to `--no-split` mode when `$TMUX_PANE` is unset.
 
 </helpers>
 

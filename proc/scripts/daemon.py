@@ -122,35 +122,19 @@ def save_snapshot() -> dict[str, Any]:
 
 
 def send_reminder() -> None:
-    """Send reminder to specific iTerm tab by name."""
+    """Send reminder to the configured tmux target (pane id or session:window)."""
     message = f"[Auto-reminder] Check system resources - {datetime.now().strftime('%H:%M')}"
 
-    # Get target tab name
     if not TARGET_TAB_FILE.exists():
-        log("No target tab configured")
+        log("No target pane configured")
         return
 
-    target_name = TARGET_TAB_FILE.read_text().strip()
-
-    # Find tab by name and inject message
-    script = f'''
-    tell application "iTerm"
-        repeat with w in windows
-            repeat with t in tabs of w
-                repeat with s in sessions of t
-                    if name of s contains "{target_name}" then
-                        tell s to write text "{message}"
-                        return
-                    end if
-                end repeat
-            end repeat
-        end repeat
-    end tell
-    '''
-
-    result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
-    if result.returncode != 0:
-        log(f"AppleScript error: {result.stderr}")
+    target = TARGET_TAB_FILE.read_text().strip()
+    for keys in (["-l", message], ["Enter"]):
+        result = subprocess.run(["tmux", "send-keys", "-t", target, *keys], capture_output=True, text=True)
+        if result.returncode != 0:
+            log(f"tmux error: {result.stderr}")
+            return
 
 
 def log(msg: str) -> None:
@@ -240,30 +224,20 @@ def status() -> None:
         print("Daemon not running")
 
 
-def set_target(tab_name: str) -> None:
-    """Set target tab name for reminders."""
-    TARGET_TAB_FILE.write_text(tab_name)
-    print(f"Target tab set to: {tab_name}")
+def set_target(target: str) -> None:
+    """Set tmux target (pane id or session:window) for reminders."""
+    TARGET_TAB_FILE.write_text(target)
+    print(f"Target pane set to: {target}")
 
 
 def list_tabs() -> None:
-    """List all iTerm tab/session names."""
-    script = '''
-    tell application "iTerm"
-        set output to ""
-        repeat with w in windows
-            repeat with t in tabs of w
-                repeat with s in sessions of t
-                    set output to output & (name of s) & "\n"
-                end repeat
-            end repeat
-        end repeat
-        return output
-    end tell
-    '''
-    result = subprocess.run(["osascript", "-e", script], capture_output=True, text=True)
+    """List all tmux panes as targets."""
+    result = subprocess.run(
+        ["tmux", "list-panes", "-a", "-F", "#{pane_id}  #{session_name}:#{window_name}  #{pane_current_command}"],
+        capture_output=True, text=True,
+    )
     if result.returncode == 0:
-        print("Available iTerm sessions:")
+        print("Available tmux panes (pane id or session:window works as target):")
         for line in result.stdout.strip().split("\n"):
             if line:
                 print(f"  - {line}")
@@ -277,7 +251,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process monitor daemon")
     parser.add_argument("command", choices=["start", "stop", "status", "snapshot", "target", "list"],
                        help="Command to execute")
-    parser.add_argument("value", nargs="?", help="Tab name for 'target' command")
+    parser.add_argument("value", nargs="?", help="tmux target (pane id or session:window) for 'target' command")
 
     args = parser.parse_args()
 
@@ -298,6 +272,6 @@ if __name__ == "__main__":
         elif TARGET_TAB_FILE.exists():
             print(f"Current target: {TARGET_TAB_FILE.read_text().strip()}")
         else:
-            print("No target set. Use: daemon.py target <tab-name>")
+            print("No target set. Use: daemon.py target <pane-id|session:window>")
     elif args.command == "list":
         list_tabs()

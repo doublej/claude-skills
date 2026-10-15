@@ -2,7 +2,7 @@
 
 Full pattern for managing tmux dev sessions from a Justfile. Adapt pane commands and process names per project.
 
-Works across **iTerm, Ghostty, and macOS Terminal**. Falls back to a "attach manually" message for unrecognized terminals. Also detects if you're already inside tmux (`$TMUX`) and uses `switch-client` instead of opening a new window.
+Attaches through tmux only — it never spawns a terminal app window. Inside tmux (`$TMUX`) it uses `switch-client`; in an interactive shell it attaches; otherwise (agents, CI) it prints the attach command.
 
 ## Template
 
@@ -12,7 +12,7 @@ Replace `SESSION`, `LEFT_CMD`, `RIGHT_CMD` with project-specific values.
 # === tmux commands ===
 _session := "SESSION"
 
-# Launch dev in tmux with left and right panes, open a terminal window
+# Launch dev in tmux with left and right panes, then attach
 [group('develop')]
 tmux-dev:
     #!/usr/bin/env bash
@@ -30,22 +30,17 @@ tmux-dev:
     fi
     just _attach-window
 
-# Open a terminal window attached to {{ _session }} — auto-detects iTerm/Ghostty/Terminal
+# Attach to {{ _session }} through tmux (switch, attach, or print the command)
 [private]
 _attach-window:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -n "${TMUX:-}" ]; then
-        # Already inside tmux — switch instead of nesting
         tmux switch-client -t {{ _session }}
-    elif [ "${TERM_PROGRAM:-}" = "iTerm.app" ]; then
-        osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t {{ _session }}"'
-    elif [ "${TERM_PROGRAM:-}" = "ghostty" ]; then
-        open -na Ghostty --args --command="tmux attach -t {{ _session }}"
-    elif [ "${TERM_PROGRAM:-}" = "Apple_Terminal" ]; then
-        osascript -e 'tell application "Terminal" to do script "tmux attach -t {{ _session }}"'
+    elif [ -t 0 ]; then
+        tmux attach -t {{ _session }}
     else
-        echo "→ Attach manually: tmux attach -t {{ _session }}"
+        echo "→ Attach: tmux attach -t {{ _session }}"
     fi
 
 # Attach to running tmux session in current shell
@@ -105,31 +100,15 @@ tmux-status:
     fi
 ```
 
-## Terminal dispatch reference
+## Attach dispatch reference
 
-| `$TERM_PROGRAM` | Spawn command |
+| Situation | Action |
 |---|---|
-| `iTerm.app` | `osascript -e 'tell application "iTerm" to create window with default profile command "tmux attach -t SESSION"'` |
-| `ghostty` | `open -na Ghostty --args --command="tmux attach -t SESSION"` |
-| `Apple_Terminal` | `osascript -e 'tell application "Terminal" to do script "tmux attach -t SESSION"'` |
-| anything else | print `→ Attach manually: tmux attach -t SESSION` |
+| `$TMUX` set | `tmux switch-client -t SESSION` (nesting tmux inside tmux is rarely what you want) |
+| `[ -t 0 ]` (interactive) | `tmux attach -t SESSION` |
+| anything else | print `→ Attach: tmux attach -t SESSION` |
 
-If `$TMUX` is set (already inside tmux), use `tmux switch-client -t SESSION` instead — nesting tmux inside tmux is rarely what you want.
-
-### Verifying the detection works
-
-```sh
-echo "$TERM_PROGRAM"   # iTerm.app | ghostty | Apple_Terminal | WezTerm | ...
-echo "${TMUX:-not set}" # path to socket if inside tmux, else "not set"
-```
-
-### Adding a new terminal (e.g. WezTerm, Alacritty, kitty)
-
-Add another `elif` arm to `_attach-window`. Examples:
-
-- WezTerm: `wezterm cli spawn -- tmux attach -t {{ _session }}` (if already running) or `open -na WezTerm --args start -- tmux attach -t {{ _session }}`
-- kitty: `open -na kitty --args tmux attach -t {{ _session }}`
-- Alacritty: `open -na Alacritty --args -e tmux attach -t {{ _session }}`
+Do not add terminal-app arms (`osascript "iTerm"`, `open -na Ghostty`, WezTerm, kitty): opening profile windows crashes iTerm 3.7.4, and under iTerm's tmux integration tmux windows already show as tabs.
 
 ## Pane addressing
 

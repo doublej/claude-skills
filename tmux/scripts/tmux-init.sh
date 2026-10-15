@@ -7,17 +7,17 @@ usage() {
   cat <<'USAGE'
 Usage: tmux-init.sh --name <session-name> [options]
 
-Bootstrap a tmux session with optional visible iTerm2 pane.
+Bootstrap a tmux session with an optional visible pane split next to the caller.
 
 Options:
   -n, --name        session name (required, slug-like, no spaces)
   -S, --socket      socket path (default: $SOCKET_DIR/<name>.sock)
-  --no-split        skip iTerm2 pane splitting
+  --no-split        skip pane splitting
   --direction h|v   split direction (default: v)
   -h, --help        show this help
 
 Output (JSON):
-  socket, session, target, monitor_cmd, iterm2_session_id (if split)
+  socket, session, target, monitor_cmd, pane_id (if split)
 USAGE
 }
 
@@ -57,30 +57,21 @@ bash "$SCRIPT_DIR/wait-for-text.sh" -S "$socket" -t "${name}:0.0" -p '^\$' -T 15
 
 monitor_cmd="tmux -S $socket attach -t $name"
 target="${name}:0.0"
-iterm2_sid=""
+pane_id=""
 
-# Try to split a visible iTerm2 pane via the it2 CLI.
-# Falls back silently to no-split when it2 or $ITERM_SESSION_ID is unavailable.
-if [[ "$no_split" != true ]]; then
-  if command -v it2 >/dev/null 2>&1 && [[ -n "${ITERM_SESSION_ID:-}" ]]; then
-    if [[ "$direction" == "h" ]]; then
-      split_verb="split"
-    else
-      split_verb="vsplit"
-    fi
-    # it2 split/vsplit prints the new pane's session ID — capture it
-    iterm2_sid=$(it2 "$split_verb" -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}') || iterm2_sid=""
-    if [[ -n "$iterm2_sid" ]]; then
-      # Attach tmux in the new pane (it2 run appends the newline)
-      it2 run -s "$iterm2_sid" "$monitor_cmd" >/dev/null 2>&1 || true
-    fi
-  fi
+# Split the caller's tmux pane and attach the agent session in it.
+# Falls back silently to no-split when $TMUX_PANE is unset (caller not inside tmux).
+if [[ "$no_split" != true && -n "${TMUX_PANE:-}" ]]; then
+  # v = side by side (tmux -h), h = stacked (tmux -v)
+  if [[ "$direction" == "h" ]]; then split_flag="-v"; else split_flag="-h"; fi
+  # env -u TMUX: tmux refuses to attach from inside another tmux session otherwise
+  pane_id=$(tmux split-window "$split_flag" -d -t "$TMUX_PANE" -P -F '#{pane_id}' "env -u TMUX $monitor_cmd" 2>/dev/null) || pane_id=""
 fi
 
 # Build JSON output
 result="{\"socket\":\"$socket\",\"session\":\"$name\",\"target\":\"$target\",\"monitor_cmd\":\"$monitor_cmd\""
-if [[ -n "$iterm2_sid" ]]; then
-  result+=",\"iterm2_session_id\":\"$iterm2_sid\""
+if [[ -n "$pane_id" ]]; then
+  result+=",\"pane_id\":\"$pane_id\""
 fi
 result+="}"
 
