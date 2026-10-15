@@ -1,6 +1,6 @@
 ---
 name: umami-tracking
-description: "Add Umami analytics tracking to any website project"
+description: "Add Umami analytics tracking to any website project, or to a native/non-browser app via /api/send"
 ---
 
 # Umami Tracking Injection
@@ -8,7 +8,7 @@ description: "Add Umami analytics tracking to any website project"
 Add Umami analytics to any website. Automatically registers the site in the Umami dashboard and injects the tracking snippet with the real website ID.
 
 <presentation>
-Print this banner once, first in the response. Close with the report under Post-Injection.
+Print this banner once, first in the response. Close with the Step 3 report.
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
@@ -33,7 +33,7 @@ Print this banner once, first in the response. Close with the report under Post-
 1. Detect the project type (framework or static HTML)
 2. Determine the site name and domain from the project (package.json name, deploy config, or folder name)
 3. Register the website via `register_website.py` to get a real website ID
-4. Inject the tracking snippet with the actual website ID
+4. Inject the tracking snippet with the actual website ID (native/non-browser apps: POST to `/api/send` instead)
 5. Report which files were modified and link to the dashboard
 
 Do NOT ask for credentials, URL, or website ID. Everything is preconfigured.
@@ -78,7 +78,27 @@ Add inside `<head>`:
 python3 <skill_dir>/scripts/inject_tracking.py <project_dir> <website_id> [--auto]
 ```
 
-## Post-Injection
+### Native / non-browser clients (macOS/iOS app, CLI, server)
+
+No snippet to inject — the app POSTs events itself, mirroring what `script.js` sends:
+
+```
+POST https://umami-inky-two.vercel.app/api/send
+Content-Type: application/json
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36
+x-umami-website-id: <website_id>
+x-umami-hostname: <domain>
+
+{"type":"event","payload":{"website":"<website_id>","hostname":"<domain>","url":"/screen-name",
+ "title":"…","language":"en-US","screen":"1512x982","referrer":"","name":"<event>","data":{}}}
+```
+
+Omit `name` for a pageview. Umami runs `isbot` on the User-Agent: a non-browser UA (`curl/…`,
+`MyApp/1.0 CFNetwork/…`, URLSession defaults) gets **200 `{"beep":"boop"}` and nothing is
+recorded** — always send a browser-shaped UA. A real hit returns `{"cache":…,"sessionId":…}`;
+`400 Website not found` = wrong id; `403` = the caller's IP is on the server's ignore list.
+
+## Step 3: Report (required — do not skip, even when other work follows)
 
 Report to the user with this block, one row per file touched, then the dashboard link on one line under it: "View stats at https://umami-inky-two.vercel.app/websites"
 
