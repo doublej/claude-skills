@@ -30,7 +30,10 @@ Open with this banner; close with the report in **Output Format**.
 3. DEBATE → 3 parallel agents evaluate findings (skippable — see When to skip debate)
 4. SYNTHESIZE → Merge perspectives into recommendations
 5. IMPROVE → Update learnings for next run
+6. REPORT → Emit the Output Format block every run, including "no viable candidate", then stop
 ```
+
+The run ends at the report. When the verdict is "build it", say so and hand off to `skill-creator` with the findings as its brief; do not scaffold, write, or commit a skill inside this one.
 
 ## Sources
 
