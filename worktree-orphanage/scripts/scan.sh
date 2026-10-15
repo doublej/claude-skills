@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # worktree-orphanage phase-1 scanner. Read-only.
 # usage: scan.sh [--branches|-b] [target-branch...]
-#   default targets: auto-detect main master develop
+#   default targets: auto-detect main master develop + the main worktree's branch
 #   --branches: also scan local branches not checked out in any worktree
 #
 # Against every target branch, commits ahead are bucketed:
@@ -9,7 +9,7 @@
 #   absorbed — diff already present in target tree (reverse-apply check;
 #              catches squash merges and edited cherry-picks)
 #   unmerged — genuinely not in target
-# Orphaned only if unmerged commits vs ANY target, or a dirty tree.
+# Orphaned only if unmerged commits vs EVERY target (landed nowhere), or a dirty tree.
 # Ahead-but-all-absorbed => likely-merged.
 set -uo pipefail
 
@@ -21,11 +21,17 @@ for a in "$@"; do
     *) cand+=("$a");;
   esac
 done
-[ ${#cand[@]} -eq 0 ] && cand=(main master develop)
-
 repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || {
   echo "NOT_A_REPO" >&2; exit 2; }
 cd "$repo_root"
+
+# default: trunk names + the branch the main worktree has checked out (the
+# line the project actually integrates on, e.g. feature/cloudflare)
+if [ ${#cand[@]} -eq 0 ]; then
+  cand=(main master develop)
+  main_br=$(git worktree list --porcelain | awk '/^$/{exit} /^branch /{sub("refs/heads/","",$2); print $2; exit}')
+  [ -n "$main_br" ] && cand+=("$main_br")
+fi
 
 # --- resolve targets -------------------------------------------------------
 targets=()
@@ -35,7 +41,9 @@ resolve() {
   fi
 }
 for c in "${cand[@]}"; do
-  r=$(resolve "$c"); [ -n "$r" ] && targets+=("$r")
+  r=$(resolve "$c"); [ -z "$r" ] && continue
+  case " ${targets[*]:-} " in *" $r "*) continue;; esac
+  targets+=("$r")
 done
 [ ${#targets[@]} -eq 0 ] && { echo "NO_TARGET_BRANCH (tried: ${cand[*]})" >&2; exit 2; }
 
@@ -52,15 +60,15 @@ stash_count() { # $1=branch
   git stash list --format=%gs 2>/dev/null | grep -cE "([Oo]n|WIP on) ${1}(:|$)" || true
 }
 
-# bucket $1=sha against all targets; prints ahead\tcherry\tabsorbed\tunmerged\tany_unmerged\tany_ahead
+# bucket $1=sha against all targets; prints ahead\tcherry\tabsorbed\tunmerged\tall_unmerged\tall_ahead
+# all_*=1 only when it holds for every target: work landed in any one target is not orphaned
 bucket() {
   local sha=$1 T ahead cherry absorbed unmerged i cline
-  local ahead_s="" cherry_s="" abs_s="" unm_s="" any_unmerged=0 any_ahead=0
+  local ahead_s="" cherry_s="" abs_s="" unm_s="" all_unmerged=1 all_ahead=1
   for T in "${targets[@]}"; do
     ahead=$(git rev-list --count --no-merges "$T..$sha" 2>/dev/null || echo 0)
     cherry=0; absorbed=0; unmerged=0
     if [ "$ahead" -gt 0 ]; then
-      any_ahead=1
       # squash-merge defense: whole branch diff already in target's tree?
       if git diff "$T...$sha" 2>/dev/null | patch_in_target "$T"; then
         absorbed=$ahead
@@ -85,13 +93,14 @@ bucket() {
         done
       fi
     fi
-    [ "$unmerged" -gt 0 ] && any_unmerged=1
+    [ "$ahead" -eq 0 ] && all_ahead=0
+    [ "$unmerged" -eq 0 ] && all_unmerged=0
     ahead_s+="${ahead_s:+,}$T:$ahead"
     cherry_s+="${cherry_s:+,}$cherry"
     abs_s+="${abs_s:+,}$absorbed"
     unm_s+="${unm_s:+,}$unmerged"
   done
-  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$ahead_s" "$cherry_s" "$abs_s" "$unm_s" "$any_unmerged" "$any_ahead"
+  printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$ahead_s" "$cherry_s" "$abs_s" "$unm_s" "$all_unmerged" "$all_ahead"
 }
 
 # --- iterate worktrees -----------------------------------------------------
@@ -116,13 +125,13 @@ emit() {
   fi
   [ -n "$wt_branch" ] && stash=$(stash_count "$wt_branch")
 
-  local ahead_s="-" cherry_s="-" abs_s="-" unm_s="-" any_unmerged=0 any_ahead=0
+  local ahead_s="-" cherry_s="-" abs_s="-" unm_s="-" all_unmerged=0 all_ahead=0
   [ -z "$class" ] && \
-    IFS=$'\t' read -r ahead_s cherry_s abs_s unm_s any_unmerged any_ahead < <(bucket "$wt_sha")
+    IFS=$'\t' read -r ahead_s cherry_s abs_s unm_s all_unmerged all_ahead < <(bucket "$wt_sha")
 
   if [ -z "$class" ]; then
-    if [ "$any_unmerged" -eq 1 ] || [ "$dirty" -gt 0 ]; then class="orphaned"
-    elif [ "$any_ahead" -eq 1 ]; then class="likely-merged"
+    if [ "$all_unmerged" -eq 1 ] || [ "$dirty" -gt 0 ]; then class="orphaned"
+    elif [ "$all_ahead" -eq 1 ]; then class="likely-merged"
     else class="clean"; fi
   fi
   echo -e "$wt_path\t${wt_branch:-<detached>}\t$ahead_s\t$cherry_s\t$abs_s\t$unm_s\t$dirty\t$stash\t$last\t$class"
