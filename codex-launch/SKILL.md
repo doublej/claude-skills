@@ -76,11 +76,16 @@ Opens a dedicated `codex` tmux window (or iTerm2 tab) running Codex with safely 
 and flags. Capture the printed launch-file path; verify the terminal actually
 shows the intended Codex session. If verification is unavailable, say the
 launch was requested, rather than claiming Codex is running.
+In a new directory or worktree Codex may stop at a "Trust this folder?" prompt
+before running the brief; if the screen shows it, tell JJ to confirm it there.
 
-Check the installed `codex --help` before choosing flags. Current CLI 0.159.2:
+Check the installed `codex --help` before choosing flags. Current CLI 0.162.1:
 
 - `-C <path>` sets the working directory; a path in prose does not change it.
-- `-m <session-model>` selects the agent model, not the image renderer.
+- `-m <session-model>` selects the agent model, not the image renderer. Omit it
+  to use the configured default (availability varies by account). List valid
+  slugs with `codex debug models`; map an unknown name only as a stated assumption.
+- `-c key=value` overrides config, e.g. `-c model_reasoning_effort=low`.
 - `-s read-only` / `workspace-write` sets filesystem sandbox behavior.
 - `-a on-request` / `never` selects approval policy where supported.
 - `--json` is for non-interactive `codex exec` event capture.
