@@ -1,6 +1,6 @@
 ---
 name: update-scaffold
-description: "Pull upstream cookiecutter-template updates into a generated project, safely. Use when a [template-update] hook fires, the user says 'update scaffold' / 'pull template updates' / runs /update-scaffold, or asks to sync a project with its template. Defaults to non-destructive: tooling is overwritten, your edits become .upstream sidecars."
+description: "Pull upstream cookiecutter-template updates into a generated project, safely. Use when a [template-update] hook fires, the user says 'update scaffold' / 'pull template updates' / runs /update-scaffold, or asks to sync a project with its template. Merges like git: tooling is overwritten, every other file is 3-way merged so local edits stay."
 ---
 
 # Update Scaffold
@@ -23,16 +23,16 @@ Print this banner once, first in the response; close the run with the report bel
 ╚══════════════════════════════════════════════════════════════╝
 ```
 ```
-UPDATE SCAFFOLD  ──  <template> <local> → <upstream>   mode: <safe|force|bump only|none>
+UPDATE SCAFFOLD  ──  <template> <local> → <upstream>   mode: <merge|force|bump only>
 
 FILE                    BUCKET             ACTION
 ──────────────────────────────────────────────────────────────
-<path>                  <bucket>           <overwritten|merged|sidecar|moved in|trashed>
+<path>                  <bucket>           <overwritten|updated|added|merged|conflict→resolved|sidecar>
 
 github.com/doublej
 ```
 
-A sidecar still awaiting review is a row marked `…`; an AFK/cancelled choice is one line under the table.
+A conflict still awaiting the user is a row marked `…` with the one-line question.
 
 ## When this runs
 
@@ -44,53 +44,45 @@ A sidecar still awaiting review is a row marked `…`; an AFK/cancelled choice i
 1. **`.template-meta.json` exists** in the project root. It holds `template` (e.g. `python/fastapi`), `template_version`, `context` (original cookiecutter answers), `template_source.path` (absolute path to the templates repo), and optionally `retrofit: true`. If it's missing, this project was not scaffolded from these templates — stop and say so.
 2. **The templates repo is reachable.** Resolution order: `$COOKIECUTTER_TEMPLATES` env, else `template_source.path` from the meta file. If neither resolves to an existing dir, stop and explain the v1 limitation: the path is captured at render time, so a moved repo breaks the link — the user must set `$COOKIECUTTER_TEMPLATES` or fix `template_source.path`.
 
-## How the updater classifies files
+## How the updater merges
 
-`update_scaffold.py` re-renders the template with the saved `context` and diffs each changed file into a bucket. Know these — they drive what you tell the user:
+`update_scaffold.py` renders the template twice with the saved `context`: at the project's own `template_version` (the merge base) and at the released upstream version. Then it handles each changed file:
 
-| Bucket | Examples | Default action |
-|--------|----------|----------------|
-| `template_managed` | `.claude/scripts/*.py` | **Overwritten in place** — pure tooling, safe |
-| `mergeable` | `.atlas` (per `sync_manifest.json` → `merge_paths`) | Shallow JSON merge — upstream keys added, local values kept |
-| `seed` | CLAUDE.md, Justfile, README.md, agent.md, .gitignore, .quality.json, .swiftlint.yml, lang manifests, `src/**` | **Never overwritten** — upstream copy written to `<file>.upstream` for manual merge |
-| `other` | anything unclassified | Skipped unless `--include-other` |
+| Bucket | Examples | Action |
+|--------|----------|--------|
+| `template_managed` | `.claude/scripts/*.py` | Overwritten in place — pure tooling |
+| `mergeable` | `.atlas` | Shallow JSON merge — upstream keys added, local values kept |
+| `merge` | everything else (CLAUDE.md, Justfile, manifests, `src/**`, new files) | 3-way merge with `git merge-file` |
 
-`--force` makes seeds overwrite in place (destructive — local edits lost). On `--apply`, the script bumps `.template-meta.json` to the upstream version.
+The 3-way merge is what makes this quiet:
+- The template did not change the file → left alone, whatever your edits.
+- You never edited it → upstream copy (`[updated]`). New in the template → `[added]`. You deleted it → stays deleted.
+- Both changed it in different places → merged cleanly (`[merged]`).
+- Both changed the same lines → git conflict markers in the file (`[conflict]`), listed at the end of the output.
 
-**Net-new template files.** Files added upstream that don't exist locally are collected like any other change, but two things bite:
-
-- Without `--include-other`, the `other` bucket is emptied *before* the summary prints — those files show up in no count and no diff. They are invisible, not merely skipped. Always preview with `--include-other` (step 1).
-- A net-new *seed* file lands as `<file>.upstream`, never as `<file>`. You must `mv` it into place yourself.
+No merge base (`retrofit: true`, no `template_version`, or a version with no release commit) → seeds fall back to `<file>.upstream` sidecars, with `--include-other` for unclassified files. `--force` overwrites seeds instead of merging; never pass it unless the user explicitly asks.
 
 ## Workflow
 
-The reliable path is the script itself — `$REPO` is `$COOKIECUTTER_TEMPLATES`, else `template_source.path` from `.template-meta.json`:
+`$REPO` is `$COOKIECUTTER_TEMPLATES`, else `template_source.path` from `.template-meta.json`:
 
 ```bash
-python3 "$REPO/tools/update_scaffold.py" [--diffs|--apply|--force|--include-other] .
+python3 "$REPO/tools/update_scaffold.py" --apply .
 ```
 
-`just update-scaffold <args>` is a convenience alias that resolves `$REPO` for you, **but only if the project's Justfile already has that recipe**. The Justfile is a `seed` file, so a project generated before the recipe existed never receives it and `just` fails with "Justfile does not contain recipe 'update-scaffold'". On that error, fall straight through to the script call — don't debug the Justfile.
+`just update-scaffold --apply` does the same if the project's Justfile has the recipe; on "Justfile does not contain recipe 'update-scaffold'" use the script call directly.
 
-```bash
-just update-scaffold                   # report-only
-just update-scaffold --diffs           # report-only + short per-file diffs
-just update-scaffold --apply           # safe apply (tooling overwritten, seeds → sidecars)
-just update-scaffold --apply --force   # also overwrite seeds (destructive)
-```
+1. **Check git.** If the working tree has uncommitted changes in files the update touches, commit them first or stop and say so. The merge writes in place, and git is the undo button. Do not ask for permission: merging is the safe default.
+2. **Apply.** Run with `--apply`. If it prints "Up to date", say so and stop.
+3. **Resolve conflicts yourself.** For each file under "Left N file(s) with git conflict markers", read the `<<<<<<< yours` / `||||||| template (old)` / `>>>>>>> template (new)` hunks and write the combination that keeps both intents: the local customization and the template's improvement. That is almost always possible (for example, a renamed recipe plus a local tweak to it, or a new dependency next to a local pin). Only `ask` (consult-user-mcp) when the two sides really are mutually exclusive, with one question per conflict that names both options. AFK/cancelled → keep the local side, and list the conflict as pending.
+4. **Sidecars (no-base fallback only).** Merge each `<file>.upstream` into `<file>` the same way, keeping both intents, then `trash` the sidecar (a safe-rm hook blocks `rm -f`; `trash` prints nothing on success).
+5. **Verify and commit.** `grep -rn '^<<<<<<< yours' .` must be empty, then run `just check`. Commit as `chore: update scaffold to <template> <version>`.
 
-1. **Preview.** Run with `--diffs --include-other` (always both — see *Net-new template files*). Summarize: version jump, count per bucket, how many `seed` files will need manual merge, and any `other`/net-new files. If it reports "Up to date", say so and stop.
-2. **Confirm, SAFE by default.** Call consult-user-mcp `ask` (`type: "confirm"`, or `type: "pick"` when force is worth offering) with the bucket counts in the body. This is a real tool call, not a rhetorical pause — do not write "Applying safely" and proceed. The built-in `AskUserQuestion` tool is disabled in this environment; `ask` is the only channel.
-   - `ask` returns `{"afk": true}` or `{"cancelled": true}` → apply the **safe** default (never `--force`), say in one line that you applied it unattended, and carry the unanswered choice into the final report.
-   - `--force` requires an explicit human "force" answer. AFK, cancelled, or an autonomous session policy is never consent to force.
-   - Four options, not three: **safe** / **no** / **force** / **bump only**. Bump only = edit `template_version` in `.template-meta.json` to the upstream version by hand and change nothing else (the script has no flag for it). Offer it when the diff is entirely noise — e.g. upstream stripping this project's customizations — and the user just wants the SessionStart prompt to stop.
-3. **Apply.** `--apply` (safe) or `--apply --force` (destructive). Never pass `--force` unless the user explicitly chose it.
-4. **Report — one sidecar at a time.** List every `<file>.upstream` written, then walk them individually: show `diff -u <file> <file>.upstream`, `ask` what to keep, edit `<file>`, then `trash <file>.upstream` (a safe-rm hook blocks `rm -f`; `/usr/bin/trash` is recoverable and prints nothing on success — exit 0 with no output means it worked, don't retry through `npx`/`bunx`). Never batch-diff, never cherry-pick on your own judgement, never delete all sidecars in one glob, and never install a dependency a sidecar implies without asking. If `ask` returns AFK/cancelled: leave every sidecar on disk untouched and list them as pending decisions — an unreviewed sidecar is not a decision you may make.
-5. **Net-new files.** If the preview showed `other` files, add `--include-other` to the apply so they land as `.upstream` sidecars too — the rendered template lives in a temp dir that is gone afterwards, and the on-disk template still has unexpanded `{{cookiecutter.*}}` vars, so a sidecar is the only clean copy. Then `mv <file>.upstream <file>` for the ones worth having (agents, scripts, docs the project lacks), and `trash` the rest. Skip template skeleton files like `src/**` unless the user wants them. Recommend `just check` afterward.
+Bump only (edit `template_version` by hand and change nothing else) is still an option, but only when the user asks for it.
 
 ## Retrofit projects
 
-If `meta.retrofit` is true, the project's local files predate the template — seeds are guaranteed to differ. Do **not** offer force-overwrite as a casual default; lead with sidecars and manual merge.
+If `meta.retrofit` is true, the project's local files predate the template, so there is no merge base and seeds become sidecars. Merge them the way step 4 describes. Do **not** offer force-overwrite as a casual default.
 
 ## Opt-outs (detection only)
 
