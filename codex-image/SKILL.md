@@ -11,7 +11,8 @@ client, sign-in method, and rollout.
 
 ## Presentation
 
-Open the first response with this banner (once), close each run with the report:
+Print this banner as plain text in your first reply, before any tool call (once);
+close each run with the report:
 
 ```
 ╔══════════════════════════════════════════════════════════════╗
@@ -22,7 +23,7 @@ Open the first response with this banner (once), close each run with the report:
 ║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝
 
-CODEX IMAGE  ──  <new|edit>   path: <inside codex|claude wrapper|api>   renderer: <model|not exposed>
+CODEX IMAGE  ──  <new|edit>   path: <inside codex|claude wrapper|api>   session: <model|default>   renderer: <model|not exposed>
 
 IMAGE PATH                      SIZE        ALPHA    INSPECTED   UNMET
 ──────────────────────────────────────────────────────────────────────
@@ -53,7 +54,8 @@ model. Never claim Flare/Sunburst was used unless the tool/API reports it.
   session model and the image model or state that the renderer is not exposed.
 - Drafting an image brief: read [briefing](references/briefing.md), then produce
   the visual brief and explicit change/preserve constraints for edits.
-- Briefing a Codex session: read [session briefs](references/session-briefs.md),
+- Briefing a Codex session yourself (interactive, custom exec, API; `generate.sh`
+  already supplies it): read [session briefs](references/session-briefs.md),
   then include the goal, inputs, tool constraints, outputs, and success criteria.
 - Every Claude-to-Codex run: follow
   [live monitoring](../codex-launch/references/live-monitor.md). The wrapper
