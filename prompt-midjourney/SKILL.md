@@ -123,6 +123,9 @@ python3 ~/.claude/skills/prompt-midjourney/scripts/lint_prompt.py --json '<promp
 Catches dead parameters, out-of-range values, mid-prompt flags, em dashes, HD/aspect-ratio conflicts,
 `--no` contradictions, over-long rendered text, and quality-spam words. Exit 1 on any error.
 
+The `too-long` warning only fires past 60 words, a ceiling for severe overruns. A clean lint does not
+mean a single prompt fits the ~40-word budget: count it yourself (series prompts excepted, see above).
+
 Fix every error. Warnings are judgement calls — resolve or explain them, don't ignore them silently.
 
 `quality-spam` is the exception: treat it as an error. The only override is a term carried verbatim
