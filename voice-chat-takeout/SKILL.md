@@ -343,9 +343,11 @@ composing; shape cannot. `for <subject>` ⇒ interview.
 
    **The template read is a real `Read` call, and it has to produce
    something.** Before you draft a single line of brief, `Read` the one
-   file above and then write out, in your reply, the section names listed
-   under that template's `## Structure` heading — verbatim, in order —
-   plus how many bullets its `## Hard rules` section carries. Those
+   file above; your very next reply line must then be exactly
+
+   `STRUCTURE: <## Structure section names, verbatim, in order> | HARD RULES: <bullet count of ## Hard rules>`
+
+   — in the visible reply, not in thinking. No marker line, no draft. Those
    section names *are* the brief's outline: compose under exactly them,
    nothing added, nothing dropped. If you can't name them, you did not
    read the file — the inline summary in this SKILL.md is not a
