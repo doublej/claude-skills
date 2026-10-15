@@ -51,10 +51,14 @@ github.com/doublej
 <procedure>
 Run in order. Each step: check → fix → evidence. Stop at the first step that says stop.
 
-1. **Dev server exists?**
-   `atlas info --json` → look at `devCommand`.
-   Missing → say "no dev server, nothing to expose" and stop. Never invent a dev script for a CLI, library or native project.
-   Failing with `No scanned project` → `atlas scan`, retry once. Still missing → the folder is not under `~/dev` or is archived; stop.
+1. **Something serves a browser?**
+   `atlas info --json` → `devCommand`, `justRecipes`, `runner`, `type`. The scanner only reads `package.json` `dev`/`start`/`serve`, so a missing `devCommand` proves nothing on its own:
+   - `devCommand` set, and not `build` → continue.
+   - No `devCommand`, but something does serve (a `dev`/`serve` just recipe, a uv/uvicorn app, a command the project's CLAUDE.md names) → continue; in step 5 start it yourself and register with `atlas hostnames assign`. `atlas run` refuses without a `devCommand`, and `.atlas` has no override for it.
+   - Workspace root (`type: workspace`, children with their own `.atlas`) → the child that serves is the target; see nested project below.
+   - Permanent service (`atlas services --json` lists it) → it already has its hostname; run step 5's curl on it and report that. This skill registers nothing for it.
+   - Nothing listens: CLI, library, native (`swift`, `dotnet`, `bepinex` in `type`), `devCommand: build` → say "no dev server, nothing to expose" and stop. Never invent a dev script.
+   `No scanned project` / "not in the cached scan" → `atlas scan`, retry once. Still missing → the folder is outside the catalog: not under `~/dev`, archived, hidden (`.claude/worktrees/…`) or matched by an `ignore` glob in `~/dev/.atlas-config.json`. Atlas cannot route it: serve the branch from the registered checkout, or stop.
    **Nested project** (`api/` + `ui/` under one root, the normal `multi-stack/` shape): the scan stops at the parent's `.atlas`. `atlas run` in the child exits 1 and prints the exact fix: a `depth` entry in `~/dev/.atlas-config.json`, then `atlas scan`. Do what it says, then `atlas info --json` from the child. Each child that serves a browser or an API gets its own port and its own hostname; two registrations are the price, not a mistake.
 
 2. **Port in range.**
