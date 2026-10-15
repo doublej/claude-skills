@@ -138,6 +138,10 @@ Ask questions like:
 - "Can you give examples of how this skill would be used?"
 - "What would a user say that should trigger this skill?"
 
+</step_1_understanding>
+
+<step_2_planning>
+
 ### Step 2: Planning Reusable Contents
 
 For each example, identify what scripts, references, and assets would be helpful:
