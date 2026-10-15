@@ -137,6 +137,8 @@ Skip clusters with only one term (no conflict to resolve) — they're already ca
 
 For each conflicting cluster, ask the user via consult-user-mcp `form`. Batch up to 10 clusters per form (mode `accordion`) — don't ask one at a time.
 
+Canonical picks are the user's, never yours. Do not draft definitions or start Phase 5 until the answers are back. Running as a subagent without consult-user-mcp: return the conflict surface from Phase 3 and stop, so the parent asks.
+
 For each cluster:
 
 ```json
