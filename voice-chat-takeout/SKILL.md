@@ -245,7 +245,9 @@ categories, POV, quality bar, slug grammar, location header, speech-is-lossy,
 file-nav, kick-start, plus a "Detected (live)" block with your real `cwd`
 and any open exchanges. The steps below are a local summary keyed to *this
 skill's* framing (kind/shape selection, template routing); where they and
-the primer disagree, **the primer wins.**
+the primer disagree, **the primer wins.** Run it bare — never pipe it
+through `head`/`tail`: a truncated primer silently drops the flow,
+context-gathering and file-nav sections the rest of this depends on.
 
 **Step 0b — pick the shape first** (see *Shape* above): decision,
 reference, or interview. Do this before anything else — it changes how step
