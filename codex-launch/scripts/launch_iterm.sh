@@ -6,6 +6,17 @@ LABEL="${2:?A session label is required}"
 command -v it2 >/dev/null
 command -v timeout >/dev/null
 printf -v COMMAND 'bash %q' "$COMMAND_FILE"
+# iTerm 3.7.4 on macOS 27 crashes when it launches a new tab from a profile (Cmd+T,
+# `it2 newtab`); three times on 2026-10-15 that took every session with it. With tmux session
+# `main` up, iTerm shows tmux windows as its tabs, so the monitor becomes a tmux window:
+# tmux creates it, iTerm only draws it, and the profile launch never runs.
+# Prints the tmux pane id instead of an iTerm session id.
+if command -v tmux >/dev/null && tmux has-session -t main 2>/dev/null; then
+  PANE="$(tmux new-window -P -F '#{pane_id}' -t main: -n "$LABEL" "$COMMAND")"
+  tmux set -w -t "$PANE" @group codex
+  printf '%s\n' "$PANE"
+  exit 0
+fi
 TAB_RESULT="$(timeout 20 it2 newtab --command "$COMMAND")"
 TAB_ID="${TAB_RESULT##*Created new tab: }"
 SESSION_ID="$(timeout 20 it2 session list --json | python3 -c '
