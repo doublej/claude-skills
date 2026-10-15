@@ -99,9 +99,7 @@ Hub skills keep the bare family name (`pixijs`, `pdf`, `raycast`, `writer`, `pro
 
 ### `term-*` — terminal emulators & multiplexers
 | iterm2 | term-iterm2 |
-| ghostty | term-ghostty |
 | tmux | term-tmux |
-| cmux | term-cmux |
 
 ### `tui-*` — building terminal UIs
 | terminal-kit | tui-kit |
@@ -176,7 +174,7 @@ voice-assistant, wgpu-graphics, workremotely, writer, pdf, pixijs
 above were applied EXCEPT the proper-noun-tool prefixes, which were intentionally
 deferred to keep those tools standalone:
 
-- `term-*` — iterm2, ghostty, tmux, cmux stay as-is
+- `term-*` — iterm2, tmux stay as-is
 - `macos-*` — build-macos-apps, file-assoc, iphone-mirroring, swift stay as-is
 - `pdf-ghostscript` — ghostscript stays as-is (reportlab-pdf/icc-color-pdf still moved)
 - `py-*` — pydantic-v2, pywebview stay as-is

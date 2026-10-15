@@ -1,7 +1,7 @@
 # Remote Windows Hosts (SSH/SCP)
 
 Canonical reference for working with Windows machines over SSH from a terminal
-session (tmux, iTerm2, cmux — the driver doesn't matter, the gotchas are the same).
+session (tmux, iTerm2 — the driver doesn't matter, the gotchas are the same).
 
 ## SCP path gotcha
 

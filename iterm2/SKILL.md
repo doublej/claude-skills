@@ -15,7 +15,7 @@ Control iTerm2 via the `it2` CLI.
 Reference skill: no banner, no report. When invoked directly and the answer is the main output, end with: — iterm2 · github.com/doublej
 </presentation>
 
-Shared driver discipline (send vs run, capture-after-settle, explicit pane targeting — with the it2/tmux/cmux command table): see `~/.claude/skills/tmux/references/terminal-driver-core.md`.
+Shared driver discipline (send vs run, capture-after-settle, explicit pane targeting — with the it2/tmux command table): see `~/.claude/skills/tmux/references/terminal-driver-core.md`.
 
 <prerequisites>
 - iTerm2 with Python API enabled (Settings > General > Magic > Enable Python API)
