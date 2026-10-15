@@ -113,7 +113,7 @@ Standard/heavy rules:
 - Evidence, not claims: every "it works" carries the command output, test result, or screenshot, checked at the source of truth (DB row, raw response, file on disk) — never a UI badge or a worker's own say-so.
 - Commit every green step; work on an isolated branch or worktree.
 
-For standard/heavy, adapt the templates in `~/.claude/skills/loop-brief/references/` (`run-contract-templates.md` for BRIEF/PROGRESS, `safety-harness.md` for hooks and autonomy zones) — read the file and rename `loop/MISSION.md` → `run/BRIEF.md`, dropping the iteration/wake-up sections. **Name the section headings you kept and the ones you dropped** when you report the files written, so it is visible the template was actually opened.
+For standard/heavy, adapt the templates in `~/.claude/skills/loop-brief/references/` (`run-contract-templates.md` for BRIEF/PROGRESS, `safety-harness.md` for hooks and autonomy zones) — read both in one call (skip `safety-harness.md` only when the run has no destructive or config-changing step: deletes, config edits, restarts, prod writes) and rename `loop/MISSION.md` → `run/BRIEF.md`, dropping the iteration/wake-up sections. **Name the section headings you kept and the ones you dropped** when you report the files written, so it is visible the template was actually opened.
 </step_5_tiers>
 
 <step_6_deliver>
