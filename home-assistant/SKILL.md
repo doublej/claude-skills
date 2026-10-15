@@ -8,7 +8,7 @@ description: "Control smart home devices, automations, dashboards, entities via 
 Uses the **ha-mcp** MCP server (homeassistant-ai/ha-mcp). If MCP tools are not available, guide the user to install the server first.
 
 <presentation>
-Open the first response with this banner, once:
+Print this banner as plain text in your first reply, before any tool call, once:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║

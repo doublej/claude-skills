@@ -6,7 +6,7 @@ description: Git protocol when a commit or push exists only to deploy — tempor
 # Deployment git protocol
 
 <presentation>
-Open the first response with the banner (once), close the deploy with the report:
+Print the banner as plain text in your first reply, before any tool call (once), close the deploy with the report:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║

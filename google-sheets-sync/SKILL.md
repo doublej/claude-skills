@@ -9,7 +9,7 @@ Bidirectional sync between local JSON files and Google Sheets. Clients edit in S
 
 ## Presentation
 
-Open the first response with this banner, once:
+Print this banner as plain text in your first reply, before any tool call, once:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║

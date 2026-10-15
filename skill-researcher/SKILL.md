@@ -9,7 +9,7 @@ Research and evaluate skills from multiple sources with structured debate-style 
 
 ## Presentation
 
-Open with this banner; close with the report in **Output Format**.
+Print this banner as plain text in your first reply, before any tool call; close with the report in **Output Format**.
 
 ```
 ╔══════════════════════════════════════════════════════════════╗

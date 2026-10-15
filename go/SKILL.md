@@ -8,7 +8,7 @@ description: Front door for any task. Turns a one-line ask into a grounded brief
 One input: the ask after `/go`. One output: the finished work, shipped, plus a report.
 
 <presentation>
-Open the first response with this banner, once:
+Print this banner as plain text in your first reply, before any tool call, once:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║

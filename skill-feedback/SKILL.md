@@ -11,7 +11,7 @@ Hands off to a new Claude session in the skills project, then resumes yours.
 
 <presentation>
 
-Open with this banner; close with the report in step 5.
+Print this banner as plain text in your first reply, before any tool call; close with the report in step 5.
 
 ```
 ╔══════════════════════════════════════════════════════════════╗

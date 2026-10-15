@@ -16,7 +16,7 @@ watch the first. Preserve result capture when Claude needs Codex's answer.
 
 ## Presentation
 
-Open the first response with this banner (once), close each launch with the report:
+Print this banner as plain text in your first reply, before any tool call (once), close each launch with the report:
 
 ```
 ╔══════════════════════════════════════════════════════════════╗

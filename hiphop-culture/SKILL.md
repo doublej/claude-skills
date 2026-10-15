@@ -8,7 +8,7 @@ description: "Analyze tracks: culture context, BPM, lyrics, visual aesthetic syn
 Hip-hop analysis for AI-assisted creative projects. Covers culture context, lyric analysis, BPM math, and visual language.
 
 <presentation>
-Open the first response with this banner, once:
+Print this banner as plain text in your first reply, before any tool call, once:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║

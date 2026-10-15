@@ -12,7 +12,7 @@ Three branches. Pick the right one, or combine.
 <presentation>
 Development answers are reference: when invoked directly and the answer is the main output, end with: — pixijs · github.com/doublej
 
-Performance reviews and Debugging runs open with this banner once and close with the report in `<output>` (Debugging branch):
+Performance reviews and Debugging runs print this banner as plain text in your first reply, before any tool call, once and close with the report in `<output>` (Debugging branch):
 
 ```
 ╔══════════════════════════════════════════════════════════════╗

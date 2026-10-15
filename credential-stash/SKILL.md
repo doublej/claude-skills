@@ -16,7 +16,7 @@ Script: `python3 ~/.claude/skills/credential-stash/scripts/stash.py`
 </overview>
 
 <presentation>
-Open the first response with the banner (once); step 5 closes the run with the report.
+Print the banner as plain text in your first reply, before any tool call (once); step 5 closes the run with the report.
 Never put a secret in either: titles, masked ids, and URLs only.
 ```
 ╔══════════════════════════════════════════════════════════════╗

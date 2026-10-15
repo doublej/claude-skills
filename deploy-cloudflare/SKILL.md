@@ -12,7 +12,7 @@ Always use `bunx` instead of `npx` for running wrangler commands.
 Default Cloudflare account: `jurrejan@gmail.com` (Account ID: `e26bfba81a629fb8b4dcd538b1f73781`). Dashboard: https://dash.cloudflare.com/e26bfba81a629fb8b4dcd538b1f73781
 
 <presentation>
-Open the first response with the banner (once), close each run with the report.
+Print the banner as plain text in your first reply, before any tool call (once), close each run with the report.
 A setup-only run lists wrangler config, Justfile recipes and `wrangler whoami` as rows.
 ```
 ╔══════════════════════════════════════════════════════════════╗

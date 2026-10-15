@@ -16,7 +16,7 @@ Work with the machines on the JJ home network (`192.168.178.0/24`).
 
 ## Presentation
 
-Open the first response with this banner, once:
+Print this banner as plain text in your first reply, before any tool call, once:
 ```
 ╔══════════════════════════════════════════════════════════════╗
 ║                                                              ║
