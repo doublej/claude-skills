@@ -133,6 +133,15 @@ mount (or `rsync` over SSH).
   admin API returns `HTTP 403: client is not allowed to access from origin`:
   `ssh nas '/share/CACHEDEV1_DATA/.qpkg/container-station/bin/docker exec caddy-porkbun caddy reload --config /etc/caddy/Caddyfile --address localhost:2019'`.
   (`apply_from_mac.sh` already passes this — you only need it for a manual reload.)
+- **Basic auth: keep the 401 a 401.** A site block without its own `handle_errors`
+  falls through to the `*.jurrejan.com` catch-all in `etc/sites/coolify.caddy`, which
+  turns every error into a styled 404 — so `basic_auth` behind `import default_site`
+  answers 404 and browsers never show the login prompt. Add, inside the site block:
+  `handle_errors 401 { respond "401 Unauthorized" 401 }` (as `sites/static/palet.caddy` does;
+  `import site_10mb` already carries a status-preserving `handle_errors`).
+  `deploy-frontend.sh` regenerates a plain `default_site` block on every run, so for an
+  auth site edit its heredoc to include the `basic_auth` + `handle_errors 401` lines —
+  otherwise a redeploy silently drops the password.
 - **The SMB share has no Trash**, so macOS `rm`/Finder-delete fails on the mount.
   To remove a retired site, delete it NAS-side: `ssh nas 'rm -rf /share/CACHEDEV1_DATA/Container/caddy/www/<site>'`, then re-run `apply_from_mac.sh`.
 
@@ -169,6 +178,7 @@ ssh nas "cd /share/CACHEDEV1_DATA/Container/caddy/www \
 
 # Verify — http=200 proves Caddy serves it. Never verify by grepping the
 # caddy container's logs: access logging is off, so there is nothing to find.
+# Basic-auth site: expect 401 (not 404) without credentials, 200 with `-u user:pass`.
 curl -s -m 15 -o /tmp/${SUBDOMAIN}.html \
   -w 'http=%{http_code} size=%{size_download}\n' https://${SITE}/index.html
 ```

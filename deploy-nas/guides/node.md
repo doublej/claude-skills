@@ -10,6 +10,15 @@ Deploy Node.js apps (including SvelteKit) to NAS with PM2 process management.
 - **Process Manager**: PM2
 - **Domain**: `${SUBDOMAIN}.jurrejan.com`
 
+## Preflight: Node adapter
+
+SvelteKit on `@sveltejs/adapter-cloudflare` (or `-vercel`/`-netlify`) does not run under
+PM2 — switch to `@sveltejs/adapter-node` (`bun add -d @sveltejs/adapter-node`, update
+`svelte.config.js`). Grep for Cloudflare-only code too: `platform.env.*` →
+`$env/dynamic/private`; `platform.context`/`platform.caches` have no Node equivalent and
+must go. Fetch-based clients picked for Workers (e.g. `Stripe.createFetchHttpClient()`)
+still work on Node 18+, but can revert to the library default.
+
 ## Directory Structure
 
 ```
