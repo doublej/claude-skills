@@ -191,6 +191,8 @@ github.com/doublej
 
 Ship as a PR-style diff list, not prose. Marks: `✓` applied, `✗` failed (cause under the table), `—` not applied.
 
+Running as a subagent (result goes back to an orchestrator): return only the header and ≤20 table rows with `file:line` in FIX. No full llms.txt, JSON-LD or rewritten-content blocks — write them to disk and name the path, or offer them on request.
+
 ## References
 
 - `references/princeton-methods.md` — 47-method scoring rubric, examples, evidence
