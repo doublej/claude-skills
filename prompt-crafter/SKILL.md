@@ -85,7 +85,7 @@ Bare `opus` resolves to Opus 5.5; bare `sonnet` to Sonnet 5. Model IDs may carry
 Target: <model> · Reference: references/<file> · Applied: "<one sentence copied verbatim from that file that governed the draft>"
 ```
 
-The quote is a sentence that exists in the file, not a paraphrase of it. Copy from the opened file, not this skill or memory. Record its checklist item number internally and apply that item to the draft; a decorative quote is not evidence of application.
+The quote is a sentence that exists in the file, not a paraphrase of it. Copy from the opened file, not this skill or memory. If the sentence is a template with `[slot]` tokens, fill the slots exactly as the draft fills them. Record its checklist item number internally and apply that item to the draft; a decorative quote is not evidence of application.
 
 **Placeholders** in lint files are inferred, not asked:
 
