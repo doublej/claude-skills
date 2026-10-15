@@ -46,8 +46,8 @@ Skill examples and conventions below are validated against official just behavio
 <workflow>
 ## Workflow (Skill Steps)
 
-1. **Check filename:** MUST be `Justfile` (capital J), not `justfile`
-2. Check if `Justfile` already exists in the project
+1. **Check filename:** a new file MUST be `Justfile` (capital J), not `justfile`
+2. Check if a Justfile already exists in the project. If it does, you are editing, not generating: keep its filename case, shell line and layout, and write your recipes in its style. Pre-existing deviations (lowercase name, ungrouped recipes, no branch in default, `-uo` without `-e`) are fixed only when asked; list them in the report instead. In a scaffolded project (`.template-meta.json`) the Justfile comes from the template, so a deviation there belongs upstream in cookiecutter-templates. The Verification Checklist applies in full to a new Justfile, and to the recipes you added in an existing one.
 3. Detect stack from package.json, pyproject.toml, Cargo.toml, etc.
 4. Generate recipes matching detected stack + user conventions below
 5. **Verify output:** Run `just --list` to check grouping, git branch, and formatting
@@ -627,6 +627,7 @@ just <recipe>  # should only output what's needed, not debug lines
 | **Info lines lack `@` prefix** | Output pollutes `just -q` and recipe chains | Add `@` to all `echo`, `echo ''`, logging lines |
 | **Comment between `[group(...)]` and the recipe** | `error: Extraneous attribute` — the justfile does not parse | Comment goes ABOVE the attribute, never between attribute and recipe name |
 | **Multi-line comment attached to a recipe** | `just --fmt` inserts a blank line between the comment lines; `just --fmt --check` fails | Keep recipe comments to ONE line; put detail in the recipe body |
+| **Comment directly above a variable or `set` line** | `just --fmt` inserts a blank line after the comment, even a one-line one; `just --fmt --check` fails | Leave a blank line between the comment and the assignment. Only recipes take an attached comment |
 
 ---
 
