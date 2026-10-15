@@ -45,6 +45,13 @@ Test each line: *would this still be true if the project were rebuilt from scrat
 
 Borderline: a constraint counts as user-facing only if the user could discover it without reading code. "Uploads cap at 50 MB" — in. "Uses S3 multipart above 5 MB" — out.
 
+## Scope
+
+The default unit is the whole project. Two variants:
+
+- **Scoped spec.** The user names one feature, page, or component. Spec only that, and rename the goal headings to its parts ("What the card shows", "What the pane does"). File: `<project>-<scope>-SPEC.md`.
+- **Per-page set.** A UI with more than ~5 distinct screens. One subagent per screen drafts and scrubs `<project>-<page>-SPEC.md` into one shared `<project>-specs/` directory and returns page name, action count, and unresolved questions. You then write the index `<project>-SPEC.md` in that directory (What it is, Who uses it, Rules that always hold, Not in scope, and a link to each page spec) and run the Scrub pass once more across every file.
+
 ## Process
 
 1. **Find the surfaces.** Locate every way a human enters the system: screens/routes, CLI commands, API consumers, scheduled jobs the user sees results of, config the user edits. Sign-in, onboarding, first-run screens, and feature gates are surfaces too. If you had to get past one in a way a real user would not (mock data, seeded local state, developer mode), say so under Unresolved.
@@ -101,7 +108,7 @@ Things a reader would reasonably assume are here and are not.
 Open questions for the owner, each a real question with the observation that raised it.
 ```
 
-Drop any section that is genuinely empty. Do not pad.
+Drop any other section that is genuinely empty. Do not pad. What it is and Who uses it are never dropped, in a page spec either: one line each is enough, and if you cannot fill one, say why under Unresolved.
 
 ## Scrub pass
 
@@ -145,5 +152,5 @@ spec: <absolute path to -SPEC.md>
 github.com/doublej
 ```
 
-One row per template section. After the block, list the Unresolved questions as short
+One row per template section; for a per-page set, one row per page, with `spec:` pointing at the index. After the block, list the Unresolved questions as short
 prose (those need an answer, not a file).
