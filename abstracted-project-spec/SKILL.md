@@ -139,7 +139,9 @@ Write to the session scratchpad directory named in the system prompt, as
 this is a derived artefact, not project documentation. No scratchpad in the system
 prompt → `/tmp/<project-name>-SPEC.md`.
 
-Then send the file with SendUserFile and report inline:
+Run for a caller (a subagent brief, a Workflow script, a pipeline feeding another agent): write to the path the caller gives, skip the banner, SendUserFile, and the report, and return the path(s) with the action and unresolved counts. The outer session sends the file and prints the report once the result arrives. Parallel instances each need their own path.
+
+Run for the user: send the file with SendUserFile (for a per-page set, send only the index and list every page path) and report inline:
 
 ```
 ABSTRACTED PROJECT SPEC  ──  <project>   actions: <n>   unresolved: <n>
