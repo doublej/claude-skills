@@ -67,16 +67,19 @@ Shared driver discipline (send vs run, capture-after-settle, explicit pane targe
 > **Critical**: `split`/`vsplit` without `-s` targets the **currently focused** window, which may differ from the window running this script. Always pass the calling session's ID.
 
 ```bash
-# vsplit returns the new session ID — capture it
-SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
+ME=${ITERM_SESSION_ID#*:}   # env is w4t2p0:<UUID>; -s takes the bare UUID only
+SID=$(it2 vsplit -s "$ME" 2>&1 | sed -n 's/^Created new pane: //p')
+[ -n "$SID" ] && [ "$SID" != "$ME" ] || { echo "vsplit failed" >&2; exit 1; }
 it2 run -s "$SID" "echo hello"
 ```
 
-`$ITERM_SESSION_ID` is set automatically by iTerm2 shell integration in each shell session. It identifies the **calling** session, so the split always opens next to it regardless of which window is focused.
+`$ITERM_SESSION_ID` is set by iTerm2 in each shell and identifies the **calling** session, so the split opens next to it regardless of focus. Its value is `w<win>t<tab>p<pane>:<UUID>`; passed unstripped, `-s` fails with `Session '…' not found`.
+
+> Never capture the new ID with `grep -oE '[A-F0-9-]{36}'`: on failure it matches the UUID inside the error message — the calling session's own — and the next `it2 run -s "$SID"` types into this session. Match the `Created new pane:` line and keep the guard.
 
 ### Session ID from `newtab` / `new`
 
-Only `split`/`vsplit` print a session UUID (`Created new pane: <UUID>`). `newtab` prints `Created new tab: 71` and `new` prints `Created new window: pty-…` — **neither emits a session UUID**, so the grep above returns empty and later `-s "$SID"` calls silently hit the wrong session.
+Only `split`/`vsplit` print a session UUID (`Created new pane: <UUID>`). `newtab` prints `Created new tab: 71` and `new` prints `Created new window: pty-…` — **neither emits a session UUID**, so the capture above returns empty and later `-s "$SID"` calls silently hit the wrong session.
 
 Resolve the tab number through `session list --json` (its `tab_id` field is a string):
 
@@ -140,8 +143,10 @@ After sending a command, always `read` to verify. Use a high line count because 
 
 ```bash
 sleep 1
-it2 session read -s "$SID" -n 200
+it2 session read -s "$SID" -n 200 | LC_ALL=C tr -cd '\11\12\40-\176'
 ```
+
+The screen holds ANSI escapes and non-ASCII bytes (prompt glyphs, box drawing) that make `cut`/`grep` fail with `Illegal byte sequence`; the `tr` keeps printable ASCII only.
 
 ### Profiles & Appearance
 
@@ -207,7 +212,9 @@ When asked to "open a pane" or "run something next to this session", combine iTe
 
 ```bash
 # Split next to the calling session (not the focused window), inherit working dir
-SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
+ME=${ITERM_SESSION_ID#*:}
+SID=$(it2 vsplit -s "$ME" 2>&1 | sed -n 's/^Created new pane: //p')
+[ -n "$SID" ] && [ "$SID" != "$ME" ] || { echo "vsplit failed" >&2; exit 1; }
 it2 run -s "$SID" "cd $(pwd) && tmux new -s dev-server"
 
 # All further commands go through tmux (reliable, no focus issues)
@@ -223,7 +230,9 @@ For simple, non-interactive commands where tmux is overkill:
 
 ```bash
 # Split next to the calling session, start in the same working directory
-SID=$(it2 vsplit -s "$ITERM_SESSION_ID" 2>&1 | grep -oE '[A-F0-9-]{36}')
+ME=${ITERM_SESSION_ID#*:}
+SID=$(it2 vsplit -s "$ME" 2>&1 | sed -n 's/^Created new pane: //p')
+[ -n "$SID" ] && [ "$SID" != "$ME" ] || { echo "vsplit failed" >&2; exit 1; }
 it2 run -s "$SID" "cd $(pwd) && tail -f /var/log/app.log"
 ```
 
@@ -271,7 +280,7 @@ end tell
 ```
 
 - `create tab with default profile` on an existing window instead of `create window` for a tab.
-- `id of current session` returns the same UUID form `it2 -s` takes, so the two can be mixed.
+- `id of current session` returns the bare UUID that `it2 session list --json` shows, so it works with `it2 -s`. If `it2 -s <id>` still says `not found`, it2's API connection is stale or broken: keep reading that session through AppleScript (`contents of session`) instead of debugging the mismatch.
 - iTerm2 has no initial-working-directory setting here: `cd` must be part of the command you write.
 - `write text` always submits (appends a newline) — there is no send-without-newline equivalent.
 </applescript>
