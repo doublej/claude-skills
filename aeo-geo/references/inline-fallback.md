@@ -1,6 +1,6 @@
 # Inline Fallback — When `geo` CLI Is Unavailable
 
-If `pip install geo-optimizer-skill` fails (offline, sandbox, no Python), do these checks by hand. ~80% of value, 0% dependencies.
+If `uv tool install geo-optimizer-skill` fails (offline, sandbox), or the target is a local dev server (`geo` refuses localhost/private hosts), do these checks by hand. Set `SITE=http://localhost:PORT` for a dev server. ~80% of value, 0% dependencies.
 
 ## Quick audit (manual, ~5 min)
 
@@ -135,4 +135,4 @@ The fallback covers structure. The CLI adds:
 - Coherence audit across a sitemap
 - Saved-history regression detection
 
-Run `pip install geo-optimizer-skill` once it's available.
+Run `uv tool install geo-optimizer-skill` once it's available (needs a public URL).

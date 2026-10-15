@@ -17,7 +17,7 @@ Track whether ChatGPT / Perplexity / Claude / Grok / Gemini cite your site for t
 ## Tool: searchstack-aeo
 
 ```bash
-pip install searchstack
+uv tool install searchstack
 searchstack init                                    # config wizard
 searchstack ai --queries queries.yaml               # poll all engines
 searchstack geo --keywords "best gpu for ml"        # AI Overview tracking

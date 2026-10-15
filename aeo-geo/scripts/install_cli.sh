@@ -9,19 +9,18 @@ warn() { printf "⚠ %s\n" "$*" >&2; }
 
 bold "aeo-geo: tool install"
 
-# Required: pip
-if ! command -v pip >/dev/null 2>&1 && ! command -v pip3 >/dev/null 2>&1; then
-  warn "pip not found. Install Python 3.9+ first."
+# Required: uv
+if ! command -v uv >/dev/null 2>&1; then
+  warn "uv not found. Install it first: brew install uv"
   exit 1
 fi
-PIP="$(command -v pip3 || command -v pip)"
 
 # 1. geo-optimizer-skill (required)
 if command -v geo >/dev/null 2>&1; then
   ok "geo CLI already installed: $(geo --version 2>/dev/null || echo unknown)"
 else
   bold "Installing geo-optimizer-skill..."
-  "$PIP" install --user geo-optimizer-skill
+  uv tool install geo-optimizer-skill
   ok "geo CLI installed"
 fi
 
@@ -32,7 +31,7 @@ case "${ans:-n}" in
     if command -v searchstack >/dev/null 2>&1; then
       ok "searchstack already installed"
     else
-      "$PIP" install --user searchstack
+      uv tool install searchstack
       ok "searchstack installed — run 'searchstack init' to configure API keys"
     fi
     ;;

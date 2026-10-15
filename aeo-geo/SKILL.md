@@ -40,18 +40,25 @@ Close with the report under Output convention. Generated files (llms.txt, robots
 - Personal projects with no real audience to capture → skip; not worth the maintenance
 - Multi-LLM brand monitoring → see `references/citation-monitoring.md` (separate concern, costs money)
 
-## Step 1 — Detect environment
+## Step 1 — Detect environment and pick a mode
+
+Run this; do not skip it or assume the result:
 
 ```bash
-# Required
-which geo || pip install geo-optimizer-skill
-geo --version
-
-# Optional (skip cleanly if missing)
-which searchstack 2>/dev/null  # citation monitoring
+command -v geo || uv tool install geo-optimizer-skill   # never pip
+geo --version                                           # 4.x expected
+command -v searchstack 2>/dev/null                      # optional, citation monitoring
 ```
 
-If `geo` install fails: fall back to inline checks in `references/inline-fallback.md`.
+Pick the mode, then state it in the report header (Output convention):
+
+| Mode | When | What runs |
+|------|------|-----------|
+| `cli` | `geo --version` works AND the target is a public URL | Steps 2–9 as written |
+| `local` | Target is `localhost`, `127.*`, `10.*`, `192.168.*`, `*.local` | `geo` refuses these (`Unsafe URL: Host not allowed`). Run the curl checks in `references/inline-fallback.md` against the dev server, `geo schema --file <built.html> --analyze` on built HTML, and write llms.txt/robots.txt/JSON-LD into source from the inline templates. No score — write `score: —` |
+| `fallback` | `geo` install fails (offline, sandbox) | `references/inline-fallback.md` manual rubric |
+
+Falling back is fine; falling back silently is a bug. In `local`/`fallback` mode, put the reason in the header and list what the CLI would have added (CDN bot checks, 47-method content score, history) as `—` rows.
 
 ## Step 2 — Audit
 
@@ -148,7 +155,7 @@ geo track --url https://SITE.com --report --output ./report.html
 Only when actively tracking a live brand. Requires API keys. See `references/citation-monitoring.md`.
 
 ```bash
-pip install searchstack
+uv tool install searchstack
 searchstack ai      # ChatGPT/Perplexity/Claude citation polling
 searchstack geo     # Google AI Overview tracking
 ```
@@ -170,7 +177,7 @@ Snippets for each: `references/framework-integration.md`.
 When asked to "improve AEO/GEO" on a codebase, produce a fix list ordered by impact:
 
 ```
-AEO GEO  ──  <site>   score: <before> → <after|—>   band: <critical|foundation|good|excellent>
+AEO GEO  ──  <site>   mode: <cli|local|fallback (reason)>   score: <before> → <after|—>   band: <critical|foundation|good|excellent|—>
 
 PRI        FINDING                            FIX                              STATUS
 ────────────────────────────────────────────────────────────────────────────────────
