@@ -66,12 +66,14 @@ Group sessions by `project`. Spawn investigators with the Agent tool, `model: "o
 Investigator prompt (fill in the placeholders):
 
 ```
-Read ~/dev/_data/session-catchup/catchup.json and keep only sessions whose "project" is one of: <paths>.
+Load your sessions (git state per project is in the same file under "projects"):
+jq --argjson p '[<paths as JSON strings>]' '[.sessions[] | select(.project as $x | $p | index($x))]' ~/dev/_data/session-catchup/catchup.json
 For each, the "goal" is the first prompt and "tail" is the last messages, which show where it stopped.
 Ground every claim in the repo, not in what the assistant said:
 - the project's git state is in catchup.json "projects"; also run `git log --oneline -10` and `git status --short` there
 - if the tail names another repo or path (work often lands outside the cwd), check that repo the same way
 - if the repo has .beads/, run `bd list --status open` and link tickets the sessions mention
+Mark anything you couldn't confirm, and say where you looked.
 Merge sessions that worked on the same thing into one thread. Per thread return JSON:
 {"thread": "<5-word name>", "project": "<path>", "sessions": ["<id>"], "last": "<iso>",
  "state": "DONE|FINISH|CONTINUE|BLOCKED|LIVE|STALE",
@@ -87,7 +89,7 @@ Return only the JSON list. Read-only: do not commit, push or edit anything.
 </step_3_investigate>
 
 <step_4_plan>
-Merge the threads, collapsing duplicates across agents. Order them:
+Merge the threads, collapsing duplicates across agents. When a subagent reports back, check its evidence before you accept it: `git -C <project> cat-file -e <sha>` for each sha cited on a DONE or FINISH thread. A thread whose sha does not resolve goes back to CONTINUE. Order the threads:
 
 1. **FINISH**: cheapest first. Uncommitted or unpushed work is at risk, so it leads.
 2. **BLOCKED**: list the exact question JJ has to answer.
@@ -95,14 +97,16 @@ Merge the threads, collapsing duplicates across agents. Order them:
 4. **LIVE / STALE**: one line each; STALE threads get a suggestion to drop or archive them.
 
 Write the plan to `~/dev/_data/session-catchup/plan-<yyyy-mm-dd-hhmm>.md`. Each thread section holds the state, the evidence, where it left off, numbered next steps, an effort estimate and the `resume` command. Then print the report from `<presentation>`.
+
+Done means the plan file exists and the report is printed. Stop there, because JJ picks the thread. If the digest exits with `No projects found for scope` or reports 0 sessions, print the report with that one line under the table and stop.
 </step_4_plan>
 
 <rules>
 - Read-only. Do not commit, push, edit or close tickets in the investigated repos. The plan says what to do, and JJ chooses.
 - A session's own "done" is a claim. A thread is DONE only with a commit or a verified artifact as evidence.
-- `resume` keeps the original `cwd`: `claude --resume` looks the session up under the directory it started in, so a `~/Documents/development/...` cwd must stay as it is there.
+- `resume` keeps the original `cwd`, even a `~/Documents/development/...` one. Sessions are stored under the directory they started in, so the resumed session gets back its own history and folder.
 - Sessions with cwd `~/dev` (no git) did their work in a subrepo. Find it from the tail.
-- If an investigator returns nothing, report that project as a `✗` row with the cause. Do not leave it out.
+- If an investigator returns nothing, report that project as a row with `✗` in STATE and the cause in NEXT. Do not leave it out.
 </rules>
 
 <self_check>
