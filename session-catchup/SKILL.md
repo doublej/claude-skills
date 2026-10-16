@@ -1,6 +1,6 @@
 ---
 name: session-catchup
-description: Catch up on all recent Claude Code sessions across projects using session-search, establish where each one left off (checked against git), and produce a ranked plan to finish or continue that work, with a resume command per thread. Use when the user says "catch up", "where did I leave off", "what was I working on", "what's still open", "pick up where we left off", "morning catchup", "plan my unfinished work", or "/session-catchup". Use session-search instead for finding a phrase in history, and handoff for briefing a single new session.
+description: Catch up on recent Claude Code sessions in the current project or folder (subprojects included; all projects on request) using session-search, establish where each one left off (checked against git), and produce a ranked plan to finish or continue that work, with a resume command per thread. Use when the user says "catch up", "where did I leave off", "what was I working on", "what's still open", "pick up where we left off", "morning catchup", "plan my unfinished work", or "/session-catchup". Use session-search instead for finding a phrase in history, and handoff for briefing a single new session.
 ---
 
 # Session Catchup
@@ -36,20 +36,21 @@ States: `FINISH` · `CONTINUE` · `BLOCKED` · `LIVE` · `STALE` · `DONE`. DONE
 </presentation>
 
 <step_1_scope>
-Defaults: all projects, the last 48 hours. Map the request onto flags:
+Defaults: the folder the session runs in (cwd, every project below it included) and the last 48 hours. Map the request onto flags:
 
 | User says | Flags |
 |-----------|-------|
-| nothing | `--all-projects` (since defaults to 2880) |
+| nothing | none: the script scopes to cwd and 2880 minutes |
 | "today" / "last 8 hours" / "this week" | `--since 1440` / `--since 480` / `--since 10080` |
-| "in web projects" / "in this repo" | `--folder ~/dev/web` / `-p $(pwd)` instead of `--all-projects` |
+| "in web projects" / "only this repo, not subfolders" | `--folder ~/dev/web` / `-p $(pwd)` |
+| "everywhere" / "all projects" | `--all-projects` |
 
 Always exclude the running session: its id is the session-directory name in the scratchpad path.
 </step_1_scope>
 
 <step_2_digest>
 ```bash
-python3 ~/.claude/skills/session-catchup/scripts/catchup_digest.py --all-projects --exclude <this-session-id> [--since N]
+python3 ~/.claude/skills/session-catchup/scripts/catchup_digest.py --exclude <this-session-id> [scope flags]
 ```
 
 The script reuses session-search's discovery, parsing and noise filter. It drops `claude -p` one-shots (fewer than 2 real prompts; `--min-user-msgs` changes that) and writes `~/dev/_data/session-catchup/catchup.json`:

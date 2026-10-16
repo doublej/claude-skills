@@ -7,6 +7,7 @@ digest to <out>/catchup.json and prints one row per session (or the JSON with --
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -70,8 +71,10 @@ def main() -> None:
     p.add_argument("--clip", type=int, default=700, help="max chars per message (default 700)")
     p.add_argument("--exclude", action="append", default=[], help="session id to skip (the running session); repeatable")
     p.add_argument("--json", action="store_true", help="print the digest JSON instead of the table")
-    p.set_defaults(since=2880, output=str(Path.home() / "dev/_data/session-catchup"))
+    p.set_defaults(since=2880, project=None, output=str(Path.home() / "dev/_data/session-catchup"))
     args = p.parse_args()
+    if not (args.all_projects or args.folder or args.project):
+        args.folder = os.getcwd()  # default scope: the folder it runs in, nested projects included
 
     projects = ss.resolve_projects(args)
     if not projects:
