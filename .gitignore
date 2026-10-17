@@ -14,3 +14,13 @@ __pycache__/
 *.darc
 node_modules/
 dist/
+
+# Tool runtime state
+.repomap.tags.cache.v1/
+*.gate.lock
+.beads/dolt-server-config.yaml
+.beads/export-state.json
+.orchestrate/
+.session-search/
+.junie/
+*.bak.mesh
