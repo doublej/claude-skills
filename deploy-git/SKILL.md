@@ -1,6 +1,6 @@
 ---
 name: deploy-git
-description: Git protocol when a commit or push exists only to deploy — temporary worktree, deploy/<target> branch, deploy: commits, no merge back. Use when deploying via git rather than developing.
+description: "Git protocol when a commit or push exists only to deploy — temporary worktree, deploy/<target> branch, deploy: commits, no merge back. Use when deploying via git rather than developing."
 ---
 
 # Deployment git protocol
